@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/layout/popup_menu_profile.xml (RESPONSIVE VERSION) -->
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="@dimen/popup_width"
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="@android:color/white"
+    app:cardCornerRadius="@dimen/popup_corner_radius"
+    app:cardElevation="@dimen/popup_elevation"
+    app:cardUseCompatPadding="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/popup_padding">
+
+        <!-- Header: Info Siswa -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/popup_header_bottom_padding">
+
+            <TextView
+                android:id="@+id/tvStudentName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nama Siswa"
+                android:textColor="#212121"
+                android:textSize="@dimen/popup_student_name_size"
+                android:textStyle="bold"
+                android:maxLines="1"
+                android:ellipsize="end"/>
+
+            <TextView
+                android:id="@+id/tvStudentNIS"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="8329093892"
+                android:textColor="#9E9E9E"
+                android:textSize="@dimen/popup_student_nis_size"
+                android:layout_marginTop="2dp"/>
+
+        </LinearLayout>
+
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/popup_divider_height"
+            android:background="#E0E0E0"
+            android:layout_marginBottom="@dimen/popup_header_bottom_padding"/>
+
+        <!-- Menu Item: Pengaturan -->
+        <LinearLayout
+            android:id="@+id/btnSettings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="@dimen/popup_menu_item_padding"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="@dimen/popup_icon_size"
+                android:layout_height="@dimen/popup_icon_size"
+                android:src="@drawable/gear"
+                android:contentDescription="Settings Icon"
+                android:layout_marginEnd="@dimen/popup_icon_margin_end"
+                app:tint="#616161"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pengaturan"
+                android:textColor="#424242"
+                android:textSize="@dimen/popup_menu_text_size"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+
+        <!-- Menu Item: Keluar -->
+        <LinearLayout
+            android:id="@+id/btnLogout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="@dimen/popup_menu_item_padding"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_marginTop="2dp">
+
+            <ImageView
+                android:layout_width="@dimen/popup_icon_size"
+                android:layout_height="@dimen/popup_icon_size"
+                android:src="@drawable/keluar"
+                android:contentDescription="Logout Icon"
+                android:layout_marginEnd="@dimen/popup_icon_margin_end"
+                app:tint="#F44336"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Keluar"
+                android:textColor="#F44336"
+                android:textSize="@dimen/popup_menu_text_size"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

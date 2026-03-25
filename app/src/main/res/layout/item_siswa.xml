@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingVertical="8dp"
+    android:background="@android:color/white">
+
+    <!-- NIS -->
+    <TextView
+        android:id="@+id/tvNis"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingHorizontal="8dp"
+        android:textColor="#333333"
+        android:textSize="12sp" />
+
+    <!-- Nama -->
+    <TextView
+        android:id="@+id/tvNama"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:paddingHorizontal="8dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="#333333"
+        android:textSize="12sp" />
+
+    <!-- Jenis Kelamin -->
+    <TextView
+        android:id="@+id/tvJenisKelamin"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingHorizontal="4dp"
+        android:textColor="#333333"
+        android:textSize="12sp" />
+
+    <!-- Kelas -->
+    <TextView
+        android:id="@+id/tvKelas"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingHorizontal="4dp"
+        android:textColor="#333333"
+        android:textSize="12sp" />
+
+    <!-- Jurusan (Badge) -->
+    <TextView
+        android:id="@+id/tvJurusan"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
+        android:background="@drawable/bg_badge_jurusan"
+        android:textColor="#2196F3"
+        android:textSize="11sp" />
+
+    <!-- Aksi Container -->
+    <LinearLayout
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:paddingHorizontal="8dp">
+
+        <ImageView
+            android:id="@+id/btnEdit"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_edit"
+            android:contentDescription="Edit"
+            app:tint="#2196F3"
+            xmlns:app="http://schemas.android.com/apk/res-auto" />
+
+        <ImageView
+            android:id="@+id/btnDelete"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_delete"
+            android:contentDescription="Delete" />
+
+    </LinearLayout>
+
+</LinearLayout>

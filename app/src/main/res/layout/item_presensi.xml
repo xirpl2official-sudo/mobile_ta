@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="48dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:background="@android:color/white">
+
+    <!-- NO -->
+    <TextView
+        android:id="@+id/tvNo"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:text="1"
+        android:textColor="#333333"
+        android:textSize="12sp"
+        android:gravity="center"
+        android:paddingHorizontal="4dp" />
+
+    <!-- NIS -->
+    <TextView
+        android:id="@+id/tvNis"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="20228PL001"
+        android:textColor="#333333"
+        android:textSize="12sp"
+        android:gravity="start"
+        android:paddingHorizontal="8dp" />
+
+    <!-- Nama Siswa -->
+    <TextView
+        android:id="@+id/tvNama"
+        android:layout_width="140dp"
+        android:layout_height="wrap_content"
+        android:text="Siswa RPL 1"
+        android:textColor="#333333"
+        android:textSize="12sp"
+        android:gravity="start"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:paddingHorizontal="8dp" />
+
+    <!-- Kelas -->
+    <TextView
+        android:id="@+id/tvKelas"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:text="10 RPL"
+        android:textColor="#333333"
+        android:textSize="12sp"
+        android:gravity="center"
+        android:paddingHorizontal="4dp" />
+
+    <!-- Jenis Sholat -->
+    <TextView
+        android:id="@+id/tvJenisSholat"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:text="Dhuha"
+        android:textColor="#333333"
+        android:textSize="12sp"
+        android:gravity="center"
+        android:paddingHorizontal="4dp" />
+
+    <!-- Status Absensi Badge -->
+    <TextView
+        android:id="@+id/tvStatus"
+        android:layout_width="70dp"
+        android:layout_height="28dp"
+        android:text="Hadir"
+        android:textColor="@android:color/white"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:background="@drawable/bg_status_hadir"
+        android:layout_marginHorizontal="8dp" />
+
+</LinearLayout>

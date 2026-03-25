@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="text_title">22sp</dimen>
+    <dimen name="text_bawah_title">13sp</dimen>
+    <dimen name="text_beranda">16sp</dimen>
+    <dimen name="text_smkn2s">10sp</dimen>
+    <dimen name="text_input_hint">13sp</dimen>
+    <dimen name="text_button">14sp</dimen>
+    <dimen name="text_small">12sp</dimen>
+    <dimen name="text_email">7sp</dimen>
+    <dimen name="text_waktu">11sp</dimen>
+    <dimen name="text_bawah_waktu">8sp</dimen>
+    <dimen name="text_masukOTP">11sp</dimen>
+    <dimen name="text_kelola">10sp</dimen>
+    
+    <!-- Spacing -->
+    <dimen name="spacing_tiny">3dp</dimen>
+    <dimen name="spacing_text">6dp</dimen>
+    <dimen name="spacing_small">8dp</dimen>
+    <dimen name="spacing_medium">12dp</dimen>
+    <dimen name="spacing_large">16dp</dimen>
+    <dimen name="spacing_xlarge">24dp</dimen>
+
+    <dimen name="card_corner_radius">12dp</dimen>
+    <dimen name="card_elevation">2dp</dimen>
+    <dimen name="card_margin_vertical">4dp</dimen>
+    <dimen name="card_padding">10dp</dimen>
+    <dimen name="qr_button_height">38dp</dimen>
+    <dimen name="qr_button_width">38dp</dimen>
+
+
+    <!-- OTP VIEW -->
+    <dimen name="otp_box_height">48dp</dimen>
+    <dimen name="otp_box_margin">3dp</dimen>
+    <dimen name="otp_text_size">16sp</dimen>
+    <dimen name="otp_box_min_width">44dp</dimen>
+    <dimen name="otp_box_max_width">56dp</dimen>
+
+    <!-- Jadwal Sholat & Riwayat Absensi -->
+    <dimen name="text_section_title">16sp</dimen>
+    <dimen name="text_nama_sholat">13sp</dimen>
+    <dimen name="text_jam_sholat">12sp</dimen>
+    <dimen name="text_status_badge">11sp</dimen>
+    <dimen name="text_riwayat_tanggal">10sp</dimen>
+    <dimen name="text_riwayat_waktu">9sp</dimen>
+    <dimen name="text_riwayat_sholat">11sp</dimen>
+    <dimen name="text_riwayat_status">10sp</dimen>
+
+    <!-- Popup Menu Dimensions -->
+    <dimen name="popup_width">200dp</dimen>
+    <dimen name="popup_padding">8dp</dimen>
+    <dimen name="popup_corner_radius">10dp</dimen>
+    <dimen name="popup_elevation">4dp</dimen>
+    
+    <!-- Text Sizes -->
+    <dimen name="popup_student_name_size">12sp</dimen>
+    <dimen name="popup_student_nis_size">9sp</dimen>
+    <dimen name="popup_menu_text_size">11sp</dimen>
+    
+    <!-- Spacings -->
+    <dimen name="popup_header_bottom_padding">6dp</dimen>
+    <dimen name="popup_menu_item_padding">6dp</dimen>
+    <dimen name="popup_icon_size">14dp</dimen>
+    <dimen name="popup_icon_margin_end">8dp</dimen>
+    <dimen name="popup_divider_height">0.5dp</dimen>
+    
+    <!-- Admin Dashboard Card Value -->
+    <dimen name="text_value_card">20sp</dimen>
+    
+    <!-- Admin Dashboard Card Label (Title like Total Siswa, etc) -->
+    <dimen name="text_admin_card_label">10sp</dimen>
+    
+    <!-- Prayer Schedule -->
+    <dimen name="text_prayer_title">14sp</dimen>
+    <dimen name="text_prayer_name">14sp</dimen>
+    <dimen name="text_prayer_time">12sp</dimen>
+    <dimen name="prayer_icon_size">20dp</dimen>
+
+</resources>

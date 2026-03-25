@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <!-- Permissions -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+
+    <application
+        android:name=".SASMobileApp"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.SAS_Mobile"
+        android:usesCleartextTraffic="true"
+        tools:targetApi="31">
+        <activity
+            android:name=".BerandaAdminActivity"
+            android:exported="false" />
+        <activity
+            android:name=".BerandaGuruActivity"
+            android:exported="false" />
+        <activity
+            android:name=".JadwalSholatAdminActivity"
+            android:exported="false" />
+        <activity
+            android:name=".DataSiswaAdminActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PresensiSholatAdminActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LaporanAdminActivity"
+            android:exported="false" />
+        <activity
+            android:name=".InputIzinActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ScanQrActivity"
+            android:exported="false" />
+        <activity
+            android:name=".StaffQRActivity"
+            android:exported="false" />
+        <activity
+            android:name=".BuatSandiBaruActivity"
+            android:exported="false" />
+        <activity
+            android:name=".VerifikasiOtpActivity"
+            android:exported="false" /> <!-- Main Activity -->
+        <activity
+            android:name=".BerandaActivity"
+            android:exported="false" /> <!-- Masuk Activity (Login) -->
+        <activity
+            android:name=".MasukActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity> <!-- Daftar Activity (Register) -->
+        <activity
+            android:name=".DaftarActivity"
+            android:exported="false" />
+        <activity
+            android:name=".GantiKataSandi"
+            android:exported="false" />
+        <activity
+            android:name=".PengaturanAkunActivity"
+            android:exported="false" />
+        <activity
+            android:name=".NotifikasiActivity"
+            android:exported="false" />
+    </application>
+
+</manifest>

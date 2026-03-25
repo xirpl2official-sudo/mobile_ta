@@ -1,0 +1,72 @@
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:dataBindingMergeDependencyArtifactsDebug UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :app:generateDebugResources
+> Task :app:packageDebugResources
+> Task :app:mergeDebugResources
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:processDebugMainManifest
+> Task :app:processDebugManifest
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:mergeDebugShaders UP-TO-DATE
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets UP-TO-DATE
+> Task :app:compressDebugAssets UP-TO-DATE
+> Task :app:desugarDebugFileDependencies
+> Task :app:mergeDebugJniLibFolders UP-TO-DATE
+> Task :app:mergeDebugNativeLibs UP-TO-DATE
+> Task :app:stripDebugDebugSymbols UP-TO-DATE
+> Task :app:validateSigningDebug UP-TO-DATE
+> Task :app:parseDebugLocalResources
+> Task :app:writeDebugAppMetadata UP-TO-DATE
+> Task :app:checkDebugDuplicateClasses
+> Task :app:dataBindingGenBaseClassesDebug
+> Task :app:mergeLibDexDebug UP-TO-DATE
+> Task :app:writeDebugSigningConfigVersions UP-TO-DATE
+> Task :app:processDebugManifestForPackage
+> Task :app:processDebugResources
+> Task :app:mergeExtDexDebug
+
+> Task :app:compileDebugKotlin
+w: file:///C:/Users/Administrator/Documents/malik/mobile-ta2-main/app/src/main/java/com/xirpl2/SASMobile/BaseAdminActivity.kt:57:9 'fun overridePendingTransition(p0: Int, p1: Int): Unit' is deprecated. Deprecated in Java.
+w: file:///C:/Users/Administrator/Documents/malik/mobile-ta2-main/app/src/main/java/com/xirpl2/SASMobile/BaseAdminActivity.kt:154:13 'fun overridePendingTransition(p0: Int, p1: Int): Unit' is deprecated. Deprecated in Java.
+w: file:///C:/Users/Administrator/Documents/malik/mobile-ta2-main/app/src/main/java/com/xirpl2/SASMobile/BaseAdminActivity.kt:203:17 'fun overridePendingTransition(p0: Int, p1: Int): Unit' is deprecated. Deprecated in Java.
+w: file:///C:/Users/Administrator/Documents/malik/mobile-ta2-main/app/src/main/java/com/xirpl2/SASMobile/BaseAdminActivity.kt:258:17 'fun overridePendingTransition(p0: Int, p1: Int): Unit' is deprecated. Deprecated in Java.
+w: file:///C:/Users/Administrator/Documents/malik/mobile-ta2-main/app/src/main/java/com/xirpl2/SASMobile/BaseAdminActivity.kt:269:16 'var statusBarColor: Int' is deprecated. Deprecated in Java.
+w: file:///C:/Users/Administrator/Documents/malik/mobile-ta2-main/app/src/main/java/com/xirpl2/SASMobile/BaseAdminActivity.kt:282:18 This declaration overrides a deprecated member but is not marked as deprecated itself. Please add the '@Deprecated' annotation or suppress the diagnostic.
+w: file:///C:/Users/Administrator/Documents/malik/mobile-ta2-main/app/src/main/java/com/xirpl2/SASMobile/BaseAdminActivity.kt:286:19 'fun onBackPressed(): Unit' is deprecated. This method has been deprecated in favor of using the
+      {@link OnBackPressedDispatcher} via {@link #getOnBackPressedDispatcher()}.
+      The OnBackPressedDispatcher controls how back button events are dispatched
+      to one or more {@link OnBackPressedCallback} objects.
+w: file:///C:/Users/Administrator/Documents/malik/mobile-ta2-main/app/src/main/java/com/xirpl2/SASMobile/BaseAdminActivity.kt:287:13 'fun overridePendingTransition(p0: Int, p1: Int): Unit' is deprecated. Deprecated in Java.
+w: file:///C:/Users/Administrator/Documents/malik/mobile-ta2-main/app/src/main/java/com/xirpl2/SASMobile/BaseAdminActivity.kt:293:9 'fun overridePendingTransition(p0: Int, p1: Int): Unit' is deprecated. Deprecated in Java.
+w: file:///C:/Users/Administrator/Documents/malik/mobile-ta2-main/app/src/main/java/com/xirpl2/SASMobile/BerandaActivity.kt:51:16 'var statusBarColor: Int' is deprecated. Deprecated in Java.
+w: file:///C:/Users/Administrator/Documents/malik/mobile-ta2-main/app/src/main/java/com/xirpl2/SASMobile/BuatSandiBaruActivity.kt:38:16 'var statusBarColor: Int' is deprecated. Deprecated in Java.
+w: file:///C:/Users/Administrator/Documents/malik/mobile-ta2-main/app/src/main/java/com/xirpl2/SASMobile/DaftarActivity.kt:37:16 'var statusBarColor: Int' is deprecated. Deprecated in Java.
+w: file:///C:/Users/Administrator/Documents/malik/mobile-ta2-main/app/src/main/java/com/xirpl2/SASMobile/GantiKataSandi.kt:38:16 'var statusBarColor: Int' is deprecated. Deprecated in Java.
+w: file:///C:/Users/Administrator/Documents/malik/mobile-ta2-main/app/src/main/java/com/xirpl2/SASMobile/MasukActivity.kt:45:16 'var statusBarColor: Int' is deprecated. Deprecated in Java.
+w: file:///C:/Users/Administrator/Documents/malik/mobile-ta2-main/app/src/main/java/com/xirpl2/SASMobile/NotifikasiActivity.kt:25:16 'var statusBarColor: Int' is deprecated. Deprecated in Java.
+w: file:///C:/Users/Administrator/Documents/malik/mobile-ta2-main/app/src/main/java/com/xirpl2/SASMobile/PengaturanAkunActivity.kt:68:16 'var statusBarColor: Int' is deprecated. Deprecated in Java.
+w: file:///C:/Users/Administrator/Documents/malik/mobile-ta2-main/app/src/main/java/com/xirpl2/SASMobile/ScanQrActivity.kt:56:16 'var statusBarColor: Int' is deprecated. Deprecated in Java.
+w: file:///C:/Users/Administrator/Documents/malik/mobile-ta2-main/app/src/main/java/com/xirpl2/SASMobile/StaffQRActivity.kt:68:16 'var statusBarColor: Int' is deprecated. Deprecated in Java.
+w: file:///C:/Users/Administrator/Documents/malik/mobile-ta2-main/app/src/main/java/com/xirpl2/SASMobile/StudentQRActivity.kt:49:16 'var statusBarColor: Int' is deprecated. Deprecated in Java.
+w: file:///C:/Users/Administrator/Documents/malik/mobile-ta2-main/app/src/main/java/com/xirpl2/SASMobile/VerifikasiOtpActivity.kt:41:16 'var statusBarColor: Int' is deprecated. Deprecated in Java.
+
+> Task :app:compileDebugJavaWithJavac UP-TO-DATE
+> Task :app:processDebugJavaRes UP-TO-DATE
+> Task :app:mergeDebugJavaResource UP-TO-DATE
+> Task :app:dexBuilderDebug
+> Task :app:mergeProjectDexDebug
+> Task :app:packageDebug
+> Task :app:createDebugApkListingFileRedirect UP-TO-DATE
+> Task :app:assembleDebug
+
+BUILD SUCCESSFUL in 37s
+37 actionable tasks: 17 executed, 20 up-to-date

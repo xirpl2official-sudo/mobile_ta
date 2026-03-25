@@ -1,0 +1,199 @@
+<resources>
+    <string name="LatarBelakangIno">Latar Belakang Logo INORASI</string>
+    <string name="SMK">SMK NEGERI 2 SINGOSARI</string>
+    <string name="MasukTitle">MASUK UNTUK MELANJUTKAN</string>
+    <string name="DaftarTitle">DAFTAR UNTUK MELANJUTKAN</string>
+    <string name="GantiSandiTitle">GANTI KATA SANDI ANDA</string>
+    <string name="VerivikasiOTP">Verifikasi Kode OTP</string>
+    <string name="MasukkanOTP">Masukkan Kode OTP :</string>
+    <string name="KirimUlgKode">Kirim ulang kode ↻</string>
+    <string name="contohEmail">Kode telah dikirim ke contoh123@gmail.com</string>
+    <string name="DekorasiBiru">Dekoratif biru di atas</string>
+    <string name="DekorasiOrange">Dekoratif orange di atas</string>
+    <string name="TopBarBiru">Top Bar</string>
+    <string name="LogoSMKN2">Logo SMK Negeri 2 Singosari</string>
+    <string name="app_name">SAS_Mobile</string>
+    <string name="JudulHal">MASUK</string>
+    <string name="Masuk">Masuk</string>
+    <string name="JudulDaf">DAFTAR</string>
+    <string name="buatakun">Buat Akun</string>
+    <string name="UbahSandi">Ubah Kata Sandi</string>
+    <string name="BuatSandi">BUAT KATA SANDI BARU</string>
+    <string name="ButtonBuatSandi">Buat Kata Sandi</string>
+    <string name="NIS">NIS</string>
+    <string name="N.N">NIS/Username</string>
+    <string name="Email">Email</string>
+    <string name="JudulSandi">Ganti Kata Sandi</string>
+    <string name="Sandi">Kata Sandi</string>
+    <string name="konfirSandi">Konfirmasi Kata Sandi</string>
+    <string name="SandiBaru">Kata Sandi Baru</string>
+    <string name="KonfirmSandiBaru">Konfirmasi Kata Sandi Baru</string>
+    <string name="Lupa_KataSandi">Lupa Kata Sandi Anda?</string>
+    <string name="BelumAkun">Belum Punya Akun?</string>
+    <string name="BuatAkun">Buat Akun</string>
+    <string name="SudahAkun">Sudah Punya Akun?</string>
+    <string name="Beran">Beranda</string>
+    <string name="Stemdasi">SMK Negeri 2 Singosari</string>
+    <string name="Menu">Menu Navigasi</string>
+    <string name="Notif">Notifikasi</string>
+    <string name="LupaSandi">LUPA KATA SANDI</string>
+    <string name="KirimOTP">Kirim Kode OTP</string>
+    <string name="email_verifikasi">Kode telah dikirim ke email %s</string>
+    <string name="Statistik">%</string>
+    <string name="Total">Total</string>
+    <string name="Hadir">Hadir</string>
+    <string name="Grafik">Grafik</string>
+    <string name="WaktuAbsensi">Waktu Presensi</string>
+    <string name="DeskripsiAbsensi">Periksa waktu presensi Anda</string>
+    <string name="Presensi">Presensi</string>
+    <string name="Lokasi">Lokasi</string>
+    <string name="Valid">Valid</string>
+    <string name="JadwalHariIni">Jadwal Hari Ini</string>
+    <string name="Jadwal">Jadwal</string>
+    <string name="Riwayat">Riwayat</string>
+    <string name="Tanggal">Tanggal</string>
+    <string name="Sholat">Sholat</string>
+    <string name="Status">Status</string>
+    <string name="Warning">Peringatan</string>
+    
+    <!-- Admin Dashboard -->
+    <string name="TotalSiswa">Total Siswa</string>
+    <string name="TotalHadirHariIni">Total Hadir Hari Ini</string>
+    <string name="IzinSakit">Izin/Sakit</string>
+    <string name="Kehadiran">Kehadiran</string>
+    <string name="Alpha">Alpha</string>
+    <string name="JadwalSholatTerdekat">Jadwal Sholat Terdekat</string>
+    <string name="SilahkanHariIni">Silahkan Hari Ini</string>
+    <string name="icon">Icon</string>
+
+    <!-- Pengaturan Akun -->
+    <string name="Pengaturan">Pengaturan</string>
+    <string name="PengaturanAkun">Pengaturan Akun</string>
+    <string name="KelolaInformasiAkun">Kelola informasi akun anda</string>
+    <string name="FotoProfil">Foto Profil</string>
+    <string name="DeskripsiFotoProfil">Foto profil kamu akan otomatis memotong huruf depan namamu</string>
+    <string name="NamaLengkap">Nama Lengkap</string>
+    <string name="JenisKelamin">Jenis Kelamin</string>
+    <string name="MengubahEmail">Mengubah Email?</string>
+    <string name="SimpanPerubahan">Simpan perubahan</string>
+    <string name="Batal">Batal</string>
+    <string name="Kembali">Kembali</string>
+
+    <!-- Activity Verifikasi OTP -->
+    <string name="Verifikasi">Verifikasi</string>
+
+    <!-- Activity Student QR -->
+    <string name="QrCodeSaya">QR CODE SAYA</string>
+    <string name="SholatDzuhur">Sholat Dzuhur</string>
+    <string name="BerlakuWaktu">Berlaku: 05:00</string>
+    <string name="TunjukkanQR">Tunjukkan QR code ini ke guru</string>
+    <string name="RefreshQRCode">REFRESH QR CODE</string>
+    <string name="TidakAdaJadwalAktif">Tidak ada jadwal sholat aktif saat ini</string>
+    <string name="CobaLagi">COBA LAGI</string>
+
+    <!-- Activity Staff QR -->
+    <string name="QrCodeAbsensi">QR CODE ABSENSI</string>
+    <string name="QrCodeAktif">QR Code Aktif</string>
+    <string name="InstruksiStaffQR">Tampilkan QR code ini di layar/proyektor.\nSiswa dapat memindai untuk absensi.</string>
+
+    <!-- Activity Scan QR -->
+    <string name="PindaiQR">PINDAI QR</string>
+    <string name="PindaiKodeQR">PINDAI KODE QR</string>
+    <string name="ArahkanKamera">Arahkan kamera ke Kode QR</string>
+    <string name="Pindai">PINDAI</string>
+    <string name="NamaSiswa">Nama Siswa</string>
+    <string name="PlaceholderKelasJurusan">XII RPL 1 - Rekayasa Perangkat Lunak</string>
+    <string name="SholatLabel">Sholat</string>
+    <string name="HADIR">HADIR</string>
+    <string name="Waktu">Waktu</string>
+    <string name="PlaceholderWaktu">12:30</string>
+    <string name="PindaiLagi">PINDAI LAGI</string>
+
+    <!-- Activity Presensi Sholat Admin -->
+    <string name="PresensiSholat">Presensi Sholat</string>
+    <string name="InputIzin">Input Izin</string>
+    <string name="Tambah">Tambah</string>
+    <string name="SemuaKelas">Semua Kelas</string>
+    <string name="SemuaJurusan">Semua Jurusan</string>
+    <string name="SemuaSholat">Semua Sholat</string>
+    <string name="Menampilkan0Data">Menampilkan 0 data</string>
+    <string name="TidakAdaDataAbsensi">Tidak ada data absensi.</string>
+    <string name="NO">NO</string>
+    <string name="Kelas">Kelas</string>
+    <string name="JenisSholat">Jenis Sholat</string>
+    <string name="StatusAbsensi">Status Absensi</string>
+
+    <!-- Activity Jadwal Sholat Admin -->
+    <string name="JadwalSholat">Jadwal Sholat</string>
+    <string name="PlaceholderJadwalSholatDhuha">Jadwal Sholat Dhuha - konsentrasi keahlian</string>
+    <string name="Hari">Hari</string>
+    <string name="KonsentrasiKeahlian1">Konsentrasi Keahlian 1</string>
+    <string name="KonsentrasiKeahlian2">Konsentrasi Keahlian 2</string>
+    <string name="SholatDhuha">Sholat Dhuha</string>
+    <string name="HariKerja">Senin, Selasa, Rabu, Kamis, Jumat</string>
+    <string name="WaktuDhuha">Waktu: 06:30 - 09:00</string>
+    <string name="JurusanSemuaJurusan">Jurusan: Semua Jurusan</string>
+    <string name="KelasAllDhuha">Kelas: 10, 11, 12</string>
+    <string name="SholatDzhuhur">Sholat Dzhuhur</string>
+    <string name="HariKerjaAlt">Senin, Selasa, Rabu, kamis, Jumat</string>
+    <string name="WaktuDzuhur">Waktu: 11:30 - 12:15</string>
+    <string name="KelasAllDzuhur">Kelas: 10, 11</string>
+    <string name="SholatJumat">Sholat Jumat</string>
+    <string name="Jumat">Jumat</string>
+    <string name="WaktuJumat">Waktu: 11:25 - 12:10</string>
+    <string name="KelasAllJumat">Kelas: 10, 11</string>
+
+    <!-- Activity Laporan Admin -->
+    <string name="Laporan">Laporan</string>
+    <string name="LaporanPresensi">Laporan Presensi</string>
+    <string name="FilterLaporan">Filter Laporan</string>
+    <string name="TanggalAwal">Tanggal Awal</string>
+    <string name="PlaceholderTanggalAwal">18/11/2025</string>
+    <string name="TanggalAkhir">Tanggal Akhir</string>
+    <string name="PlaceholderTanggalAkhir">27/11/2025</string>
+    <string name="Jurusan">Jurusan</string>
+    <string name="RingkasanPeriode">Ringkasan Periode</string>
+    <string name="Izin">Izin</string>
+    <string name="Sakit">Sakit</string>
+    <string name="DataAbsensi0Entri">Data Absensi (0 entri)</string>
+    <string name="ExportExcel">Export Excel</string>
+    <string name="TidakAdaDataAbsensiAlt">Tidak ada data absensi</string>
+    <string name="Nama">Nama</string>
+
+    <!-- Activity Data Siswa Admin -->
+    <string name="DataSiswa">Data Siswa</string>
+    <string name="SemuaJK">Semua JK</string>
+    <string name="MenampilkanSiswa">Menampilkan /92 siswa dari /92 siswa</string>
+    <string name="TidakDitemukanSiswa">Tidak ditemukan siswa yang sesuai</string>
+    <string name="JK">JK</string>
+    <string name="Aksi">Aksi</string>
+
+    <!-- Activity Input Izin -->
+    <string name="InputPerizinanSiswa">Input Perizinan Siswa</string>
+    <string name="CariSiswa">Cari Siswa</string>
+    <string name="BelumAdaSiswaDipilih">Belum ada siswa dipilih</string>
+    <string name="DetailPerizinan">Detail Perizinan</string>
+    <string name="StatusKehadiran">Status Kehadiran</string>
+    <string name="SimpanData">Simpan Data</string>
+
+    <!-- Activity Notifikasi -->
+    <string name="TandaiSemuaDibaca">Tandai semua dibaca</string>
+    <string name="HapusSemua">Hapus semua</string>
+    <string name="TidakAdaNotifikasi">Tidak ada notifikasi</string>
+
+    <!-- Activity Beranda Admin -->
+    <string name="PlaceholderDash">--</string>
+    <string name="Dhuha">Dhuha</string>
+    <string name="WaktuDhuhaJadwal">Waktu : 07.00 - 08.00</string>
+
+    <!-- Activity Beranda Siswa -->
+    <string name="PlaceholderNol">0</string>
+
+    <!-- Activity Pengaturan Akun - Placeholder -->
+    <string name="PlaceholderInisial">K</string>
+    <string name="PlaceholderNIS">778310383063</string>
+    <string name="PlaceholderNama">Kenf J Luffy</string>
+    <string name="PlaceholderJK">Laki - laki</string>
+    <string name="PlaceholderEmail">Kenfjluffy@gmail.com</string>
+
+</resources>

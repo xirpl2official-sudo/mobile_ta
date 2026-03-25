@@ -1,0 +1,554 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawerLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Main Content -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        tools:context=".JadwalSholatAdminActivity">
+
+        <!-- Vector Background untuk Toolbar -->
+        <View
+            android:id="@+id/VectorAtasMenu"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/bg_menu_atas"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.08" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/topBarContent"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:background="@android:color/transparent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.08">
+
+            <!-- Icon Menu (Kiri) -->
+            <ImageView
+                android:id="@+id/iconMenu"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:src="@drawable/menu"
+                android:contentDescription="@string/Menu"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintHeight_percent="0.4"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <!-- Logo Sekolah -->
+            <ImageView
+                android:id="@+id/logoSekolah"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:src="@drawable/logo_smk"
+                android:contentDescription="@string/LogoSMKN2"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintHeight_percent="0.8"
+                app:layout_constraintStart_toEndOf="@id/iconMenu"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginStart="14dp" />
+
+            <!-- Text Jadwal Sholat -->
+            <TextView
+                android:id="@+id/textDashboard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/JadwalSholat"
+                android:textColor="#FFFFFF"
+                android:textSize="@dimen/text_beranda"
+                android:textStyle="bold"
+                app:layout_constraintStart_toEndOf="@id/logoSekolah"
+                app:layout_constraintTop_toTopOf="@id/logoSekolah"
+                app:layout_constraintBottom_toTopOf="@id/textNamaSekolah"
+                app:layout_constraintVertical_chainStyle="packed"
+                android:layout_marginStart="10dp" />
+
+            <!-- Text Nama Sekolah -->
+            <TextView
+                android:id="@+id/textNamaSekolah"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/Stemdasi"
+                android:textColor="#E0E0E0"
+                android:textSize="@dimen/text_smkn2s"
+                android:ellipsize="end"
+                android:maxLines="1"
+                app:layout_constraintStart_toStartOf="@id/textDashboard"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textDashboard"
+                app:layout_constraintBottom_toBottomOf="@id/logoSekolah"
+                android:layout_marginEnd="8dp" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- ScrollView untuk Content -->
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scrollContent"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:clipToPadding="false"
+            android:clipChildren="false"
+            app:layout_constraintTop_toBottomOf="@id/topBarContent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="@dimen/spacing_medium"
+                android:paddingVertical="@dimen/spacing_medium"
+                android:clipToPadding="false"
+                android:clipChildren="false">
+
+                <!-- Button Tambah -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTambah"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="@string/Tambah"
+                    android:textColor="@android:color/white"
+                    android:textSize="12sp"
+                    app:backgroundTint="#2196F3"
+                    app:cornerRadius="8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <!-- Card Jadwal Sholat Dhuha -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardJadwalDhuha"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:layout_constraintTop_toBottomOf="@id/btnTambah"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginTop="16dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp">
+
+                        <!-- Icon dan Title -->
+                        <ImageView
+                            android:id="@+id/iconJadwalDhuha"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/clipboard"
+                            android:contentDescription="Jadwal"
+                            app:tint="#2196F3"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/tvJadwalDhuhaTitle"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/PlaceholderJadwalSholatDhuha"
+                            android:textColor="#000000"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:layout_marginStart="8dp"
+                            app:layout_constraintStart_toEndOf="@id/iconJadwalDhuha"
+                            app:layout_constraintTop_toTopOf="@id/iconJadwalDhuha"
+                            app:layout_constraintBottom_toBottomOf="@id/iconJadwalDhuha"
+                            app:layout_constraintEnd_toStartOf="@id/btnEditDhuha" />
+
+                        <ImageView
+                            android:id="@+id/btnEditDhuha"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_edit"
+                            android:contentDescription="Edit"
+                            app:tint="#2196F3"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <!-- Save Button for Edit Mode -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnSaveDhuha"
+                            android:layout_width="wrap_content"
+                            android:layout_height="32dp"
+                            android:text="Save"
+                            android:textColor="@android:color/white"
+                            android:textSize="12sp"
+                            android:visibility="gone"
+                            app:backgroundTint="#4CAF50"
+                            app:cornerRadius="8dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="@id/iconJadwalDhuha" />
+
+                        <!-- Table Header -->
+                        <LinearLayout
+                            android:id="@+id/tableHeader"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="16dp"
+                            app:layout_constraintTop_toBottomOf="@id/iconJadwalDhuha"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            android:weightSum="4">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/Hari"
+                                android:textColor="#666666"
+                                android:textSize="12sp"
+                                android:paddingStart="8dp" />
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1.5"
+                                android:text="@string/KonsentrasiKeahlian1"
+                                android:textColor="#666666"
+                                android:textSize="10sp"
+                                android:gravity="center" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1.5"
+                                android:text="@string/KonsentrasiKeahlian2"
+                                android:textColor="#666666"
+                                android:textSize="10sp"
+                                android:gravity="center" />
+
+                        </LinearLayout>
+
+                        <!-- Table Rows untuk jadwal hari -->
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/rvDhuhaSchedule"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:nestedScrollingEnabled="false"
+                            app:layout_constraintTop_toBottomOf="@id/tableHeader"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <!-- Card Waktu Sholat Dhuha -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardWaktuDhuha"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:layout_constraintTop_toBottomOf="@id/cardJadwalDhuha"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginTop="16dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp">
+
+                        <!-- Icon Sholat -->
+                        <ImageView
+                            android:id="@+id/iconDhuha"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/ic_sun"
+                            android:contentDescription="Sholat Dhuha"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <!-- Title dan Days -->
+                        <TextView
+                            android:id="@+id/tvSholatDhuha"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/SholatDhuha"
+                            android:textColor="#000000"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:layout_marginStart="12dp"
+                            app:layout_constraintStart_toEndOf="@id/iconDhuha"
+                            app:layout_constraintTop_toTopOf="@id/iconDhuha"
+                            app:layout_constraintEnd_toStartOf="@id/btnEditWaktuDhuha" />
+
+                        <TextView
+                            android:id="@+id/tvHariDhuha"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/HariKerja"
+                            android:textColor="#666666"
+                            android:textSize="12sp"
+                            android:layout_marginTop="4dp"
+                            app:layout_constraintStart_toStartOf="@id/tvSholatDhuha"
+                            app:layout_constraintTop_toBottomOf="@id/tvSholatDhuha"
+                            app:layout_constraintEnd_toEndOf="parent" />
+
+                        <ImageView
+                            android:id="@+id/btnEditWaktuDhuha"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_edit"
+                            android:contentDescription="Edit"
+                            app:tint="#2196F3"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <!-- Details -->
+                        <TextView
+                            android:id="@+id/tvWaktuDhuha"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/WaktuDhuha"
+                            android:textColor="#333333"
+                            android:textSize="14sp"
+                            android:layout_marginTop="12dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/tvHariDhuha" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <!-- Card Sholat Dzhuhur -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardSholatZuhur"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:layout_constraintTop_toBottomOf="@id/cardWaktuDhuha"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginTop="16dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp">
+
+                        <!-- Icon Sholat -->
+                        <ImageView
+                            android:id="@+id/iconZuhur"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/ic_sun"
+                            android:contentDescription="Sholat Dzhuhur"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <!-- Title dan Days -->
+                        <TextView
+                            android:id="@+id/tvSholatZuhur"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/SholatDzhuhur"
+                            android:textColor="#000000"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:layout_marginStart="12dp"
+                            app:layout_constraintStart_toEndOf="@id/iconZuhur"
+                            app:layout_constraintTop_toTopOf="@id/iconZuhur"
+                            app:layout_constraintEnd_toStartOf="@id/btnEditZuhur" />
+
+                        <TextView
+                            android:id="@+id/tvHariZuhur"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/HariKerjaAlt"
+                            android:textColor="#666666"
+                            android:textSize="12sp"
+                            android:layout_marginTop="4dp"
+                            app:layout_constraintStart_toStartOf="@id/tvSholatZuhur"
+                            app:layout_constraintTop_toBottomOf="@id/tvSholatZuhur"
+                            app:layout_constraintEnd_toEndOf="parent" />
+
+                        <ImageView
+                            android:id="@+id/btnEditZuhur"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_edit"
+                            android:contentDescription="Edit"
+                            app:tint="#2196F3"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <!-- Details -->
+                        <TextView
+                            android:id="@+id/tvWaktuZuhur"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/WaktuDzuhur"
+                            android:textColor="#333333"
+                            android:textSize="14sp"
+                            android:layout_marginTop="12dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/tvHariZuhur" />
+
+                        <TextView
+                            android:id="@+id/tvJurusanZuhur"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/JurusanSemuaJurusan"
+                            android:textColor="#333333"
+                            android:textSize="14sp"
+                            android:layout_marginTop="4dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/tvWaktuZuhur" />
+
+                        <TextView
+                            android:id="@+id/tvKelasZuhur"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/KelasAllDzuhur"
+                            android:textColor="#333333"
+                            android:textSize="14sp"
+                            android:layout_marginTop="4dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/tvJurusanZuhur" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <!-- Card Sholat Jumat -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardSholatJumat"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:layout_constraintTop_toBottomOf="@id/cardSholatZuhur"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="24dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp">
+
+                        <!-- Icon Sholat -->
+                        <ImageView
+                            android:id="@+id/iconJumat"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/ic_sun"
+                            android:contentDescription="Sholat Jumat"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <!-- Title dan Days -->
+                        <TextView
+                            android:id="@+id/tvSholatJumat"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/SholatJumat"
+                            android:textColor="#000000"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:layout_marginStart="12dp"
+                            app:layout_constraintStart_toEndOf="@id/iconJumat"
+                            app:layout_constraintTop_toTopOf="@id/iconJumat"
+                            app:layout_constraintEnd_toStartOf="@id/btnEditJumat" />
+
+                        <TextView
+                            android:id="@+id/tvHariJumat"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/Jumat"
+                            android:textColor="#666666"
+                            android:textSize="12sp"
+                            android:layout_marginTop="4dp"
+                            app:layout_constraintStart_toStartOf="@id/tvSholatJumat"
+                            app:layout_constraintTop_toBottomOf="@id/tvSholatJumat"
+                            app:layout_constraintEnd_toEndOf="parent" />
+
+                        <ImageView
+                            android:id="@+id/btnEditJumat"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_edit"
+                            android:contentDescription="Edit"
+                            app:tint="#2196F3"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <!-- Details -->
+                        <TextView
+                            android:id="@+id/tvWaktuJumat"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/WaktuJumat"
+                            android:textColor="#333333"
+                            android:textSize="14sp"
+                            android:layout_marginTop="12dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/tvHariJumat" />
+
+                        <TextView
+                            android:id="@+id/tvJurusanJumat"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/JurusanSemuaJurusan"
+                            android:textColor="#333333"
+                            android:textSize="14sp"
+                            android:layout_marginTop="4dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/tvWaktuJumat" />
+
+                        <TextView
+                            android:id="@+id/tvKelasJumat"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/KelasAllJumat"
+                            android:textColor="#333333"
+                            android:textSize="14sp"
+                            android:layout_marginTop="4dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/tvJurusanJumat" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </androidx.cardview.widget.CardView>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Navigation Drawer (Sidebar) -->
+    <include
+        android:id="@+id/navigationView"
+        layout="@layout/sidebar_jadwal_sholat"
+        android:layout_width="280dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start" />
+
+</androidx.drawerlayout.widget.DrawerLayout>

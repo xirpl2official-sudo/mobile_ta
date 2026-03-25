@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardJurusan"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/spacing_text"
+    android:layout_marginVertical="@dimen/card_margin_vertical"
+    app:cardCornerRadius="@dimen/card_corner_radius"
+    app:cardElevation="@dimen/card_elevation">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_medium">
+
+        <!-- Label "Silahkan Hari Ini" -->
+        <TextView
+            android:id="@+id/tvLabelHariIni"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Silahkan Hari Ini"
+            android:textColor="#FFFFFF"
+            android:textSize="@dimen/text_smkn2s"
+            android:layout_marginBottom="@dimen/spacing_tiny" />
+
+        <!-- Nama Jurusan -->
+        <TextView
+            android:id="@+id/tvNamaJurusan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nama Jurusan"
+            android:textColor="#FFFFFF"
+            android:textSize="@dimen/text_beranda"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardJadwalItem"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="@dimen/card_margin_vertical"
+    app:cardCornerRadius="@dimen/card_corner_radius"
+    app:cardElevation="@dimen/card_elevation"
+    app:cardBackgroundColor="#F5F5F5">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/card_padding"
+        android:gravity="center_vertical">
+
+        <!-- Container Kiri: Nama & Jam Sholat -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <!-- Nama Sholat -->
+            <TextView
+                android:id="@+id/tvNamaSholat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dhuha"
+                android:textColor="#000000"
+                android:textSize="@dimen/text_nama_sholat"
+                android:textStyle="bold" />
+
+            <!-- Jam Sholat -->
+            <TextView
+                android:id="@+id/tvJamSholat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="07:00 - 08:00"
+                android:textColor="#666666"
+                android:textSize="@dimen/text_jam_sholat"
+                android:layout_marginTop="@dimen/spacing_tiny" />
+
+        </LinearLayout>
+
+        <!-- Status Badge (Kanan) -->
+        <TextView
+            android:id="@+id/textStatusSholat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Selesai"
+            android:textSize="@dimen/text_status_badge"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/bg_status_gray"
+            android:paddingHorizontal="@dimen/status_padding_horizontal"
+            android:paddingVertical="@dimen/status_padding_vertical"
+            android:gravity="center" />
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

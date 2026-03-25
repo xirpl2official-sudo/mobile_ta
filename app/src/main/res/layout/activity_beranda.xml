@@ -1,0 +1,619 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".BerandaActivity">
+
+    <!-- Vector Background untuk Toolbar -->
+    <View
+        android:id="@+id/VectorAtasMenu"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/bg_menu_atas"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.08" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/topBarContent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:paddingStart="@dimen/spacing_medium"
+        android:paddingEnd="@dimen/spacing_medium"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.08">
+
+        <!-- Icon Menu (Kiri) -->
+        <ImageView
+            android:id="@+id/iconMenu"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:src="@drawable/menu"
+            android:contentDescription="@string/Menu"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintHeight_percent="0.4"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <!-- Logo Sekolah -->
+        <ImageView
+            android:id="@+id/logoSekolah"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:src="@drawable/logo_smk"
+            android:contentDescription="@string/LogoSMKN2"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintHeight_percent="0.8"
+            app:layout_constraintStart_toEndOf="@id/iconMenu"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginStart="@dimen/spacing_medium" />
+
+        <!-- Text Dashboard -->
+        <TextView
+            android:id="@+id/textDashboard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Beran"
+            android:textColor="#FFFFFF"
+            android:textSize="@dimen/text_beranda"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/logoSekolah"
+            app:layout_constraintTop_toTopOf="@id/logoSekolah"
+            app:layout_constraintBottom_toTopOf="@id/textNamaSekolah"
+            app:layout_constraintVertical_chainStyle="packed"
+            android:layout_marginStart="@dimen/spacing_small" />
+
+        <!-- Text Nama Sekolah -->
+        <TextView
+            android:id="@+id/textNamaSekolah"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/Stemdasi"
+            android:textColor="#E0E0E0"
+            android:textSize="@dimen/text_smkn2s"
+            android:ellipsize="end"
+            android:maxLines="1"
+            app:layout_constraintStart_toStartOf="@id/textDashboard"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textDashboard"
+            app:layout_constraintBottom_toBottomOf="@id/logoSekolah"
+            android:layout_marginEnd="@dimen/spacing_text" />
+
+        <!-- Icon Notifikasi (Kanan) -->
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintHeight_percent="0.35"
+            android:layout_marginEnd="@dimen/spacing_text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <ImageView
+                android:id="@+id/iconNotifikasi"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/notification"
+                android:contentDescription="@string/Notif" />
+
+            <!-- Notification Counter Badge -->
+            <TextView
+                android:id="@+id/notificationCounter"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="top|end"
+                android:layout_marginTop="-4dp"
+                android:layout_marginEnd="-4dp"
+                android:background="@drawable/bg_notification_badge"
+                android:text="@string/PlaceholderNol"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/spacing_small"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:visibility="gone"
+                android:fontFamily="@font/poppins_medium" />
+
+        </FrameLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- ScrollView untuk Content -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollContent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:clipChildren="false"
+        app:layout_constraintTop_toBottomOf="@id/topBarContent"
+        app:layout_constraintBottom_toTopOf="@id/VectorBawah"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="@dimen/spacing_medium"
+            android:paddingVertical="@dimen/spacing_large"
+            android:clipToPadding="false"
+            android:clipChildren="false">
+
+            <!-- Card Waktu Absensi -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardWaktuAbsensi"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="@dimen/spacing_small"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="#F76E13"
+                app:cardUseCompatPadding="true"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/spacing_medium">
+
+                    <!-- Icon Warning -->
+                    <ImageView
+                        android:id="@+id/iconWarning"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:src="@drawable/ic_peringatan"
+                        android:contentDescription="@string/Warning"
+                        app:layout_constraintDimensionRatio="1:1"
+                        app:layout_constraintHeight_percent="0.5"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <!-- Text Waktu Absensi -->
+                    <TextView
+                        android:id="@+id/tvWaktuAbsensi"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/WaktuAbsensi"
+                        android:textColor="#FFFFFF"
+                        android:textSize="@dimen/text_waktu"
+                        android:textStyle="bold"
+                        android:layout_marginTop="@dimen/spacing_tiny"
+                        app:layout_constraintStart_toEndOf="@id/iconWarning"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/btnAbsensi"
+                        android:layout_marginStart="@dimen/spacing_small" />
+
+                    <!-- Text Deskripsi -->
+                    <TextView
+                        android:id="@+id/tvDeskripsiAbsensi"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/DeskripsiAbsensi"
+                        android:textColor="#FFFFFF"
+                        android:textSize="@dimen/text_bawah_waktu"
+                        app:layout_constraintStart_toStartOf="@id/tvWaktuAbsensi"
+                        app:layout_constraintTop_toBottomOf="@id/tvWaktuAbsensi"
+                        app:layout_constraintEnd_toStartOf="@id/btnAbsensi"
+                        />
+
+                    <!-- Button Absensi -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnAbsensi"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/Presensi"
+                        android:textSize="@dimen/text_small"
+                        android:paddingHorizontal="@dimen/spacing_medium"
+                        android:paddingVertical="@dimen/spacing_text"
+                        android:textColor="#F76E13"
+                        app:backgroundTint="#FFFFFF"
+                        app:cornerRadius="12dp"
+                        app:rippleColor="#E0E0E0"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- Stats Container (Total, Hadir, Grafik) -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/statsContainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/cardWaktuAbsensi"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="@dimen/spacing_small"
+                android:paddingHorizontal="@dimen/spacing_tiny"
+                android:paddingVertical="@dimen/spacing_tiny"
+                android:clipToPadding="false"
+                android:clipChildren="false">
+
+                <!-- Card Total -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardTotal"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="@dimen/spacing_small"
+                    app:cardElevation="4dp"
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:cardUseCompatPadding="true"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/cardHadir"
+                    app:layout_constraintWidth_percent="0.34">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/spacing_medium">
+
+                        <ImageView
+                            android:id="@+id/iconTotal"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:src="@drawable/ic_total"
+                            android:contentDescription="@string/Total"
+                            app:layout_constraintDimensionRatio="1:1"
+                            app:layout_constraintHeight_percent="0.35"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/tvTotalLabel"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/Total"
+                            android:textColor="#000000"
+                            android:textSize="@dimen/text_button"
+                            android:textStyle="bold"
+                            app:layout_constraintStart_toEndOf="@id/iconTotal"
+                            app:layout_constraintTop_toTopOf="@id/iconTotal"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            android:layout_marginStart="@dimen/spacing_text" />
+
+                        <TextView
+                            android:id="@+id/tvTotalValue"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/PlaceholderDash"
+                            android:textColor="#000000"
+                            android:textSize="@dimen/text_title"
+                            android:textStyle="bold"
+                            android:gravity="center"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/iconTotal"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            android:layout_marginTop="@dimen/spacing_small" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <!-- Card Hadir -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardHadir"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="@dimen/spacing_small"
+                    app:cardElevation="4dp"
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:cardUseCompatPadding="true"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/cardTotal"
+                    app:layout_constraintEnd_toStartOf="@id/cardStatistik"
+                    app:layout_constraintWidth_percent="0.34">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/spacing_medium">
+
+                        <ImageView
+                            android:id="@+id/iconHadir"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:src="@drawable/ic_hadir"
+                            android:contentDescription="@string/Hadir"
+                            app:layout_constraintDimensionRatio="1:1"
+                            app:layout_constraintHeight_percent="0.35"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/tvHadirLabel"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/Hadir"
+                            android:textColor="#000000"
+                            android:textSize="@dimen/text_button"
+                            android:textStyle="bold"
+                            app:layout_constraintStart_toEndOf="@id/iconHadir"
+                            app:layout_constraintTop_toTopOf="@id/iconHadir"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            android:layout_marginStart="@dimen/spacing_text" />
+
+                        <TextView
+                            android:id="@+id/tvHadirValue"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/PlaceholderDash"
+                            android:textColor="#000000"
+                            android:textSize="@dimen/text_title"
+                            android:textStyle="bold"
+                            android:gravity="center"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/iconHadir"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            android:layout_marginTop="@dimen/spacing_small" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <!-- Card Statistik -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardStatistik"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="@dimen/spacing_small"
+                    app:cardElevation="4dp"
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:cardUseCompatPadding="true"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/cardHadir"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintWidth_percent="0.34">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/spacing_medium">
+
+                        <ImageView
+                            android:id="@+id/iconStatistik"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:src="@drawable/ic_statistik"
+                            android:contentDescription="@string/Statistik"
+                            app:layout_constraintDimensionRatio="1:1"
+                            app:layout_constraintHeight_percent="0.35"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/tvStatistikLabel"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/Statistik"
+                            android:textColor="#000000"
+                            android:textSize="@dimen/text_button"
+                            android:textStyle="bold"
+                            app:layout_constraintStart_toEndOf="@id/iconStatistik"
+                            app:layout_constraintTop_toTopOf="@id/iconStatistik"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            android:layout_marginStart="@dimen/spacing_text" />
+
+                        <TextView
+                            android:id="@+id/tvStatistikValue"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/PlaceholderDash"
+                            android:textColor="#000000"
+                            android:textSize="@dimen/text_title"
+                            android:textStyle="bold"
+                            android:gravity="center"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/iconStatistik"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            android:layout_marginTop="@dimen/spacing_small" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </androidx.cardview.widget.CardView>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- Jadwal Hari Ini dengan RecyclerView -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardJadwalHariIni"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="@dimen/spacing_small"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardUseCompatPadding="true"
+                app:layout_constraintTop_toBottomOf="@id/statsContainer"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="@dimen/spacing_small">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/spacing_medium">
+
+                    <ImageView
+                        android:id="@+id/iconJadwal"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:src="@drawable/ic_jadwal"
+                        android:contentDescription="@string/Jadwal"
+                        app:layout_constraintDimensionRatio="1:1"
+                        app:layout_constraintTop_toTopOf="@id/tvJadwalLabel"
+                        app:layout_constraintBottom_toBottomOf="@id/tvJadwalLabel"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvJadwalLabel"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/JadwalHariIni"
+                        android:textColor="#000000"
+                        android:textSize="@dimen/text_section_title"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toEndOf="@id/iconJadwal"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:layout_marginStart="@dimen/spacing_small" />
+
+                    <!-- RecyclerView untuk Jadwal Sholat -->
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvJadwalSholat"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="false"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvJadwalLabel"
+                        android:layout_marginTop="@dimen/spacing_small"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        tools:listitem="@layout/item_jadwal_sholat"
+                        tools:itemCount="2" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- Riwayat Absensi dengan RecyclerView -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardRiwayat"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="@dimen/spacing_small"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardUseCompatPadding="true"
+                app:layout_constraintTop_toBottomOf="@id/cardJadwalHariIni"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="@dimen/spacing_small"
+                android:layout_marginBottom="@dimen/spacing_large">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/spacing_medium">
+
+                    <ImageView
+                        android:id="@+id/iconRiwayat"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:src="@drawable/ic_riwayat"
+                        android:contentDescription="@string/Riwayat"
+                        app:layout_constraintDimensionRatio="1:1"
+                        app:layout_constraintTop_toTopOf="@id/tvRiwayatLabel"
+                        app:layout_constraintBottom_toBottomOf="@id/tvRiwayatLabel"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvRiwayatLabel"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/Riwayat"
+                        android:textColor="#000000"
+                        android:textSize="@dimen/text_section_title"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toEndOf="@id/iconRiwayat"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:layout_marginStart="@dimen/spacing_small" />
+
+                    <!-- Header Table -->
+                    <LinearLayout
+                        android:id="@+id/riwayatHeader"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingVertical="@dimen/spacing_small"
+                        android:layout_marginTop="@dimen/spacing_small"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvRiwayatLabel">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/Tanggal"
+                            android:textStyle="bold"
+                            android:textSize="@dimen/text_small"
+                            android:textColor="#000000"
+                            android:gravity="center" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/Sholat"
+                            android:textStyle="bold"
+                            android:textSize="@dimen/text_small"
+                            android:textColor="#000000"
+                            android:gravity="center" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/Status"
+                            android:textStyle="bold"
+                            android:textSize="@dimen/text_small"
+                            android:textColor="#000000"
+                            android:gravity="center" />
+                    </LinearLayout>
+                    
+                    <!-- Divider Line di bawah header -->
+                    <View
+                        android:id="@+id/dividerHeader"
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:background="#CCCCCC"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/riwayatHeader" />
+
+
+                    <!-- RecyclerView untuk Riwayat Absensi -->
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvRiwayatAbsensi"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="false"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/dividerHeader"
+                        tools:listitem="@layout/item_riwayat_absensi"
+                        tools:itemCount="6" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <View
+        android:id="@+id/VectorBawah"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/bg_menu_atas"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.065" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
