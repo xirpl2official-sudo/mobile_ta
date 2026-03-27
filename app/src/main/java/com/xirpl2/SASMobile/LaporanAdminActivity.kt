@@ -215,14 +215,11 @@ class LaporanAdminActivity : BaseAdminActivity() {
     private fun setupButtons() {
         // btnUnduhPDF removed
 
-        // Check role - guru has view-only access (no export/delete)
+        // Role check for report access
         val role = getSharedPreferences("UserData", android.content.Context.MODE_PRIVATE)
-            .getString("user_role", "")
+            .getString("user_role", "")?.lowercase() ?: ""
         
-        if (role == "guru") {
-            btnExportExcel.visibility = View.GONE
-            return
-        }
+        // Both Guru and Wali Kelas can see and export reports according to latest request
         btnExportExcel.setOnClickListener {
             // TODO: Implement Excel export
             Toast.makeText(this, "Fitur export Excel akan segera tersedia", Toast.LENGTH_SHORT).show()

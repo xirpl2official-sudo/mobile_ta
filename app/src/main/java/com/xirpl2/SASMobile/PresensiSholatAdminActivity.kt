@@ -111,15 +111,22 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
         val btnInputIzin = findViewById<com.google.android.material.button.MaterialButton>(R.id.btnInputIzin)
         val btnTambah = findViewById<com.google.android.material.button.MaterialButton>(R.id.btnTambah)
         
-        // Check role - only show Input Izin for wali_kelas, hide Tambah
-        val role = getSharedPreferences("UserData", MODE_PRIVATE).getString("user_role", "")
+        // Check role - Wali Kelas: show Input Izin, Admin: show Tambah, Guru: hide both
+        val role = getSharedPreferences("UserData", MODE_PRIVATE).getString("user_role", "")?.lowercase() ?: ""
         
-        if (role == "wali_kelas" || role == "wali kelas") {
-            btnInputIzin.visibility = View.VISIBLE
-            btnTambah.visibility = View.GONE
-        } else {
-            btnInputIzin.visibility = View.GONE
-            btnTambah.visibility = View.VISIBLE
+        when {
+            role == "wali_kelas" || role == "wali kelas" -> {
+                btnInputIzin.visibility = View.VISIBLE
+                btnTambah.visibility = View.GONE
+            }
+            role == "admin" -> {
+                btnInputIzin.visibility = View.GONE
+                btnTambah.visibility = View.VISIBLE
+            }
+            else -> { // Guru or others
+                btnInputIzin.visibility = View.GONE
+                btnTambah.visibility = View.GONE
+            }
         }
         
         btnInputIzin.setOnClickListener {

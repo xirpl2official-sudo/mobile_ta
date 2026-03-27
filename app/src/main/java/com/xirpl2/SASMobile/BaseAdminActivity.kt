@@ -69,7 +69,34 @@ abstract class BaseAdminActivity : AppCompatActivity() {
 
         setupAdminProfile()
         setupCloseSidebarButton()
+        applyRoleBasedFiltering()
         setupMenuItems()
+    }
+
+    /**
+     * Filter sidebar menu items based on user role.
+     * Admin: All items
+     * Wali Kelas: Beranda, Presensi, Laporan
+     * Guru: Beranda, Laporan
+     */
+    private fun applyRoleBasedFiltering() {
+        val role = getSharedPreferences("user_session", Context.MODE_PRIVATE)
+            .getString("user_role", "")?.lowercase() ?: ""
+            
+        val isWali = role.contains("wali")
+        val isGuru = role == "guru"
+        val isAdmin = role.contains("admin")
+
+        if (!isAdmin) {
+            // Hide administrative modules for non-admins
+            sidebarView.findViewById<View>(R.id.menuJadwalSholat)?.visibility = View.GONE
+            sidebarView.findViewById<View>(R.id.menuDataSiswa)?.visibility = View.GONE
+            
+            if (isGuru && !isWali) {
+                // Guru cannot even access Presensi (input)
+                sidebarView.findViewById<View>(R.id.menuPresensi)?.visibility = View.GONE
+            }
+        }
     }
 
     /**
