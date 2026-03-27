@@ -43,6 +43,7 @@ class InputIzinActivity : AppCompatActivity() {
     private var selectedDate: String = "" // YYYY-MM-DD
     private var jadwalList: List<JadwalSholatData> = emptyList()
     private var selectedJadwalId: Int? = null
+    private var selectedJenisSholat: String? = null
 
     // Search
     private var searchJob: Job? = null
@@ -98,17 +99,34 @@ class InputIzinActivity : AppCompatActivity() {
         
         // Jadwal Selection
         actvJadwal.setOnItemClickListener { parent, _, position, _ ->
-            val selectedItem = parent.getItemAtPosition(position) as String
-            // Format: "Dhuha - TKJ (06:30)" or "Dzuhur - Umum (12:00)"
-            // Find corresponding ID based on exact string match since we generated these strings
-            val jadwal = jadwalList.find { 
-                val jurusanDisplay = if (it.jurusan.isNullOrEmpty()) "Umum" else it.jurusan
-                val display = "${it.jenis_sholat} - $jurusanDisplay (${it.jam_mulai})"
-                display == selectedItem
-            }
-            if (jadwal != null) {
-                selectedJadwalId = jadwal.id
-            }
+            selectedJenisSholat = parent.getItemAtPosition(position) as String
+            updateSelectedJadwalId()
+        }
+    }
+
+    private fun updateSelectedJadwalId() {
+        if (selectedJenisSholat == null || selectedSiswa == null || jadwalList.isEmpty()) {
+            selectedJadwalId = null
+            return
+        }
+
+        // Find the schedule that matches the prayer type and the student's major (Jurusan)
+        // If it's Dhuha, it must match the student's major. 
+        // If it's Dzuhur/Jumat, it's usually "Umum" or matches everyone.
+        val targetJurusan = selectedSiswa?.jurusan?.lowercase() ?: ""
+        
+        val match = jadwalList.find { 
+            val isSameType = it.jenis_sholat.equals(selectedJenisSholat, ignoreCase = true)
+            val scheduleJurusan = (it.jurusan ?: "").lowercase()
+            
+            isSameType && (scheduleJurusan == targetJurusan || scheduleJurusan == "umum" || scheduleJurusan.isEmpty())
+        }
+        
+        selectedJadwalId = match?.id
+        if (selectedJadwalId == null) {
+            Log.w(TAG, "No matching schedule found for $selectedJenisSholat and jurusan $targetJurusan")
+        } else {
+            Log.d(TAG, "Matched schedule ID: $selectedJadwalId for $selectedJenisSholat")
         }
     }
     
@@ -189,6 +207,9 @@ class InputIzinActivity : AppCompatActivity() {
                                 selectedSiswa = lastSearchResults[position]
                                 tvSelectedSiswa.text = "Terpilih: ${selectedSiswa!!.nama_siswa} - Kelas ${selectedSiswa!!.kelas} ${selectedSiswa!!.jurusan}"
                                 actvSiswa.dismissDropDown() // Hide dropdown
+                                
+                                // Auto-update selectedJadwalId if prayer type already selected
+                                updateSelectedJadwalId()
                             }
                         }
                         
@@ -224,26 +245,17 @@ class InputIzinActivity : AppCompatActivity() {
     private fun filterJadwalByDay() {
         if (jadwalList.isEmpty()) return
 
-        // We use all items returned by the API since they represent active/valid schedules.
-        // Remove duplicates based on jenis_sholat + jurusan + waktu_mulai to be safe
-        val uniqueJadwal = jadwalList.distinctBy { "${it.jenis_sholat}-${it.jurusan}-${it.jam_mulai}" }
+        // User requested: "hanya menampilkan 3 jenis sholatnya saja, jangan tampilkan jurusan"
+        // We take unique jenis_sholat names from the list
+        val uniqueTypes = jadwalList.map { it.jenis_sholat }.distinct()
         
-        val options = uniqueJadwal.map { 
-            val jurusanDisplay = if (it.jurusan.isNullOrEmpty()) "Umum" else it.jurusan
-            "${it.jenis_sholat} - $jurusanDisplay (${it.jam_mulai})" 
-        }
-        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, options)
+        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, uniqueTypes)
         
         runOnUiThread {
             actvJadwal.setAdapter(adapter)
-            // if list not empty, maybe auto select first?
-            if (options.isNotEmpty()) {
-                // actvJadwal.setText(options[0], false)
-                // selectedJadwalId = uniqueJadwal[0].id
-            }
+            // If already selecting a type, maintain it but update the ID
+            updateSelectedJadwalId()
         }
-        
-        // Update click listener to use this filtered list (handled by global setupListeners)
     }
 
     private fun submitForm() {

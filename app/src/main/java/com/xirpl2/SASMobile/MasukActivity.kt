@@ -160,14 +160,18 @@ class MasukActivity : AppCompatActivity() {
                             // Simpan data user ke SharedPreferences
                             saveUserSession(userData)
 
-                            // Navigate based on role
-                            val targetActivity = when (userData?.role) {
-                                "guru" -> BerandaGuruActivity::class.java
-                                "admin", "wali_kelas" -> BerandaAdminActivity::class.java
+                            // Normalize role for navigation and subsequent use
+                            val roleNormalized = userData?.role?.lowercase()?.replace(' ', '_')?.trim() ?: ""
+                            
+                            val targetActivity = when (roleNormalized) {
+                                "guru", "wali_kelas" -> BerandaGuruActivity::class.java
+                                "admin" -> BerandaAdminActivity::class.java
                                 "siswa" -> BerandaActivity::class.java
                                 else -> {
-                                    if (userData?.isStaff() == true) BerandaAdminActivity::class.java
-                                    else BerandaActivity::class.java
+                                    if (userData?.isStaff() == true) {
+                                        if (roleNormalized.contains("wali")) BerandaGuruActivity::class.java
+                                        else BerandaAdminActivity::class.java
+                                    } else BerandaActivity::class.java
                                 }
                             }
                             
@@ -220,6 +224,8 @@ class MasukActivity : AppCompatActivity() {
     private fun saveUserSession(user: com.xirpl2.SASMobile.model.AkunLoginResponse?) {
         if (user == null) return
 
+        val roleNormalized = user.role?.lowercase()?.replace(' ', '_')?.trim() ?: ""
+
         val sharedPref = getSharedPreferences("user_session", MODE_PRIVATE)
         with(sharedPref.edit()) {
             putString("user_id", user.id?.toString())
@@ -229,7 +235,7 @@ class MasukActivity : AppCompatActivity() {
             putString("user_jk", user.jk ?: "")
             putString("user_kelas", user.kelas ?: "")
             putString("user_jurusan", user.jurusan ?: "")
-            putString("user_role", user.role)
+            putString("user_role", roleNormalized)
             putString("auth_token", user.token)
             apply()
         }
@@ -241,7 +247,7 @@ class MasukActivity : AppCompatActivity() {
             putString("nama_siswa", user.getDisplayName())
             putString("nis", user.getIdentifier())
             putString("jenis_kelamin", user.jk ?: "L")
-            putString("user_role", user.role)
+            putString("user_role", roleNormalized)
             apply()
         }
     }

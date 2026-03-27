@@ -391,6 +391,7 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
         val actvJurusan = dialogView.findViewById<android.widget.AutoCompleteTextView>(R.id.actvJurusan)
         val btnBatal = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnBatal)
         val btnSimpan = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnSimpan)
+        val btnClose = dialogView.findViewById<android.widget.ImageView>(R.id.btnClose)
         
         // Setup jurusan dropdown
         val jurusanAdapter = android.widget.ArrayAdapter(
@@ -407,6 +408,10 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
             .create()
         
         btnBatal.setOnClickListener {
+            dialog.dismiss()
+        }
+        
+        btnClose.setOnClickListener {
             dialog.dismiss()
         }
         
@@ -474,6 +479,7 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
             }
         }
         
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
         dialog.show()
     }
     
@@ -496,6 +502,7 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
         val actvJurusan = dialogView.findViewById<android.widget.AutoCompleteTextView>(R.id.actvJurusan)
         val btnBatal = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnBatal)
         val btnSimpan = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnSimpan)
+        val btnClose = dialogView.findViewById<android.widget.ImageView>(R.id.btnClose)
         
         // Pre-fill with existing data
         etNis.setText(siswa.nis)
@@ -584,6 +591,7 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
             }
         }
         
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
         dialog.show()
     }
     

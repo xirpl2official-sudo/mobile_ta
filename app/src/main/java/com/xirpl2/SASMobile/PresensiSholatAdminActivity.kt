@@ -114,7 +114,7 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
         // Check role - only show Input Izin for wali_kelas, hide Tambah
         val role = getSharedPreferences("UserData", MODE_PRIVATE).getString("user_role", "")
         
-        if (role == "wali_kelas") {
+        if (role == "wali_kelas" || role == "wali kelas") {
             btnInputIzin.visibility = View.VISIBLE
             btnTambah.visibility = View.GONE
         } else {

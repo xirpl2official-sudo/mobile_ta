@@ -87,7 +87,18 @@ abstract class BaseAdminActivity : AppCompatActivity() {
                     val profile = response.body()?.data
                     runOnUiThread {
                         val tvAdminName = sidebarView.findViewById<TextView>(R.id.tvAdminName)
+                        val tvAdminRole = sidebarView.findViewById<TextView>(R.id.tvAdminRole)
+                        
                         tvAdminName?.text = profile?.nama_siswa ?: profile?.name ?: profile?.username ?: "Admin"
+                        
+                        // Map role to friendly name
+                        val roleRaw = profile?.role?.lowercase() ?: ""
+                        tvAdminRole?.text = when {
+                            roleRaw.contains("admin") -> "Administrator"
+                            roleRaw.contains("wali") -> "Wali Kelas"
+                            roleRaw.contains("guru") -> "Guru"
+                            else -> "Staff"
+                        }
                     }
                 }
             } catch (e: Exception) {
@@ -118,7 +129,15 @@ abstract class BaseAdminActivity : AppCompatActivity() {
             currentItem = currentItem,
             isCardView = currentItem == AdminMenuItem.BERANDA
         ) {
-            navigateTo(BerandaAdminActivity::class.java)
+            val role = getSharedPreferences("user_session", Context.MODE_PRIVATE)
+                .getString("user_role", "")?.lowercase() ?: ""
+                
+            val targetClass = if (role.contains("wali") || role == "guru") {
+                BerandaGuruActivity::class.java
+            } else {
+                BerandaAdminActivity::class.java
+            }
+            navigateTo(targetClass)
         }
 
         // Jadwal Sholat menu

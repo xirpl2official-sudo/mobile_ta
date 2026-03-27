@@ -34,6 +34,6 @@ data class AkunLoginResponse(
      * Check if user is staff (admin, guru, or wali_kelas)
      */
     fun isStaff(): Boolean {
-        return role in listOf("admin", "guru", "wali_kelas")
+        return role.lowercase() in listOf("admin", "guru", "wali_kelas", "wali kelas")
     }
 }

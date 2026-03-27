@@ -532,6 +532,7 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
             )
         }
 
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
         dialog.show()
     }
 
