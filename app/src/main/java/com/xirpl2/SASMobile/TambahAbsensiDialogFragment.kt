@@ -1,16 +1,22 @@
 package com.xirpl2.SASMobile
 
 import android.app.DatePickerDialog
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import android.widget.ImageView
 import android.widget.RadioButton
 import android.widget.RadioGroup
+import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
@@ -24,19 +30,25 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-class InputIzinActivity : AppCompatActivity() {
+class TambahAbsensiDialogFragment : DialogFragment() {
 
-    private val TAG = "InputIzinActivity"
+    private val TAG = "TambahAbsensiDialog"
     private val repository = BerandaRepository()
 
     // Views
     private lateinit var actvSiswa: AutoCompleteTextView
-    private lateinit var tvSelectedSiswa: android.widget.TextView
+    private lateinit var tvSelectedSiswa: TextView
     private lateinit var etTanggal: TextInputEditText
     private lateinit var actvJadwal: AutoCompleteTextView
     private lateinit var rgStatus: RadioGroup
+    private lateinit var rbHadir: RadioButton
+    private lateinit var rbIzin: RadioButton
+    private lateinit var rbSakit: RadioButton
+    private lateinit var rbAlpha: RadioButton
     private lateinit var etDeskripsi: TextInputEditText
     private lateinit var btnSimpan: MaterialButton
+    private lateinit var btnBatal: MaterialButton
+    private lateinit var btnClose: ImageView
 
     // Data
     private var selectedSiswa: SiswaItem? = null
@@ -47,13 +59,24 @@ class InputIzinActivity : AppCompatActivity() {
 
     // Search
     private var searchJob: Job? = null
-    
+    private var lastSearchResults: List<SiswaItem> = emptyList()
+
+    // Callback for when data is saved
+    var onDismissCallback: (() -> Unit)? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_input_izin)
+        // Make dialog background transparent to show the rounded card
+        setStyle(STYLE_NO_TITLE, R.style.TransparentDialog)
+    }
 
-        setupStatusBar()
-        initViews()
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.dialog_tambah_presensi, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initViews(view)
         setupListeners()
         setupSearchSiswa()
         
@@ -61,46 +84,46 @@ class InputIzinActivity : AppCompatActivity() {
         val calendar = Calendar.getInstance()
         updateDate(calendar)
         
-        // Load initial jadwal for today
+        // Load initial jadwal
         loadJadwalSholat()
     }
 
-    private fun setupStatusBar() {
-        window.statusBarColor = 0xFF2886D6.toInt()
-        @Suppress("DEPRECATION")
-        window.decorView.systemUiVisibility = android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-    }
-
-    private fun initViews() {
-        actvSiswa = findViewById(R.id.actvSiswa)
-        tvSelectedSiswa = findViewById(R.id.tvSelectedSiswa)
-        etTanggal = findViewById(R.id.etTanggal)
-        actvJadwal = findViewById(R.id.actvJadwal)
-        rgStatus = findViewById(R.id.rgStatus)
-        etDeskripsi = findViewById(R.id.etDeskripsi)
-        btnSimpan = findViewById(R.id.btnSimpan)
-        
-        // Back button on toolbar
-        findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar).setNavigationOnClickListener {
-            onBackPressed()
-        }
+    private fun initViews(view: View) {
+        actvSiswa = view.findViewById(R.id.actvSiswa)
+        tvSelectedSiswa = view.findViewById(R.id.tvSelectedSiswa)
+        etTanggal = view.findViewById(R.id.etTanggal)
+        actvJadwal = view.findViewById(R.id.actvJadwal)
+        rgStatus = view.findViewById(R.id.rgStatus)
+        rbHadir = view.findViewById(R.id.rbHadir)
+        rbIzin = view.findViewById(R.id.rbIzin)
+        rbSakit = view.findViewById(R.id.rbSakit)
+        rbAlpha = view.findViewById(R.id.rbAlpha)
+        etDeskripsi = view.findViewById(R.id.etDeskripsi)
+        btnSimpan = view.findViewById(R.id.btnSimpan)
+        btnBatal = view.findViewById(R.id.btnBatal)
+        btnClose = view.findViewById(R.id.btnClose)
     }
 
     private fun setupListeners() {
-        // Date Picker
-        etTanggal.setOnClickListener {
-            showDatePicker()
-        }
+        btnClose.setOnClickListener { dismiss() }
+        btnBatal.setOnClickListener { dismiss() }
 
-        // Simpan Button
-        btnSimpan.setOnClickListener {
-            submitForm()
-        }
+        etTanggal.setOnClickListener { showDatePicker() }
+
+        btnSimpan.setOnClickListener { submitForm() }
         
-        // Jadwal Selection
         actvJadwal.setOnItemClickListener { parent, _, position, _ ->
             selectedJenisSholat = parent.getItemAtPosition(position) as String
             updateSelectedJadwalId()
+        }
+
+        rgStatus.setOnCheckedChangeListener { _, checkedId ->
+            // In premium theme, description might be optional for "Hadir"
+            if (checkedId == R.id.rbHadir) {
+                etDeskripsi.hint = "Opsional (Keterangan tambahan)"
+            } else {
+                etDeskripsi.hint = "Wajib diisi (Alasan perizinan)"
+            }
         }
     }
 
@@ -110,11 +133,9 @@ class InputIzinActivity : AppCompatActivity() {
             return
         }
 
-        // Find the schedule that matches the prayer type and the student's major (Jurusan)
-        // If it's Dhuha, it must match the student's major. 
-        // If it's Dzuhur/Jumat, it's usually "Umum" or matches everyone.
         val targetJurusan = selectedSiswa?.jurusan?.lowercase() ?: ""
         
+        // Better matching logic: check specific jurusan then general/null
         val match = jadwalList.find { 
             val isSameType = it.jenis_sholat.equals(selectedJenisSholat, ignoreCase = true)
             val scheduleJurusan = (it.jurusan ?: "").lowercase()
@@ -124,16 +145,14 @@ class InputIzinActivity : AppCompatActivity() {
         
         selectedJadwalId = match?.id
         if (selectedJadwalId == null) {
-            Log.w(TAG, "No matching schedule found for $selectedJenisSholat and jurusan $targetJurusan")
-        } else {
-            Log.d(TAG, "Matched schedule ID: $selectedJadwalId for $selectedJenisSholat")
+            Log.w(TAG, "No matching schedule for $selectedJenisSholat and jurusan $targetJurusan")
         }
     }
     
     private fun showDatePicker() {
         val calendar = Calendar.getInstance()
-        val datePickerDialog = DatePickerDialog(
-            this,
+        DatePickerDialog(
+            requireContext(),
             { _, year, month, dayOfMonth ->
                 calendar.set(Calendar.YEAR, year)
                 calendar.set(Calendar.MONTH, month)
@@ -143,8 +162,7 @@ class InputIzinActivity : AppCompatActivity() {
             calendar.get(Calendar.YEAR),
             calendar.get(Calendar.MONTH),
             calendar.get(Calendar.DAY_OF_MONTH)
-        )
-        datePickerDialog.show()
+        ).show()
     }
 
     private fun updateDate(calendar: Calendar) {
@@ -152,16 +170,10 @@ class InputIzinActivity : AppCompatActivity() {
         val sdf = SimpleDateFormat(myFormat, Locale.US)
         selectedDate = sdf.format(calendar.time)
         etTanggal.setText(selectedDate)
-        
-        // Let's populate the dropdown with all available schedules.
-        // We will trust the API's schedule list and just format them nicely with Jurusan
         filterJadwalByDay()
     }
 
     private fun setupSearchSiswa() {
-        val adapter = ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line)
-        actvSiswa.setAdapter(adapter)
-
         actvSiswa.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
@@ -172,23 +184,14 @@ class InputIzinActivity : AppCompatActivity() {
                 }
             }
         })
-        
-        actvSiswa.setOnItemClickListener { parent, _, position, _ ->
-            val selection = parent.getItemAtPosition(position) as String
-            // Selection format: "Nama (NIS)"
-            // We need to find the actual object. Since we only have strings here, 
-            // we rely on the last search result or we store a map.
-            // Simplified: we will just store the last list of students
-        }
     }
-    
-    // Quick cache for search results
-    private var lastSearchResults: List<SiswaItem> = emptyList()
 
     private fun performSearch(query: String) {
         searchJob?.cancel()
         searchJob = lifecycleScope.launch {
-            val token = getSharedPreferences("UserData", MODE_PRIVATE).getString("auth_token", "") ?: ""
+            val token = requireContext().getSharedPreferences("UserData", Context.MODE_PRIVATE)
+                .getString("auth_token", "") ?: ""
+                
             if (token.isEmpty()) return@launch
 
             repository.getSiswaList(token, page = 1, pageSize = 20, search = query).fold(
@@ -196,126 +199,137 @@ class InputIzinActivity : AppCompatActivity() {
                     lastSearchResults = response.data
                     val suggestions = response.data.map { "${it.nama_siswa} (${it.nis})" }
                     
-                    runOnUiThread {
-                        val adapter = ArrayAdapter(this@InputIzinActivity, android.R.layout.simple_dropdown_item_1line, suggestions)
+                    activity?.runOnUiThread {
+                        if (!isAdded) return@runOnUiThread
+                        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, suggestions)
                         actvSiswa.setAdapter(adapter)
-                        adapter.notifyDataSetChanged()
                         
-                        // Re-set listener because setAdapter might clear it? No, but safe to keep logic consistent
                         actvSiswa.setOnItemClickListener { parent, _, position, _ ->
                             if (position < lastSearchResults.size) {
                                 selectedSiswa = lastSearchResults[position]
-                                tvSelectedSiswa.text = "Terpilih: ${selectedSiswa!!.nama_siswa} - Kelas ${selectedSiswa!!.kelas} ${selectedSiswa!!.jurusan}"
-                                actvSiswa.dismissDropDown() // Hide dropdown
-                                
-                                // Auto-update selectedJadwalId if prayer type already selected
+                                tvSelectedSiswa.apply {
+                                    visibility = View.VISIBLE
+                                    text = "Terpilih: ${selectedSiswa!!.nama_siswa} - ${selectedSiswa!!.kelas} ${selectedSiswa!!.jurusan}"
+                                }
+                                actvSiswa.setText(selectedSiswa!!.nama_siswa, false)
+                                actvSiswa.dismissDropDown()
                                 updateSelectedJadwalId()
                             }
                         }
-                        
                         actvSiswa.showDropDown()
                     }
                 },
-                onFailure = {
-                    Log.e(TAG, "Search failed: ${it.message}")
-                }
+                onFailure = { Log.e(TAG, "Search failed: ${it.message}") }
             )
         }
     }
 
     private fun loadJadwalSholat() {
-        val token = getSharedPreferences("UserData", MODE_PRIVATE).getString("auth_token", "") ?: ""
+        val token = requireContext().getSharedPreferences("UserData", Context.MODE_PRIVATE)
+            .getString("auth_token", "") ?: ""
+            
         if (token.isEmpty()) return
 
         lifecycleScope.launch {
             repository.getJadwalSholat(token).fold(
                 onSuccess = { list ->
                     jadwalList = list
-                    // Initial filter setup
                     filterJadwalByDay()
                 },
-                onFailure = {
-                    Log.e(TAG, "Failed to load jadwal: ${it.message}")
-                    Toast.makeText(this@InputIzinActivity, "Gagal memuat jadwal sholat", Toast.LENGTH_SHORT).show()
-                }
+                onFailure = { Log.e(TAG, "Failed to load jadwal: ${it.message}") }
             )
         }
     }
     
     private fun filterJadwalByDay() {
-        if (jadwalList.isEmpty()) return
-
-        // User requested: "hanya menampilkan 3 jenis sholatnya saja, jangan tampilkan jurusan"
-        // We take unique jenis_sholat names from the list
+        if (jadwalList.isEmpty() || !isAdded) return
         val uniqueTypes = jadwalList.map { it.jenis_sholat }.distinct()
-        
-        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, uniqueTypes)
-        
-        runOnUiThread {
-            actvJadwal.setAdapter(adapter)
-            // If already selecting a type, maintain it but update the ID
-            updateSelectedJadwalId()
-        }
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, uniqueTypes)
+        actvJadwal.setAdapter(adapter)
+        updateSelectedJadwalId()
     }
 
     private fun submitForm() {
         if (selectedSiswa == null) {
-            actvSiswa.error = "Pilih siswa terlebih dahulu"
+            Toast.makeText(context, "Pilih siswa terlebih dahulu", Toast.LENGTH_SHORT).show()
             return
         }
         if (selectedDate.isEmpty()) {
-            etTanggal.error = "Pilih tanggal"
+            Toast.makeText(context, "Pilih tanggal", Toast.LENGTH_SHORT).show()
             return
         }
         if (selectedJadwalId == null) {
-            actvJadwal.error = "Pilih jadwal sholat"
-            Toast.makeText(this, "Silakan pilih jadwal sholat dari list", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Pilih jadwal sholat yang sesuai", Toast.LENGTH_SHORT).show()
             return
         }
         
         val selectedStatusId = rgStatus.checkedRadioButtonId
         if (selectedStatusId == -1) {
-            Toast.makeText(this, "Pilih status kehadiran", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Pilih status kehadiran", Toast.LENGTH_SHORT).show()
             return
         }
         
         val status = when (selectedStatusId) {
+            R.id.rbHadir -> "hadir"
             R.id.rbIzin -> "izin"
             R.id.rbSakit -> "sakit"
             R.id.rbAlpha -> "alpha"
-            else -> "izin"
+            else -> "hadir"
         }
         
-        val deskripsi = etDeskripsi.text.toString()
+        val deskripsi = etDeskripsi.text.toString().trim()
+        if (status != "hadir" && deskripsi.isEmpty()) {
+            Toast.makeText(context, "Keterangan wajib diisi untuk perizinan/alpha", Toast.LENGTH_SHORT).show()
+            return
+        }
         
         val request = CreateAbsensiRequest(
             id_jadwal = selectedJadwalId!!,
             status = status,
             tanggal = selectedDate,
-            deskripsi = deskripsi
+            deskripsi = if (deskripsi.isEmpty()) "Mencatat presensi manual" else deskripsi
         )
         
         btnSimpan.isEnabled = false
-        btnSimpan.text = "Menyimpan..."
+        btnSimpan.text = "MENYIMPAN..."
         
-        val token = getSharedPreferences("UserData", MODE_PRIVATE).getString("auth_token", "") ?: ""
+        val token = requireContext().getSharedPreferences("UserData", Context.MODE_PRIVATE)
+            .getString("auth_token", "") ?: ""
         
         lifecycleScope.launch {
             repository.createAbsensi(token, selectedSiswa!!.nis, request).fold(
                 onSuccess = {
-                    runOnUiThread {
-                        Toast.makeText(this@InputIzinActivity, "Berhasil mencatat izin!", Toast.LENGTH_LONG).show()
-                        finish() // Close activity
+                    activity?.runOnUiThread {
+                        Toast.makeText(context, "Berhasil mencatat presensi!", Toast.LENGTH_LONG).show()
+                        onDismissCallback?.invoke()
+                        dismiss()
                     }
                 },
-                onFailure = {
-                    runOnUiThread {
-                        Toast.makeText(this@InputIzinActivity, "Gagal: ${it.message}", Toast.LENGTH_LONG).show()
+                onFailure = { error ->
+                    activity?.runOnUiThread {
+                        Toast.makeText(context, "Gagal: ${error.message}", Toast.LENGTH_LONG).show()
                         btnSimpan.isEnabled = true
-                        btnSimpan.text = "Simpan Data"
+                        btnSimpan.text = "SIMPAN PRESENSI"
                     }
                 }
             )
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // Set dialog width to match parent with margins
+        dialog?.window?.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+    }
+
+    companion object {
+        fun newInstance(onDismiss: (() -> Unit)? = null): TambahAbsensiDialogFragment {
+            return TambahAbsensiDialogFragment().apply {
+                onDismissCallback = onDismiss
+            }
         }
     }
 }

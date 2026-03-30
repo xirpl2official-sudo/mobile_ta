@@ -130,7 +130,19 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
         }
         
         btnInputIzin.setOnClickListener {
-            startActivity(android.content.Intent(this, InputIzinActivity::class.java))
+            val dialog = InputIzinDialogFragment.newInstance {
+                // Refresh data when dialog is dismissed after saving
+                refreshData()
+            }
+            dialog.show(supportFragmentManager, "InputIzinDialog")
+        }
+
+        btnTambah.setOnClickListener {
+            val dialog = TambahAbsensiDialogFragment.newInstance {
+                // Refresh data when dialog is dismissed after saving
+                refreshData()
+            }
+            dialog.show(supportFragmentManager, "TambahAbsensiDialog")
         }
     }
 

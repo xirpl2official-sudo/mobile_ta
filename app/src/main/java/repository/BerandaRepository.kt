@@ -158,6 +158,35 @@ class BerandaRepository {
     }
 
     /**
+     * Create new jadwal sholat
+     */
+    suspend fun createJadwalSholat(
+        token: String,
+        request: JadwalSholatCreateRequest
+    ): Result<JadwalSholatDetail> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.createJadwalSholat("Bearer $token", request)
+                
+                if (!response.isSuccessful) {
+                    return@withContext Result.failure(
+                        Exception("HTTP Error: ${response.code()} - ${response.message()}")
+                    )
+                }
+                
+                val body = response.body()
+                if (body?.data == null) {
+                    return@withContext Result.failure(Exception("Data tidak tersedia"))
+                }
+                
+                return@withContext Result.success(body.data)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    /**
      * Update jadwal sholat
      */
     suspend fun updateJadwalSholat(
@@ -309,6 +338,7 @@ class BerandaRepository {
         kelas: String? = null,
         jurusan: String? = null,
         status: String? = null,
+        nis: String? = null,
         page: Int? = null,
         limit: Int? = null
     ): Result<HistoryStaffData> {
@@ -324,6 +354,7 @@ class BerandaRepository {
                         status = status,
                         jenisSholat = null,
                         search = null,
+                        nis = nis,
                         page = page,
                         limit = limit
                     )
@@ -518,9 +549,10 @@ class BerandaRepository {
         status: String? = null,
         jenisSholat: String? = null,
         search: String? = null,
+        nis: String? = null,
         page: Int? = null,
         limit: Int? = null
-    ): Result<HistoryStaffResponse> {
+    ): Result<HistoryStaffData> {
         return withContext(Dispatchers.IO) {
             try {
                 val response: Response<HistoryStaffResponse> =
@@ -533,6 +565,7 @@ class BerandaRepository {
                         status = status,
                         jenisSholat = null,
                         search = null,
+                        nis = nis,
                         page = page,
                         limit = limit
                     )
@@ -548,7 +581,8 @@ class BerandaRepository {
                     return@withContext Result.failure(Exception("Response body kosong"))
                 }
 
-                return@withContext Result.success(body)
+                val data = body.data ?: return@withContext Result.failure(Exception("Data kosong"))
+                return@withContext Result.success(data)
             } catch (e: Exception) {
                 Result.failure(e)
             }

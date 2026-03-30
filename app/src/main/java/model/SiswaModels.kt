@@ -1,6 +1,7 @@
 package com.xirpl2.SASMobile.model
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 /**
  * Response model untuk API Siswa (/api/siswa)
@@ -21,7 +22,7 @@ data class SiswaItem(
     val jenis_kelamin: String = "",
     val kelas: String = "",
     val jurusan: String = ""
-)
+) : Serializable
 
 data class SiswaPaginationInfo(
     val page: Int = 1,

@@ -1,6 +1,7 @@
 package com.xirpl2.SASMobile.network
 
 import com.xirpl2.SASMobile.model.*
+import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -57,6 +58,16 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Path("tanggal") tanggal: String
     ): Response<ApiResponse<List<JadwalSholatData>>>
+
+    /**
+     * Create new jadwal sholat
+     * POST /api/jadwal-sholat
+     */
+    @POST("jadwal-sholat")
+    suspend fun createJadwalSholat(
+        @Header("Authorization") token: String,
+        @Body request: JadwalSholatCreateRequest
+    ): Response<JadwalSholatDetailResponse>
 
     /**
      * Get jadwal sholat by ID
@@ -177,6 +188,7 @@ interface ApiService {
         @Query("status") status: String? = null,
         @Query("jenis_sholat") jenisSholat: String? = null,
         @Query("search") search: String? = null,
+        @Query("nis") nis: String? = null,
         @Query("tanggal") tanggal: String? = null,
         @Query("page") page: Int? = null,
         @Query("limit") limit: Int? = null
@@ -258,4 +270,31 @@ interface ApiService {
     suspend fun getNotifications(
         @Header("Authorization") token: String
     ): Response<NotificationResponse>
+
+    // ========== Export Endpoints ==========
+
+    /**
+     * Export high-fidelity report absensi ke Excel
+     * GET /api/v1/export/attendance-report
+     */
+    @Streaming
+    @GET("export/attendance-report")
+    suspend fun exportAttendanceReport(
+        @Header("Authorization") token: String,
+        @Query("start_date") startDate: String,
+        @Query("end_date") endDate: String,
+        @Query("jurusan") jurusan: String? = null
+    ): Response<ResponseBody>
+
+    /**
+     * Export laporan lengkap (Absensi & Jadwal) ke Excel
+     * GET /api/v1/export/full-report
+     */
+    @Streaming
+    @GET("export/full-report")
+    suspend fun exportFullReport(
+        @Header("Authorization") token: String,
+        @Query("month") month: String,
+        @Query("jurusan") jurusan: String
+    ): Response<ResponseBody>
 }

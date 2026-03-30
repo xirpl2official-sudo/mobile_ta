@@ -32,7 +32,7 @@
     <!-- Jenis Kelamin -->
     <TextView
         android:id="@+id/tvJenisKelamin"
-        android:layout_width="50dp"
+        android:layout_width="40dp"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:paddingHorizontal="4dp"
@@ -42,7 +42,7 @@
     <!-- Kelas -->
     <TextView
         android:id="@+id/tvKelas"
-        android:layout_width="50dp"
+        android:layout_width="60dp"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:paddingHorizontal="4dp"
@@ -52,7 +52,7 @@
     <!-- Jurusan (Badge) -->
     <TextView
         android:id="@+id/tvJurusan"
-        android:layout_width="60dp"
+        android:layout_width="80dp"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:paddingHorizontal="8dp"
@@ -61,9 +61,33 @@
         android:textColor="#2196F3"
         android:textSize="11sp" />
 
+    <!-- Keterangan (Detail Button) -->
+    <LinearLayout
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingHorizontal="8dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnDetailSiswa"
+            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="28dp"
+            android:text="Detail"
+            android:textAllCaps="false"
+            android:textSize="10sp"
+            android:textColor="@android:color/white"
+            app:backgroundTint="#4CAF50"
+            app:cornerRadius="6dp"
+            android:padding="0dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            xmlns:app="http://schemas.android.com/apk/res-auto" />
+    </LinearLayout>
+
     <!-- Aksi Container -->
     <LinearLayout
-        android:layout_width="80dp"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
@@ -84,7 +108,9 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_delete"
-            android:contentDescription="Delete" />
+            android:contentDescription="Delete"
+            app:tint="#F44336"
+            xmlns:app="http://schemas.android.com/apk/res-auto" />
 
     </LinearLayout>
 

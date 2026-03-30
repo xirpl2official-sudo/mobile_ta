@@ -107,6 +107,11 @@ class BerandaActivity : AppCompatActivity() {
             // Navigate to ScanQrActivity for students to scan QR code displayed by staff
             startActivity(Intent(this@BerandaActivity, ScanQrActivity::class.java))
         }
+
+        findViewById<androidx.cardview.widget.CardView>(R.id.cardHadir).setOnClickListener {
+            val dialog = PresenceDetailDialogFragment()
+            dialog.show(supportFragmentManager, "PresenceDetail")
+        }
     }
     private fun setupJadwalSholat() {
         // Initialize with empty list or loading state

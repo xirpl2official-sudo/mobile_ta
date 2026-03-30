@@ -40,11 +40,7 @@
         <activity
             android:name=".LaporanAdminActivity"
             android:exported="false" />
-        <activity
-            android:name=".InputIzinActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" />
+
         <activity
             android:name=".ScanQrActivity"
             android:exported="false" />
@@ -81,6 +77,10 @@
         <activity
             android:name=".NotifikasiActivity"
             android:exported="false" />
+        <activity
+            android:name=".DetailAbsensiActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SAS_Mobile" />
     </application>
 
 </manifest>

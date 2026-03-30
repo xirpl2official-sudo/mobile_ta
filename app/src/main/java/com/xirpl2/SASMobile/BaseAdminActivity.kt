@@ -84,16 +84,22 @@ abstract class BaseAdminActivity : AppCompatActivity() {
             .getString("user_role", "")?.lowercase() ?: ""
             
         val isWali = role.contains("wali")
-        val isGuru = role == "guru"
         val isAdmin = role.contains("admin")
+        val isGuru = role == "guru"
 
         if (!isAdmin) {
-            // Hide administrative modules for non-admins
-            sidebarView.findViewById<View>(R.id.menuJadwalSholat)?.visibility = View.GONE
-            sidebarView.findViewById<View>(R.id.menuDataSiswa)?.visibility = View.GONE
+            // Wali Kelas can see everything except administrative features (handled in activities)
+            // But they MUST see Jadwal Sholat and Data Siswa (read-only)
+            if (isWali) {
+                sidebarView.findViewById<View>(R.id.menuJadwalSholat)?.visibility = View.VISIBLE
+                sidebarView.findViewById<View>(R.id.menuDataSiswa)?.visibility = View.VISIBLE
+            } else {
+                sidebarView.findViewById<View>(R.id.menuJadwalSholat)?.visibility = View.GONE
+                sidebarView.findViewById<View>(R.id.menuDataSiswa)?.visibility = View.GONE
+            }
             
             if (isGuru && !isWali) {
-                // Guru cannot even access Presensi (input)
+                // Pure Guru cannot access Presensi (input)
                 sidebarView.findViewById<View>(R.id.menuPresensi)?.visibility = View.GONE
             }
         }

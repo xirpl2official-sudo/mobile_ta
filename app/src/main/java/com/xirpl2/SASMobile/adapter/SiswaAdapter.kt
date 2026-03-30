@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import com.google.android.material.button.MaterialButton
 import android.widget.Toast
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -18,6 +19,7 @@ import com.xirpl2.SASMobile.model.SiswaItem
 class SiswaAdapter(
     private val onEditClick: (SiswaItem) -> Unit,
     private val onDeleteClick: (SiswaItem) -> Unit,
+    private val onDetailClick: (SiswaItem) -> Unit,
     private val isReadOnly: Boolean = false
 ) : ListAdapter<SiswaItem, RecyclerView.ViewHolder>(SiswaDiffCallback()) {
 
@@ -67,7 +69,7 @@ class SiswaAdapter(
         when (holder) {
             is SiswaViewHolder -> {
                 val siswa = getItem(position)
-                holder.bind(siswa, onEditClick, onDeleteClick, isReadOnly)
+                holder.bind(siswa, onEditClick, onDeleteClick, onDetailClick, isReadOnly)
             }
             is LoadingViewHolder -> {
                 // Loading view, nothing to bind
@@ -81,6 +83,7 @@ class SiswaAdapter(
         private val tvJenisKelamin: TextView = itemView.findViewById(R.id.tvJenisKelamin)
         private val tvKelas: TextView = itemView.findViewById(R.id.tvKelas)
         private val tvJurusan: TextView = itemView.findViewById(R.id.tvJurusan)
+        private val btnDetailSiswa: MaterialButton = itemView.findViewById(R.id.btnDetailSiswa)
         private val btnEdit: ImageView = itemView.findViewById(R.id.btnEdit)
         private val btnDelete: ImageView = itemView.findViewById(R.id.btnDelete)
 
@@ -88,6 +91,7 @@ class SiswaAdapter(
             siswa: SiswaItem,
             onEditClick: (SiswaItem) -> Unit,
             onDeleteClick: (SiswaItem) -> Unit,
+            onDetailClick: (SiswaItem) -> Unit,
             isReadOnly: Boolean
         ) {
             tvNis.text = siswa.nis
@@ -99,6 +103,8 @@ class SiswaAdapter(
             }
             tvKelas.text = siswa.kelas
             tvJurusan.text = siswa.jurusan
+
+            btnDetailSiswa.setOnClickListener { onDetailClick(siswa) }
 
             if (isReadOnly) {
                 btnEdit.visibility = View.GONE

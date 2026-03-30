@@ -13,12 +13,22 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
+import android.content.ContentValues
+import android.content.Context
+import android.os.Build
+import android.os.Environment
+import android.provider.MediaStore
 import com.xirpl2.SASMobile.adapter.LaporanAbsensiAdapter
 import com.xirpl2.SASMobile.model.AbsensiStaffItem
 import com.xirpl2.SASMobile.model.LaporanStatistik
 import com.xirpl2.SASMobile.network.RetrofitClient
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.ResponseBody
+import java.io.InputStream
+import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -221,8 +231,91 @@ class LaporanAdminActivity : BaseAdminActivity() {
         
         // Both Guru and Wali Kelas can see and export reports according to latest request
         btnExportExcel.setOnClickListener {
-            // TODO: Implement Excel export
-            Toast.makeText(this, "Fitur export Excel akan segera tersedia", Toast.LENGTH_SHORT).show()
+            downloadExcelReport()
+        }
+    }
+
+    private fun downloadExcelReport() {
+        val token = getAuthToken()
+        if (token.isEmpty()) {
+            Toast.makeText(this, "Sesi habis, silakan login ulang", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val startDate = apiDateFormat.format(tanggalAwal.time)
+        val endDate = apiDateFormat.format(tanggalAkhir.time)
+        val jurusanApi = if (selectedJurusan == "Semua Jurusan") "" else selectedJurusan
+
+        showLoading(true)
+        btnExportExcel.isEnabled = false
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val response = RetrofitClient.apiService.exportAttendanceReport(
+                    token = "Bearer $token",
+                    startDate = startDate,
+                    endDate = endDate,
+                    jurusan = jurusanApi
+                )
+
+                if (response.isSuccessful) {
+                    val body = response.body()
+                    if (body != null) {
+                        val fileName = "Laporan_Absensi_${selectedJurusan.replace(" ", "_")}_$startDate.xlsx"
+                        val success = saveFileToDownloads(body, fileName)
+                        
+                        withContext(Dispatchers.Main) {
+                            showLoading(false)
+                            btnExportExcel.isEnabled = true
+                            if (success) {
+                                Toast.makeText(this@LaporanAdminActivity, "Laporan berhasil diunduh ke folder Download", Toast.LENGTH_LONG).show()
+                            } else {
+                                Toast.makeText(this@LaporanAdminActivity, "Gagal menyimpan file", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        showLoading(false)
+                        btnExportExcel.isEnabled = true
+                        Toast.makeText(this@LaporanAdminActivity, "Gagal mengunduh: ${response.message()}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    showLoading(false)
+                    btnExportExcel.isEnabled = true
+                    Log.e(TAG, "Download error", e)
+                    Toast.makeText(this@LaporanAdminActivity, "Terjadi kesalahan: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private fun saveFileToDownloads(body: ResponseBody, fileName: String): Boolean {
+        return try {
+            val contentValues = ContentValues().apply {
+                put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+                put(MediaStore.MediaColumns.MIME_TYPE, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
+                }
+            }
+
+            val resolver = contentResolver
+            val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
+
+            uri?.let {
+                resolver.openOutputStream(it)?.use { outputStream ->
+                    body.byteStream().use { inputStream ->
+                        inputStream.copyTo(outputStream)
+                    }
+                }
+                true
+            } ?: false
+        } catch (e: Exception) {
+            Log.e(TAG, "Save file error", e)
+            false
         }
     }
 

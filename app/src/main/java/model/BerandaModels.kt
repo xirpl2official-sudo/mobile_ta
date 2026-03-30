@@ -30,7 +30,8 @@ data class JadwalSholatData(
     @SerializedName("waktu_selesai")
     val jam_selesai: String,
     var hari: String? = null, // Optional: jika API mengirim info hari
-    var jurusan: String? = null // Optional: jurusan specific schedule
+    var jurusan: String? = null, // Optional: jurusan specific schedule
+    var kelas: String? = null // Optional: kelas specific schedule
 )
 
 /**
@@ -50,6 +51,7 @@ data class JadwalSholatDetail(
     val jam_selesai: String = "",
     val hari: String? = null,
     val jurusan: String? = null,
+    val kelas: String? = null,
     val created_at: String? = null
 )
 
@@ -63,7 +65,22 @@ data class JadwalSholatUpdateRequest(
     @SerializedName("waktu_selesai")
     val jam_selesai: String? = null,
     val hari: String? = null,
-    val jurusan: String? = null
+    val jurusan: String? = null,
+    val kelas: String? = null
+)
+
+/**
+ * Request model untuk CREATE jadwal sholat
+ */
+data class JadwalSholatCreateRequest(
+    val jenis_sholat: String,
+    @SerializedName("waktu_mulai")
+    val jam_mulai: String,
+    @SerializedName("waktu_selesai")
+    val jam_selesai: String,
+    val hari: String? = null,
+    val jurusan: String? = null,
+    val kelas: String? = null
 )
 
 

@@ -4,6 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
+    android:background="#FFFFFF"
+    android:elevation="8dp"
     android:padding="24dp">
 
     <TextView
@@ -16,31 +18,7 @@
         android:textColor="#000000"
         android:layout_marginBottom="16dp" />
 
-    <!-- Nama Sholat (Read-only) -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Nama Sholat"
-        android:textSize="14sp"
-        android:textColor="#666666"
-        android:layout_marginBottom="4dp" />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/tilNamaSholat"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etNamaSholat"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Contoh: Dhuha"
-            android:inputType="text"
-            android:enabled="false" />
-
-    </com.google.android.material.textfield.TextInputLayout>
+    <!-- Name is redundant as it's shown in title -->
 
     <!-- Hari Dropdown -->
     <TextView
@@ -96,6 +74,45 @@
             android:clickable="true" />
 
     </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Kelas Selection (Multi-select) -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pilih Kelas"
+        android:textSize="14sp"
+        android:textColor="#666666"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="4dp" />
+
+    <GridLayout
+        android:id="@+id/glKelas"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="3"
+        android:layout_marginBottom="12dp">
+
+        <CheckBox
+            android:id="@+id/cbKelas10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="10" />
+
+        <CheckBox
+            android:id="@+id/cbKelas11"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="11"
+            android:layout_marginStart="16dp" />
+
+        <CheckBox
+            android:id="@+id/cbKelas12"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="12"
+            android:layout_marginStart="16dp" />
+
+    </GridLayout>
 
     <!-- Validation Status Indicator -->
     <LinearLayout

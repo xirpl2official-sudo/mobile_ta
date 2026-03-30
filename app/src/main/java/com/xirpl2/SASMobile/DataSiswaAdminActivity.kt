@@ -1,6 +1,7 @@
 package com.xirpl2.SASMobile
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -137,8 +138,8 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
      */
     private fun setupRecyclerView() {
         // Check role
-        val role = getSharedPreferences("UserData", Context.MODE_PRIVATE).getString("user_role", "")
-        val isReadOnly = role == "wali_kelas" || role == "guru"
+        val role = getSharedPreferences("UserData", Context.MODE_PRIVATE).getString("user_role", "")?.lowercase() ?: ""
+        val isReadOnly = role.contains("wali") || role == "guru"
 
         siswaAdapter = SiswaAdapter(
             onEditClick = { siswa ->
@@ -146,6 +147,9 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
             },
             onDeleteClick = { siswa ->
                 if (!isReadOnly) showDeleteConfirmationDialog(siswa)
+            },
+            onDetailClick = { siswa ->
+                showHistorySiswaDialog(siswa)
             },
             isReadOnly = isReadOnly
         )
@@ -630,5 +634,17 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
                 }
             )
         }
+    }
+
+    /**
+     * Show student history Detail Activity
+     */
+    private fun showHistorySiswaDialog(siswa: SiswaItem) {
+        val dialog = PresenceDetailPopUpFragment.newInstance(
+            nis = siswa.nis,
+            jurusan = siswa.jurusan,
+            name = siswa.nama_siswa
+        )
+        dialog.show(supportFragmentManager, "PresenceDetailPopUp")
     }
 }

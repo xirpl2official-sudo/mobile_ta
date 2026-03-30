@@ -129,6 +129,14 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
             if (dhuhaJadwal != null) "Waktu: ${dhuhaJadwal.jam_mulai} - ${dhuhaJadwal.jam_selesai}"
             else "Waktu: -"
 
+        findViewById<TextView>(R.id.tvHariDhuha)?.text =
+            if (dhuhaJadwal != null) "${dhuhaJadwal.hari ?: "Semua Hari"}"
+            else "-"
+
+        findViewById<TextView>(R.id.tvKelasDhuha)?.text =
+            if (dhuhaJadwal != null) "Kelas: ${dhuhaJadwal.kelas ?: "Semua Kelas"}"
+            else "Kelas: -"
+
         // ✅ Update Zuhur dengan pola yang sama
         val zuhurJadwal = jadwalList.find {
             it.jenis_sholat.equals("Dzuhur", ignoreCase = true) && it.jurusan.isNullOrEmpty()
@@ -139,6 +147,14 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
             if (zuhurJadwal != null) "Waktu: ${zuhurJadwal.jam_mulai} - ${zuhurJadwal.jam_selesai}"
             else "Waktu: -"
 
+        findViewById<TextView>(R.id.tvHariZuhur)?.text =
+            if (zuhurJadwal != null) "${zuhurJadwal.hari ?: "Semua Hari"}"
+            else "-"
+
+        findViewById<TextView>(R.id.tvKelasZuhur)?.text =
+            if (zuhurJadwal != null) "Kelas: ${zuhurJadwal.kelas ?: "Semua Kelas"}"
+            else "Kelas: Semua"
+
         // ✅ Update Jumat dengan pola yang sama
         val jumatJadwal = jadwalList.find {
             it.jenis_sholat.equals("Jumat", ignoreCase = true) && it.jurusan.isNullOrEmpty()
@@ -148,6 +164,14 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
         findViewById<TextView>(R.id.tvWaktuJumat)?.text =
             if (jumatJadwal != null) "Waktu: ${jumatJadwal.jam_mulai} - ${jumatJadwal.jam_selesai}"
             else "Waktu: -"
+
+        findViewById<TextView>(R.id.tvHariJumat)?.text =
+            if (jumatJadwal != null) "${jumatJadwal.hari ?: "Jumat"}"
+            else "-"
+
+        findViewById<TextView>(R.id.tvKelasJumat)?.text =
+            if (jumatJadwal != null) "Kelas: ${jumatJadwal.kelas ?: "Semua Kelas"}"
+            else "Kelas: Semua"
     }
 
     private fun populateDhuhaTable() {
@@ -187,11 +211,11 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
      */
     private fun setupButtons() {
         val btnTambah = findViewById<MaterialButton>(R.id.btnTambah)
-        val role = getSharedPreferences("UserData", MODE_PRIVATE).getString("user_role", "")
+        val role = getSharedPreferences("UserData", MODE_PRIVATE).getString("user_role", "")?.lowercase() ?: ""
 
         // 🔹 TENTUKAN PERMISSION
-        val isReadOnly = role == "wali_kelas" || role == "guru"
-        val canEdit = !isReadOnly  // Hanya admin yang bisa edit
+        val isReadOnly = role.contains("wali") || role == "guru"
+        val canEdit = !isReadOnly && role.contains("admin") // Hanya admin yang bisa edit
 
         // 🔹 ATUR VISIBILITY BUTTON CRUD (hanya untuk yang bisa edit)
         if (!canEdit) {
@@ -210,7 +234,7 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
 
         // 🔹 SETUP CRUD BUTTONS (hanya untuk admin)
         btnTambah.setOnClickListener {
-            Toast.makeText(this, "Fitur Tambah Jadwal belum tersedia di API", Toast.LENGTH_LONG).show()
+            showTambahJadwalDialog()
         }
 
         // Edit Jadwal Dhuha per Jurusan (table) with Click-to-Swap logic
@@ -315,9 +339,11 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_edit_jadwal_sholat, null)
         
         val tvTitle = dialogView.findViewById<TextView>(R.id.tvDialogTitle)
-        val etNamaSholat = dialogView.findViewById<TextInputEditText>(R.id.etNamaSholat)
         val etJamMulai = dialogView.findViewById<TextInputEditText>(R.id.etJamMulai)
         val etJamSelesai = dialogView.findViewById<TextInputEditText>(R.id.etJamSelesai)
+        val cbKelas10 = dialogView.findViewById<android.widget.CheckBox>(R.id.cbKelas10)
+        val cbKelas11 = dialogView.findViewById<android.widget.CheckBox>(R.id.cbKelas11)
+        val cbKelas12 = dialogView.findViewById<android.widget.CheckBox>(R.id.cbKelas12)
         val actvHari = dialogView.findViewById<AutoCompleteTextView>(R.id.actvHari)
         val actvJurusan = dialogView.findViewById<AutoCompleteTextView>(R.id.actvJurusan)
         val tilJurusan = dialogView.findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.tilJurusan)
@@ -333,12 +359,21 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
         var originalJurusan = ""
         var originalJamMulai = ""
         var originalJamSelesai = ""
+        var originalKelas = ""
 
         // Create dialog
         val dialog = AlertDialog.Builder(this)
             .setView(dialogView)
             .setCancelable(true)
             .create()
+
+        // Populate Hari Spinner
+        val days = listOf("Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Semua Hari")
+        actvHari.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, days))
+
+        // Populate Jurusan Spinner
+        val jurusans = listOf("RPL", "BC", "TKJ", "Semua Jurusan")
+        actvJurusan.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, jurusans))
 
         // Function to update validation status
         fun updateValidationStatus() {
@@ -350,27 +385,26 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
                 return
             }
 
-            // Only show validation for Dhuha
+            // Only show validation for non-Dhuha or when needed
             if (!namaSholat.equals("Dhuha", ignoreCase = true)) {
-                validationContainer.visibility = View.GONE
-                return
-            }
+                val duplicateDay = checkDuplicateJurusan(selectedJurusan, selectedHari, currentJadwalId)
+                validationContainer.visibility = View.VISIBLE
 
-            val duplicateDay = checkDuplicateJurusan(selectedJurusan, selectedHari, currentJadwalId)
-            validationContainer.visibility = View.VISIBLE
-
-            if (duplicateDay != null) {
-                // Duplicate found - show warning
-                ivValidationIcon.setImageResource(android.R.drawable.ic_dialog_alert)
-                ivValidationIcon.setColorFilter(ContextCompat.getColor(this, android.R.color.holo_orange_dark))
-                tvValidationStatus.text = "⚠️ Jurusan $selectedJurusan sudah ada di hari $duplicateDay!"
-                tvValidationStatus.setTextColor(ContextCompat.getColor(this, android.R.color.holo_orange_dark))
+                if (duplicateDay != null) {
+                    // Duplicate found - show warning
+                    ivValidationIcon.setImageResource(android.R.drawable.ic_dialog_alert)
+                    ivValidationIcon.setColorFilter(ContextCompat.getColor(this, android.R.color.holo_orange_dark))
+                    tvValidationStatus.text = "⚠️ Jurusan $selectedJurusan sudah ada di hari $duplicateDay!"
+                    tvValidationStatus.setTextColor(ContextCompat.getColor(this, android.R.color.holo_orange_dark))
+                } else {
+                    // No duplicate - show success
+                    ivValidationIcon.setImageResource(android.R.drawable.ic_menu_send)
+                    ivValidationIcon.setColorFilter(ContextCompat.getColor(this, android.R.color.holo_green_dark))
+                    tvValidationStatus.text = "✅ Jurusan tersedia"
+                    tvValidationStatus.setTextColor(ContextCompat.getColor(this, android.R.color.holo_green_dark))
+                }
             } else {
-                // No duplicate - show success
-                ivValidationIcon.setImageResource(android.R.drawable.ic_menu_send)
-                ivValidationIcon.setColorFilter(ContextCompat.getColor(this, android.R.color.holo_green_dark))
-                tvValidationStatus.text = "✅ Jurusan tersedia"
-                tvValidationStatus.setTextColor(ContextCompat.getColor(this, android.R.color.holo_green_dark))
+                validationContainer.visibility = View.GONE
             }
         }
 
@@ -414,7 +448,6 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
             repository.getJadwalSholatById(token, currentJadwalId).fold(
                 onSuccess = { jadwal ->
                     runOnUiThread {
-                        etNamaSholat.setText(jadwal.jenis_sholat)
                         etJamMulai.setText(jadwal.jam_mulai)
                         etJamSelesai.setText(jadwal.jam_selesai)
 
@@ -426,12 +459,19 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
                         val jurusan = jadwal.jurusan ?: ""
                         actvJurusan.setText(jurusan, false)
 
+                        // Set Kelas CheckBoxes
+                        val kelasStr = jadwal.kelas ?: ""
+                        cbKelas10.isChecked = kelasStr.contains("10")
+                        cbKelas11.isChecked = kelasStr.contains("11")
+                        cbKelas12.isChecked = kelasStr.contains("12")
+
                         // Hide jurusan selector for Dhuha as requested by user
                         if (namaSholat.equals("Dhuha", ignoreCase = true)) {
                             tilJurusan.visibility = View.GONE
                             tvJurusanLabel.visibility = View.GONE
-                            // Always default to "Semua Jurusan" for Dhuha edit from card
+                            // Always default to "Semua Jurusan" and "Semua Hari" for Dhuha edit from card
                             actvJurusan.setText("Semua Jurusan", false)
+                            actvHari.setText("Semua Hari", false)
                             tvTitle.text = "Edit Jadwal Sholat $namaSholat"
                         } else if (jurusan.isNotEmpty()) {
                             tvTitle.text = "Edit Jadwal Sholat $namaSholat - $jurusan"
@@ -442,6 +482,7 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
                         originalJurusan = jurusan
                         originalJamMulai = jadwal.jam_mulai
                         originalJamSelesai = jadwal.jam_selesai
+                        originalKelas = kelasStr
 
                         // Initial validation check
                         updateValidationStatus()
@@ -450,12 +491,11 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
                 onFailure = { error ->
                     Log.e(TAG, "Error loading jadwal: ${error.message}")
                     runOnUiThread {
-                        // Set defaults based on prayer type
-                        etNamaSholat.setText(namaSholat)
                         when (namaSholat) {
                             "Dhuha" -> {
                                 etJamMulai.setText("06:30")
                                 etJamSelesai.setText("09:00")
+                                originalKelas = "{10,11,12}" // Default for Dhuha
                             }
                             "Dzuhur" -> {
                                 etJamMulai.setText("11:30")
@@ -479,15 +519,23 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
 
         // Save button - show confirmation dialog first
         btnSave.setOnClickListener {
-            val updatedNama = etNamaSholat.text.toString().trim()
+            val updatedNama = namaSholat
             val updatedJamMulai = etJamMulai.text.toString().trim()
             val updatedJamSelesai = etJamSelesai.text.toString().trim()
             val updatedHari = actvHari.text.toString().trim()
             val updatedJurusan = actvJurusan.text.toString().trim()
 
+            // Get selected Kelas from CheckBoxes
+            val selectedKelas = mutableListOf<String>()
+            if (cbKelas10.isChecked) selectedKelas.add("10")
+            if (cbKelas11.isChecked) selectedKelas.add("11")
+            if (cbKelas12.isChecked) selectedKelas.add("12")
+            val updatedKelas = selectedKelas.joinToString(", ")
+
             // Validate required fields
-            if (updatedNama.isEmpty() || updatedJamMulai.isEmpty() || updatedJamSelesai.isEmpty()) {
-                Toast.makeText(this, "Harap isi semua field wajib", Toast.LENGTH_SHORT).show()
+            if (updatedJamMulai.isEmpty() || updatedJamSelesai.isEmpty() || updatedKelas.isEmpty()) {
+                val errorMsg = if (updatedKelas.isEmpty()) "Harap pilih minimal satu kelas" else "Harap isi semua field wajib"
+                Toast.makeText(this, errorMsg, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -525,8 +573,9 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
                         updatedNama = updatedNama,
                         updatedJamMulai = updatedJamMulai,
                         updatedJamSelesai = updatedJamSelesai,
-                        updatedHari = updatedHari,
-                        updatedJurusan = updatedJurusan
+                        updatedHari = if (namaSholat.equals("Dhuha", ignoreCase = true)) "Semua Hari" else updatedHari,
+                        updatedJurusan = if (namaSholat.equals("Dhuha", ignoreCase = true)) "Semua Jurusan" else updatedJurusan,
+                        updatedKelas = updatedKelas
                     )
                 }
             )
@@ -590,7 +639,8 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
         updatedJamMulai: String,
         updatedJamSelesai: String,
         updatedHari: String,
-        updatedJurusan: String
+        updatedJurusan: String,
+        updatedKelas: String
     ) {
         // Show loading state
         Toast.makeText(this, "Menyimpan perubahan...", Toast.LENGTH_SHORT).show()
@@ -622,7 +672,8 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
                         jam_mulai = updatedJamMulai,
                         jam_selesai = updatedJamSelesai,
                         hari = if (updatedHari == "Semua Hari") item.hari else updatedHari,
-                        jurusan = if (updatedJurusan == "Semua Jurusan") item.jurusan else updatedJurusan.ifEmpty { null }
+                        jurusan = if (updatedJurusan == "Semua Jurusan") item.jurusan else updatedJurusan.ifEmpty { null },
+                        kelas = updatedKelas.ifEmpty { null }
                     )
 
                     repository.updateJadwalSholat(token, item.id, request).fold(
@@ -648,7 +699,8 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
                 jam_mulai = updatedJamMulai,
                 jam_selesai = updatedJamSelesai,
                 hari = updatedHari.ifEmpty { null },
-                jurusan = updatedJurusan.ifEmpty { null }
+                jurusan = updatedJurusan.ifEmpty { null },
+                kelas = updatedKelas.ifEmpty { null }
             )
 
             lifecycleScope.launch {
@@ -737,6 +789,114 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
         } catch (e: Exception) {
             false
         }
+    }
+
+    /**
+     * Show dialog to add new prayer schedule
+     */
+    private fun showTambahJadwalDialog() {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_tambah_jadwal, null)
+        
+        val actvJenisSholat = dialogView.findViewById<AutoCompleteTextView>(R.id.actvJenisSholat)
+        val actvHari = dialogView.findViewById<AutoCompleteTextView>(R.id.actvHari)
+        val actvJurusan = dialogView.findViewById<AutoCompleteTextView>(R.id.actvJurusan)
+        val cbKelas10 = dialogView.findViewById<android.widget.CheckBox>(R.id.cbKelas10)
+        val cbKelas11 = dialogView.findViewById<android.widget.CheckBox>(R.id.cbKelas11)
+        val cbKelas12 = dialogView.findViewById<android.widget.CheckBox>(R.id.cbKelas12)
+        val etJamMulai = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etJamMulai)
+        val etJamSelesai = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etJamSelesai)
+        val btnBatal = dialogView.findViewById<MaterialButton>(R.id.btnBatal)
+        val btnSimpan = dialogView.findViewById<MaterialButton>(R.id.btnSimpan)
+        val btnClose = dialogView.findViewById<ImageView>(R.id.btnClose)
+
+        // Setup Spinners
+        val jenisSholatOptions = listOf("Dhuha", "Dzuhur", "Jumat")
+        actvJenisSholat.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, jenisSholatOptions))
+        actvHari.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, daysOptions))
+        actvJurusan.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, jurusanOptions))
+
+        // Create dialog
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
+
+        btnClose.setOnClickListener { dialog.dismiss() }
+        btnBatal.setOnClickListener { dialog.dismiss() }
+
+        btnSimpan.setOnClickListener {
+            val jenisSholat = actvJenisSholat.text.toString().trim()
+            val hari = actvHari.text.toString().trim()
+            val jurusan = actvJurusan.text.toString().trim()
+            val jamMulai = etJamMulai.text.toString().trim()
+            val jamSelesai = etJamSelesai.text.toString().trim()
+
+            // Get selected Kelas
+            val selectedKelas = mutableListOf<String>()
+            if (cbKelas10.isChecked) selectedKelas.add("10")
+            if (cbKelas11.isChecked) selectedKelas.add("11")
+            if (cbKelas12.isChecked) selectedKelas.add("12")
+            val kelasStr = selectedKelas.joinToString(", ")
+
+            // Validation
+            if (jenisSholat.isEmpty()) {
+                Toast.makeText(this, "Pilih jenis sholat", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            if (hari.isEmpty() || hari == "Semua Hari") {
+                Toast.makeText(this, "Pilih hari yang spesifik", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            if (jamMulai.isEmpty() || jamSelesai.isEmpty()) {
+                Toast.makeText(this, "Isi jam mulai dan selesai", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            if (kelasStr.isEmpty()) {
+                Toast.makeText(this, "Pilih minimal satu kelas", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            if (!isValidTimeFormat(jamMulai) || !isValidTimeFormat(jamSelesai)) {
+                Toast.makeText(this, "Format waktu tidak valid (HH:mm)", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // Create Request
+            val request = com.xirpl2.SASMobile.model.JadwalSholatCreateRequest(
+                jenis_sholat = jenisSholat,
+                jam_mulai = jamMulai,
+                jam_selesai = jamSelesai,
+                hari = hari,
+                jurusan = if (jurusan == "Semua Jurusan") null else jurusan,
+                kelas = kelasStr
+            )
+
+            // Disable button
+            btnSimpan.isEnabled = false
+            btnSimpan.text = "MENYIMPAN..."
+
+            val token = getAuthToken()
+            lifecycleScope.launch {
+                repository.createJadwalSholat(token, request).fold(
+                    onSuccess = {
+                        runOnUiThread {
+                            Toast.makeText(this@JadwalSholatAdminActivity, "Jadwal berhasil ditambahkan!", Toast.LENGTH_SHORT).show()
+                            dialog.dismiss()
+                            loadJadwalList()
+                        }
+                    },
+                    onFailure = { error ->
+                        runOnUiThread {
+                            Toast.makeText(this@JadwalSholatAdminActivity, "Gagal: ${error.message}", Toast.LENGTH_SHORT).show()
+                            btnSimpan.isEnabled = true
+                            btnSimpan.text = "SIMPAN JADWAL"
+                        }
+                    }
+                )
+            }
+        }
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.show()
     }
 
     /**
