@@ -37,7 +37,7 @@ class BuatSandiBaruActivity : AppCompatActivity() {
         setContentView(R.layout.activity_buat_sandi_baru)
         window.statusBarColor = 0xFF2886D6.toInt()
         
-        // Set statusbar to dark themed (dark icons)
+        
         @Suppress("DEPRECATION")
         window.decorView.systemUiVisibility = android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
 
@@ -47,7 +47,7 @@ class BuatSandiBaruActivity : AppCompatActivity() {
             insets
         }
 
-        // Get data from intent
+        
         userNis = intent.getStringExtra("USER_NIS") ?: ""
         userOtp = intent.getStringExtra("USER_OTP") ?: ""
 
@@ -64,7 +64,7 @@ class BuatSandiBaruActivity : AppCompatActivity() {
             val passwordBaru = etPasswordBaru.text.toString()
             val konfirmPassword = etKonfirmPassword.text.toString()
 
-            // Validate empty password
+            
             if (passwordBaru.isEmpty()) {
                 MotionToast.createColorToast(
                     this,
@@ -79,7 +79,7 @@ class BuatSandiBaruActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Validate password length
+            
             if (passwordBaru.length < 6) {
                 MotionToast.createColorToast(
                     this,
@@ -94,7 +94,7 @@ class BuatSandiBaruActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Validate confirm password
+            
             if (konfirmPassword.isEmpty()) {
                 MotionToast.createColorToast(
                     this,
@@ -109,7 +109,7 @@ class BuatSandiBaruActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Validate passwords match
+            
             if (passwordBaru != konfirmPassword) {
                 MotionToast.createColorToast(
                     this,
@@ -124,7 +124,7 @@ class BuatSandiBaruActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Call reset password API
+            
             resetPassword(passwordBaru)
         }
     }
@@ -140,7 +140,7 @@ class BuatSandiBaruActivity : AppCompatActivity() {
                 MotionToast.LONG_DURATION,
                 null
             )
-            // Navigate back to forgot password screen
+            
             val intent = Intent(this, GantiKataSandi::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(intent)
@@ -174,7 +174,7 @@ class BuatSandiBaruActivity : AppCompatActivity() {
                             null
                         )
 
-                        // Navigate to login screen
+                        
                         val intent = Intent(this@BuatSandiBaruActivity, MasukActivity::class.java)
                         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         startActivity(intent)

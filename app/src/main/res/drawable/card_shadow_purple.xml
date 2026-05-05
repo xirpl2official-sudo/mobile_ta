@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     
-    <!-- Shadow layer (kiri) dengan warna ungu -->
+    
     <item android:right="3dp">
         <shape android:shape="rectangle">
             <corners android:radius="12dp"/>
-            <solid android:color="#DA3F92"/> <!-- Ungu transparan untuk shadow -->
+            <solid android:color="#DA3F92"/> 
         </shape>
     </item>
     
-    <!-- Card layer utama -->
+    
     <item android:left="4dp">
         <shape android:shape="rectangle">
             <corners android:radius="12dp"/>

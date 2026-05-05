@@ -35,10 +35,10 @@ class JadwalSholatAdapter(
         holder.tvNamaSholat.text = jadwal.namaSholat
         holder.tvJamSholat.text = "${jadwal.jamMulai} - ${jadwal.jamSelesai}"
 
-        // Set status badge dan background card berdasarkan enum
+        
         when (jadwal.status) {
             StatusSholat.SELESAI -> {
-                // Abu-abu untuk selesai
+                
                 holder.cardJadwalItem.setCardBackgroundColor(Color.TRANSPARENT)
                 holder.cardJadwalItem.setBackgroundResource(R.drawable.bg_status_gray)
 
@@ -47,9 +47,9 @@ class JadwalSholatAdapter(
                 holder.textStatusSholat.setTextColor(Color.WHITE)
             }
             StatusSholat.SEDANG_BERLANGSUNG -> {
-                // Nonaktifkan warna bawaan CardView
+                
                 holder.cardJadwalItem.setCardBackgroundColor(Color.TRANSPARENT)
-                // Gunakan drawable custom
+                
                 holder.cardJadwalItem.setBackgroundResource(R.drawable.bg_status_berlangsung)
 
                 holder.textStatusSholat.text = "Berlangsung"
@@ -57,12 +57,12 @@ class JadwalSholatAdapter(
                 holder.textStatusSholat.setTextColor(Color.WHITE)
             }
             StatusSholat.AKAN_DATANG -> {
-                // Nonaktifkan warna bawaan CardView
+                
                 holder.cardJadwalItem.setCardBackgroundColor(Color.TRANSPARENT)
-                // Gunakan drawable custom
+                
                 holder.cardJadwalItem.setBackgroundResource(R.drawable.bg_status_akandatang)
 
-                // Teks status
+                
                 holder.textStatusSholat.text = "Akan Datang"
                 holder.textStatusSholat.setBackgroundResource(R.drawable.bg_badge_akandatang)
                 holder.textStatusSholat.setTextColor(Color.WHITE)

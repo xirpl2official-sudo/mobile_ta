@@ -20,7 +20,7 @@
             android:padding="20dp"
             android:background="@android:color/white">
 
-            <!-- Title & Close -->
+            
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -45,7 +45,7 @@
                     app:tint="#64748B"/>
             </RelativeLayout>
 
-            <!-- Form Cari Siswa -->
+            
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -90,7 +90,7 @@
                 android:textSize="11sp"
                 android:layout_marginBottom="16dp"/>
 
-            <!-- Tanggal -->
+            
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -126,7 +126,7 @@
                     android:focusable="false" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Jadwal Sholat -->
+            
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -160,7 +160,7 @@
                     android:inputType="none" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Status Kehadiran -->
+            
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -224,7 +224,7 @@
                     android:textStyle="bold" />
             </RadioGroup>
 
-            <!-- Keterangan -->
+            
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -259,7 +259,7 @@
                     android:inputType="textMultiLine" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Submit -->
+            
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSimpan"
                 android:layout_width="match_parent"

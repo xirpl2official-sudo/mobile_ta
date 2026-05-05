@@ -18,9 +18,9 @@
         android:textColor="#000000"
         android:layout_marginBottom="16dp" />
 
-    <!-- Name is redundant as it's shown in title -->
+    
 
-    <!-- Hari Dropdown -->
+    
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -47,7 +47,7 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Jurusan Dropdown -->
+    
     <TextView
         android:id="@+id/tvJurusanLabel"
         android:layout_width="wrap_content"
@@ -75,7 +75,7 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Kelas Selection (Multi-select) -->
+    
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -114,7 +114,7 @@
 
     </GridLayout>
 
-    <!-- Validation Status Indicator -->
+    
     <LinearLayout
         android:id="@+id/validationStatusContainer"
         android:layout_width="match_parent"
@@ -142,7 +142,7 @@
 
     </LinearLayout>
 
-    <!-- Jam Mulai -->
+    
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -167,7 +167,7 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Jam Selesai -->
+    
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -192,7 +192,7 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Buttons -->
+    
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -8,9 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.xirpl2.SASMobile.R
 import com.xirpl2.SASMobile.model.AbsensiStaffItem
 
-/**
- * Adapter for displaying attendance records in the Laporan (Report) table
- */
 class LaporanAbsensiAdapter(
     private var items: List<AbsensiStaffItem> = emptyList()
 ) : RecyclerView.Adapter<LaporanAbsensiAdapter.LaporanViewHolder>() {
@@ -33,12 +30,12 @@ class LaporanAbsensiAdapter(
     override fun onBindViewHolder(holder: LaporanViewHolder, position: Int) {
         val item = items[position]
         
-        // Format tanggal (dari "2025-01-28" ke "28/01/2025")
+        
         holder.tvTanggal.text = formatTanggal(item.tanggal)
         holder.tvNis.text = item.nis
         holder.tvNama.text = item.nama_siswa
         
-        // Format kelas with jurusan
+        
         val kelasDisplay = buildString {
             append(item.kelas ?: "")
             if (!item.jurusan.isNullOrEmpty()) {
@@ -48,10 +45,10 @@ class LaporanAbsensiAdapter(
         }
         holder.tvKelas.text = kelasDisplay
         
-        // Jenis sholat
+        
         holder.tvSholat.text = item.jenis_sholat?.replaceFirstChar { it.uppercase() } ?: "-"
         
-        // Set status with colored background
+        
         val status = item.status.lowercase()
         holder.tvStatus.text = status.replaceFirstChar { it.uppercase() }
         
@@ -67,9 +64,6 @@ class LaporanAbsensiAdapter(
 
     override fun getItemCount(): Int = items.size
 
-    /**
-     * Format tanggal dari "2025-01-28" ke "28/01/2025"
-     */
     private fun formatTanggal(tanggal: String): String {
         return try {
             val parts = tanggal.split("-")
@@ -83,17 +77,11 @@ class LaporanAbsensiAdapter(
         }
     }
 
-    /**
-     * Update the adapter with new data
-     */
     fun updateData(newItems: List<AbsensiStaffItem>) {
         items = newItems
         notifyDataSetChanged()
     }
 
-    /**
-     * Clear all data
-     */
     fun clearData() {
         items = emptyList()
         notifyDataSetChanged()

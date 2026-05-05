@@ -1,11 +1,11 @@
 package com.xirpl2.SASMobile
 
+import android.util.Log
 import android.app.DatePickerDialog
 import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,7 +34,7 @@ class InputIzinDialogFragment : DialogFragment() {
     private val TAG = "InputIzinDialog"
     private val repository = BerandaRepository()
 
-    // Views
+    
     private lateinit var actvSiswa: AutoCompleteTextView
     private lateinit var tvSelectedSiswa: TextView
     private lateinit var etTanggal: TextInputEditText
@@ -44,23 +44,23 @@ class InputIzinDialogFragment : DialogFragment() {
     private lateinit var btnSimpan: MaterialButton
     private lateinit var btnClose: ImageView
 
-    // Data
+    
     private var selectedSiswa: SiswaItem? = null
-    private var selectedDate: String = "" // YYYY-MM-DD
+    private var selectedDate: String = "" 
     private var jadwalList: List<JadwalSholatData> = emptyList()
     private var selectedJadwalId: Int? = null
     private var selectedJenisSholat: String? = null
 
-    // Search
+    
     private var searchJob: Job? = null
     private var lastSearchResults: List<SiswaItem> = emptyList()
 
-    // Callback for when data is saved
+    
     var onDismissCallback: (() -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Make dialog background transparent to show the rounded card
+        
         setStyle(STYLE_NO_TITLE, R.style.TransparentDialog)
     }
 
@@ -74,11 +74,11 @@ class InputIzinDialogFragment : DialogFragment() {
         setupListeners()
         setupSearchSiswa()
         
-        // Default date = today
+        
         val calendar = Calendar.getInstance()
         updateDate(calendar)
         
-        // Load initial jadwal
+        
         loadJadwalSholat()
     }
 
@@ -123,7 +123,6 @@ class InputIzinDialogFragment : DialogFragment() {
         
         selectedJadwalId = match?.id
         if (selectedJadwalId == null) {
-            Log.w(TAG, "No matching schedule for $selectedJenisSholat and jurusan $targetJurusan")
         }
     }
     
@@ -295,7 +294,7 @@ class InputIzinDialogFragment : DialogFragment() {
 
     override fun onStart() {
         super.onStart()
-        // Set dialog width to match parent with margins
+        
         dialog?.window?.setLayout(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT

@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:padding="16dp">
 
-        <!-- Left Icon Container -->
+        
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/iconContainer"
             android:layout_width="48dp"

@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Base64
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
@@ -25,16 +24,6 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
-/**
- * Activity untuk Staff (Admin/Guru/Wali Kelas) menampilkan QR Code
- * Staff menampilkan QR code ini di layar/proyektor untuk dipindai oleh siswa
- * 
- * Workflow:
- * 1. Staff membuka activity ini saat waktu sholat
- * 2. QR code ditampilkan di layar/proyektor
- * 3. Siswa memindai QR code untuk mencatat kehadiran mereka
- * 4. QR code berlaku selama 5 menit, auto-refresh saat expired
- */
 class StaffQRActivity : AppCompatActivity() {
 
     private lateinit var ivQRCode: ImageView
@@ -55,11 +44,6 @@ class StaffQRActivity : AppCompatActivity() {
     
     private val TAG = "StaffQRActivity"
 
-    /**
-     * Allowed prayer types for QR generation
-     * Only Dhuha, Dzuhur, and Jumat are allowed
-     * Other prayers (Ashar, Maghrib, Isya, Shubuh) are NOT allowed
-     */
     private val allowedPrayers = JadwalSholatHelper.ALLOWED_PRAYERS
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,7 +57,7 @@ class StaffQRActivity : AppCompatActivity() {
         initializeViews()
         setupClickListeners()
         
-        // Load QR code on start
+        
         loadQRCode()
     }
 
@@ -91,17 +75,17 @@ class StaffQRActivity : AppCompatActivity() {
     }
 
     private fun setupClickListeners() {
-        // Back button
+        
         findViewById<ImageView>(R.id.btnBack).setOnClickListener {
             finish()
         }
 
-        // Refresh button
+        
         btnRefresh.setOnClickListener {
             loadQRCode()
         }
 
-        // Retry button in error state
+        
         findViewById<MaterialButton>(R.id.btnRetry).setOnClickListener {
             loadQRCode()
         }
@@ -110,14 +94,14 @@ class StaffQRActivity : AppCompatActivity() {
     private fun findUpcomingPrayerFromAPI(jadwalList: List<JadwalSholatData>): JadwalSholat? {
         val hariIni = getHariIni()
         
-        // Find first prayer that is upcoming or currently active AND matches today's day
+        
         for (jadwal in jadwalList) {
-            // Skip if not allowed prayer
+            
             if (allowedPrayers.none { it.equals(jadwal.jenis_sholat, ignoreCase = true) }) {
                 continue
             }
 
-            // Skip if hari doesn't match and it's not a daily schedule (null)
+            
             if (jadwal.hari != null && !jadwal.hari.equals(hariIni, ignoreCase = true)) {
                 continue
             }
@@ -135,8 +119,8 @@ class StaffQRActivity : AppCompatActivity() {
             }
         }
         
-        // If no specific schedule found, try finding one specifically for today even if SELESAI
-        // to avoid falling back to a different day's schedule
+        
+        
         val todaySchedules = jadwalList.filter { 
             it.hari == null || it.hari.equals(hariIni, ignoreCase = true) 
         }
@@ -153,9 +137,6 @@ class StaffQRActivity : AppCompatActivity() {
         }
     }
     
-    /**
-     * Get current day name in Indonesian (Senin, Selasa, etc.)
-     */
     private fun getHariIni(): String {
         val calendar = Calendar.getInstance()
         return when (calendar.get(Calendar.DAY_OF_WEEK)) {
@@ -170,22 +151,19 @@ class StaffQRActivity : AppCompatActivity() {
         }
     }
     
-    /**
-     * Get status from API times
-     */
     private fun getStatusFromAPI(jamMulai: String, jamSelesai: String): StatusSholat {
         val now = Calendar.getInstance()
         val currentHour = now.get(Calendar.HOUR_OF_DAY)
         val currentMinute = now.get(Calendar.MINUTE)
         val currentTimeInMinutes = currentHour * 60 + currentMinute
         
-        // Parse jam mulai
+        
         val mulaiParts = jamMulai.split(":")
         val mulaiHour = mulaiParts[0].toInt()
         val mulaiMinute = mulaiParts[1].toInt()
         val mulaiInMinutes = mulaiHour * 60 + mulaiMinute
         
-        // Parse jam selesai
+        
         val selesaiParts = jamSelesai.split(":")
         val selesaiHour = selesaiParts[0].toInt()
         val selesaiMinute = selesaiParts[1].toInt()
@@ -209,10 +187,10 @@ class StaffQRActivity : AppCompatActivity() {
         showLoading()
         
         lifecycleScope.launch {
-            // First, fetch the jadwal list from API
+            
             berandaRepository.getJadwalSholat(token).fold(
                 onSuccess = { jadwalList ->
-                    // Find the upcoming prayer from API data
+                    
                     val upcomingPrayer = findUpcomingPrayerFromAPI(jadwalList)
                     
                     if (upcomingPrayer == null) {
@@ -222,15 +200,15 @@ class StaffQRActivity : AppCompatActivity() {
                         return@fold
                     }
                     
-                    // Validate prayer type - only allow Dhuha, Dzuhur, Jumat
-                    //if (!allowedPrayers.contains(upcomingPrayer.namaSholat)) {
-                        //runOnUiThread {
-                            //showError("QR Code hanya tersedia untuk sholat Dhuha, Dhuhur, dan Jumat.\n\nSholat ${upcomingPrayer.namaSholat} tidak memerlukan QR Code.")
-                        //}
-                        //return@fold
-                    //}
                     
-                    // Check if prayer is currently active or upcoming
+                    
+                        
+                            
+                        
+                        
+                    
+                    
+                    
                     if (upcomingPrayer.status == StatusSholat.SELESAI) {
                         runOnUiThread {
                             showError("Waktu sholat ${upcomingPrayer.namaSholat} telah berakhir.\n\nQR Code tidak tersedia di luar waktu sholat.")
@@ -238,7 +216,7 @@ class StaffQRActivity : AppCompatActivity() {
                         return@fold
                     }
                     
-                    // Proceed to generate QR code
+                    
                     generateQRCode(token)
                 },
                 onFailure = { error ->
@@ -250,15 +228,12 @@ class StaffQRActivity : AppCompatActivity() {
         }
     }
     
-    /**
-     * Generate QR code after validation
-     */
     private fun generateQRCode(token: String) {
         lifecycleScope.launch {
             repository.generateQRCode(token).fold(
                 onSuccess = { qrData ->
                     runOnUiThread {
-                        // Double-check the returned prayer type from backend
+                        
                         if (!allowedPrayers.contains(qrData.jenis_sholat)) {
                             showError("QR Code hanya tersedia untuk sholat Dhuha, Dhuhur, dan Jumat.")
                             return@runOnUiThread
@@ -270,7 +245,6 @@ class StaffQRActivity : AppCompatActivity() {
                     }
                 },
                 onFailure = { error ->
-                    Log.e(TAG, "Error generating QR code: ${error.message}")
                     runOnUiThread {
                         showError(error.message ?: "Gagal generate QR code")
                     }
@@ -280,10 +254,10 @@ class StaffQRActivity : AppCompatActivity() {
     }
 
     private fun displayQRCode(qrData: QRCodeData) {
-        // Display prayer type
+        
         tvJenisSholat.text = "Sholat ${qrData.jenis_sholat}"
         
-        // Decode and display QR code image
+        
         val bitmap = decodeBase64ToBitmap(qrData.qr_code)
         if (bitmap != null) {
             ivQRCode.setImageBitmap(bitmap)
@@ -292,25 +266,21 @@ class StaffQRActivity : AppCompatActivity() {
             return
         }
 
-        // Start countdown timer
+        
         startCountdown(qrData.expires_at)
         
-        // Update status for staff
+        
         tvStatus.text = "QR Code Aktif"
         tvStatus.setTextColor(getColor(android.R.color.holo_green_dark))
         
-        // Show instructions for staff
+        
         tvInstructions.text = "Tampilkan QR code ini di layar/proyektor.\nSiswa dapat memindai untuk absensi."
         tvInstructions.visibility = View.VISIBLE
     }
 
-    /**
-     * Decode base64 image string to Bitmap
-     * Format: "data:image/png;base64,[PNG_DATA]"
-     */
     private fun decodeBase64ToBitmap(base64String: String): Bitmap? {
         return try {
-            // Remove the data URI prefix if present
+            
             val pureBase64 = if (base64String.contains(",")) {
                 base64String.substringAfter(",")
             } else {
@@ -320,20 +290,16 @@ class StaffQRActivity : AppCompatActivity() {
             val decodedBytes = Base64.decode(pureBase64, Base64.DEFAULT)
             BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
         } catch (e: Exception) {
-            Log.e(TAG, "Error decoding base64: ${e.message}")
             null
         }
     }
 
-    /**
-     * Start countdown timer based on expiry time
-     */
     private fun startCountdown(expiresAt: String) {
-        // Cancel any existing timer
+        
         countDownTimer?.cancel()
         
         try {
-            // Parse expiry time (ISO 8601 format)
+            
             val expiryTime = parseExpiryTime(expiresAt)
             val currentTime = System.currentTimeMillis()
             val remainingTime = expiryTime - currentTime
@@ -349,7 +315,7 @@ class StaffQRActivity : AppCompatActivity() {
                     val seconds = (millisUntilFinished / 1000) % 60
                     tvCountdown.text = String.format("Berlaku: %02d:%02d", minutes, seconds)
                     
-                    // Change color when time is running low (< 1 minute)
+                    
                     if (millisUntilFinished < 60000) {
                         tvCountdown.setTextColor(getColor(android.R.color.holo_red_light))
                     } else {
@@ -363,27 +329,22 @@ class StaffQRActivity : AppCompatActivity() {
             }.start()
             
         } catch (e: Exception) {
-            Log.e(TAG, "Error parsing expiry time: ${e.message}")
             tvCountdown.text = "Waktu tidak tersedia"
         }
     }
 
-    /**
-     * Parse ISO 8601 expiry time string to milliseconds
-     */
     private fun parseExpiryTime(expiresAt: String): Long {
         return try {
-            // Try ISO 8601 format with Z suffix
+            
             val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
             format.timeZone = TimeZone.getTimeZone("UTC")
             format.parse(expiresAt)?.time ?: 0L
         } catch (e: Exception) {
             try {
-                // Try alternative format with timezone offset
+                
                 val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault())
                 format.parse(expiresAt)?.time ?: 0L
             } catch (e2: Exception) {
-                Log.e(TAG, "Error parsing expiry time: ${e2.message}")
                 0L
             }
         }
@@ -396,13 +357,13 @@ class StaffQRActivity : AppCompatActivity() {
         tvStatus.setTextColor(getColor(android.R.color.holo_red_dark))
         tvInstructions.text = "Tekan tombol refresh untuk generate QR code baru"
         
-        // Dim the QR code to indicate it's expired
+        
         ivQRCode.alpha = 0.5f
         
-        // Show refresh button prominently
+        
         btnRefresh.visibility = View.VISIBLE
         
-        // Auto-refresh after 2 seconds
+        
         android.os.Handler(mainLooper).postDelayed({
             if (!isFinishing && !isDestroyed) {
                 loadQRCode()

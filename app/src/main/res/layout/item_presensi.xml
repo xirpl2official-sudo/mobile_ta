@@ -6,7 +6,7 @@
     android:gravity="center_vertical"
     android:background="@android:color/white">
 
-    <!-- NO -->
+    
     <TextView
         android:id="@+id/tvNo"
         android:layout_width="40dp"
@@ -17,7 +17,7 @@
         android:gravity="center"
         android:paddingHorizontal="4dp" />
 
-    <!-- NIS -->
+    
     <TextView
         android:id="@+id/tvNis"
         android:layout_width="100dp"
@@ -28,7 +28,7 @@
         android:gravity="start"
         android:paddingHorizontal="8dp" />
 
-    <!-- Nama Siswa -->
+    
     <TextView
         android:id="@+id/tvNama"
         android:layout_width="140dp"
@@ -41,7 +41,7 @@
         android:maxLines="1"
         android:paddingHorizontal="8dp" />
 
-    <!-- Kelas -->
+    
     <TextView
         android:id="@+id/tvKelas"
         android:layout_width="70dp"
@@ -52,7 +52,7 @@
         android:gravity="center"
         android:paddingHorizontal="4dp" />
 
-    <!-- Jenis Sholat -->
+    
     <TextView
         android:id="@+id/tvJenisSholat"
         android:layout_width="80dp"
@@ -63,7 +63,7 @@
         android:gravity="center"
         android:paddingHorizontal="4dp" />
 
-    <!-- Status Absensi Badge -->
+    
     <TextView
         android:id="@+id/tvStatus"
         android:layout_width="70dp"

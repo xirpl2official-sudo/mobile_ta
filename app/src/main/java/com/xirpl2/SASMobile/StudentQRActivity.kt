@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Base64
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
@@ -21,10 +20,6 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
-/**
- * Activity untuk menampilkan QR Code siswa
- * Siswa dapat menunjukkan QR code ini untuk dipindai oleh guru/admin
- */
 class StudentQRActivity : AppCompatActivity() {
 
     private lateinit var ivQRCode: ImageView
@@ -54,7 +49,7 @@ class StudentQRActivity : AppCompatActivity() {
         initializeViews()
         setupClickListeners()
         
-        // Load QR code on start
+        
         loadQRCode()
     }
 
@@ -71,17 +66,17 @@ class StudentQRActivity : AppCompatActivity() {
     }
 
     private fun setupClickListeners() {
-        // Back button
+        
         findViewById<ImageView>(R.id.btnBack).setOnClickListener {
             finish()
         }
 
-        // Refresh button
+        
         btnRefresh.setOnClickListener {
             loadQRCode()
         }
 
-        // Retry button in error state
+        
         findViewById<MaterialButton>(R.id.btnRetry).setOnClickListener {
             loadQRCode()
         }
@@ -107,7 +102,6 @@ class StudentQRActivity : AppCompatActivity() {
                     }
                 },
                 onFailure = { error ->
-                    Log.e(TAG, "Error generating QR code: ${error.message}")
                     runOnUiThread {
                         showError(error.message ?: "Gagal generate QR code")
                     }
@@ -117,10 +111,10 @@ class StudentQRActivity : AppCompatActivity() {
     }
 
     private fun displayQRCode(qrData: QRCodeData) {
-        // Display prayer type
+        
         tvJenisSholat.text = "Sholat ${qrData.jenis_sholat}"
         
-        // Decode and display QR code image
+        
         val bitmap = decodeBase64ToBitmap(qrData.qr_code)
         if (bitmap != null) {
             ivQRCode.setImageBitmap(bitmap)
@@ -129,21 +123,17 @@ class StudentQRActivity : AppCompatActivity() {
             return
         }
 
-        // Start countdown timer
+        
         startCountdown(qrData.expires_at)
         
-        // Update status
+        
         tvStatus.text = "Tunjukkan QR code ini ke guru"
         tvStatus.setTextColor(getColor(R.color.text_secondary))
     }
 
-    /**
-     * Decode base64 image string to Bitmap
-     * Format: "data:image/png;base64,[PNG_DATA]"
-     */
     private fun decodeBase64ToBitmap(base64String: String): Bitmap? {
         return try {
-            // Remove the data URI prefix if present
+            
             val pureBase64 = if (base64String.contains(",")) {
                 base64String.substringAfter(",")
             } else {
@@ -153,20 +143,16 @@ class StudentQRActivity : AppCompatActivity() {
             val decodedBytes = Base64.decode(pureBase64, Base64.DEFAULT)
             BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
         } catch (e: Exception) {
-            Log.e(TAG, "Error decoding base64: ${e.message}")
             null
         }
     }
 
-    /**
-     * Start countdown timer based on expiry time
-     */
     private fun startCountdown(expiresAt: String) {
-        // Cancel any existing timer
+        
         countDownTimer?.cancel()
         
         try {
-            // Parse expiry time (ISO 8601 format)
+            
             val expiryTime = parseExpiryTime(expiresAt)
             val currentTime = System.currentTimeMillis()
             val remainingTime = expiryTime - currentTime
@@ -182,7 +168,7 @@ class StudentQRActivity : AppCompatActivity() {
                     val seconds = (millisUntilFinished / 1000) % 60
                     tvCountdown.text = String.format("Berlaku: %02d:%02d", minutes, seconds)
                     
-                    // Change color when time is running low (< 1 minute)
+                    
                     if (millisUntilFinished < 60000) {
                         tvCountdown.setTextColor(getColor(android.R.color.holo_red_light))
                     } else {
@@ -196,27 +182,22 @@ class StudentQRActivity : AppCompatActivity() {
             }.start()
             
         } catch (e: Exception) {
-            Log.e(TAG, "Error parsing expiry time: ${e.message}")
             tvCountdown.text = "Waktu tidak tersedia"
         }
     }
 
-    /**
-     * Parse ISO 8601 expiry time string to milliseconds
-     */
     private fun parseExpiryTime(expiresAt: String): Long {
         return try {
-            // Try ISO 8601 format with Z suffix
+            
             val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
             format.timeZone = TimeZone.getTimeZone("UTC")
             format.parse(expiresAt)?.time ?: 0L
         } catch (e: Exception) {
             try {
-                // Try alternative format with timezone offset
+                
                 val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault())
                 format.parse(expiresAt)?.time ?: 0L
             } catch (e2: Exception) {
-                Log.e(TAG, "Error parsing expiry time: ${e2.message}")
                 0L
             }
         }
@@ -228,10 +209,10 @@ class StudentQRActivity : AppCompatActivity() {
         tvStatus.text = "Tekan tombol refresh untuk mendapatkan QR code baru"
         tvStatus.setTextColor(getColor(android.R.color.holo_orange_dark))
         
-        // Dim the QR code to indicate it's expired
+        
         ivQRCode.alpha = 0.5f
         
-        // Show refresh button prominently
+        
         btnRefresh.visibility = View.VISIBLE
     }
 

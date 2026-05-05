@@ -31,7 +31,7 @@ class DhuhaScheduleAdapter(
             notifyItemRangeChanged(0, size)
         }
 
-    // Pair of rowIndex and slotIndex (1 or 2)
+    
     private var selectedItem: Pair<Int, Int>? = null
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -51,42 +51,42 @@ class DhuhaScheduleAdapter(
         val clickedData = if (slotIndex == 1) row.slot1 else row.slot2
 
         if (!isEditMode) {
-            // Original behavior: open dialog
+            
             if (clickedData != null) {
                 onEditClick?.invoke(clickedData.id, "Dhuha")
             }
             return
         }
 
-        // In edit mode: first selection
+        
         if (selectedItem == null) {
-            if (clickedData == null) return // Can't start a swap from an empty slot
+            if (clickedData == null) return 
             selectedItem = Pair(rowIndex, slotIndex)
             notifyItemChanged(rowIndex)
         } else {
-            // Second selection: could be another item or an empty slot
+            
             val firstSelection = selectedItem!!
             if (firstSelection.first == rowIndex && firstSelection.second == slotIndex) {
-                // Deselect if same item clicked
+                
                 selectedItem = null
                 notifyItemChanged(rowIndex)
                 return
             }
 
-            // Execute Swap or Move Logic
+            
             val row1 = rows[firstSelection.first]
             val data1 = if (firstSelection.second == 1) row1.slot1 else row1.slot2
             val row2 = rows[rowIndex]
             val data2 = if (slotIndex == 1) row2.slot1 else row2.slot2
 
             if (data1 != null) {
-                // UPDATE POSITIONS AND HARI PROPERTY
-                // Update Slot in Row 1
+                
+                
                 if (firstSelection.second == 1) row1.slot1 = data2 else row1.slot2 = data2
-                // Update Slot in Row 2
+                
                 if (slotIndex == 1) row2.slot1 = data1 else row2.slot2 = data1
 
-                // Important: Update the 'hari' property for API persistence
+                
                 data1.hari = row2.day
                 onModified(data1)
                 
@@ -124,11 +124,11 @@ class DhuhaScheduleAdapter(
         } else {
             val isSelected = selectedItem?.first == rowIndex && selectedItem?.second == slotIndex
             if (isSelected) {
-                // "changes the text color ... to Blue"
-                tv.setTextColor(Color.parseColor("#2196F3")) // Selected (Blue)
+                
+                tv.setTextColor(Color.parseColor("#2196F3")) 
             } else {
-                // "text color ... reverted back to Black"
-                tv.setTextColor(Color.parseColor("#000000")) // Default (Black)
+                
+                tv.setTextColor(Color.parseColor("#000000")) 
             }
         }
     }

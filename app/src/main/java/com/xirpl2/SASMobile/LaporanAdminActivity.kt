@@ -2,7 +2,6 @@ package com.xirpl2.SASMobile
 
 import android.app.DatePickerDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -33,48 +32,40 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-/**
- * Activity untuk menampilkan Laporan Presensi
- * Fitur:
- * - Filter berdasarkan tanggal awal, tanggal akhir, jurusan, dan kelas
- * - Ringkasan statistik kehadiran (persentase, izin, sakit, alpha)
- * - Tabel data absensi yang bisa di-scroll horizontal
- * - Pagination / Infinite Scroll untuk performa yang lebih baik
- */
 class LaporanAdminActivity : BaseAdminActivity() {
 
     private val TAG = "LaporanAdminActivity"
 
-    // Views - Scroll Container
+    
     private lateinit var mainScrollView: NestedScrollView
 
-    // Views - Filter
+    
     private lateinit var tvTanggalAwal: TextView
     private lateinit var tvTanggalAkhir: TextView
     private lateinit var tvFilterJurusan: TextView
     private lateinit var tvFilterKelas: TextView
 
-    // Views - Statistik
+    
     private lateinit var progressKehadiran: ProgressBar
-    private lateinit var tvCountKehadiran: TextView // Renamed from tvPercentKehadiran
+    private lateinit var tvCountKehadiran: TextView 
     private lateinit var tvCountIzin: TextView
     private lateinit var tvCountSakit: TextView
     private lateinit var tvCountAlpha: TextView
 
-    // Views - Data Absensi
+    
     private lateinit var tvDataAbsensiTitle: TextView
     private lateinit var progressLoading: ProgressBar
     private lateinit var tvEmptyState: TextView
     private lateinit var recyclerAbsensi: RecyclerView
 
-    // Buttons
-    // btnUnduhPDF removed
+    
+    
     private lateinit var btnExportExcel: MaterialButton
 
-    // Adapter
+    
     private lateinit var absensiAdapter: LaporanAbsensiAdapter
 
-    // Data & Pagination
+    
     private val allItems = mutableListOf<AbsensiStaffItem>()
     private var statistik: LaporanStatistik? = null
     
@@ -83,24 +74,24 @@ class LaporanAdminActivity : BaseAdminActivity() {
     private var totalItems = 0
     private var isLoading = false
     private var isLastPage = false
-    private val pageSize = 20 // Load lebih sedikit per batch untuk fluiditas UI
+    private val pageSize = 20 
     
     private var loadJob: Job? = null
 
-    // Filter states
+    
     private var selectedJurusan: String = "Semua Jurusan"
     private var selectedKelas: String = "Semua Kelas"
     private var tanggalAwal: Calendar = Calendar.getInstance().apply {
-        add(Calendar.DAY_OF_MONTH, -6) // Default: 7 hari terakhir (hari ini + 6 hari lalu)
+        add(Calendar.DAY_OF_MONTH, -6) 
     }
-    private var tanggalAkhir: Calendar = Calendar.getInstance() // Default: hari ini
+    private var tanggalAkhir: Calendar = Calendar.getInstance() 
 
-    // Available options for filters
+    
     private val fixedJurusanList = listOf("RPL", "TKJ", "TEI", "TAV", "BC", "TMT", "DKV", "ANM")
     private val jurusanOptions: List<String> = listOf("Semua Jurusan") + fixedJurusanList
     private val kelasOptions: List<String> = listOf("Semua Kelas", "X", "XI", "XII")
 
-    // Date format
+    
     private val displayDateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     private val apiDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
@@ -125,38 +116,38 @@ class LaporanAdminActivity : BaseAdminActivity() {
         setupButtons()
         setupInfiniteScroll()
         
-        // Update initial date display
+        
         updateDateDisplay()
 
-        // Load initial data
+        
         loadData(reset = true)
     }
 
     private fun initViews() {
-        // Main Scroll
+        
         mainScrollView = findViewById(R.id.mainScrollView)
 
-        // Filter views
+        
         tvTanggalAwal = findViewById(R.id.tvTanggalAwal)
         tvTanggalAkhir = findViewById(R.id.tvTanggalAkhir)
         tvFilterJurusan = findViewById(R.id.tvFilterJurusan)
         tvFilterKelas = findViewById(R.id.tvFilterKelas)
 
-        // Statistik views
+        
         progressKehadiran = findViewById(R.id.progressKehadiran)
-        tvCountKehadiran = findViewById(R.id.tvCountKehadiran) // Changed ID match
+        tvCountKehadiran = findViewById(R.id.tvCountKehadiran) 
         tvCountIzin = findViewById(R.id.tvCountIzin)
         tvCountSakit = findViewById(R.id.tvCountSakit)
         tvCountAlpha = findViewById(R.id.tvCountAlpha)
 
-        // Data Absensi views
+        
         tvDataAbsensiTitle = findViewById(R.id.tvDataAbsensiTitle)
         progressLoading = findViewById(R.id.progressLoading)
         tvEmptyState = findViewById(R.id.tvEmptyState)
         recyclerAbsensi = findViewById(R.id.recyclerAbsensi)
 
-        // Buttons
-        // btnUnduhPDF removed
+        
+        
         btnExportExcel = findViewById(R.id.btnExportExcel)
     }
 
@@ -165,17 +156,13 @@ class LaporanAdminActivity : BaseAdminActivity() {
         recyclerAbsensi.apply {
             layoutManager = LinearLayoutManager(this@LaporanAdminActivity)
             adapter = absensiAdapter
-            isNestedScrollingEnabled = false // Penting agar tidak konflik dengan NestedScrollView
+            isNestedScrollingEnabled = false 
         }
     }
     
-    /**
-     * Setup infinite scroll pada NestedScrollView
-     * Karena RecyclerView ada di dalam NestedScrollView, kita mendeteksi scroll pada NestedScrollView
-     */
     private fun setupInfiniteScroll() {
         mainScrollView.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener { v, _, scrollY, _, _ ->
-            // Cek jika scroll sudah di bawah
+            
             if (scrollY == (v.getChildAt(0).measuredHeight - v.measuredHeight)) {
                 if (!isLoading && !isLastPage) {
                     loadMoreData()
@@ -185,7 +172,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
     }
 
     private fun setupFilters() {
-        // Tanggal Awal - Date Picker
+        
         tvTanggalAwal.setOnClickListener {
             showDatePicker(tanggalAwal) { selectedDate ->
                 tanggalAwal = selectedDate
@@ -194,7 +181,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
             }
         }
 
-        // Tanggal Akhir - Date Picker
+        
         tvTanggalAkhir.setOnClickListener {
             showDatePicker(tanggalAkhir) { selectedDate ->
                 tanggalAkhir = selectedDate
@@ -203,7 +190,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
             }
         }
 
-        // Jurusan Filter
+        
         tvFilterJurusan.setOnClickListener {
             showFilterDialog("Pilih Jurusan", jurusanOptions, selectedJurusan) { selected ->
                 selectedJurusan = selected
@@ -212,7 +199,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
             }
         }
 
-        // Kelas Filter
+        
         tvFilterKelas.setOnClickListener {
             showFilterDialog("Pilih Kelas", kelasOptions, selectedKelas) { selected ->
                 selectedKelas = selected
@@ -223,13 +210,13 @@ class LaporanAdminActivity : BaseAdminActivity() {
     }
 
     private fun setupButtons() {
-        // btnUnduhPDF removed
+        
 
-        // Role check for report access
+        
         val role = getSharedPreferences("UserData", android.content.Context.MODE_PRIVATE)
             .getString("user_role", "")?.lowercase() ?: ""
         
-        // Both Guru and Wali Kelas can see and export reports according to latest request
+        
         btnExportExcel.setOnClickListener {
             downloadExcelReport()
         }
@@ -285,7 +272,6 @@ class LaporanAdminActivity : BaseAdminActivity() {
                 withContext(Dispatchers.Main) {
                     showLoading(false)
                     btnExportExcel.isEnabled = true
-                    Log.e(TAG, "Download error", e)
                     Toast.makeText(this@LaporanAdminActivity, "Terjadi kesalahan: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -314,7 +300,6 @@ class LaporanAdminActivity : BaseAdminActivity() {
                 true
             } ?: false
         } catch (e: Exception) {
-            Log.e(TAG, "Save file error", e)
             false
         }
     }
@@ -352,10 +337,6 @@ class LaporanAdminActivity : BaseAdminActivity() {
         tvTanggalAkhir.text = displayDateFormat.format(tanggalAkhir.time)
     }
 
-    /**
-     * Load data absensi
-     * @param reset Jika true, hapus data lama dan load dari page 1 (filter baru)
-     */
     private fun loadData(reset: Boolean) {
         val token = getAuthToken()
         if (token.isEmpty()) {
@@ -371,14 +352,14 @@ class LaporanAdminActivity : BaseAdminActivity() {
             isLastPage = false
             showLoading(true)
         } else {
-            // Loading more - show progress at bottom if needed, or just let default progress bar show
-            // Disini kita gunakan progress bar utama saja sederhana
+            
+            
             progressLoading.visibility = View.VISIBLE
         }
 
         isLoading = true
 
-        // Convert filter values to API parameters
+        
         val kelasApi = if (selectedKelas == "Semua Kelas") null else selectedKelas
         val jurusanApi = if (selectedJurusan == "Semua Jurusan") null else selectedJurusan
         val startDate = apiDateFormat.format(tanggalAwal.time)
@@ -386,7 +367,6 @@ class LaporanAdminActivity : BaseAdminActivity() {
 
         loadJob = lifecycleScope.launch {
             try {
-                Log.d(TAG, "Loading page $currentPage... limit=$pageSize")
                 
                 val response = RetrofitClient.apiService.getHistoryStaff(
                     token = "Bearer $token",
@@ -402,16 +382,16 @@ class LaporanAdminActivity : BaseAdminActivity() {
                     val respBody = response.body()
                     val dataWrapper = respBody?.data
 
-                    // Get statistik (only use from first page or accumulate? Usually first page stats are global)
+                    
                     if (reset) {
                         statistik = dataWrapper?.statistik
                     }
 
-                    // Get items
+                    
                     val newItems = dataWrapper?.absensi ?: emptyList()
                     allItems.addAll(newItems)
                     
-                    // Pagination info
+                    
                     val pagination = dataWrapper?.pagination
                     totalItems = pagination?.total_items ?: allItems.size
                     totalPages = pagination?.total_pages ?: 1
@@ -419,7 +399,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
                     if (pagination != null) {
                         isLastPage = currentPage >= totalPages
                     } else {
-                         // Fallback logic if pagination null
+                         
                         isLastPage = newItems.isEmpty() || newItems.size < pageSize
                     }
 
@@ -427,15 +407,15 @@ class LaporanAdminActivity : BaseAdminActivity() {
                         showLoading(false)
                         isLoading = false
                         
-                        // Update Data Views
+                        
                         absensiAdapter.updateData(allItems.toList())
                         
-                        // Update Statistik UI (only if reset/first load)
+                        
                         if (reset) {
                             updateStatistikDisplay()
                         }
                         
-                        // Update Headers
+                        
                         val currentCount = allItems.size
                         tvDataAbsensiTitle.text = "Data Absensi ($currentCount / $totalItems entri)"
 
@@ -445,13 +425,11 @@ class LaporanAdminActivity : BaseAdminActivity() {
                             hideEmptyState()
                         }
                         
-                         Log.d(TAG, "Loaded page $currentPage. Items: ${newItems.size}. Total: $currentCount/$totalItems")
                     }
                 } else {
                     runOnUiThread {
                         showLoading(false)
                         isLoading = false
-                        Log.e(TAG, "API Error: ${response.code()} - ${response.message()}")
                         if (allItems.isEmpty()) {
                             showEmptyState("Gagal memuat data: ${response.message()}")
                         } else {
@@ -463,7 +441,6 @@ class LaporanAdminActivity : BaseAdminActivity() {
                 runOnUiThread {
                     showLoading(false)
                     isLoading = false
-                    Log.e(TAG, "Exception: ${e.message}", e)
                     if (allItems.isEmpty()) {
                         showEmptyState("Terjadi kesalahan: ${e.message}")
                     }
@@ -480,19 +457,19 @@ class LaporanAdminActivity : BaseAdminActivity() {
 
     private fun updateStatistikDisplay() {
         statistik?.let { stat ->
-            // Update kehadiran progress visual (still using percentage for the circle)
+            
             val percentKehadiran = stat.persentase_hadir
             progressKehadiran.progress = percentKehadiran.toInt().coerceIn(0, 100)
             
-            // Update text to show COUNT (total hadir) instead of percentage
+            
             tvCountKehadiran.text = stat.total_hadir.toString()
 
-            // Update counts
+            
             tvCountIzin.text = stat.total_izin.toString()
             tvCountSakit.text = stat.total_sakit.toString()
             tvCountAlpha.text = stat.total_alpha.toString()
         } ?: run {
-            // Default values if no statistik
+            
             progressKehadiran.progress = 0
             tvCountKehadiran.text = "0"
             tvCountIzin.text = "0"

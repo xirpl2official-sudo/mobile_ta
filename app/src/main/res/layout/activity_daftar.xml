@@ -115,7 +115,7 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.41" />
 
-    <!-- NIS/NIP Field -->
+    
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:id="@+id/nisLayout"
@@ -152,7 +152,7 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Email Field -->
+    
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:id="@+id/emailLayout"
@@ -188,7 +188,7 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Password Field -->
+    
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:id="@+id/passwordLayout2"

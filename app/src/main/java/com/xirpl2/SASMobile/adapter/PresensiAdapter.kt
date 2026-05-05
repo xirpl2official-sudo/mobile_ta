@@ -8,9 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.xirpl2.SASMobile.R
 import com.xirpl2.SASMobile.model.AbsensiStaffItem
 
-/**
- * Adapter for displaying attendance records in PresensiSholatAdminActivity
- */
 class PresensiAdapter(
     private var items: List<AbsensiStaffItem> = emptyList()
 ) : RecyclerView.Adapter<PresensiAdapter.PresensiViewHolder>() {
@@ -37,7 +34,7 @@ class PresensiAdapter(
         holder.tvNis.text = item.nis
         holder.tvNama.text = item.nama_siswa
         
-        // Format kelas with jurusan
+        
         val kelasDisplay = buildString {
             append(item.kelas ?: "")
             if (!item.jurusan.isNullOrEmpty()) {
@@ -47,10 +44,10 @@ class PresensiAdapter(
         }
         holder.tvKelas.text = kelasDisplay
 
-        // Set jenis sholat
+        
         holder.tvJenisSholat.text = item.jenis_sholat ?: "-"
         
-        // Set status with colored background
+        
         val status = item.status.lowercase()
         holder.tvStatus.text = status.replaceFirstChar { it.uppercase() }
         
@@ -66,17 +63,11 @@ class PresensiAdapter(
 
     override fun getItemCount(): Int = items.size
 
-    /**
-     * Update the adapter with new data
-     */
     fun updateData(newItems: List<AbsensiStaffItem>) {
         items = newItems
         notifyDataSetChanged()
     }
 
-    /**
-     * Clear all data
-     */
     fun clearData() {
         items = emptyList()
         notifyDataSetChanged()

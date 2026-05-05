@@ -1,12 +1,6 @@
 package com.xirpl2.SASMobile.model
 import com.google.gson.annotations.SerializedName
 
-/**
- * Response model untuk API Jadwal Sholat
- */
-/**
- * Response model untuk API Jadwal Sholat (Paginated)
- */
 data class JadwalSholatListResponse(
     val message: String,
     val data: List<JadwalSholatData>,
@@ -29,14 +23,11 @@ data class JadwalSholatData(
     val jam_mulai: String,
     @SerializedName("waktu_selesai")
     val jam_selesai: String,
-    var hari: String? = null, // Optional: jika API mengirim info hari
-    var jurusan: String? = null, // Optional: jurusan specific schedule
-    var kelas: String? = null // Optional: kelas specific schedule
+    var hari: String? = null, 
+    var jurusan: String? = null, 
+    var kelas: String? = null 
 )
 
-/**
- * Response model untuk GET jadwal sholat by ID
- */
 data class JadwalSholatDetailResponse(
     val message: String,
     val data: JadwalSholatDetail? = null
@@ -55,9 +46,6 @@ data class JadwalSholatDetail(
     val created_at: String? = null
 )
 
-/**
- * Request model untuk UPDATE jadwal sholat
- */
 data class JadwalSholatUpdateRequest(
     val jenis_sholat: String? = null,
     @SerializedName("waktu_mulai")
@@ -69,9 +57,6 @@ data class JadwalSholatUpdateRequest(
     val kelas: String? = null
 )
 
-/**
- * Request model untuk CREATE jadwal sholat
- */
 data class JadwalSholatCreateRequest(
     val jenis_sholat: String,
     @SerializedName("waktu_mulai")
@@ -85,9 +70,6 @@ data class JadwalSholatCreateRequest(
 
 
 
-/**
- * Response model untuk API Riwayat Absensi
- */
 data class RiwayatAbsensiResponse(
     val success: Boolean,
     val message: String,
@@ -98,13 +80,10 @@ data class RiwayatAbsensiData(
     val id: Int,
     val tanggal: String,
     val jenis_sholat: String,
-    val status: String, // "HADIR", "ALPHA", "SAKIT", "IZIN"
+    val status: String, 
     val waktu_absen: String? = null
 )
 
-/**
- * Response model untuk User Profile (untuk mendapatkan jenis kelamin)
- */
 data class UserProfileResponse(
     val success: Boolean,
     val message: String,
@@ -115,25 +94,17 @@ data class UserData(
     val id: Int,
     val nama: String,
     val nis: String,
-    val jenis_kelamin: String, // "L" atau "P"
+    val jenis_kelamin: String, 
     val kelas: String,
     val email: String? = null,
     val no_hp: String? = null
 )
 
-/**
- * Response wrapper untuk API Statistics (/api/statistics)
- * Format: {"message":"...", "data":{...}}
- */
 data class StatisticsResponse(
     val message: String,
     val data: StatisticsData
 )
 
-/**
- * Response model untuk API Statistics (/api/statistics)
- * Statistik kehadiran hari ini
- */
 data class StatisticsData(
     val tanggal: String,
     val total_siswa: Int,
@@ -150,9 +121,6 @@ data class StatisticsData(
     val rata_rata_kehadiran: Double
 )
 
-/**
- * Response model untuk Statistik Absensi
- */
 data class StatistikAbsensiResponse(
     val success: Boolean,
     val message: String,
@@ -168,19 +136,13 @@ data class StatistikData(
     val persentase_kehadiran: Float
 )
 
-/**
- * Request body untuk submit absensi
- */
 data class AbsensiRequest(
     val jadwal_sholat_id: Int,
     val latitude: Double,
     val longitude: Double,
-    val foto: String? = null // Base64 encoded image
+    val foto: String? = null 
 )
 
-/**
- * Response untuk submit absensi
- */
 data class AbsensiResponse(
     val success: Boolean,
     val message: String,
@@ -193,10 +155,6 @@ data class AbsensiData(
     val status: String
 )
 
-/**
- * Response model untuk API History Siswa (/api/history/siswa)
- * Mengambil riwayat absensi sholat untuk siswa yang sedang login per minggu
- */
 data class HistorySiswaResponse(
     val message: String,
     val data: HistorySiswaData? = null
@@ -218,14 +176,10 @@ data class AbsensiHistoryItem(
     val status: String = "ALPHA",
     val waktu_absen: String? = null
 ) {
-    // Helper to get the prayer name
+    
     fun getPrayerName(): String = jenis_sholat ?: "Unknown"
 }
 
-/**
- * Response model untuk API History Staff (/api/history/staff)
- * Untuk admin/guru/wali_kelas melihat riwayat absensi semua siswa
- */
 data class HistoryStaffResponse(
     val message: String,
     val data: HistoryStaffData? = null
@@ -238,9 +192,6 @@ data class HistoryStaffData(
     val absensi: List<AbsensiStaffItem> = emptyList()
 )
 
-/**
- * Statistik laporan dari handlers.LaporanStatistik
- */
 data class LaporanStatistik(
     val total_siswa: Int = 0,
     val total_absensi: Int = 0,
@@ -255,9 +206,6 @@ data class LaporanStatistik(
     val rata_rata_kehadiran: Double = 0.0
 )
 
-/**
- * Pagination info dari handlers.PaginationInfo
- */
 data class PaginationInfo(
     val page: Int = 1,
     val limit: Int = 20,
@@ -265,9 +213,6 @@ data class PaginationInfo(
     val total_items: Int = 0
 )
 
-/**
- * Filter history dari handlers.HistoryFilters
- */
 data class HistoryFilters(
     val start_date: String? = null,
     val end_date: String? = null,
@@ -277,9 +222,6 @@ data class HistoryFilters(
     val status: String? = null
 )
 
-/**
- * Item absensi staff dari handlers.AbsensiStaffItem
- */
 data class AbsensiStaffItem(
     val id_absen: Int = 0,
     val nis: String = "",
@@ -293,9 +235,6 @@ data class AbsensiStaffItem(
     val deskripsi: String? = null
 )
 
-/**
- * Data model untuk statistik absensi
- */
 data class StatistikStaffData(
     val total_siswa: Int = 0,
     val total_hadir: Int = 0,
@@ -304,9 +243,6 @@ data class StatistikStaffData(
     val total_alpha: Int = 0
 )
 
-/**
- * Response model untuk API /jadwal-sholat/dhuha-today
- */
 data class DhuhaTodayResponse(
     val message: String,
     val data: List<DhuhaJurusanData>
@@ -329,10 +265,6 @@ data class DhuhaJadwalData(
     val created_at: String
 )
 
-/**
- * Response model untuk API /notifications
- * Returns list of students who haven't marked attendance for active prayers
- */
 data class NotificationResponse(
     val message: String,
     val data: List<NotificationItem>,

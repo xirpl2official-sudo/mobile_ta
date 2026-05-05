@@ -33,7 +33,7 @@ class RiwayatAbsensiAdapter(
         holder.tvWaktu.text = riwayat.waktuAbsen ?: "-"
         holder.tvSholat.text = riwayat.namaSholat
 
-        // Set status dengan background dan warna yang berbeda
+        
         when (riwayat.status) {
             StatusAbsensi.HADIR -> {
                 holder.tvStatus.text = "Hadir"

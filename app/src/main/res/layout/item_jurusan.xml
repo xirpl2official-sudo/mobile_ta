@@ -15,7 +15,7 @@
         android:orientation="vertical"
         android:padding="@dimen/spacing_medium">
 
-        <!-- Label "Silahkan Hari Ini" -->
+        
         <TextView
             android:id="@+id/tvLabelHariIni"
             android:layout_width="wrap_content"
@@ -25,7 +25,7 @@
             android:textSize="@dimen/text_smkn2s"
             android:layout_marginBottom="@dimen/spacing_tiny" />
 
-        <!-- Nama Jurusan -->
+        
         <TextView
             android:id="@+id/tvNamaJurusan"
             android:layout_width="wrap_content"

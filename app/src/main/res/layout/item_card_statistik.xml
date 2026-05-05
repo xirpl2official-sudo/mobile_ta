@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:padding="16dp">
 
-        <!-- Icon -->
+        
         <ImageView
             android:id="@+id/ivIcon"
             android:layout_width="40dp"
@@ -24,7 +24,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
-        <!-- Value (Angka Besar) -->
+        
         <TextView
             android:id="@+id/tvValue"
             android:layout_width="0dp"
@@ -39,7 +39,7 @@
             app:layout_constraintTop_toBottomOf="@id/ivIcon"
             android:layout_marginTop="12dp" />
 
-        <!-- Label -->
+        
         <TextView
             android:id="@+id/tvLabel"
             android:layout_width="0dp"

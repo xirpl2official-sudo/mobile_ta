@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:openDrawer="start">
 
-    <!-- Main Content -->
+    
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main"
         android:layout_width="match_parent"
@@ -15,7 +15,7 @@
         android:background="@color/white"
         tools:context=".LaporanAdminActivity">
 
-        <!-- Vector Background untuk Toolbar -->
+        
         <View
             android:id="@+id/VectorAtasMenu"
             android:layout_width="0dp"
@@ -38,7 +38,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHeight_percent="0.08">
 
-            <!-- Icon Menu (Kiri) -->
+            
             <ImageView
                 android:id="@+id/iconMenu"
                 android:layout_width="0dp"
@@ -51,7 +51,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent" />
 
-            <!-- Logo Sekolah -->
+            
             <ImageView
                 android:id="@+id/logoSekolah"
                 android:layout_width="0dp"
@@ -65,7 +65,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:layout_marginStart="14dp" />
 
-            <!-- Text Laporan -->
+            
             <TextView
                 android:id="@+id/textDashboard"
                 android:layout_width="wrap_content"
@@ -80,7 +80,7 @@
                 app:layout_constraintVertical_chainStyle="packed"
                 android:layout_marginStart="10dp" />
 
-            <!-- Text Nama Sekolah -->
+            
             <TextView
                 android:id="@+id/textNamaSekolah"
                 android:layout_width="0dp"
@@ -98,7 +98,7 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!-- Content Area - Scrollable Content -->
+        
         <androidx.core.widget.NestedScrollView
             android:id="@+id/mainScrollView"
             android:layout_width="0dp"
@@ -115,7 +115,7 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <!-- Title: Laporan Presensi -->
+                
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -125,7 +125,7 @@
                     android:textStyle="bold"
                     android:layout_marginBottom="16dp" />
 
-                <!-- Filter Laporan Card -->
+                
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -149,7 +149,7 @@
                             android:textStyle="bold"
                             android:layout_marginBottom="12dp" />
 
-                        <!-- Tanggal Awal -->
+                        
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -170,7 +170,7 @@
                             android:textSize="14sp"
                             android:layout_marginBottom="12dp" />
 
-                        <!-- Tanggal Akhir -->
+                        
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -191,7 +191,7 @@
                             android:textSize="14sp"
                             android:layout_marginBottom="12dp" />
 
-                        <!-- Jurusan -->
+                        
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -213,7 +213,7 @@
                             android:textSize="14sp"
                             android:layout_marginBottom="12dp" />
 
-                        <!-- Kelas -->
+                        
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -238,7 +238,7 @@
 
                 </androidx.cardview.widget.CardView>
 
-                <!-- Ringkasan Periode Card -->
+                
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -253,7 +253,7 @@
                         android:orientation="vertical"
                         android:padding="16dp">
 
-                        <!-- Title with Icon -->
+                        
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -279,7 +279,7 @@
 
                         </LinearLayout>
 
-                        <!-- Stats Row -->
+                        
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -287,7 +287,7 @@
                             android:gravity="center"
                             android:layout_marginBottom="16dp">
 
-                            <!-- Kehadiran (Large Circle) -->
+                            
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -338,7 +338,7 @@
 
                             </LinearLayout>
 
-                            <!-- Izin -->
+                            
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -377,7 +377,7 @@
 
                         </LinearLayout>
 
-                        <!-- Stats Row 2 -->
+                        
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -385,7 +385,7 @@
                             android:gravity="center"
                             android:layout_marginBottom="16dp">
 
-                            <!-- Sakit -->
+                            
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -422,7 +422,7 @@
 
                             </LinearLayout>
 
-                            <!-- Alpha -->
+                            
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -461,13 +461,13 @@
 
                         </LinearLayout>
 
-                        <!-- Unduh Laporan PDF Button - Removed as requested -->
+                        
                         
                     </LinearLayout>
 
                 </androidx.cardview.widget.CardView>
 
-                <!-- Data Absensi Section -->
+                
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -497,7 +497,7 @@
 
                 </LinearLayout>
 
-                <!-- Loading Progress Bar -->
+                
                 <ProgressBar
                     android:id="@+id/progressLoading"
                     android:layout_width="48dp"
@@ -505,7 +505,7 @@
                     android:layout_gravity="center"
                     android:visibility="gone" />
 
-                <!-- Empty State Text -->
+                
                 <TextView
                     android:id="@+id/tvEmptyState"
                     android:layout_width="match_parent"
@@ -517,7 +517,7 @@
                     android:visibility="gone"
                     android:padding="24dp" />
 
-                <!-- Horizontal Scrollable Table -->
+                
                 <HorizontalScrollView
                     android:id="@+id/tableHorizontalScrollView"
                     android:layout_width="match_parent"
@@ -529,7 +529,7 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
 
-                        <!-- Table Header -->
+                        
                         <LinearLayout
                             android:id="@+id/tableHeader"
                             android:layout_width="wrap_content"
@@ -600,7 +600,7 @@
 
                         </LinearLayout>
 
-                        <!-- RecyclerView for Table Body -->
+                        
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/recyclerAbsensi"
                             android:layout_width="wrap_content"
@@ -617,7 +617,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Navigation Drawer (Sidebar) -->
+    
     <include
         android:id="@+id/navigationView"
         layout="@layout/sidebar_laporan"

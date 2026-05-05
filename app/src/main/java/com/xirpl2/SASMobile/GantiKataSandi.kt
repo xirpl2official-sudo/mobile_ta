@@ -37,7 +37,7 @@ class GantiKataSandi : AppCompatActivity() {
         setContentView(R.layout.activity_lupa_katasandi)
         window.statusBarColor = 0xFF2886D6.toInt()
         
-        // Set statusbar to dark themed (dark icons)
+        
         @Suppress("DEPRECATION")
         window.decorView.systemUiVisibility = android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
 
@@ -61,7 +61,7 @@ class GantiKataSandi : AppCompatActivity() {
             val nis = etNis.text.toString().trim()
             val email = etEmail.text.toString().trim()
 
-            // Validasi NIS/Username tidak boleh kosong
+            
             if (nis.isEmpty()) {
                 MotionToast.createColorToast(
                     this,
@@ -76,7 +76,7 @@ class GantiKataSandi : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Validasi email tidak boleh kosong
+            
             if (email.isEmpty()) {
                 MotionToast.createColorToast(
                     this,
@@ -91,7 +91,7 @@ class GantiKataSandi : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Validasi format email
+            
             if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                 MotionToast.createColorToast(
                     this,
@@ -106,7 +106,7 @@ class GantiKataSandi : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Call forgot-password API
+            
             requestOtp(nis, email)
         }
     }
@@ -127,41 +127,60 @@ class GantiKataSandi : AppCompatActivity() {
 
                 setLoading(false)
 
-                if (response.isSuccessful && response.body() != null) {
-                    val apiResponse = response.body()!!
-                    
-                    if (apiResponse.status) {
-                        android.util.Log.d("GantiKataSandi", "OTP berhasil dikirim: ${apiResponse.message}")
-                        
-                        MotionToast.createColorToast(
-                            this@GantiKataSandi,
-                            "Berhasil",
-                            apiResponse.message ?: "Kode OTP telah dikirim ke email Anda",
-                            MotionToastStyle.SUCCESS,
-                            Gravity.CENTER,
-                            MotionToast.LONG_DURATION,
-                            null
-                        )
+                 if (response.isSuccessful && response.body() != null) {
+                     val apiResponse = response.body()!!
+                     
+                     
+                     
+                     
+                     val isSuccessByStatus = apiResponse.status
+                     val isSuccessByMessage = !apiResponse.message.isNullOrEmpty() &&
+                         (apiResponse.message.contains("berhasil", ignoreCase = true) ||
+                          apiResponse.message.contains("dikirim", ignoreCase = true) ||
+                          apiResponse.message.contains("sukses", ignoreCase = true) ||
+                          apiResponse.message.contains("success", ignoreCase = true))
+                     val isHttpSuccess = response.code() == 200
+                     
+                     android.util.Log.d("GantiKataSandi", "OTP Response - status: $isSuccessByStatus, http: $isHttpSuccess, msgContainsSuccess: $isSuccessByMessage")
+                     android.util.Log.d("GantiKataSandi", "OTP Message: ${apiResponse.message}")
+                     
+                     
+                     
+                     val shouldNavigate = (isSuccessByStatus && isHttpSuccess) ||
+                         (isHttpSuccess && isSuccessByMessage)
+                     
+                     if (shouldNavigate) {
+                         android.util.Log.d("GantiKataSandi", "OTP berhasil dikirim, navigasi ke VerifikasiOtpActivity")
+                         
+                         MotionToast.createColorToast(
+                             this@GantiKataSandi,
+                             "Berhasil",
+                             apiResponse.message ?: "Kode OTP telah dikirim ke email Anda",
+                             MotionToastStyle.SUCCESS,
+                             Gravity.CENTER,
+                             MotionToast.LONG_DURATION,
+                             null
+                         )
 
-                        // Navigate to OTP verification screen
-                        val intent = Intent(this@GantiKataSandi, VerifikasiOtpActivity::class.java)
-                        intent.putExtra("USER_EMAIL", email)
-                        intent.putExtra("USER_NIS", nis)
-                        startActivity(intent)
-                    } else {
-                        android.util.Log.e("GantiKataSandi", "API Response status false: ${apiResponse.message}")
-                        MotionToast.createColorToast(
-                            this@GantiKataSandi,
-                            "Gagal",
-                            apiResponse.message ?: "Gagal mengirim OTP",
-                            MotionToastStyle.ERROR,
-                            Gravity.CENTER,
-                            MotionToast.LONG_DURATION,
-                            null
-                        )
-                    }
-                } else {
-                    // Parse error body ONCE
+                         
+                         val intent = Intent(this@GantiKataSandi, VerifikasiOtpActivity::class.java)
+                         intent.putExtra("USER_EMAIL", email)
+                         intent.putExtra("USER_NIS", nis)
+                         startActivity(intent)
+                     } else {
+                         android.util.Log.e("GantiKataSandi", "API Response status false: ${apiResponse.message}")
+                         MotionToast.createColorToast(
+                             this@GantiKataSandi,
+                             "Gagal",
+                             apiResponse.message ?: "Gagal mengirim OTP",
+                             MotionToastStyle.ERROR,
+                             Gravity.CENTER,
+                             MotionToast.LONG_DURATION,
+                             null
+                         )
+                     }
+                 } else {
+                    
                     val errorBody = response.errorBody()?.string()
                     android.util.Log.e("GantiKataSandi", "Error response: $errorBody")
                     

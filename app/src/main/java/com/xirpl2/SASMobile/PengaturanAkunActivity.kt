@@ -8,7 +8,6 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.EditText
@@ -32,7 +31,6 @@ import java.io.FileOutputStream
 
 class PengaturanAkunActivity : AppCompatActivity() {
 
-    // UI Components
     private lateinit var btnBack: ImageView
     private lateinit var cardProfilePhoto: CardView
     private lateinit var tvInitial: TextView
@@ -42,13 +40,11 @@ class PengaturanAkunActivity : AppCompatActivity() {
     private lateinit var etEmail: TextView
     private lateinit var tvChangeEmail: TextView
     
-    // Data
     private var currentUserData: UserData? = null
     private var selectedImageUri: Uri? = null
     
     private val TAG = "PengaturanAkunActivity"
     
-    // Image picker launcher
     private val imagePickerLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -56,7 +52,7 @@ class PengaturanAkunActivity : AppCompatActivity() {
             val imageUri = result.data?.data
             if (imageUri != null) {
                 selectedImageUri = imageUri
-                // TODO: Update foto profil preview
+                
                 Toast.makeText(this, "Foto dipilih (preview segera menyusul)", Toast.LENGTH_SHORT).show()
             }
         }
@@ -66,16 +62,16 @@ class PengaturanAkunActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pengaturan_akun)
 
-        // Initialize Views
+        
         initializeViews()
         
-        // Setup Spinner
+        
         setupJenisKelaminSpinner()
         
-        // Load User Data from API
+        
         loadUserDataFromAPI()
         
-        // Setup Click Listeners
+        
         setupListeners()
     }
 
@@ -91,29 +87,26 @@ class PengaturanAkunActivity : AppCompatActivity() {
     }
 
     private fun setupJenisKelaminSpinner() {
-        // No longer needed as we use TextView
+        
     }
 
     private fun setupListeners() {
-        // Back button
+        
         btnBack.setOnClickListener {
             finish()
         }
         
-        // Profile photo click
+        
         cardProfilePhoto.setOnClickListener {
             showPhotoPickerDialog()
         }
         
-        // Change email link
+        
         tvChangeEmail.setOnClickListener {
             showChangeEmailDialog()
         }
     }
 
-    /**
-     * Load user data dari API dengan Bearer token
-     */
     private fun loadUserDataFromAPI() {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
@@ -127,7 +120,6 @@ class PengaturanAkunActivity : AppCompatActivity() {
                     return@launch
                 }
 
-                Log.d(TAG, "Fetching user profile with token: Bearer ${token.take(10)}...")
                 val response = RetrofitClient.apiService.getProfile("Bearer $token")
 
                 withContext(Dispatchers.Main) {
@@ -136,9 +128,8 @@ class PengaturanAkunActivity : AppCompatActivity() {
                         val profileData = body?.data
 
                         if (profileData != null) {
-                            Log.d(TAG, "Profile data received: ${profileData.nama_siswa}")
                             
-                            // Convert UserProfile to UserData
+                            
                             currentUserData = UserData(
                                 nis = profileData.nis ?: "",
                                 namaLengkap = profileData.name ?: profileData.username ?: profileData.nama_siswa ?: "",
@@ -150,26 +141,24 @@ class PengaturanAkunActivity : AppCompatActivity() {
                                 isGoogleAccount = profileData.is_google_acct
                             )
                             
-                            // Save to SharedPreferences for future use
+                            
                             saveUserDataLocally(currentUserData!!)
                             
-                            // Populate fields
+                            
                             populateFields(currentUserData!!)
                         }
                     } else {
-                        Log.e(TAG, "Error fetching profile: ${response.code()}")
                         Toast.makeText(
                             this@PengaturanAkunActivity,
                             "Gagal mengambil data profil",
                             Toast.LENGTH_SHORT
                         ).show()
                         
-                        // Fallback to SharedPreferences data
+                        
                         loadUserDataFromPreferences()
                     }
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Exception: ${e.message}", e)
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
                         this@PengaturanAkunActivity,
@@ -177,16 +166,13 @@ class PengaturanAkunActivity : AppCompatActivity() {
                         Toast.LENGTH_SHORT
                     ).show()
                     
-                    // Fallback to SharedPreferences data
+                    
                     loadUserDataFromPreferences()
                 }
             }
         }
     }
 
-    /**
-     * Load user data dari SharedPreferences (fallback)
-     */
     private fun loadUserDataFromPreferences() {
         val sharedPref = getSharedPreferences("user_session", Context.MODE_PRIVATE)
         
@@ -201,15 +187,12 @@ class PengaturanAkunActivity : AppCompatActivity() {
             isGoogleAccount = false
         )
         
-        // Populate fields
+        
         if (currentUserData != null) {
             populateFields(currentUserData!!)
         }
     }
 
-    /**
-     * Save user data to SharedPreferences
-     */
     private fun saveUserDataLocally(userData: UserData) {
         val sharedPref = getSharedPreferences("user_session", Context.MODE_PRIVATE)
         with(sharedPref.edit()) {
@@ -223,27 +206,21 @@ class PengaturanAkunActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Populate form fields dengan data user (read-only)
-     */
     private fun populateFields(userData: UserData) {
         etNIS.text = userData.nis
         etNamaLengkap.text = userData.namaLengkap
         etEmail.text = userData.email
         
-        // Set jenis kelamin
+        
         val jenisKelaminText = if (userData.jenisKelamin == "P") "Perempuan" else "Laki - laki"
         tvJenisKelamin.text = jenisKelaminText
         
-        // Set initial dari nama
+        
         if (userData.namaLengkap.isNotEmpty()) {
             tvInitial.text = userData.namaLengkap.first().uppercase()
         }
     }
 
-    /**
-     * Show dialog untuk memilih foto profil
-     */
     private fun showPhotoPickerDialog() {
         val options = arrayOf("Pilih dari Galeri", "Batal")
         AlertDialog.Builder(this)
@@ -257,17 +234,11 @@ class PengaturanAkunActivity : AppCompatActivity() {
             .show()
     }
 
-    /**
-     * Open image picker
-     */
     private fun openImagePicker() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         imagePickerLauncher.launch(intent)
     }
 
-    /**
-     * Show dialog untuk change email dengan custom layout
-     */
     private fun showChangeEmailDialog() {
         val dialogBuilder = AlertDialog.Builder(this)
         val inflater = layoutInflater
@@ -277,16 +248,13 @@ class PengaturanAkunActivity : AppCompatActivity() {
         val alertDialog = dialogBuilder.create()
         alertDialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
         
-        // Initialize dialog views
         val etEmailDialog = dialogView.findViewById<EditText>(R.id.etEmailDialog)
         val btnClose = dialogView.findViewById<ImageView>(R.id.btnClose)
         val btnBatal = dialogView.findViewById<MaterialButton>(R.id.btnBatalDialog)
         val btnSimpan = dialogView.findViewById<MaterialButton>(R.id.btnSimpanDialog)
         
-        // Set current email
         etEmailDialog.setText(currentUserData?.email)
         
-        // Setup listeners
         btnClose.setOnClickListener {
             alertDialog.dismiss()
         }
@@ -308,7 +276,6 @@ class PengaturanAkunActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
             
-            // Update data
             updateEmail(newEmail)
             alertDialog.dismiss()
         }
@@ -319,7 +286,6 @@ class PengaturanAkunActivity : AppCompatActivity() {
     private fun updateEmail(newEmail: String) {
         val currentData = currentUserData ?: return
         
-        // Validate email format
         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(newEmail).matches()) {
             Toast.makeText(this, "Format email tidak valid", Toast.LENGTH_SHORT).show()
             return
@@ -327,7 +293,6 @@ class PengaturanAkunActivity : AppCompatActivity() {
         
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                // Get auth token
                 val sharedPref = getSharedPreferences("user_session", Context.MODE_PRIVATE)
                 val token = sharedPref.getString("auth_token", null)
                 
@@ -342,45 +307,25 @@ class PengaturanAkunActivity : AppCompatActivity() {
                     return@launch
                 }
                 
-                Log.d(TAG, "Updating email to: $newEmail")
                 
-                // Show loading
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
                         this@PengaturanAkunActivity,
                         "Memperbarui email...",
                         Toast.LENGTH_SHORT
                     ).show()
-                }
-                
-                // Make API request
+                }                
                 val request = com.xirpl2.SASMobile.model.ChangeEmailRequest(email = newEmail)
-                Log.d(TAG, "========== CHANGE EMAIL REQUEST ==========")
-                Log.d(TAG, "Request email: $newEmail")
-                Log.d(TAG, "Request object: $request")
                 
                 val response = RetrofitClient.apiService.changeEmail("Bearer $token", request)
                 
-                Log.d(TAG, "========== CHANGE EMAIL RESPONSE ==========")
-                Log.d(TAG, "Response code: ${response.code()}")
-                Log.d(TAG, "Response successful: ${response.isSuccessful}")
-                Log.d(TAG, "Response body: ${response.body()}")
-                Log.d(TAG, "Response error body: ${response.errorBody()?.string()}")
-                Log.d(TAG, "==========================================")
                 
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful && response.body() != null) {
                         val apiResponse = response.body()!!
-                        Log.d(TAG, "Email updated successfully: ${apiResponse.message}")
-                        
-                        // Update local data
                         val updatedData = currentData.copy(email = newEmail)
                         currentUserData = updatedData
-                        
-                        // Save to SharedPreferences
                         sharedPref.edit().putString("user_email", newEmail).apply()
-                        
-                        // Update UI
                         etEmail.text = newEmail
                         
                         Toast.makeText(
@@ -389,9 +334,7 @@ class PengaturanAkunActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         ).show()
                     } else {
-                        // Parse error response
                         val errorBody = response.errorBody()?.string()
-                        Log.e(TAG, "Error updating email: $errorBody")
                         
                         val errorMessage = try {
                             if (!errorBody.isNullOrEmpty()) {
@@ -418,7 +361,6 @@ class PengaturanAkunActivity : AppCompatActivity() {
                     }
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Exception updating email: ${e.message}", e)
                 withContext(Dispatchers.Main) {
                     val errorMsg = when (e) {
                         is java.net.UnknownHostException -> "Tidak dapat terhubung ke server"
@@ -436,14 +378,10 @@ class PengaturanAkunActivity : AppCompatActivity() {
         }
     }
 
-
-    /**
-     * Data class untuk user data
-     */
     data class UserData(
         val nis: String,
         val namaLengkap: String,
-        val jenisKelamin: String, // "L" atau "P"
+        val jenisKelamin: String,
         val email: String,
         val fotoProfil: String? = null,
         val jurusan: String = "",

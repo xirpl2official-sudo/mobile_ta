@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- res/layout/popup_menu_profile.xml (RESPONSIVE VERSION) -->
+
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -16,7 +16,7 @@
         android:orientation="vertical"
         android:padding="@dimen/popup_padding">
 
-        <!-- Header: Info Siswa -->
+        
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -45,14 +45,44 @@
 
         </LinearLayout>
 
-        <!-- Divider -->
+        
         <View
             android:layout_width="match_parent"
             android:layout_height="@dimen/popup_divider_height"
             android:background="#E0E0E0"
             android:layout_marginBottom="@dimen/popup_header_bottom_padding"/>
 
-        <!-- Menu Item: Pengaturan -->
+        
+        <LinearLayout
+            android:id="@+id/btnPengajuanIzin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="@dimen/popup_menu_item_padding"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="@dimen/popup_icon_size"
+                android:layout_height="@dimen/popup_icon_size"
+                android:src="@drawable/ic_perizinan"
+                android:contentDescription="Pengajuan Izin Icon"
+                android:layout_marginEnd="@dimen/popup_icon_margin_end"
+                app:tint="#616161"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pengajuan Izin"
+                android:textColor="#424242"
+                android:textSize="@dimen/popup_menu_text_size"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+
+        
         <LinearLayout
             android:id="@+id/btnSettings"
             android:layout_width="match_parent"
@@ -82,7 +112,7 @@
 
         </LinearLayout>
 
-        <!-- Menu Item: Keluar -->
+        
         <LinearLayout
             android:id="@+id/btnLogout"
             android:layout_width="match_parent"

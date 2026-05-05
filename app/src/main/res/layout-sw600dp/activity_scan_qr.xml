@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="#0a0e27">
 
-    <!-- Header with Gradient Background -->
+    
     <View
         android:id="@+id/header"
         android:layout_width="0dp"
@@ -18,7 +18,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.08"/>
 
-    <!-- Back Button (aligned to right) -->
+    
     <ImageView
         android:id="@+id/btnBack"
         android:layout_width="wrap_content"
@@ -32,7 +32,7 @@
         app:layout_constraintBottom_toBottomOf="@id/header"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Header Title (centered precisely) -->
+    
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
@@ -48,7 +48,7 @@
         app:layout_constraintEnd_toEndOf="parent"/>
 
 
-    <!-- Guideline for main title position -->
+    
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guidelineMainTitle"
         android:layout_width="wrap_content"
@@ -56,7 +56,7 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.13"/>
 
-    <!-- Main Title -->
+    
     <TextView
         android:id="@+id/tvMainTitle"
         android:layout_width="wrap_content"
@@ -71,7 +71,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Subtitle -->
+    
     <TextView
         android:id="@+id/tvSubtitle"
         android:layout_width="wrap_content"
@@ -85,7 +85,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Guideline for scanner frame center -->
+    
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guidelineScannerTop"
         android:layout_width="wrap_content"
@@ -94,7 +94,7 @@
         app:layout_constraintGuide_percent="0.26"/>
 
 
-    <!-- Scanner Box (White Frame) - Tablet: 50% width, 60% height (no ratio) -->
+    
     <androidx.cardview.widget.CardView
         android:id="@+id/cardScanner"
         android:layout_width="0dp"
@@ -110,13 +110,13 @@
         app:layout_constraintHeight_percent="0.58"
         app:layout_constraintVertical_bias="0.0">
 
-        <!-- Inner Container for Padding -->
+        
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:padding="@dimen/qr_frame_padding">
 
-            <!-- Black Scanner Background with rounded corners (278:278 square) -->
+            
             <androidx.cardview.widget.CardView
                 android:id="@+id/scannerInnerCard"
                 android:layout_width="0dp"
@@ -132,7 +132,7 @@
                 app:layout_constraintVertical_chainStyle="packed"
                 app:layout_constraintVertical_bias="0">
 
-                <!-- ZXing Scanner View -->
+                
                 <com.journeyapps.barcodescanner.BarcodeView
                     android:id="@+id/barcodeView"
                     android:layout_width="match_parent"
@@ -140,7 +140,7 @@
 
             </androidx.cardview.widget.CardView>
 
-            <!-- Button inside frame (228:48) -->
+            
             <androidx.cardview.widget.CardView
                 android:id="@+id/btnScanInner"
                 android:layout_width="0dp"
@@ -172,7 +172,7 @@
 
     </androidx.cardview.widget.CardView>
 
-    <!-- Status Text -->
+    
     <TextView
         android:id="@+id/tvStatus"
         android:layout_width="wrap_content"

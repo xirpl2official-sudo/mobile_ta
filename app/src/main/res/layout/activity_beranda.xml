@@ -8,7 +8,7 @@
     android:background="@color/white"
     tools:context=".BerandaActivity">
 
-    <!-- Vector Background untuk Toolbar -->
+    
     <View
         android:id="@+id/VectorAtasMenu"
         android:layout_width="0dp"
@@ -31,7 +31,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.08">
 
-        <!-- Icon Menu (Kiri) -->
+        
         <ImageView
             android:id="@+id/iconMenu"
             android:layout_width="0dp"
@@ -44,7 +44,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
-        <!-- Logo Sekolah -->
+        
         <ImageView
             android:id="@+id/logoSekolah"
             android:layout_width="0dp"
@@ -58,7 +58,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginStart="@dimen/spacing_medium" />
 
-        <!-- Text Dashboard -->
+        
         <TextView
             android:id="@+id/textDashboard"
             android:layout_width="wrap_content"
@@ -73,7 +73,7 @@
             app:layout_constraintVertical_chainStyle="packed"
             android:layout_marginStart="@dimen/spacing_small" />
 
-        <!-- Text Nama Sekolah -->
+        
         <TextView
             android:id="@+id/textNamaSekolah"
             android:layout_width="0dp"
@@ -89,7 +89,7 @@
             app:layout_constraintBottom_toBottomOf="@id/logoSekolah"
             android:layout_marginEnd="@dimen/spacing_text" />
 
-        <!-- Icon Notifikasi (Kanan) -->
+        
         <FrameLayout
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -107,7 +107,7 @@
                 android:src="@drawable/notification"
                 android:contentDescription="@string/Notif" />
 
-            <!-- Notification Counter Badge -->
+            
             <TextView
                 android:id="@+id/notificationCounter"
                 android:layout_width="20dp"
@@ -128,7 +128,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- ScrollView untuk Content -->
+    
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollContent"
         android:layout_width="0dp"
@@ -148,7 +148,7 @@
             android:clipToPadding="false"
             android:clipChildren="false">
 
-            <!-- Card Waktu Absensi -->
+            
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardWaktuAbsensi"
                 android:layout_width="0dp"
@@ -166,7 +166,7 @@
                     android:layout_height="wrap_content"
                     android:padding="@dimen/spacing_medium">
 
-                    <!-- Icon Warning -->
+                    
                     <ImageView
                         android:id="@+id/iconWarning"
                         android:layout_width="0dp"
@@ -179,7 +179,7 @@
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent" />
 
-                    <!-- Text Waktu Absensi -->
+                    
                     <TextView
                         android:id="@+id/tvWaktuAbsensi"
                         android:layout_width="0dp"
@@ -194,7 +194,7 @@
                         app:layout_constraintEnd_toStartOf="@id/btnAbsensi"
                         android:layout_marginStart="@dimen/spacing_small" />
 
-                    <!-- Text Deskripsi -->
+                    
                     <TextView
                         android:id="@+id/tvDeskripsiAbsensi"
                         android:layout_width="0dp"
@@ -207,7 +207,7 @@
                         app:layout_constraintEnd_toStartOf="@id/btnAbsensi"
                         />
 
-                    <!-- Button Absensi -->
+                    
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnAbsensi"
                         android:layout_width="wrap_content"
@@ -228,7 +228,7 @@
 
             </androidx.cardview.widget.CardView>
 
-            <!-- Stats Container (Total, Hadir, Grafik) -->
+            
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/statsContainer"
                 android:layout_width="0dp"
@@ -242,7 +242,7 @@
                 android:clipToPadding="false"
                 android:clipChildren="false">
 
-                <!-- Card Total -->
+                
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cardTotal"
                     android:layout_width="0dp"
@@ -303,7 +303,7 @@
 
                 </androidx.cardview.widget.CardView>
 
-                <!-- Card Hadir -->
+                
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cardHadir"
                     android:layout_width="0dp"
@@ -364,7 +364,7 @@
 
                 </androidx.cardview.widget.CardView>
 
-                <!-- Card Statistik -->
+                
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cardStatistik"
                     android:layout_width="0dp"
@@ -427,7 +427,7 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <!-- Jadwal Hari Ini dengan RecyclerView -->
+            
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardJadwalHariIni"
                 android:layout_width="0dp"
@@ -470,7 +470,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         android:layout_marginStart="@dimen/spacing_small" />
 
-                    <!-- RecyclerView untuk Jadwal Sholat -->
+                    
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rvJadwalSholat"
                         android:layout_width="0dp"
@@ -488,7 +488,7 @@
 
             </androidx.cardview.widget.CardView>
 
-            <!-- Riwayat Absensi dengan RecyclerView -->
+            
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardRiwayat"
                 android:layout_width="0dp"
@@ -532,7 +532,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         android:layout_marginStart="@dimen/spacing_small" />
 
-                    <!-- Header Table -->
+                    
                     <LinearLayout
                         android:id="@+id/riwayatHeader"
                         android:layout_width="0dp"
@@ -575,7 +575,7 @@
                             android:gravity="center" />
                     </LinearLayout>
                     
-                    <!-- Divider Line di bawah header -->
+                    
                     <View
                         android:id="@+id/dividerHeader"
                         android:layout_width="0dp"
@@ -586,7 +586,7 @@
                         app:layout_constraintTop_toBottomOf="@id/riwayatHeader" />
 
 
-                    <!-- RecyclerView untuk Riwayat Absensi -->
+                    
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rvRiwayatAbsensi"
                         android:layout_width="0dp"

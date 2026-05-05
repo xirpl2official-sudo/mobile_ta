@@ -1,11 +1,11 @@
 package com.xirpl2.SASMobile
 
+import android.util.Log
 import android.app.DatePickerDialog
 import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,7 +35,7 @@ class TambahAbsensiDialogFragment : DialogFragment() {
     private val TAG = "TambahAbsensiDialog"
     private val repository = BerandaRepository()
 
-    // Views
+    
     private lateinit var actvSiswa: AutoCompleteTextView
     private lateinit var tvSelectedSiswa: TextView
     private lateinit var etTanggal: TextInputEditText
@@ -50,23 +50,23 @@ class TambahAbsensiDialogFragment : DialogFragment() {
     private lateinit var btnBatal: MaterialButton
     private lateinit var btnClose: ImageView
 
-    // Data
+    
     private var selectedSiswa: SiswaItem? = null
-    private var selectedDate: String = "" // YYYY-MM-DD
+    private var selectedDate: String = "" 
     private var jadwalList: List<JadwalSholatData> = emptyList()
     private var selectedJadwalId: Int? = null
     private var selectedJenisSholat: String? = null
 
-    // Search
+    
     private var searchJob: Job? = null
     private var lastSearchResults: List<SiswaItem> = emptyList()
 
-    // Callback for when data is saved
+    
     var onDismissCallback: (() -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Make dialog background transparent to show the rounded card
+        
         setStyle(STYLE_NO_TITLE, R.style.TransparentDialog)
     }
 
@@ -80,11 +80,11 @@ class TambahAbsensiDialogFragment : DialogFragment() {
         setupListeners()
         setupSearchSiswa()
         
-        // Default date = today
+        
         val calendar = Calendar.getInstance()
         updateDate(calendar)
         
-        // Load initial jadwal
+        
         loadJadwalSholat()
     }
 
@@ -118,7 +118,7 @@ class TambahAbsensiDialogFragment : DialogFragment() {
         }
 
         rgStatus.setOnCheckedChangeListener { _, checkedId ->
-            // In premium theme, description might be optional for "Hadir"
+            
             if (checkedId == R.id.rbHadir) {
                 etDeskripsi.hint = "Opsional (Keterangan tambahan)"
             } else {
@@ -135,7 +135,7 @@ class TambahAbsensiDialogFragment : DialogFragment() {
 
         val targetJurusan = selectedSiswa?.jurusan?.lowercase() ?: ""
         
-        // Better matching logic: check specific jurusan then general/null
+        
         val match = jadwalList.find { 
             val isSameType = it.jenis_sholat.equals(selectedJenisSholat, ignoreCase = true)
             val scheduleJurusan = (it.jurusan ?: "").lowercase()
@@ -145,7 +145,6 @@ class TambahAbsensiDialogFragment : DialogFragment() {
         
         selectedJadwalId = match?.id
         if (selectedJadwalId == null) {
-            Log.w(TAG, "No matching schedule for $selectedJenisSholat and jurusan $targetJurusan")
         }
     }
     
@@ -318,7 +317,7 @@ class TambahAbsensiDialogFragment : DialogFragment() {
 
     override fun onStart() {
         super.onStart()
-        // Set dialog width to match parent with margins
+        
         dialog?.window?.setLayout(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT

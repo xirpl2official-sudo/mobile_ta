@@ -34,11 +34,11 @@ class DetailAbsensiActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.fragment_presence_detail)
         
-        // Change background to solid white for activity
+        
         findViewById<View>(R.id.handleBar)?.visibility = View.GONE
         findViewById<View>(R.id.main_container)?.setBackgroundColor(resources.getColor(android.R.color.white))
 
-        // Get data from Intent
+        
         studentNis = intent.getStringExtra("student_nis")
         studentMajor = intent.getStringExtra("student_major")
         val studentName = intent.getStringExtra("student_name")
@@ -146,10 +146,10 @@ class DetailAbsensiActivity : AppCompatActivity() {
 
     private fun loadAttendanceData() {
         val token = getAuthToken()
-        // Here we might need to use a different repository method if we are viewing ANOTHER student's history
-        // But for now, let's assume getHistorySiswa can take a student NIS somehow or the admin uses a different endpoint.
-        // Looking at BerandaRepository, getHistorySiswa doesn't take NIS.
-        // We should use getHistoryStaff with NIS filter.
+        
+        
+        
+        
         
         lifecycleScope.launch {
             repository.getHistoryStaff(token, nis = studentNis).fold(
@@ -163,7 +163,7 @@ class DetailAbsensiActivity : AppCompatActivity() {
                         updatePrayerStatuses(absensiList)
                     }
                 },
-                onFailure = { /* Handle error */ }
+                onFailure = {  }
             )
         }
     }

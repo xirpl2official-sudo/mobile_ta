@@ -25,7 +25,7 @@
             android:paddingBottom="20dp"
             android:background="@android:color/transparent">
 
-            <!-- Header -->
+            
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -55,7 +55,7 @@
                     app:tint="#64748B" />
             </RelativeLayout>
 
-            <!-- Jenis Sholat -->
+            
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -92,7 +92,7 @@
                     android:cursorVisible="false" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Hari -->
+            
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -129,7 +129,7 @@
                     android:cursorVisible="false" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Jurusan -->
+            
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -166,7 +166,7 @@
                     android:cursorVisible="false" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Kelas -->
+            
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -206,7 +206,7 @@
                     android:layout_marginStart="16dp" />
             </GridLayout>
 
-            <!-- Jam Mulai -->
+            
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -243,7 +243,7 @@
                     android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Jam Selesai -->
+            
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -280,14 +280,14 @@
                     android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Divider -->
+            
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="#F8FAFC"
                 android:layout_marginBottom="24dp"/>
 
-            <!-- Buttons -->
+            
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSimpan"
                 android:layout_width="match_parent"

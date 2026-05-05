@@ -21,6 +21,7 @@ import com.xirpl2.SASMobile.model.PasswordResetRequest
 import com.xirpl2.SASMobile.network.RetrofitClient
 import kotlinx.coroutines.launch
 import android.os.CountDownTimer
+import com.google.gson.Gson
 import java.util.concurrent.TimeUnit
 import www.sanju.motiontoast.MotionToast
 import www.sanju.motiontoast.MotionToastStyle
@@ -40,7 +41,7 @@ class VerifikasiOtpActivity : AppCompatActivity() {
         setContentView(R.layout.activity_verifikasi_otp)
         window.statusBarColor = 0xFFE48134.toInt()
         
-        // Set statusbar to dark themed (dark icons)
+        
         @Suppress("DEPRECATION")
         window.decorView.systemUiVisibility = android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
 
@@ -50,7 +51,7 @@ class VerifikasiOtpActivity : AppCompatActivity() {
             insets
         }
 
-        // Get data from intent
+        
         userEmail = intent.getStringExtra("USER_EMAIL") ?: ""
         userNis = intent.getStringExtra("USER_NIS") ?: ""
 
@@ -62,10 +63,10 @@ class VerifikasiOtpActivity : AppCompatActivity() {
         progressBar = findViewById(R.id.progressBar)
         btnVerifikasi = findViewById(R.id.btnVerifikasi)
 
-        // Setup OTP Input
+        
         setupOtpInput()
 
-        // Setup Kirim Ulang OTP
+        
         val btnKirimUlang = findViewById<TextView>(R.id.btnKirimUlang)
         btnKirimUlang.isClickable = true
         btnKirimUlang.setOnClickListener {
@@ -73,10 +74,10 @@ class VerifikasiOtpActivity : AppCompatActivity() {
             startResendTimer(btnKirimUlang)
         }
 
-        // Mulai timer jika perlu (misal setelah pertama kali masuk halaman)
+        
         startResendTimer(btnKirimUlang)
 
-        // Setup Verify Button
+        
         btnVerifikasi?.setOnClickListener {
             val otp = getOtpFromBoxes()
             if (otp.length < 6) {
@@ -111,7 +112,30 @@ class VerifikasiOtpActivity : AppCompatActivity() {
 
                 if (response.isSuccessful && response.body() != null) {
                     val apiResponse = response.body()!!
-                    if (apiResponse.status) {
+                    
+                    
+                    
+                    
+                    val isSuccessByStatus = apiResponse.status
+                    val isSuccessByVerified = response.body()?.let { 
+                        val jsonStr = Gson().toJson(it)
+                        jsonStr.contains("\"verified\":true") || 
+                        jsonStr.contains("\"verified\": true")
+                    } ?: false
+                    val isSuccessByMessage = !apiResponse.message.isNullOrEmpty() &&
+                        (apiResponse.message.contains("valid", ignoreCase = true) ||
+                         apiResponse.message.contains("sukses", ignoreCase = true) ||
+                         apiResponse.message.contains("berhasil", ignoreCase = true) ||
+                         apiResponse.message.contains("success", ignoreCase = true))
+                    val isHttpSuccess = response.code() == 200
+                    
+                    
+                    
+                    val shouldNavigate = isHttpSuccess && 
+                        (isSuccessByStatus || isSuccessByVerified || isSuccessByMessage)
+                    
+                    if (shouldNavigate) {
+                        
                         MotionToast.createColorToast(
                             this@VerifikasiOtpActivity,
                             "Berhasil",
@@ -122,7 +146,7 @@ class VerifikasiOtpActivity : AppCompatActivity() {
                             null
                         )
 
-                        // Navigate to reset password screen
+                        
                         val intent = Intent(this@VerifikasiOtpActivity, BuatSandiBaruActivity::class.java)
                         intent.putExtra("USER_NIS", userNis)
                         intent.putExtra("USER_OTP", otp)
@@ -171,7 +195,7 @@ class VerifikasiOtpActivity : AppCompatActivity() {
                         null
                     )
                     
-                    // Clear OTP boxes on error
+                    
                     clearOtpBoxes()
                 }
             } catch (e: Exception) {
@@ -202,7 +226,7 @@ class VerifikasiOtpActivity : AppCompatActivity() {
     }
 
     private fun startResendTimer(view: TextView) {
-        // Batalkan timer sebelumnya (opsional, cegah multiple timer)
+        
         resendTimer?.cancel()
 
         view.isEnabled = false
@@ -293,7 +317,7 @@ class VerifikasiOtpActivity : AppCompatActivity() {
                         otpBoxes[i + 1].requestFocus()
                     }
                     
-                    // Auto verify when all 6 digits are entered
+                    
                     if (i == otpBoxes.size - 1 && s?.length == 1) {
                         val otp = getOtpFromBoxes()
                         if (otp.length == 6) {

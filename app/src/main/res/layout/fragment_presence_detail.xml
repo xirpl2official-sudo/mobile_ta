@@ -8,7 +8,7 @@
     android:background="@drawable/bg_bottom_sheet_rounded"
     android:padding="24dp">
 
-    <!-- Handle Bar for Bottom Sheet look -->
+    
     <View
         android:id="@+id/handleBar"
         android:layout_width="40dp"
@@ -31,7 +31,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/handleBar" />
 
-    <!-- Attendance Summary Cards -->
+    
     <LinearLayout
         android:id="@+id/summaryContainer"
         android:layout_width="match_parent"
@@ -41,7 +41,7 @@
         android:weightSum="3"
         app:layout_constraintTop_toBottomOf="@id/tvTitle">
 
-        <!-- Hadir Card -->
+        
         <com.google.android.material.card.MaterialCardView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -74,7 +74,7 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Izin Card -->
+        
         <com.google.android.material.card.MaterialCardView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -107,7 +107,7 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Sakit Card -->
+        
         <com.google.android.material.card.MaterialCardView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -152,7 +152,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/summaryContainer" />
 
-    <!-- Date Strip RecyclerView -->
+    
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvDateStrip"
         android:layout_width="match_parent"
@@ -162,7 +162,7 @@
         app:layout_constraintTop_toBottomOf="@id/tvDateTitle"
         tools:listitem="@layout/item_date_strip" />
 
-    <!-- Prayer List Container -->
+    
     <LinearLayout
         android:id="@+id/prayerListContainer"
         android:layout_width="match_parent"
@@ -171,12 +171,12 @@
         android:orientation="vertical"
         app:layout_constraintTop_toBottomOf="@id/rvDateStrip">
 
-        <!-- Dhuha Item -->
+        
         <include
             android:id="@+id/itemDhuha"
             layout="@layout/item_presence_prayer" />
 
-        <!-- Dzuhur Item -->
+        
         <include
             android:id="@+id/itemDzuhur"
             layout="@layout/item_presence_prayer"
@@ -184,7 +184,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp" />
 
-        <!-- Jumat Item (Hidden by default) -->
+        
         <include
             android:id="@+id/itemJumat"
             layout="@layout/item_presence_prayer"

@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.Gravity
 import android.widget.Button
 import android.widget.EditText
@@ -13,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import www.sanju.motiontoast.MotionToast
 import www.sanju.motiontoast.MotionToastStyle
-import com.xirpl2.SASMobile.model.LoginRequest
 import com.xirpl2.SASMobile.network.RetrofitClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,7 +21,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.content.ContextCompat
 import com.google.android.material.textfield.TextInputLayout
-
+import com.xirpl2.SASMobile.model.LoginRequest
 
 class MasukActivity : AppCompatActivity() {
 
@@ -44,7 +42,7 @@ class MasukActivity : AppCompatActivity() {
         setContentView(R.layout.activity_masuk)
         window.statusBarColor = 0xFF2886D6.toInt()
         
-        // Set statusbar to dark themed (dark icons)
+        
         @Suppress("DEPRECATION")
         window.decorView.systemUiVisibility = android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
 
@@ -66,7 +64,7 @@ class MasukActivity : AppCompatActivity() {
 
         checkCameraPermission()
 
-        // Check for existing token and auto-login
+        
         checkAndValidateExistingToken()
 
         btnMasuk.setOnClickListener {
@@ -94,9 +92,9 @@ class MasukActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == CAMERA_PERMISSION_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Camera permission granted
+                
             } else {
-                // Camera permission denied
+                
             }
         }
     }
@@ -111,7 +109,7 @@ class MasukActivity : AppCompatActivity() {
         val nisOrUsername = etNis.text.toString().trim()
         val password = etPassword.text.toString()
 
-        // Validasi input
+        
         if (nisOrUsername.isEmpty() || password.isEmpty()) {
             MotionToast.createColorToast(
                 this,
@@ -125,15 +123,14 @@ class MasukActivity : AppCompatActivity() {
             return
         }
 
-        // Disable button saat proses
+        
         btnMasuk.isEnabled = false
         btnMasuk.text = "Masuk..."
 
-        // Panggil API
+        
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                // Log parameters being sent
-                Log.d("LoadDataDebug", "Logging in with: identifier=$nisOrUsername")
+                
                 val response = RetrofitClient.apiService.login(LoginRequest(identifier = nisOrUsername, password = password))
 
                 withContext(Dispatchers.Main) {
@@ -143,7 +140,6 @@ class MasukActivity : AppCompatActivity() {
                     if (response.isSuccessful) {
                         val body = response.body()
                         val respCode = response.code()
-                        Log.d("MasukActivity", "Response: ${response.code()} - $body")
 
                         if (respCode == 200) {
                             val userData = body!!.data
@@ -157,10 +153,10 @@ class MasukActivity : AppCompatActivity() {
                                 null
                             )
 
-                            // Simpan data user ke SharedPreferences
+                            
                             saveUserSession(userData)
 
-                            // Navigate based on role (Filtering dashboard)
+                            
                             val roleLower = userData?.role?.lowercase()?.trim()
                             val targetActivity = when (roleLower) {
                                 "guru", "wali_kelas", "wali kelas" -> BerandaGuruActivity::class.java
@@ -190,7 +186,6 @@ class MasukActivity : AppCompatActivity() {
                         }
                     } else {
                         val errorBody = response.errorBody()?.string()
-                        Log.e("MasukActivity", "Error: ${response.code()} - $errorBody")
                         MotionToast.createColorToast(
                             this@MasukActivity,
                             "Gagal",
@@ -203,7 +198,6 @@ class MasukActivity : AppCompatActivity() {
                     }
                 }
             } catch (e: Exception) {
-                Log.e("MasukActivity", "Exception: ${e.message}", e)
                 withContext(Dispatchers.Main) {
                     btnMasuk.isEnabled = true
                     btnMasuk.text = "Masuk"
@@ -238,7 +232,7 @@ class MasukActivity : AppCompatActivity() {
             apply()
         }
         
-        // Also save to UserData prefs for consistency with other activities
+        
         val userDataPref = getSharedPreferences("UserData", MODE_PRIVATE)
         with(userDataPref.edit()) {
             putString("auth_token", user.token)
@@ -250,31 +244,25 @@ class MasukActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Check if token exists and validate it with auth/me endpoint
-     */
     private fun checkAndValidateExistingToken() {
         val sharedPref = getSharedPreferences("user_session", MODE_PRIVATE)
         val token = sharedPref.getString("auth_token", null)
         val role = sharedPref.getString("user_role", "siswa")
 
         if (token.isNullOrEmpty()) {
-            Log.d("MasukActivity", "No existing token found")
             return
         }
 
-        Log.d("MasukActivity", "Validating existing token...")
         
-        // Validate token by calling auth/me
+        
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val response = RetrofitClient.apiService.getProfile("Bearer $token")
 
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful && response.code() == 200) {
-                        Log.d("MasukActivity", "Token validation successful, auto-login")
                         
-                        // Navigate based on saved role
+                        
                         val roleLower = role?.lowercase()?.trim()
                         val targetActivity = when (roleLower) {
                             "guru", "wali_kelas", "wali kelas" -> BerandaGuruActivity::class.java
@@ -285,27 +273,21 @@ class MasukActivity : AppCompatActivity() {
                         startActivity(Intent(this@MasukActivity, targetActivity))
                         finish()
                     } else {
-                        Log.e("MasukActivity", "Token validation failed: ${response.code()}")
-                        // Token is invalid, clear it
+                        
                         clearUserSession()
                     }
                 }
             } catch (e: Exception) {
-                Log.e("MasukActivity", "Token validation error: ${e.message}", e)
                 withContext(Dispatchers.Main) {
-                    // Clear token on error
+                    
                     clearUserSession()
                 }
             }
         }
     }
 
-    /**
-     * Clear user session from SharedPreferences
-     */
     private fun clearUserSession() {
         val sharedPref = getSharedPreferences("user_session", MODE_PRIVATE)
         sharedPref.edit().clear().apply()
-        Log.d("MasukActivity", "User session cleared")
     }
 }

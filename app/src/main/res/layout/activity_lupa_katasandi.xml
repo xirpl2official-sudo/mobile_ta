@@ -107,7 +107,7 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.41" />
 
-    <!-- NIS Field -->
+    
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:id="@+id/nisLayout"
@@ -145,7 +145,7 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Email Field -->
+    
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:id="@+id/emailLayout"
@@ -198,7 +198,7 @@
         app:layout_constraintTop_toBottomOf="@id/emailLayout"
         app:layout_constraintWidth_percent="0.75" />
 
-    <!-- Progress Bar -->
+    
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"

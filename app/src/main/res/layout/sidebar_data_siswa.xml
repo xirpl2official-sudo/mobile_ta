@@ -6,7 +6,7 @@
     android:background="@android:color/white"
     android:elevation="8dp">
 
-    <!-- Header with close button and title -->
+    
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/sidebarHeader"
         android:layout_width="0dp"
@@ -50,7 +50,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:tint="@android:color/white" />
 
-        <!-- akun admin (inside header) -->
+        
         <androidx.cardview.widget.CardView
             android:id="@+id/cardUserProfile"
             android:layout_width="0dp"
@@ -71,7 +71,7 @@
                 android:padding="12dp"
                 android:gravity="center_vertical">
 
-                <!-- User Avatar -->
+                
                 <androidx.cardview.widget.CardView
                     android:layout_width="48dp"
                     android:layout_height="48dp"
@@ -89,7 +89,7 @@
 
                 </androidx.cardview.widget.CardView>
 
-                <!-- User Info -->
+                
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -123,7 +123,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Menu Items Container -->
+    
     <LinearLayout
         android:id="@+id/menuItemsContainer"
         android:layout_width="0dp"
@@ -136,7 +136,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Beranda Menu Item (not active) -->
+        
         <LinearLayout
             android:id="@+id/menuBeranda"
             android:layout_width="match_parent"
@@ -165,7 +165,7 @@
 
         </LinearLayout>
 
-        <!-- Jadwal Sholat Menu Item -->
+        
         <LinearLayout
             android:id="@+id/menuJadwalSholat"
             android:layout_width="match_parent"
@@ -194,7 +194,7 @@
 
         </LinearLayout>
 
-        <!-- Data Siswa Menu Item (ACTIVE - highlighted blue) -->
+        
         <androidx.cardview.widget.CardView
             android:id="@+id/menuDataSiswa"
             android:layout_width="match_parent"
@@ -238,7 +238,7 @@
 
         </androidx.cardview.widget.CardView>
 
-        <!-- Presensi Menu Item -->
+        
         <LinearLayout
             android:id="@+id/menuPresensi"
             android:layout_width="match_parent"
@@ -267,7 +267,36 @@
 
         </LinearLayout>
 
-        <!-- Laporan Menu Item -->
+        
+        <LinearLayout
+            android:id="@+id/menuPengajuanIzin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="14dp"
+            android:gravity="center_vertical"
+            android:background="?attr/selectableItemBackground"
+            android:layout_marginBottom="4dp">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_perizinan"
+                android:contentDescription="Pengajuan Izin"
+                app:tint="#666666" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Pengajuan Izin"
+                android:textColor="#333333"
+                android:textSize="14sp"
+                android:layout_marginStart="12dp" />
+
+        </LinearLayout>
+
+        
         <LinearLayout
             android:id="@+id/menuLaporan"
             android:layout_width="match_parent"
@@ -298,7 +327,7 @@
 
     </LinearLayout>
 
-    <!-- Divider before Settings -->
+    
     <View
         android:id="@+id/dividerSettings"
         android:layout_width="0dp"
@@ -310,7 +339,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginBottom="8dp" />
 
-    <!-- Pengaturan Menu Item -->
+    
     <LinearLayout
         android:id="@+id/menuPengaturan"
         android:layout_width="0dp"
@@ -342,7 +371,7 @@
 
     </LinearLayout>
 
-    <!-- Logout Menu Item -->
+    
     <LinearLayout
         android:id="@+id/menuLogout"
         android:layout_width="0dp"

@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     android:background="#0a0e27">
 
-    <!-- Header with Gradient Background -->
+    
     <View
         android:id="@+id/header"
         android:layout_width="0dp"
@@ -19,7 +19,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.08"/>
 
-    <!-- Back Button -->
+    
     <ImageView
         android:id="@+id/btnBack"
         android:layout_width="wrap_content"
@@ -33,7 +33,7 @@
         app:layout_constraintBottom_toBottomOf="@id/header"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Header Title -->
+    
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
@@ -48,7 +48,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Main Content Area -->
+    
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/containerQR"
         android:layout_width="0dp"
@@ -59,7 +59,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Prayer Type Label -->
+        
         <TextView
             android:id="@+id/tvJenisSholat"
             android:layout_width="wrap_content"
@@ -74,7 +74,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
-        <!-- Status Badge -->
+        
         <TextView
             android:id="@+id/tvStatus"
             android:layout_width="wrap_content"
@@ -92,7 +92,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
-        <!-- Countdown Timer -->
+        
         <TextView
             android:id="@+id/tvCountdown"
             android:layout_width="wrap_content"
@@ -107,7 +107,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
-        <!-- QR Code Card -->
+        
         <androidx.cardview.widget.CardView
             android:id="@+id/cardQR"
             android:layout_width="0dp"
@@ -125,7 +125,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp">
 
-            <!-- QR Code Image -->
+            
             <ImageView
                 android:id="@+id/ivQRCode"
                 android:layout_width="match_parent"
@@ -137,7 +137,7 @@
 
         </androidx.cardview.widget.CardView>
 
-        <!-- Instructions Text -->
+        
         <TextView
             android:id="@+id/tvInstructions"
             android:layout_width="0dp"
@@ -154,7 +154,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
-        <!-- Refresh Button -->
+        
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnRefresh"
             android:layout_width="0dp"
@@ -175,7 +175,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Loading Indicator -->
+    
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="48dp"
@@ -187,7 +187,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Error Container -->
+    
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/containerError"
         android:layout_width="0dp"
@@ -198,7 +198,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Error Icon -->
+        
         <ImageView
             android:id="@+id/ivError"
             android:layout_width="80dp"
@@ -211,7 +211,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintVertical_bias="0.35"/>
 
-        <!-- Error Message -->
+        
         <TextView
             android:id="@+id/tvErrorMessage"
             android:layout_width="0dp"
@@ -226,7 +226,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
-        <!-- Retry Button -->
+        
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnRetry"
             android:layout_width="wrap_content"
@@ -242,7 +242,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Bottom Bar -->
+    
     <View
         android:id="@+id/Bawah"
         android:layout_width="0dp"

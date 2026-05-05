@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.widget.TextView
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,10 +13,6 @@ import com.xirpl2.SASMobile.repository.BerandaRepository
 import com.xirpl2.SASMobile.network.RetrofitClient
 import kotlinx.coroutines.launch
 
-/**
- * Guru Dashboard Activity - Read-only view of today's prayer attendance
- * Guru can see statistics but cannot edit any data
- */
 class BerandaGuruActivity : BaseAdminActivity() {
 
     private lateinit var tvTotalSiswaValue: TextView
@@ -34,7 +29,7 @@ class BerandaGuruActivity : BaseAdminActivity() {
     private val repository = BerandaRepository()
     private val TAG = "BerandaGuruActivity"
     
-    // Real-time clock handler
+    
     private val clockHandler = Handler(Looper.getMainLooper())
     private val clockRefreshInterval = 30_000L
     private val clockRunnable = object : Runnable {
@@ -61,10 +56,10 @@ class BerandaGuruActivity : BaseAdminActivity() {
         setupDrawerAndSidebar()
         setupMenuIcon()
         
-        // Setup QR Code Generator Button (guru can generate QR)
+        
         setupQRCodeButton()
         
-        // Load data
+        
         findViewById<android.view.View>(R.id.main).post {
             loadStatistik()
             setupJadwalSholat()
@@ -97,7 +92,6 @@ class BerandaGuruActivity : BaseAdminActivity() {
                     }
                 },
                 onFailure = { error ->
-                    Log.e(TAG, "Error loading stats: ${error.message}")
                 }
             )
         }
@@ -131,7 +125,6 @@ class BerandaGuruActivity : BaseAdminActivity() {
                     }
                 },
                 onFailure = { error ->
-                    Log.e(TAG, "Error loading jadwal: ${error.message}")
                 }
             )
         }
@@ -173,7 +166,6 @@ class BerandaGuruActivity : BaseAdminActivity() {
                     }
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Error loading notifications: ${e.message}")
             }
         }
     }
@@ -198,8 +190,7 @@ class BerandaGuruActivity : BaseAdminActivity() {
                     }
                 },
                 onFailure = { error ->
-                    Log.e(TAG, "Error loading jurusan schedules: ${error.message}")
-                    // Fallback to empty list
+                    
                     runOnUiThread {
                         jurusanAdapter = JurusanAdapter(emptyList<DhuhaJurusanData>())
                         

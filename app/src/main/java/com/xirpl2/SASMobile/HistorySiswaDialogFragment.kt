@@ -3,7 +3,6 @@ package com.xirpl2.SASMobile
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -78,7 +77,7 @@ class HistorySiswaDialogFragment : DialogFragment() {
         recyclerHistory.visibility = View.GONE
         tvEmptyState.visibility = View.GONE
 
-        // Calculate Monday to Sunday of current week
+        
         val calendar = Calendar.getInstance()
         calendar.firstDayOfWeek = Calendar.MONDAY
         calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
@@ -145,7 +144,7 @@ class HistorySiswaDialogFragment : DialogFragment() {
             tvJenisSholat.text = item.jenis_sholat
             tvStatus.text = item.status.uppercase()
             
-            // Set status color
+            
             when (item.status.lowercase()) {
                 "hadir" -> tvStatus.setBackgroundResource(R.drawable.bg_status_hadir)
                 "izin" -> tvStatus.setBackgroundResource(R.drawable.bg_status_izin)

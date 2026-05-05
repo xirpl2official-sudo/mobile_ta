@@ -168,7 +168,7 @@ class PresenceDetailDialogFragment : BottomSheetDialogFragment() {
         
         lifecycleScope.launch {
             if (studentNis == null) {
-                // Own history (student view)
+                
                 repository.getHistorySiswa(token, 0).fold(
                     onSuccess = { history ->
                         activity?.runOnUiThread {
@@ -180,10 +180,10 @@ class PresenceDetailDialogFragment : BottomSheetDialogFragment() {
                             updatePrayerStatusesFromHistory(absensiList)
                         }
                     },
-                    onFailure = { /* Handle error */ }
+                    onFailure = {  }
                 )
             } else {
-                // Other student history (admin view)
+                
                 repository.getHistoryStaff(token, nis = studentNis).fold(
                     onSuccess = { historyStaffData ->
                         activity?.runOnUiThread {
@@ -195,7 +195,7 @@ class PresenceDetailDialogFragment : BottomSheetDialogFragment() {
                             updatePrayerStatusesFromStaff(absensiList)
                         }
                     },
-                    onFailure = { /* Handle error */ }
+                    onFailure = {  }
                 )
             }
         }

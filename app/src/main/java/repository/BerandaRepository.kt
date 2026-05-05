@@ -6,19 +6,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 
-/**
- * Repository untuk mengelola data Beranda dari API
- * Menggunakan coroutines untuk async operations
- */
 class BerandaRepository {
 
     private val apiService = RetrofitClient.apiService
 
-    /**
-     * Get jadwal sholat dari API
-     * @param token Auth token user
-     * @return Result dengan data atau error
-     */
     suspend fun getJadwalSholat(token: String): Result<List<JadwalSholatData>> {
         return withContext(Dispatchers.IO) {
             try {
@@ -41,7 +32,7 @@ class BerandaRepository {
                     return@withContext Result.failure(Exception("Response body kosong"))
                 }
 
-                // Return the data directly as it's a list
+                
                 return@withContext Result.success(body.data)
             } catch (e: Exception) {
                 Result.failure(e)
@@ -49,10 +40,6 @@ class BerandaRepository {
         }
     }
 
-    /**
-     * Get riwayat absensi siswa dari API history/siswa
-     * @param week Minggu ke berapa (0 = minggu ini, 1 = minggu lalu, dst)
-     */
     suspend fun getHistorySiswa(token: String, week: Int = 0): Result<HistorySiswaData> {
         return withContext(Dispatchers.IO) {
             try {
@@ -70,7 +57,7 @@ class BerandaRepository {
                     return@withContext Result.failure(Exception("Response body kosong"))
                 }
 
-                // Handle nullable data - return default empty data if null
+                
                 val data = body.data ?: HistorySiswaData(week = 0, periode = "", absensi = emptyList())
                 return@withContext Result.success(data)
             } catch (e: Exception) {
@@ -79,9 +66,6 @@ class BerandaRepository {
         }
     }
 
-    /**
-     * Get user profile (untuk mendapatkan jenis kelamin)
-     */
     suspend fun getUserProfile(token: String): Result<UserData> {
         return withContext(Dispatchers.IO) {
             try {
@@ -95,9 +79,6 @@ class BerandaRepository {
         }
     }
 
-    /**
-     * Get statistik absensi
-     */
     suspend fun getStatistikAbsensi(
         token: String,
         bulan: Int? = null,
@@ -115,9 +96,6 @@ class BerandaRepository {
         }
     }
 
-    /**
-     * Get statistik total siswa
-     */
     suspend fun getTotalSiswa(token: String): Result<Int> {
         return withContext(Dispatchers.IO) {
             try {
@@ -131,9 +109,6 @@ class BerandaRepository {
         }
     }
 
-    /**
-     * Get jadwal sholat by ID
-     */
     suspend fun getJadwalSholatById(token: String, id: Int): Result<JadwalSholatDetail> {
         return withContext(Dispatchers.IO) {
             try {
@@ -157,9 +132,6 @@ class BerandaRepository {
         }
     }
 
-    /**
-     * Create new jadwal sholat
-     */
     suspend fun createJadwalSholat(
         token: String,
         request: JadwalSholatCreateRequest
@@ -186,9 +158,6 @@ class BerandaRepository {
         }
     }
 
-    /**
-     * Update jadwal sholat
-     */
     suspend fun updateJadwalSholat(
         token: String,
         id: Int,
@@ -216,9 +185,6 @@ class BerandaRepository {
         }
     }
 
-    /**
-     * Delete jadwal sholat
-     */
     suspend fun deleteJadwalSholat(token: String, id: Int): Result<String> {
         return withContext(Dispatchers.IO) {
             try {
@@ -242,11 +208,6 @@ class BerandaRepository {
         }
     }
 
-    /**
-     * Get statistics for today's attendance
-     * No authentication required
-     * Response format: {"message":"...", "data":{...}}
-     */
     suspend fun getStatistics(): Result<StatisticsData> {
         return withContext(Dispatchers.IO) {
             try {
@@ -264,7 +225,7 @@ class BerandaRepository {
                     return@withContext Result.failure(Exception("Respons body kosong"))
                 }
 
-                // Directly return the data since response has "message" and "data" fields
+                
                 return@withContext Result.success(body.data)
             } catch (e: Exception) {
                 Result.failure(e)
@@ -272,9 +233,6 @@ class BerandaRepository {
         }
     }
 
-    /**
-     * Get Dhuha prayer schedules for today (max 2 jurusan)
-     */
     suspend fun getDhuhaToday(token: String): Result<List<DhuhaJurusanData>> {
         return withContext(Dispatchers.IO) {
             try {
@@ -299,9 +257,6 @@ class BerandaRepository {
         }
     }
 
-    /**
-     * Helper function untuk menangani respons API secara konsisten
-     */
     private fun <T> handleApiResponse(response: Response<ApiResponse<T>>): Result<T> {
         if (!response.isSuccessful) {
             return Result.failure(
@@ -314,7 +269,7 @@ class BerandaRepository {
             return Result.failure(Exception("Respons body kosong"))
         }
 
-        // Sesuaikan dengan model ApiResponse.kt: gunakan "status", bukan "success"
+        
         if (body.status) {
             if (body.data != null) {
                 return Result.success(body.data)
@@ -322,15 +277,11 @@ class BerandaRepository {
                 return Result.failure(Exception("Data tidak tersedia"))
             }
         } else {
-            // message di modelmu tidak nullable, jadi aman pakai langsung
+            
             return Result.failure(Exception(body.message))
         }
     }
 
-    /**
-     * Get history for staff (admin/guru/wali_kelas)
-     * Returns attendance summary and list of all students' attendance
-     */
     suspend fun getHistoryStaff(
         token: String,
         startDate: String? = null,
@@ -382,11 +333,6 @@ class BerandaRepository {
         }
     }
 
-    /**
-     * Get list of all students with pagination
-     * Supports search, kelas, jurusan, and jk (gender) filters
-     * Returns the full response with data as List<SiswaItem> and pagination info
-     */
     suspend fun getSiswaList(
         token: String,
         page: Int = 1,
@@ -427,9 +373,6 @@ class BerandaRepository {
         }
     }
 
-    /**
-     * Create a new student
-     */
     suspend fun createSiswa(
         token: String,
         request: CreateSiswaRequest
@@ -465,9 +408,6 @@ class BerandaRepository {
         }
     }
 
-    /**
-     * Update existing student
-     */
     suspend fun updateSiswa(
         token: String,
         nis: String,
@@ -504,9 +444,6 @@ class BerandaRepository {
         }
     }
 
-    /**
-     * Delete student
-     */
     suspend fun deleteSiswa(
         token: String,
         nis: String
@@ -537,9 +474,6 @@ class BerandaRepository {
         }
     }
 
-    /**
-     * Get history staff (for admin dashboard statistics)
-     */
     suspend fun getHistoryStaff(
         token: String,
         startDate: String? = null,
@@ -588,9 +522,6 @@ class BerandaRepository {
             }
         }
     }
-    /**
-     * Submit attendance based on location (Auto Absen)
-     */
     suspend fun submitAbsensi(
         token: String, 
         latitude: Double, 
@@ -634,9 +565,6 @@ class BerandaRepository {
             }
         }
     }
-    /**
-     * Create manual absensi (for Izin/Sakit/Alpha)
-     */
     suspend fun createAbsensi(
         token: String,
         nis: String,

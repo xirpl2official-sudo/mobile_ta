@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Background ring -->
+    
     <item>
         <shape android:shape="ring"
             android:innerRadiusRatio="2.7"
@@ -9,7 +9,7 @@
             <solid android:color="#E8F5E9" />
         </shape>
     </item>
-    <!-- Progress ring -->
+    
     <item>
         <rotate
             android:fromDegrees="0"

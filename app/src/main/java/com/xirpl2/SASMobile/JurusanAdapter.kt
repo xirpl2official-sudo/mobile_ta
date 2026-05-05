@@ -9,9 +9,6 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.xirpl2.SASMobile.model.DhuhaJurusanData
 
-/**
- * Adapter untuk RecyclerView list Jurusan dengan jadwal Dhuha
- */
 class JurusanAdapter(
     private val listJurusan: List<DhuhaJurusanData>
 ) : RecyclerView.Adapter<JurusanAdapter.JurusanViewHolder>() {
@@ -31,20 +28,20 @@ class JurusanAdapter(
     override fun onBindViewHolder(holder: JurusanViewHolder, position: Int) {
         val jurusanData = listJurusan[position]
         
-        // Set nama jurusan
+        
         holder.tvNamaJurusan.text = jurusanData.jurusan
         
-        // Set jadwal info
+        
         if (jurusanData.jadwal.isNotEmpty()) {
-            val jadwal = jurusanData.jadwal[0] // Take first schedule
-            val waktuMulai = jadwal.jam_mulai.substring(0, 5) // HH:MM format
+            val jadwal = jurusanData.jadwal[0] 
+            val waktuMulai = jadwal.jam_mulai.substring(0, 5) 
             val waktuSelesai = jadwal.jam_selesai.substring(0, 5)
             holder.tvLabelHariIni.text = "Dhuha ${waktuMulai}-${waktuSelesai}"
         } else {
             holder.tvLabelHariIni.text = "Dhuha Hari Ini"
         }
 
-        // Set warna background card berdasarkan jurusan
+        
         val warnaJurusan = when (jurusanData.jurusan.uppercase()) {
             "BROADCASTING" -> "#E14648"
             "RPL" -> "#F78B20"
@@ -54,7 +51,7 @@ class JurusanAdapter(
             "MEKATRONIKA" -> "#57A77C"
             "TEI" -> "#059452"
             "DKV" -> "#1087CC"
-            else -> "#2196F3" // Default biru jika tidak cocok
+            else -> "#2196F3" 
         }
         holder.cardJurusan.setCardBackgroundColor(Color.parseColor(warnaJurusan))
     }

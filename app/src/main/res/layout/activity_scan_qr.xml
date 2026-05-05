@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="#0a0e27">
 
-    <!-- Header with Gradient Background -->
+    
     <View
         android:id="@+id/header"
         android:layout_width="0dp"
@@ -18,7 +18,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.08"/>
 
-    <!-- Back Button (aligned to right) -->
+    
     <ImageView
         android:id="@+id/btnBack"
         android:layout_width="wrap_content"
@@ -32,7 +32,7 @@
         app:layout_constraintBottom_toBottomOf="@id/header"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Header Title (centered precisely) -->
+    
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
@@ -48,7 +48,7 @@
         app:layout_constraintEnd_toEndOf="parent"/>
 
 
-    <!-- Guideline for main title position -->
+    
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guidelineMainTitle"
         android:layout_width="wrap_content"
@@ -56,7 +56,7 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.13"/>
 
-    <!-- Main Title -->
+    
     <TextView
         android:id="@+id/tvMainTitle"
         android:layout_width="wrap_content"
@@ -71,7 +71,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Subtitle -->
+    
     <TextView
         android:id="@+id/tvSubtitle"
         android:layout_width="wrap_content"
@@ -85,7 +85,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Guideline for scanner frame center -->
+    
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guidelineScannerTop"
         android:layout_width="wrap_content"
@@ -95,7 +95,7 @@
 
 
 
-    <!-- Scanner Box (White Frame) - Phone: 80% width, 96% height (no ratio) -->
+    
     <androidx.cardview.widget.CardView
         android:id="@+id/cardScanner"
         android:layout_width="0dp"
@@ -111,13 +111,13 @@
         app:layout_constraintHeight_percent="0.46"
         app:layout_constraintVertical_bias="0.0">
 
-        <!-- Inner Container for Padding -->
+        
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:padding="@dimen/qr_frame_padding">
 
-            <!-- Black Scanner Background with rounded corners (278:278 square) -->
+            
             <androidx.cardview.widget.CardView
                 android:id="@+id/scannerInnerCard"
                 android:layout_width="0dp"
@@ -133,7 +133,7 @@
                 app:layout_constraintVertical_chainStyle="packed"
                 app:layout_constraintVertical_bias="0">
 
-                <!-- ZXing Scanner View -->
+                
                 <com.journeyapps.barcodescanner.BarcodeView
                     android:id="@+id/barcodeView"
                     android:layout_width="match_parent"
@@ -141,7 +141,7 @@
 
             </androidx.cardview.widget.CardView>
 
-            <!-- Button inside frame (228:48) -->
+            
             <androidx.cardview.widget.CardView
                 android:id="@+id/btnScanInner"
                 android:layout_width="0dp"
@@ -173,7 +173,7 @@
 
     </androidx.cardview.widget.CardView>
 
-    <!-- Status Text -->
+    
     <TextView
         android:id="@+id/tvStatus"
         android:layout_width="wrap_content"
@@ -187,7 +187,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Loading Progress Bar -->
+    
     <ProgressBar
         android:id="@+id/progressBarScan"
         android:layout_width="32dp"
@@ -199,7 +199,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Result Card (shown after successful verification) -->
+    
     <androidx.cardview.widget.CardView
         android:id="@+id/cardResult"
         android:layout_width="0dp"
@@ -219,7 +219,7 @@
             android:layout_height="wrap_content"
             android:padding="16dp">
 
-            <!-- Success Icon -->
+            
             <ImageView
                 android:id="@+id/ivSuccessIcon"
                 android:layout_width="48dp"
@@ -230,7 +230,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"/>
 
-            <!-- Student Name -->
+            
             <TextView
                 android:id="@+id/tvStudentName"
                 android:layout_width="0dp"
@@ -245,7 +245,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"/>
 
-            <!-- Student Class -->
+            
             <TextView
                 android:id="@+id/tvStudentClass"
                 android:layout_width="0dp"
@@ -259,7 +259,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"/>
 
-            <!-- Divider -->
+            
             <View
                 android:id="@+id/divider"
                 android:layout_width="0dp"
@@ -270,7 +270,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"/>
 
-            <!-- Prayer Type -->
+            
             <TextView
                 android:id="@+id/tvPrayerTypeLabel"
                 android:layout_width="wrap_content"
@@ -294,7 +294,7 @@
                 app:layout_constraintTop_toBottomOf="@id/divider"
                 app:layout_constraintEnd_toEndOf="parent"/>
 
-            <!-- Attendance Status -->
+            
             <TextView
                 android:id="@+id/tvStatusLabel"
                 android:layout_width="wrap_content"
@@ -318,7 +318,7 @@
                 app:layout_constraintTop_toBottomOf="@id/tvPrayerType"
                 app:layout_constraintEnd_toEndOf="parent"/>
 
-            <!-- Attendance Time -->
+            
             <TextView
                 android:id="@+id/tvTimeLabel"
                 android:layout_width="wrap_content"
@@ -342,7 +342,7 @@
                 app:layout_constraintTop_toBottomOf="@id/tvAttendanceStatus"
                 app:layout_constraintEnd_toEndOf="parent"/>
 
-            <!-- Scan Again Button -->
+            
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnScanAgain"
                 android:layout_width="0dp"

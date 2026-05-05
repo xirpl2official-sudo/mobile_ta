@@ -13,9 +13,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.xirpl2.SASMobile.R
 import com.xirpl2.SASMobile.model.SiswaItem
 
-/**
- * RecyclerView Adapter for displaying student data with infinite scroll support
- */
 class SiswaAdapter(
     private val onEditClick: (SiswaItem) -> Unit,
     private val onDeleteClick: (SiswaItem) -> Unit,
@@ -72,7 +69,7 @@ class SiswaAdapter(
                 holder.bind(siswa, onEditClick, onDeleteClick, onDetailClick, isReadOnly)
             }
             is LoadingViewHolder -> {
-                // Loading view, nothing to bind
+                
             }
         }
     }

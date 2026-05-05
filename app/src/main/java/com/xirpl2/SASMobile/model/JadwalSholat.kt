@@ -1,6 +1,6 @@
 package com.xirpl2.SASMobile.model
 
-// Data class untuk Jadwal Sholat
+
 data class JadwalSholat(
     val id: Int = 0,
     val namaSholat: String,

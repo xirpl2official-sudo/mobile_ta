@@ -8,7 +8,7 @@
     android:background="@color/white"
     tools:context=".NotifikasiActivity">
 
-    <!-- Header Background dengan Gradient Biru -->
+    
     <View
         android:id="@+id/headerBackground"
         android:layout_width="0dp"
@@ -19,7 +19,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.08" />
 
-    <!-- Header Content -->
+    
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/headerContent"
         android:layout_width="0dp"
@@ -31,7 +31,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.08">
 
-        <!-- Back Button -->
+        
         <ImageView
             android:id="@+id/btnBack"
             android:layout_width="0dp"
@@ -46,7 +46,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
-        <!-- Title -->
+        
         <TextView
             android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
@@ -63,7 +63,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Action Buttons Row -->
+    
     <LinearLayout
         android:id="@+id/actionButtonsRow"
         android:layout_width="0dp"
@@ -108,7 +108,7 @@
             android:paddingVertical="4dp" />
     </LinearLayout>
 
-    <!-- Divider -->
+    
     <View
         android:id="@+id/divider"
         android:layout_width="0dp"
@@ -118,7 +118,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Notification List -->
+    
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvNotifikasi"
         android:layout_width="0dp"
@@ -133,7 +133,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         tools:listitem="@layout/item_notifikasi" />
 
-    <!-- Empty State (shown when no notifications) -->
+    
     <LinearLayout
         android:id="@+id/emptyState"
         android:layout_width="wrap_content"
@@ -164,7 +164,7 @@
 
     </LinearLayout>
 
-    <!-- Footer Background -->
+    
     <View
         android:id="@+id/footerBackground"
         android:layout_width="0dp"

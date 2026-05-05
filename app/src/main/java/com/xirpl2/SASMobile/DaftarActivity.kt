@@ -1,7 +1,6 @@
 package com.xirpl2.SASMobile
 
 import android.os.Bundle
-import android.util.Log
 import android.view.Gravity
 import android.widget.Button
 import android.widget.EditText
@@ -36,7 +35,7 @@ class DaftarActivity : AppCompatActivity() {
         setContentView(R.layout.activity_daftar)
         window.statusBarColor = 0xFFE48134.toInt()
         
-        // Set statusbar to dark themed (dark icons)
+        
         @Suppress("DEPRECATION")
         window.decorView.systemUiVisibility = android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
 
@@ -62,7 +61,7 @@ class DaftarActivity : AppCompatActivity() {
         }
 
         textMasuk.setOnClickListener {
-            finish() // Kembali ke halaman login
+            finish() 
         }
     }
 
@@ -78,7 +77,7 @@ class DaftarActivity : AppCompatActivity() {
         val password = etPassword.text.toString()
         val email = etEmail.text.toString().trim()
 
-        // Validasi input
+        
         if (nis.isEmpty() || password.isEmpty() || email.isEmpty()) {
             MotionToast.createColorToast(
                 this,
@@ -105,14 +104,13 @@ class DaftarActivity : AppCompatActivity() {
             return
         }
 
-        // Disable button saat proses
+        
         btnDaftar.isEnabled = false
         btnDaftar.text = "Mendaftar..."
 
-        // Panggil API
+        
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                Log.d("DaftarActivity", "Mengirim request register: NIS=$nis")
                 val response = RetrofitClient.apiService.register(RegisterRequest(nis, email, password))
 
                 withContext(Dispatchers.Main) {
@@ -121,7 +119,6 @@ class DaftarActivity : AppCompatActivity() {
 
                     if (response.isSuccessful) {
                         val body = response.body()
-                        Log.d("DaftarActivity", "Response: ${response.code()} - $body")
 
                         MotionToast.createColorToast(
                             this@DaftarActivity,
@@ -132,10 +129,9 @@ class DaftarActivity : AppCompatActivity() {
                             MotionToast.LONG_DURATION,
                             null
                         )
-                        finish() // Kembali ke halaman login
+                        finish() 
                     } else {
                         val errorBody = response.errorBody()?.string()
-                        Log.e("DaftarActivity", "Error: ${response.code()} - $errorBody")
                         MotionToast.createColorToast(
                             this@DaftarActivity,
                             "Gagal",
@@ -148,7 +144,6 @@ class DaftarActivity : AppCompatActivity() {
                     }
                 }
             } catch (e: Exception) {
-                Log.e("DaftarActivity", "Exception: ${e.message}", e)
                 withContext(Dispatchers.Main) {
                     btnDaftar.isEnabled = true
                     btnDaftar.text = "Buat Akun"

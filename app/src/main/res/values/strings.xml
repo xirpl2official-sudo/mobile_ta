@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="LatarBelakangIno">Latar Belakang Logo INORASI</string>
     <string name="SMK">SMK NEGERI 2 SINGOSARI</string>
@@ -55,8 +56,8 @@
     <string name="Sholat">Sholat</string>
     <string name="Status">Status</string>
     <string name="Warning">Peringatan</string>
+
     
-    <!-- Admin Dashboard -->
     <string name="TotalSiswa">Total Siswa</string>
     <string name="TotalHadirHariIni">Total Hadir Hari Ini</string>
     <string name="IzinSakit">Izin/Sakit</string>
@@ -66,7 +67,7 @@
     <string name="SilahkanHariIni">Silahkan Hari Ini</string>
     <string name="icon">Icon</string>
 
-    <!-- Pengaturan Akun -->
+    
     <string name="Pengaturan">Pengaturan</string>
     <string name="PengaturanAkun">Pengaturan Akun</string>
     <string name="KelolaInformasiAkun">Kelola informasi akun anda</string>
@@ -79,10 +80,10 @@
     <string name="Batal">Batal</string>
     <string name="Kembali">Kembali</string>
 
-    <!-- Activity Verifikasi OTP -->
+    
     <string name="Verifikasi">Verifikasi</string>
 
-    <!-- Activity Student QR -->
+    
     <string name="QrCodeSaya">QR CODE SAYA</string>
     <string name="SholatDzuhur">Sholat Dzuhur</string>
     <string name="BerlakuWaktu">Berlaku: 05:00</string>
@@ -91,12 +92,12 @@
     <string name="TidakAdaJadwalAktif">Tidak ada jadwal sholat aktif saat ini</string>
     <string name="CobaLagi">COBA LAGI</string>
 
-    <!-- Activity Staff QR -->
+    
     <string name="QrCodeAbsensi">QR CODE ABSENSI</string>
     <string name="QrCodeAktif">QR Code Aktif</string>
     <string name="InstruksiStaffQR">Tampilkan QR code ini di layar/proyektor.\nSiswa dapat memindai untuk absensi.</string>
 
-    <!-- Activity Scan QR -->
+    
     <string name="PindaiQR">PINDAI QR</string>
     <string name="PindaiKodeQR">PINDAI KODE QR</string>
     <string name="ArahkanKamera">Arahkan kamera ke Kode QR</string>
@@ -109,7 +110,7 @@
     <string name="PlaceholderWaktu">12:30</string>
     <string name="PindaiLagi">PINDAI LAGI</string>
 
-    <!-- Activity Presensi Sholat Admin -->
+    
     <string name="PresensiSholat">Presensi Sholat</string>
     <string name="InputIzin">Input Izin</string>
     <string name="Tambah">Tambah</string>
@@ -123,7 +124,7 @@
     <string name="JenisSholat">Jenis Sholat</string>
     <string name="StatusAbsensi">Status Absensi</string>
 
-    <!-- Activity Jadwal Sholat Admin -->
+    
     <string name="JadwalSholat">Jadwal Sholat</string>
     <string name="PlaceholderJadwalSholatDhuha">Jadwal Sholat Dhuha - konsentrasi keahlian</string>
     <string name="Hari">Hari</string>
@@ -143,7 +144,7 @@
     <string name="WaktuJumat">Waktu: 11:25 - 12:10</string>
     <string name="KelasAllJumat">Kelas: 10, 11</string>
 
-    <!-- Activity Laporan Admin -->
+    
     <string name="Laporan">Laporan</string>
     <string name="LaporanPresensi">Laporan Presensi</string>
     <string name="FilterLaporan">Filter Laporan</string>
@@ -160,7 +161,7 @@
     <string name="TidakAdaDataAbsensiAlt">Tidak ada data absensi</string>
     <string name="Nama">Nama</string>
 
-    <!-- Activity Data Siswa Admin -->
+    
     <string name="DataSiswa">Data Siswa</string>
     <string name="SemuaJK">Semua JK</string>
     <string name="MenampilkanSiswa">Menampilkan /92 siswa dari /92 siswa</string>
@@ -168,7 +169,7 @@
     <string name="JK">JK</string>
     <string name="Aksi">Aksi</string>
 
-    <!-- Activity Input Izin -->
+    
     <string name="InputPerizinanSiswa">Input Perizinan Siswa</string>
     <string name="CariSiswa">Cari Siswa</string>
     <string name="BelumAdaSiswaDipilih">Belum ada siswa dipilih</string>
@@ -176,24 +177,67 @@
     <string name="StatusKehadiran">Status Kehadiran</string>
     <string name="SimpanData">Simpan Data</string>
 
-    <!-- Activity Notifikasi -->
+    
     <string name="TandaiSemuaDibaca">Tandai semua dibaca</string>
     <string name="HapusSemua">Hapus semua</string>
     <string name="TidakAdaNotifikasi">Tidak ada notifikasi</string>
 
-    <!-- Activity Beranda Admin -->
+    
     <string name="PlaceholderDash">--</string>
     <string name="Dhuha">Dhuha</string>
     <string name="WaktuDhuhaJadwal">Waktu : 07.00 - 08.00</string>
 
-    <!-- Activity Beranda Siswa -->
+    
     <string name="PlaceholderNol">0</string>
 
-    <!-- Activity Pengaturan Akun - Placeholder -->
+    
     <string name="PlaceholderInisial">K</string>
     <string name="PlaceholderNIS">778310383063</string>
     <string name="PlaceholderNama">Kenf J Luffy</string>
     <string name="PlaceholderJK">Laki - laki</string>
     <string name="PlaceholderEmail">Kenfjluffy@gmail.com</string>
 
+    
+    <string name="beranda">Beranda</string>
+    <string name="presensi">Presensi</string>
+    <string name="pengajuan_izin">Pengajuan Izin</string>
+    <string name="logout">Keluar</string>
+    <string name="pengaturan">Pengaturan</string>
+    <string name="profile">Profil</string>
+    <string name="menu">Menu</string>
+    <string name="back">Kembali</string>
+    <string name="form_pengajuan_izin">Formulir Pengajuan Perizinan</string>
+    <string name="jenis_perizinan">Jenis Perizinan</string>
+    <string name="pilih_jenis_perizinan">Pilih jenis perizinan</string>
+    <string name="rentang_waktu">Rentang Waktu</string>
+    <string name="tanggal_mulai">Tanggal Mulai</string>
+    <string name="tanggal_berakhir">Tanggal Berakhir</string>
+    <string name="alasan_keterangan">Alasan / Keterangan</string>
+    <string name="tuliskan_alasan_detail">Tuliskan alasan perizinan Anda secara detail...</string>
+    <string name="lampiran_dokumen">Lampiran Dokumen</string>
+    <string name="lampiran_opsional">Lampiran opsional (surat dokter/pendukung)</string>
+    <string name="klik_untuk_unggah">Klik untuk unggah atau seret berkas</string>
+    <string name="format_dokumen">PNG, JPG, atau PDF (Maks. 5MB)</string>
+    <string name="kirim_pengajuan">Kirim Pengajuan</string>
+    <string name="upload">Unggah</string>
+
+    
+    <string name="pengajuan_perizinan">Pengajuan Perizinan</string>
+    <string name="formulir_pengajuan">Formulir Pengajuan</string>
+    <string name="formulir_subtitle">Mohon isi data perizinan dengan lengkap dan benar.</string>
+    <string name="izin_personal">Izin</string>
+    <string name="sisa_kuota_izin">Sisa Kuota Izin</string>
+    <string name="izin_personal_label">Izin (Personal)</string>
+    <string name="sakit_label">Sakit</string>
+    <string name="kuota_izin_value">2 / 5 Hari</string>
+    <string name="sakit_terpakai">3 Hari Terpakai</string>
+    <string name="riwayat_terakhir">Riwayat Terakhir</string>
+    <string name="disetujui">DISETUJUI</string>
+    <string name="izin_keluarga">Izin Keluarga</string>
+    <string name="sakit_flu">Sakit (Flu)</string>
+    <string name="lihat_semua_riwayat">Lihat Semua Riwayat</string>
+    <string name="user_class_placeholder">Siswa - Kelas XII IPA 1</string>
+    <string name="date_range_1">12 Mar - 14 Mar 2024</string>
+    <string name="date_range_2">02 Feb - 03 Feb 2024</string>
+    <string name="lampiran_surat">Lampiran (Surat Dokter/Pendukung)</string>
 </resources>

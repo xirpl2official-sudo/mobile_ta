@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     >
 
-    <!-- Main Content -->
+    
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main"
         android:layout_width="match_parent"
@@ -15,7 +15,7 @@
         android:background="@color/white"
         tools:context=".BerandaAdminActivity">
 
-    <!-- Vector Background untuk Toolbar -->
+    
     <View
         android:id="@+id/VectorAtasMenu"
         android:layout_width="0dp"
@@ -38,7 +38,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.08">
 
-        <!-- Icon Menu (Kiri) -->
+        
         <ImageView
             android:id="@+id/iconMenu"
             android:layout_width="0dp"
@@ -51,7 +51,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
-        <!-- Logo Sekolah -->
+        
         <ImageView
             android:id="@+id/logoSekolah"
             android:layout_width="0dp"
@@ -65,7 +65,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginStart="@dimen/spacing_medium" />
 
-        <!-- Text Dashboard -->
+        
         <TextView
             android:id="@+id/textDashboard"
             android:layout_width="wrap_content"
@@ -80,7 +80,7 @@
             app:layout_constraintVertical_chainStyle="packed"
             android:layout_marginStart="@dimen/spacing_small" />
 
-        <!-- Text Nama Sekolah -->
+        
         <TextView
             android:id="@+id/textNamaSekolah"
             android:layout_width="0dp"
@@ -96,7 +96,7 @@
             app:layout_constraintBottom_toBottomOf="@id/logoSekolah"
             android:layout_marginEnd="@dimen/spacing_text" />
 
-        <!-- Notification Bell with Badge -->
+        
         <FrameLayout
             android:id="@+id/notifContainer"
             android:layout_width="32dp"
@@ -131,7 +131,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- ScrollView untuk Content -->
+    
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollContent"
         android:layout_width="0dp"
@@ -151,7 +151,7 @@
             android:clipToPadding="false"
             android:clipChildren="false">
 
-            <!-- Grid 4 Card Statistik -->
+            
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/statsContainer"
                 android:layout_width="0dp"
@@ -161,7 +161,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 
-                <!-- Card Total Siswa (Kiri Atas) -->
+                
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cardTotalSiswa"
                     android:layout_width="0dp"
@@ -187,7 +187,7 @@
                             android:layout_height="match_parent"
                             android:padding="@dimen/card_padding">
 
-                            <!-- Label di Kiri Atas -->
+                            
                             <TextView
                                 android:id="@+id/tvTotalSiswaLabel"
                                 android:layout_width="wrap_content"
@@ -198,7 +198,7 @@
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
-                            <!-- Value di Tengah -->
+                            
                             <TextView
                                 android:id="@+id/tvTotalSiswaValue"
                                 android:layout_width="wrap_content"
@@ -212,7 +212,7 @@
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintBottom_toBottomOf="parent" />
 
-                            <!-- Icon di Kanan Bawah -->
+                            
                             <ImageView
                                 android:id="@+id/iconTotalSiswa"
                                 android:layout_width="0dp"
@@ -230,7 +230,7 @@
 
                 </androidx.cardview.widget.CardView>
 
-                <!-- Card Hadir Hari Ini (Kanan Atas) -->
+                
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cardHadirHariIni"
                     android:layout_width="0dp"
@@ -256,7 +256,7 @@
                             android:layout_height="match_parent"
                             android:padding="@dimen/card_padding">
 
-                            <!-- Label di Kiri Atas -->
+                            
                             <TextView
                                 android:id="@+id/tvHadirHariIniLabel"
                                 android:layout_width="wrap_content"
@@ -270,7 +270,7 @@
                                 app:layout_constraintTop_toTopOf="parent"
                                 />
 
-                            <!-- Value di Tengah -->
+                            
                             <TextView
                                 android:id="@+id/tvHadirHariIniValue"
                                 android:layout_width="wrap_content"
@@ -284,7 +284,7 @@
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintBottom_toBottomOf="parent" />
 
-                            <!-- Icon di Kanan Bawah -->
+                            
                             <ImageView
                                 android:id="@+id/iconHadirHariIni"
                                 android:layout_width="0dp"
@@ -302,7 +302,7 @@
 
                 </androidx.cardview.widget.CardView>
 
-                <!-- Card Izin/Sakit (Kiri Bawah) -->
+                
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cardIzinSakit"
                     android:layout_width="0dp"
@@ -328,7 +328,7 @@
                             android:layout_height="match_parent"
                             android:padding="@dimen/card_padding">
 
-                            <!-- Label di Kiri Atas -->
+                            
                             <TextView
                                 android:id="@+id/tvIzinSakitLabel"
                                 android:layout_width="wrap_content"
@@ -339,7 +339,7 @@
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
-                            <!-- Value di Tengah -->
+                            
                             <TextView
                                 android:id="@+id/tvIzinSakitValue"
                                 android:layout_width="wrap_content"
@@ -353,7 +353,7 @@
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintBottom_toBottomOf="parent" />
 
-                            <!-- Icon di Kanan Bawah -->
+                            
                             <ImageView
                                 android:id="@+id/iconIzinSakit"
                                 android:layout_width="0dp"
@@ -371,7 +371,7 @@
 
                 </androidx.cardview.widget.CardView>
 
-                <!-- Card Kehadiran (Kanan Bawah) -->
+                
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cardKehadiran"
                     android:layout_width="0dp"
@@ -397,7 +397,7 @@
                             android:layout_height="match_parent"
                             android:padding="@dimen/card_padding">
 
-                            <!-- Label di Kiri Atas -->
+                            
                             <TextView
                                 android:id="@+id/tvKehadiranLabel"
                                 android:layout_width="wrap_content"
@@ -408,7 +408,7 @@
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
-                            <!-- Value di Tengah -->
+                            
                             <TextView
                                 android:id="@+id/tvKehadiranValue"
                                 android:layout_width="wrap_content"
@@ -422,7 +422,7 @@
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintBottom_toBottomOf="parent" />
 
-                            <!-- Icon di Kanan Bawah -->
+                            
                             <ImageView
                                 android:id="@+id/iconKehadiran"
                                 android:layout_width="0dp"
@@ -442,7 +442,7 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <!-- Card Jadwal Sholat Terdekat -->
+            
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardJadwalTerdekat"
                 android:layout_width="0dp"
@@ -461,7 +461,7 @@
                     android:layout_height="wrap_content"
                     android:padding="@dimen/spacing_medium">
 
-                    <!-- Icon Clock + Title -->
+                    
                     <ImageView
                         android:id="@+id/iconJadwal"
                         android:layout_width="@dimen/prayer_icon_size"
@@ -486,7 +486,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         android:layout_marginStart="@dimen/spacing_small" />
 
-                    <!-- Prayer Card -->
+                    
                     <androidx.cardview.widget.CardView
                         android:id="@+id/cardPrayerDetail"
                         android:layout_width="0dp"
@@ -499,7 +499,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         android:layout_marginTop="@dimen/spacing_small">
 
-                        <!-- Stroke border -->
+                        
                         <View
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
@@ -510,7 +510,7 @@
                             android:layout_height="wrap_content"
                             android:padding="@dimen/card_padding">
 
-                            <!-- Sun Icon (left side) -->
+                            
                             <ImageView
                                 android:id="@+id/iconPrayer"
                                 android:layout_width="0dp"
@@ -526,7 +526,7 @@
                                 app:layout_constraintHorizontal_chainStyle="packed"
                                 android:layout_marginStart="@dimen/spacing_text" />
 
-                            <!-- Prayer Name -->
+                            
                             <TextView
                                 android:id="@+id/tvNamaSholat"
                                 android:layout_width="wrap_content"
@@ -539,7 +539,7 @@
                                 app:layout_constraintTop_toTopOf="parent"
                                 android:layout_marginStart="@dimen/spacing_text" />
 
-                            <!-- Prayer Time -->
+                            
                             <TextView
                                 android:id="@+id/tvWaktuSholat"
                                 android:layout_width="wrap_content"
@@ -551,7 +551,7 @@
                                 app:layout_constraintTop_toBottomOf="@id/tvNamaSholat"
                                 android:layout_marginTop="@dimen/spacing_tiny" />
 
-                            <!-- Generate QR Code Button -->
+                            
                             <com.google.android.material.button.MaterialButton
                                 android:id="@+id/btnGenerateQR"
                                 android:layout_width="@dimen/qr_button_width"
@@ -576,7 +576,7 @@
 
             </androidx.cardview.widget.CardView>
 
-            <!-- RecyclerView untuk List Jurusan -->
+            
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvJurusan"
                 android:layout_width="0dp"
@@ -607,7 +607,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Navigation Drawer (Sidebar) -->
+    
     <include
         android:id="@+id/navigationView"
         layout="@layout/sidebar_admin"

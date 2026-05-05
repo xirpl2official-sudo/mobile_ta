@@ -98,7 +98,7 @@ class PresenceDetailPopUpFragment : DialogFragment() {
         val dates = mutableListOf<Date>()
         val cal = Calendar.getInstance()
         
-        // Date strip for last 7 days
+        
         cal.add(Calendar.DAY_OF_YEAR, -6)
         for (i in 0 until 7) {
             dates.add(cal.time)
@@ -119,7 +119,7 @@ class PresenceDetailPopUpFragment : DialogFragment() {
         val token = getAuthToken()
         val cal = Calendar.getInstance()
         
-        // Calculate start and end of current month for accurate Ringkasan
+        
         val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         cal.set(Calendar.DAY_OF_MONTH, 1)
         val startDate = sdf.format(cal.time)
@@ -127,7 +127,7 @@ class PresenceDetailPopUpFragment : DialogFragment() {
         val endDate = sdf.format(cal.time)
 
         lifecycleScope.launch {
-            // Fetch monthly data for the specific student
+            
             repository.getHistoryStaff(
                 token = token,
                 startDate = startDate,
@@ -139,7 +139,7 @@ class PresenceDetailPopUpFragment : DialogFragment() {
                         allAbsensiList.clear()
                         allAbsensiList.addAll(data.absensi)
                         
-                        // Use accurate statistics from backend instead of local counting
+                        
                         data.statistik?.let { stat ->
                             tvHadirCount.text = stat.total_hadir.toString()
                             tvIzinCount.text = stat.total_izin.toString()
@@ -149,7 +149,7 @@ class PresenceDetailPopUpFragment : DialogFragment() {
                         filterPrayerByDate()
                     }
                 },
-                onFailure = { /* Handle error */ }
+                onFailure = {  }
             )
         }
     }

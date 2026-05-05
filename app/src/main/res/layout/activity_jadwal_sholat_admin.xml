@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Main Content -->
+    
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main"
         android:layout_width="match_parent"
@@ -14,7 +14,7 @@
         android:background="@color/white"
         tools:context=".JadwalSholatAdminActivity">
 
-        <!-- Vector Background untuk Toolbar -->
+        
         <View
             android:id="@+id/VectorAtasMenu"
             android:layout_width="0dp"
@@ -37,7 +37,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHeight_percent="0.08">
 
-            <!-- Icon Menu (Kiri) -->
+            
             <ImageView
                 android:id="@+id/iconMenu"
                 android:layout_width="0dp"
@@ -50,7 +50,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent" />
 
-            <!-- Logo Sekolah -->
+            
             <ImageView
                 android:id="@+id/logoSekolah"
                 android:layout_width="0dp"
@@ -64,7 +64,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:layout_marginStart="14dp" />
 
-            <!-- Text Jadwal Sholat -->
+            
             <TextView
                 android:id="@+id/textDashboard"
                 android:layout_width="wrap_content"
@@ -79,7 +79,7 @@
                 app:layout_constraintVertical_chainStyle="packed"
                 android:layout_marginStart="10dp" />
 
-            <!-- Text Nama Sekolah -->
+            
             <TextView
                 android:id="@+id/textNamaSekolah"
                 android:layout_width="0dp"
@@ -97,7 +97,7 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!-- ScrollView untuk Content -->
+        
         <androidx.core.widget.NestedScrollView
             android:id="@+id/scrollContent"
             android:layout_width="0dp"
@@ -117,7 +117,7 @@
                 android:clipToPadding="false"
                 android:clipChildren="false">
 
-                <!-- Button Tambah -->
+                
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnTambah"
                     android:layout_width="wrap_content"
@@ -130,7 +130,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <!-- Card Jadwal Sholat Dhuha -->
+                
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cardJadwalDhuha"
                     android:layout_width="0dp"
@@ -148,7 +148,7 @@
                         android:layout_height="wrap_content"
                         android:padding="16dp">
 
-                        <!-- Icon dan Title -->
+                        
                         <ImageView
                             android:id="@+id/iconJadwalDhuha"
                             android:layout_width="24dp"
@@ -183,7 +183,7 @@
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
-                        <!-- Save Button for Edit Mode -->
+                        
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnSaveDhuha"
                             android:layout_width="wrap_content"
@@ -198,7 +198,7 @@
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintBottom_toBottomOf="@id/iconJadwalDhuha" />
 
-                        <!-- Table Header -->
+                        
                         <LinearLayout
                             android:id="@+id/tableHeader"
                             android:layout_width="match_parent"
@@ -238,7 +238,7 @@
 
                         </LinearLayout>
 
-                        <!-- Table Rows untuk jadwal hari -->
+                        
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/rvDhuhaSchedule"
                             android:layout_width="0dp"
@@ -252,7 +252,7 @@
 
                 </androidx.cardview.widget.CardView>
 
-                <!-- Card Waktu Sholat Dhuha -->
+                
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cardWaktuDhuha"
                     android:layout_width="0dp"
@@ -270,7 +270,7 @@
                         android:layout_height="wrap_content"
                         android:padding="16dp">
 
-                        <!-- Icon Sholat -->
+                        
                         <ImageView
                             android:id="@+id/iconDhuha"
                             android:layout_width="32dp"
@@ -280,7 +280,7 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
-                        <!-- Title dan Days -->
+                        
                         <TextView
                             android:id="@+id/tvSholatDhuha"
                             android:layout_width="0dp"
@@ -316,7 +316,7 @@
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
-                        <!-- Details -->
+                        
                         <TextView
                             android:id="@+id/tvWaktuDhuha"
                             android:layout_width="0dp"
@@ -343,7 +343,7 @@
 
                 </androidx.cardview.widget.CardView>
 
-                <!-- Card Sholat Dzhuhur -->
+                
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cardSholatZuhur"
                     android:layout_width="0dp"
@@ -361,7 +361,7 @@
                         android:layout_height="wrap_content"
                         android:padding="16dp">
 
-                        <!-- Icon Sholat -->
+                        
                         <ImageView
                             android:id="@+id/iconZuhur"
                             android:layout_width="32dp"
@@ -371,7 +371,7 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
-                        <!-- Title dan Days -->
+                        
                         <TextView
                             android:id="@+id/tvSholatZuhur"
                             android:layout_width="0dp"
@@ -407,7 +407,7 @@
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
-                        <!-- Details -->
+                        
                         <TextView
                             android:id="@+id/tvWaktuZuhur"
                             android:layout_width="0dp"
@@ -445,7 +445,7 @@
 
                 </androidx.cardview.widget.CardView>
 
-                <!-- Card Sholat Jumat -->
+                
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cardSholatJumat"
                     android:layout_width="0dp"
@@ -464,7 +464,7 @@
                         android:layout_height="wrap_content"
                         android:padding="16dp">
 
-                        <!-- Icon Sholat -->
+                        
                         <ImageView
                             android:id="@+id/iconJumat"
                             android:layout_width="32dp"
@@ -474,7 +474,7 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
-                        <!-- Title dan Days -->
+                        
                         <TextView
                             android:id="@+id/tvSholatJumat"
                             android:layout_width="0dp"
@@ -510,7 +510,7 @@
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
-                        <!-- Details -->
+                        
                         <TextView
                             android:id="@+id/tvWaktuJumat"
                             android:layout_width="0dp"
@@ -554,7 +554,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Navigation Drawer (Sidebar) -->
+    
     <include
         android:id="@+id/navigationView"
         layout="@layout/sidebar_jadwal_sholat"

@@ -6,21 +6,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 
-/**
- * Repository untuk mengelola QR Code operations
- * - Generate QR code for staff (admin/guru/wali_kelas)
- * - Verify/scan QR code for students (siswa)
- */
 class QRCodeRepository {
 
     private val apiService = RetrofitClient.apiService
 
-    /**
-     * Generate QR code for attendance display (Staff only)
-     * Staff displays this QR code for students to scan
-     * @param token Auth token (Bearer token for admin/guru/wali_kelas role)
-     * @return Result with QRCodeData or error
-     */
     suspend fun generateQRCode(token: String): Result<QRCodeData> {
         return withContext(Dispatchers.IO) {
             try {
@@ -49,13 +38,6 @@ class QRCodeRepository {
         }
     }
 
-    /**
-     * Scan and verify QR code to record student attendance (Student only)
-     * Student scans QR code displayed by staff to record their attendance
-     * @param authToken Auth token (Bearer token for siswa/student role)
-     * @param qrToken Scanned token from QR code
-     * @return Result with verification data or error
-     */
     suspend fun verifyQRCode(authToken: String, qrToken: String): Result<QRCodeVerifyData> {
         return withContext(Dispatchers.IO) {
             try {
@@ -90,13 +72,10 @@ class QRCodeRepository {
         }
     }
 
-    /**
-     * Parse error message from error response body
-     */
     private fun parseErrorMessage(response: Response<*>): String? {
         return try {
             val errorBody = response.errorBody()?.string()
-            // Try to extract message from JSON error response
+            
             if (errorBody != null && errorBody.contains("message")) {
                 val regex = "\"message\"\\s*:\\s*\"([^\"]+)\"".toRegex()
                 regex.find(errorBody)?.groupValues?.get(1)

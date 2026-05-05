@@ -2,7 +2,6 @@ package com.xirpl2.SASMobile
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
@@ -22,15 +21,6 @@ import com.xirpl2.SASMobile.model.QRCodeVerifyData
 import com.xirpl2.SASMobile.repository.QRCodeRepository
 import kotlinx.coroutines.launch
 
-/**
- * Activity untuk Siswa memindai QR Code yang ditampilkan oleh Staff
- * 
- * Workflow:
- * 1. Staff menampilkan QR code di layar/proyektor
- * 2. Siswa membuka activity ini dan memindai QR code
- * 3. Token dari QR code dikirim ke API untuk verifikasi dan pencatatan kehadiran
- * 4. Siswa hanya dapat memindai sekali per sesi sholat
- */
 class ScanQrActivity : AppCompatActivity() {
 
     private lateinit var barcodeView: BarcodeView
@@ -69,7 +59,7 @@ class ScanQrActivity : AppCompatActivity() {
         btnScan = findViewById(R.id.btnScan)
         tvStatus = findViewById(R.id.tvStatus)
         
-        // Result card views (may not exist in old layout)
+        
         cardResult = findViewById(R.id.cardResult) ?: createDummyCardView()
         tvStudentName = findViewById(R.id.tvStudentName) ?: createDummyTextView()
         tvStudentClass = findViewById(R.id.tvStudentClass) ?: createDummyTextView()
@@ -94,19 +84,19 @@ class ScanQrActivity : AppCompatActivity() {
     }
 
     private fun setupClickListeners() {
-        // Back button
+        
         findViewById<androidx.appcompat.widget.AppCompatImageView>(R.id.btnBack).setOnClickListener {
             finish()
         }
 
-        // Scan button
+        
         btnScan.setOnClickListener {
             if (!isProcessing) {
                 startScanning()
             }
         }
 
-        // Scan again button (in result card)
+        
         btnScanAgain.setOnClickListener {
             hideResult()
             startScanning()
@@ -114,7 +104,7 @@ class ScanQrActivity : AppCompatActivity() {
     }
 
     private fun setupBarcodeScanner() {
-        // Only allow QR code format
+        
         barcodeView.decoderFactory = DefaultDecoderFactory(listOf(com.google.zxing.BarcodeFormat.QR_CODE))
     }
 
@@ -133,9 +123,8 @@ class ScanQrActivity : AppCompatActivity() {
                 runOnUiThread {
                     if (result != null && result.text.isNotBlank()) {
                         val qrToken = result.text
-                        Log.d(TAG, "QR Token scanned: ${qrToken.take(50)}...")
                         
-                        // Verify the scanned QR code
+                        
                         verifyQRCode(qrToken)
                     } else {
                         showStatus("Tidak ada QR yang terdeteksi", false)
@@ -144,14 +133,11 @@ class ScanQrActivity : AppCompatActivity() {
             }
 
             override fun possibleResultPoints(resultPoints: MutableList<com.google.zxing.ResultPoint>?) {
-                // Can be ignored
+                
             }
         })
     }
 
-    /**
-     * Verify scanned QR code with the backend API
-     */
     private fun verifyQRCode(qrToken: String) {
         val authToken = getAuthToken()
         
@@ -166,7 +152,6 @@ class ScanQrActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repository.verifyQRCode(authToken, qrToken).fold(
                 onSuccess = { verifyData ->
-                    Log.d(TAG, "Verification success: ${verifyData.siswa.nama}")
                     runOnUiThread {
                         hideLoading()
                         isProcessing = false
@@ -174,7 +159,6 @@ class ScanQrActivity : AppCompatActivity() {
                     }
                 },
                 onFailure = { error ->
-                    Log.e(TAG, "Verification failed: ${error.message}")
                     runOnUiThread {
                         hideLoading()
                         isProcessing = false
@@ -185,12 +169,8 @@ class ScanQrActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Display verification result in the result card
-     * Shows student's own attendance confirmation
-     */
     private fun showVerificationResult(data: QRCodeVerifyData) {
-        // Update student info (this is the student's own info)
+        
         tvStudentName.text = data.siswa.nama
         
         val classInfo = if (data.siswa.jurusan != null) {
@@ -200,12 +180,12 @@ class ScanQrActivity : AppCompatActivity() {
         }
         tvStudentClass.text = classInfo
         
-        // Update attendance info
+        
         tvPrayerType.text = "Sholat ${data.absensi.jenis_sholat}"
         tvAttendanceStatus.text = data.absensi.status
         tvAttendanceTime.text = formatTime(data.absensi.waktu_absen)
         
-        // Set status color based on attendance status
+        
         val statusColor = when (data.absensi.status.uppercase()) {
             "HADIR" -> getColor(android.R.color.holo_green_dark)
             "ALPHA" -> getColor(android.R.color.holo_red_dark)
@@ -213,19 +193,19 @@ class ScanQrActivity : AppCompatActivity() {
         }
         tvAttendanceStatus.setTextColor(statusColor)
         
-        // Show the result card
+        
         cardResult.visibility = View.VISIBLE
         
-        // Show success status for student
+        
         showStatus("✓ Kehadiran Anda berhasil dicatat!", true)
         
-        // Play success feedback for student
+        
         Toast.makeText(this, "Kehadiran berhasil dicatat!", Toast.LENGTH_SHORT).show()
     }
 
     private fun formatTime(waktuAbsen: String): String {
         return try {
-            // Extract time part from datetime string
+            
             if (waktuAbsen.contains("T")) {
                 val timePart = waktuAbsen.substringAfter("T").substringBefore("Z")
                 val parts = timePart.split(":")
@@ -276,7 +256,7 @@ class ScanQrActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        // Don't auto-resume, control manually via decodeSingle
+        
     }
 
     override fun onPause() {

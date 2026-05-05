@@ -17,14 +17,14 @@
         android:padding="@dimen/card_padding"
         android:gravity="center_vertical">
 
-        <!-- Container Kiri: Nama & Jam Sholat -->
+        
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <!-- Nama Sholat -->
+            
             <TextView
                 android:id="@+id/tvNamaSholat"
                 android:layout_width="wrap_content"
@@ -34,7 +34,7 @@
                 android:textSize="@dimen/text_nama_sholat"
                 android:textStyle="bold" />
 
-            <!-- Jam Sholat -->
+            
             <TextView
                 android:id="@+id/tvJamSholat"
                 android:layout_width="wrap_content"
@@ -46,7 +46,7 @@
 
         </LinearLayout>
 
-        <!-- Status Badge (Kanan) -->
+        
         <TextView
             android:id="@+id/textStatusSholat"
             android:layout_width="wrap_content"
