@@ -116,7 +116,7 @@ class VerifikasiOtpActivity : AppCompatActivity() {
                     
                     
                     
-                    val isSuccessByStatus = apiResponse.status
+                    val isSuccessByStatus = apiResponse.status == true
                     val isSuccessByVerified = response.body()?.let { 
                         val jsonStr = Gson().toJson(it)
                         jsonStr.contains("\"verified\":true") || 

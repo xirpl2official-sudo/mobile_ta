@@ -163,7 +163,7 @@ class BuatSandiBaruActivity : AppCompatActivity() {
 
                 if (response.isSuccessful && response.body() != null) {
                     val apiResponse = response.body()!!
-                    if (apiResponse.status) {
+                    if (apiResponse.status == true) {
                         MotionToast.createColorToast(
                             this@BuatSandiBaruActivity,
                             "Berhasil",

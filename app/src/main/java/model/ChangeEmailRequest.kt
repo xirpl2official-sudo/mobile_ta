@@ -4,5 +4,12 @@ import com.google.gson.annotations.SerializedName
 
 data class ChangeEmailRequest(
     @SerializedName("new_email")
-    val email: String
+    val newEmail: String
+)
+
+data class VerifyEmailOTPRequest(
+    @SerializedName("new_email")
+    val newEmail: String,
+    @SerializedName("otp")
+    val otp: String
 )

@@ -315,7 +315,7 @@ class PengaturanAkunActivity : AppCompatActivity() {
                         Toast.LENGTH_SHORT
                     ).show()
                 }                
-                val request = com.xirpl2.SASMobile.model.ChangeEmailRequest(email = newEmail)
+                val request = com.xirpl2.SASMobile.model.ChangeEmailRequest(newEmail = newEmail)
                 
                 val response = RetrofitClient.apiService.changeEmail("Bearer $token", request)
                 
@@ -323,16 +323,14 @@ class PengaturanAkunActivity : AppCompatActivity() {
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful && response.body() != null) {
                         val apiResponse = response.body()!!
-                        val updatedData = currentData.copy(email = newEmail)
-                        currentUserData = updatedData
-                        sharedPref.edit().putString("user_email", newEmail).apply()
-                        etEmail.text = newEmail
+                        
                         
                         Toast.makeText(
                             this@PengaturanAkunActivity,
-                            apiResponse.message ?: "Email berhasil diubah",
-                            Toast.LENGTH_SHORT
+                            apiResponse.message ?: "Kode OTP telah dikirim ke email baru Anda",
+                            Toast.LENGTH_LONG
                         ).show()
+                        
                     } else {
                         val errorBody = response.errorBody()?.string()
                         

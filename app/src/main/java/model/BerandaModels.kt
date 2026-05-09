@@ -101,7 +101,7 @@ data class UserData(
 )
 
 data class StatisticsResponse(
-    val message: String,
+    val message: String? = null,
     val data: StatisticsData
 )
 
@@ -122,9 +122,9 @@ data class StatisticsData(
 )
 
 data class StatistikAbsensiResponse(
-    val success: Boolean,
-    val message: String,
-    val data: StatistikData
+    val success: Boolean? = null,
+    val message: String? = null,
+    val data: StatisticsData 
 )
 
 data class StatistikData(
@@ -156,27 +156,44 @@ data class AbsensiData(
 )
 
 data class HistorySiswaResponse(
-    val message: String,
+    val message: String? = null,
     val data: HistorySiswaData? = null
 )
 
 data class HistorySiswaData(
-    val week: Int = 0,
+    val siswa: SiswaInfo? = null,
     val periode: String = "",
+    val start_date: String? = null,
+    val end_date: String? = null,
+    val statistik: HistoryStatistik? = null,
     val absensi: List<AbsensiHistoryItem>? = null
 )
 
+data class SiswaInfo(
+    val nis: String,
+    val nama_siswa: String,
+    val kelas: String,
+    val jurusan: String
+)
+
+data class HistoryStatistik(
+    val total_absensi: Long,
+    val total_hadir: Long,
+    val total_izin: Long,
+    val total_sakit: Long,
+    val total_alpha: Long,
+    val persentase_kehadiran: Double
+)
+
 data class AbsensiHistoryItem(
+    @SerializedName("id_absen")
     val id: Int = 0,
     val tanggal: String = "",
     val hari: String? = null,
+    @SerializedName("jenis_sholat")
     val jenis_sholat: String? = null,
-    val jam_mulai: String? = null,
-    val jam_selesai: String? = null,
-    val status: String = "ALPHA",
-    val waktu_absen: String? = null
+    val status: String = "ALPHA"
 ) {
-    
     fun getPrayerName(): String = jenis_sholat ?: "Unknown"
 }
 
@@ -280,3 +297,95 @@ data class NotificationItem(
     val waktu_mulai: String,
     val id_jadwal: Int
 )
+
+data class DeviceAuthRequest(
+    @SerializedName("hardware_id")
+    val hardwareId: String,
+    val imei: String? = null,
+    @SerializedName("device_name")
+    val deviceName: String? = null,
+    @SerializedName("device_model")
+    val deviceModel: String? = null,
+    @SerializedName("os_version")
+    val osVersion: String? = null
+)
+
+data class DeviceInfoResponse(
+    val message: String? = null,
+    val data: DeviceInfo
+)
+
+data class DeviceInfo(
+    @SerializedName("hardware_id")
+    val hardwareId: String,
+    val imei: String? = null,
+    @SerializedName("device_name")
+    val deviceName: String? = null,
+    @SerializedName("device_model")
+    val deviceModel: String? = null,
+    @SerializedName("os_version")
+    val osVersion: String? = null,
+    @SerializedName("is_verified")
+    val isVerified: Boolean = false,
+    @SerializedName("last_auth_at")
+    val lastAuthAt: String? = null,
+    @SerializedName("changed_at")
+    val changedAt: String? = null
+)
+
+data class BarcodeData(
+    val barcode: String,
+    val token: String,
+    @SerializedName("expires_at")
+    val expiresAt: String,
+    @SerializedName("jenis_sholat")
+    val jenisSholat: String,
+    @SerializedName("id_template")
+    val idTemplate: Int
+)
+
+data class BarcodeVerifyRequest(
+    val barcode: String,
+    @SerializedName("hardware_id")
+    val hardwareId: String
+)
+
+data class QRCodeGenerateResponse(
+    val message: String,
+    val data: QRCodeData
+)
+
+data class QRCodeData(
+    @SerializedName("qr_code")
+    val qrCode: String,
+    val token: String,
+    @SerializedName("expires_at")
+    val expiresAt: String,
+    @SerializedName("jenis_sholat")
+    val jenisSholat: String,
+    @SerializedName("id_template")
+    val idTemplate: Int
+)
+
+data class QRCodeVerifyRequest(
+    val token: String
+)
+
+data class QRCodeVerifyResponse(
+    val message: String,
+    val data: QRCodeVerifyData
+)
+
+data class QRCodeVerifyData(
+    val valid: Boolean,
+    val nis: String,
+    @SerializedName("nama_siswa")
+    val namaSiswa: String,
+    val kelas: String,
+    val jurusan: String,
+    @SerializedName("jenis_sholat")
+    val jenisSholat: String,
+    val tanggal: String,
+    val status: String
+)
+

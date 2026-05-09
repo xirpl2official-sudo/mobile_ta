@@ -197,11 +197,11 @@ class BerandaRepository {
                 }
                 
                 val body = response.body()
-                if (body == null || !body.status) {
+                if (body == null || body.status != true) {
                     return@withContext Result.failure(Exception(body?.message ?: "Gagal menghapus"))
                 }
                 
-                return@withContext Result.success(body.message)
+                return@withContext Result.success(body.message ?: "Berhasil")
             } catch (e: Exception) {
                 Result.failure(e)
             }
@@ -270,7 +270,7 @@ class BerandaRepository {
         }
 
         
-        if (body.status) {
+        if (body.status == true) {
             if (body.data != null) {
                 return Result.success(body.data)
             } else {
@@ -278,7 +278,7 @@ class BerandaRepository {
             }
         } else {
             
-            return Result.failure(Exception(body.message))
+            return Result.failure(Exception(body.message ?: "Gagal memproses permintaan"))
         }
     }
 
@@ -392,8 +392,8 @@ class BerandaRepository {
                     return@withContext Result.failure(Exception("Response body kosong"))
                 }
 
-                if (!body.status) {
-                    return@withContext Result.failure(Exception(body.message))
+                if (body.status != true) {
+                    return@withContext Result.failure(Exception(body.message ?: "Gagal membuat siswa"))
                 }
 
                 val data = body.data
@@ -428,8 +428,8 @@ class BerandaRepository {
                     return@withContext Result.failure(Exception("Response body kosong"))
                 }
 
-                if (!body.status) {
-                    return@withContext Result.failure(Exception(body.message))
+                if (body.status != true) {
+                    return@withContext Result.failure(Exception(body.message ?: "Gagal memperbarui siswa"))
                 }
 
                 val data = body.data
@@ -463,11 +463,11 @@ class BerandaRepository {
                     return@withContext Result.failure(Exception("Response body kosong"))
                 }
 
-                if (!body.status) {
-                    return@withContext Result.failure(Exception(body.message))
+                if (body.status != true) {
+                    return@withContext Result.failure(Exception(body.message ?: "Gagal menghapus siswa"))
                 }
 
-                return@withContext Result.success(body.message)
+                return@withContext Result.success(body.message ?: "Berhasil")
             } catch (e: Exception) {
                 Result.failure(e)
             }
@@ -551,8 +551,8 @@ class BerandaRepository {
                     return@withContext Result.failure(Exception("Response body kosong"))
                 }
                 
-                if (!body.status) {
-                    return@withContext Result.failure(Exception(body.message))
+                if (body.status != true) {
+                    return@withContext Result.failure(Exception(body.message ?: "Gagal submit absensi"))
                 }
                 
                 if (body.data == null) {
@@ -585,8 +585,8 @@ class BerandaRepository {
                     return@withContext Result.failure(Exception("Response body kosong"))
                 }
                 
-                if (!body.status) {
-                    return@withContext Result.failure(Exception(body.message))
+                if (body.status != true) {
+                    return@withContext Result.failure(Exception(body.message ?: "Gagal membuat absensi"))
                 }
                 
                 val data = body.data
