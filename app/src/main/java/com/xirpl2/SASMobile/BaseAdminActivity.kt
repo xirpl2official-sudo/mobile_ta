@@ -132,12 +132,7 @@ abstract class BaseAdminActivity : AppCompatActivity() {
         val currentItem = getCurrentMenuItem()
 
         
-        setupMenuItem(
-            menuId = R.id.menuBeranda,
-            targetItem = AdminMenuItem.BERANDA,
-            currentItem = currentItem,
-            isCardView = currentItem == AdminMenuItem.BERANDA
-        ) {
+        setupMenuItem(R.id.menuBeranda, AdminMenuItem.BERANDA, currentItem) {
             val role = getSharedPreferences("user_session", Context.MODE_PRIVATE)
                 .getString("user_role", "")?.lowercase() ?: ""
                 
@@ -150,82 +145,46 @@ abstract class BaseAdminActivity : AppCompatActivity() {
         }
 
         
-        setupMenuItem(
-            menuId = R.id.menuJadwalSholat,
-            targetItem = AdminMenuItem.JADWAL_SHOLAT,
-            currentItem = currentItem,
-            isCardView = currentItem == AdminMenuItem.JADWAL_SHOLAT
-        ) {
+        setupMenuItem(R.id.menuJadwalSholat, AdminMenuItem.JADWAL_SHOLAT, currentItem) {
             navigateTo(JadwalSholatAdminActivity::class.java)
         }
 
         
-        setupMenuItem(
-            menuId = R.id.menuDataSiswa,
-            targetItem = AdminMenuItem.DATA_SISWA,
-            currentItem = currentItem,
-            isCardView = currentItem == AdminMenuItem.DATA_SISWA
-        ) {
+        setupMenuItem(R.id.menuDataSiswa, AdminMenuItem.DATA_SISWA, currentItem) {
             navigateTo(DataSiswaAdminActivity::class.java)
         }
 
         
-        setupMenuItem(
-            menuId = R.id.menuKelolaSiswa,
-            targetItem = AdminMenuItem.KELOLA_SISWA,
-            currentItem = currentItem,
-            isCardView = currentItem == AdminMenuItem.KELOLA_SISWA
-        ) {
+        setupMenuItem(R.id.menuKelolaSiswa, AdminMenuItem.KELOLA_SISWA, currentItem) {
             
         }
 
         
-        setupMenuItem(
-            menuId = R.id.menuKelolaKelas,
-            targetItem = AdminMenuItem.KELOLA_KELAS,
-            currentItem = currentItem,
-            isCardView = currentItem == AdminMenuItem.KELOLA_KELAS
-        ) {
+        setupMenuItem(R.id.menuKelolaKelas, AdminMenuItem.KELOLA_KELAS, currentItem) {
             navigateTo(KelolaKelasActivity::class.java)
         }
 
         
-        setupMenuItem(
-            menuId = R.id.menuPresensi,
-            targetItem = AdminMenuItem.PRESENSI,
-            currentItem = currentItem,
-            isCardView = currentItem == AdminMenuItem.PRESENSI
-        ) {
+        setupMenuItem(R.id.menuPresensi, AdminMenuItem.PRESENSI, currentItem) {
             navigateTo(PresensiSholatAdminActivity::class.java)
         }
 
         
-        setupMenuItem(
-            menuId = R.id.menuPengajuanIzin,
-            targetItem = AdminMenuItem.PENGAJUAN_IZIN,
-            currentItem = currentItem,
-            isCardView = currentItem == AdminMenuItem.PENGAJUAN_IZIN
-        ) {
+        setupMenuItem(R.id.menuPengajuanIzin, AdminMenuItem.PENGAJUAN_IZIN, currentItem) {
             
         }
 
         
-        setupMenuItem(
-            menuId = R.id.menuLaporan,
-            targetItem = AdminMenuItem.LAPORAN,
-            currentItem = currentItem,
-            isCardView = currentItem == AdminMenuItem.LAPORAN
-        ) {
+        setupMenuItem(R.id.menuLaporan, AdminMenuItem.LAPORAN, currentItem) {
             navigateTo(LaporanAdminActivity::class.java)
         }
 
         
-        setupMenuItem(
-            menuId = R.id.menuQRCode,
-            targetItem = AdminMenuItem.QR_CODE,
-            currentItem = currentItem,
-            isCardView = currentItem == AdminMenuItem.QR_CODE
-        ) {
+        setupMenuItem(R.id.menuQRCode, AdminMenuItem.QR_CODE, currentItem) {
+            
+        }
+
+        setupMenuItem(R.id.menuSiswaBelumTerdaftar, AdminMenuItem.SISWA_BELUM_TERDAFTAR, currentItem) {
             
         }
 
@@ -247,18 +206,28 @@ abstract class BaseAdminActivity : AppCompatActivity() {
         menuId: Int,
         targetItem: AdminMenuItem,
         currentItem: AdminMenuItem,
-        isCardView: Boolean,
         onClick: () -> Unit
     ) {
-        val menuView: View? = if (isCardView) {
-            sidebarView.findViewById<CardView>(menuId)
-        } else {
-            sidebarView.findViewById<LinearLayout>(menuId)
+        val menuView = sidebarView.findViewById<LinearLayout>(menuId) ?: return
+        val isActive = targetItem == currentItem
+
+        if (isActive) {
+            
+            menuView.setBackgroundColor(0xFF2886D6.toInt()) 
+            
+            
+            for (i in 0 until menuView.childCount) {
+                val child = menuView.getChildAt(i)
+                if (child is ImageView) {
+                    child.setColorFilter(0xFFFFFFFF.toInt())
+                } else if (child is TextView) {
+                    child.setTextColor(0xFFFFFFFF.toInt())
+                }
+            }
         }
 
-        menuView?.setOnClickListener {
-            if (targetItem == currentItem) {
-                
+        menuView.setOnClickListener {
+            if (isActive) {
                 closeSidebar()
             } else {
                 onClick()

@@ -357,11 +357,6 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
         if (::recyclerPresensi.isInitialized) {
             recyclerPresensi.adapter = null
         }
-        try {
-            lifecycleScope.cancel()
-        } catch (e: Exception) {
-            android.util.Log.e(TAG, "Error cancelling lifecycleScope: ${e.message}")
-        }
         super.onDestroy()
     }
 

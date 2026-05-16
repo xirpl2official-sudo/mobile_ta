@@ -157,13 +157,8 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
     }
 
     override fun onDestroy() {
-        try {
-            val rvDhuhaSchedule = findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.rvDhuhaSchedule)
-            rvDhuhaSchedule?.adapter = null
-            lifecycleScope.cancel()
-        } catch (e: Exception) {
-            android.util.Log.e(TAG, "Error in onDestroy: ${e.message}")
-        }
+        val rvDhuhaSchedule = findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.rvDhuhaSchedule)
+        rvDhuhaSchedule?.adapter = null
         super.onDestroy()
     }
 

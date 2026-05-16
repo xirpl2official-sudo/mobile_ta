@@ -372,7 +372,7 @@
     
     <include
         android:id="@+id/navigationView"
-        layout="@layout/sidebar_presensi"
+        layout="@layout/sidebar_admin"
         android:layout_width="280dp"
         android:layout_height="match_parent"
         android:layout_gravity="start" />
