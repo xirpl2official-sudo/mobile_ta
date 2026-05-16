@@ -110,48 +110,6 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Response<ApiResponse<com.google.gson.JsonObject>>
 
-    @GET("v2/prayer-schedules/dhuha/keahlian")
-    suspend fun getJadwalDhuhaKeahlian(
-        @Header("Authorization") token: String
-    ): Response<JadwalDhuhaKeahlianResponse>
-
-    @GET("v2/prayer-schedules/dhuha/detail")
-    suspend fun getSholatDhuhaDetail(
-        @Header("Authorization") token: String
-    ): Response<SholatDhuhaDetailResponse>
-
-    @GET("v2/prayer-schedules/dzuhur/detail")
-    suspend fun getSholatDzuhurDetail(
-        @Header("Authorization") token: String
-    ): Response<SholatDzuhurDetailResponse>
-
-    @POST("v2/prayer-schedules/dhuha/keahlian")
-    suspend fun createJadwalDhuhaKeahlian(
-        @Header("Authorization") token: String,
-        @Body request: JadwalDhuhaKeahlian
-    ): Response<MessageResponse>
-
-    @PUT("v2/prayer-schedules/dhuha/keahlian/{id}")
-    suspend fun updateJadwalDhuhaKeahlian(
-        @Header("Authorization") token: String,
-        @Path("id") id: Int,
-        @Body request: JadwalDhuhaKeahlian
-    ): Response<MessageResponse>
-
-    @PUT("v2/prayer-schedules/dhuha/{id}")
-    suspend fun updateSholatDhuha(
-        @Header("Authorization") token: String,
-        @Path("id") id: Int,
-        @Body request: SholatDhuhaDetail
-    ): Response<MessageResponse>
-
-    @PUT("v2/prayer-schedules/dzuhur/{id}")
-    suspend fun updateSholatDzuhur(
-        @Header("Authorization") token: String,
-        @Path("id") id: Int,
-        @Body request: SholatDzuhurDetail
-    ): Response<MessageResponse>
-
     // --- Attendance ---
 
     @GET("v2/attendance/history")

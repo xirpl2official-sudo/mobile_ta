@@ -14,8 +14,11 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
+import com.xirpl2.SASMobile.model.JadwalDhuhaKeahlian
 import com.xirpl2.SASMobile.model.JadwalSholatData
 import com.xirpl2.SASMobile.model.JadwalSholatUpdateRequest
+import com.xirpl2.SASMobile.model.SholatDhuhaDetail
+import com.xirpl2.SASMobile.model.SholatDzuhurDetail
 import com.xirpl2.SASMobile.repository.BerandaRepository
 import kotlinx.coroutines.launch
 
