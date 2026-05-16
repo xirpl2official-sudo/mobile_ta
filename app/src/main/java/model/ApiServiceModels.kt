@@ -271,11 +271,3 @@ data class BackupConfirmRequest(
     val backup_id: String,
     val confirmed: Boolean
 )
-
-// --- Generic ApiResponse wrapper ---
-
-data class ApiResponse<T>(
-    val success: Boolean = true,
-    val message: String? = null,
-    val data: T? = null
-)
