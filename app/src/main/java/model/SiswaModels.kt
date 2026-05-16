@@ -31,6 +31,8 @@ data class CreateSiswaRequest(
     val nama_siswa: String,
     @SerializedName("jk")
     val jenis_kelamin: String,
+    val kelas: String? = null,
+    val jurusan: String? = null,
     val id_kelas: Int? = null,
     val id_jurusan: Int? = null,
     val id_tahun_masuk: Int? = null,
@@ -42,6 +44,8 @@ data class UpdateSiswaRequest(
     val nama_siswa: String? = null,
     @SerializedName("jk")
     val jenis_kelamin: String? = null,
+    val kelas: String? = null,
+    val jurusan: String? = null,
     val id_kelas: Int? = null,
     val id_jurusan: Int? = null,
     val id_tahun_masuk: Int? = null,

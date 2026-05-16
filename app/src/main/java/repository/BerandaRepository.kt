@@ -237,10 +237,11 @@ class BerandaRepository {
     suspend fun getSiswaList(
         token: String,
         page: Int = 1,
-        limit: Int = 100,
+        pageSize: Int = 100,
         search: String? = null,
         kelas: String? = null,
-        jurusan: String? = null
+        jurusan: String? = null,
+        jk: String? = null
     ): Result<SiswaListPaginatedResponse> {
         return withContext(Dispatchers.IO) {
             try {
@@ -248,7 +249,7 @@ class BerandaRepository {
                     apiService.getStudents(
                         "Bearer $token",
                         page,
-                        limit,
+                        pageSize,
                         search,
                         kelas,
                         jurusan
