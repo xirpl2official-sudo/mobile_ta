@@ -6,5 +6,5 @@ data class Notifikasi(
     val message: String,
     val time: String,
     val type: String = "info",
-    val isRead: Boolean = false
+    var isRead: Boolean = false
 )

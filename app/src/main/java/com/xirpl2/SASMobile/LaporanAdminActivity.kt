@@ -36,6 +36,7 @@ import java.util.Locale
 class LaporanAdminActivity : BaseAdminActivity() {
 
     private val TAG = "LaporanAdminActivity"
+    private val repository = BerandaRepository()
 
     
     private lateinit var mainScrollView: NestedScrollView

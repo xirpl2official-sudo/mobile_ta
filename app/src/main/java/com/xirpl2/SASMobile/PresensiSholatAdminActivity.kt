@@ -16,11 +16,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.xirpl2.SASMobile.adapter.PresensiAdapter
 import com.xirpl2.SASMobile.model.AbsensiStaffItem
 import com.xirpl2.SASMobile.network.RetrofitClient
+import com.xirpl2.SASMobile.repository.BerandaRepository
 import kotlinx.coroutines.launch
 
 class PresensiSholatAdminActivity : BaseAdminActivity() {
 
     private val TAG = "PresensiSholatAdmin"
+    private val repository = BerandaRepository()
 
     
     private lateinit var tvTitle: TextView

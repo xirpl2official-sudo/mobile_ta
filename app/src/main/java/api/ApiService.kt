@@ -147,7 +147,7 @@ interface ApiService {
     suspend fun verifyQRCode(
         @Header("Authorization") token: String,
         @Body request: QRCodeVerifyRequest
-    ): Response<MessageResponse>
+    ): Response<QRCodeVerifyResponse>
 
     @GET("v2/attendance/code/generate")
     suspend fun generateAttendanceCode(

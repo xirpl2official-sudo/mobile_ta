@@ -130,11 +130,9 @@ class PresenceDetailPopUpFragment : DialogFragment() {
             
             repository.getHistoryStaff(
                 token = token,
-                filters = mapOf(
-                    "startDate" to startDate,
-                    "endDate" to endDate,
-                    "nis" to studentNis
-                )
+                startDate = startDate,
+                endDate = endDate,
+                search = studentNis
             ).fold(
                 onSuccess = { data ->
                     activity?.runOnUiThread {

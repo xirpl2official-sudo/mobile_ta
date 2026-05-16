@@ -184,7 +184,7 @@ class PresenceDetailDialogFragment : BottomSheetDialogFragment() {
                 )
             } else {
                 
-                repository.getHistoryStaff(token, nis = studentNis).fold(
+                repository.getHistoryStaff(token, search = studentNis).fold(
                     onSuccess = { historyStaffData ->
                         activity?.runOnUiThread {
                             val absensiList = historyStaffData.absensi
