@@ -12,7 +12,10 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
+import com.xirpl2.SASMobile.model.RiwayatAbsensi
 import com.xirpl2.SASMobile.model.SiswaItem
 import com.xirpl2.SASMobile.repository.BerandaRepository
 import kotlinx.coroutines.launch
@@ -31,6 +34,9 @@ class SiswaDetailDialogFragment : DialogFragment() {
     private lateinit var tvAgama: TextView
     private lateinit var progressBar: ProgressBar
     private lateinit var layoutContent: View
+    private lateinit var recyclerRiwayat: RecyclerView
+    private lateinit var progressRiwayat: ProgressBar
+    private lateinit var tvEmptyRiwayat: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +54,7 @@ class SiswaDetailDialogFragment : DialogFragment() {
 
         initViews(view)
         loadStudentDetail()
+        loadRiwayatAbsensi()
     }
 
     private fun initViews(view: View) {
@@ -59,6 +66,9 @@ class SiswaDetailDialogFragment : DialogFragment() {
         tvAgama = view.findViewById(R.id.tvAgama)
         progressBar = view.findViewById(R.id.progressBar)
         layoutContent = view.findViewById(R.id.layoutContent)
+        recyclerRiwayat = view.findViewById(R.id.recyclerRiwayat)
+        progressRiwayat = view.findViewById(R.id.progressRiwayat)
+        tvEmptyRiwayat = view.findViewById(R.id.tvEmptyRiwayat)
 
         view.findViewById<ImageView>(R.id.btnClose).setOnClickListener { dismiss() }
         view.findViewById<MaterialButton>(R.id.btnTutup).setOnClickListener { dismiss() }
@@ -114,6 +124,52 @@ class SiswaDetailDialogFragment : DialogFragment() {
                         progressBar.visibility = View.GONE
                         layoutContent.visibility = View.VISIBLE
                         Toast.makeText(context, "Gagal memuat detail siswa. Silakan coba lagi.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            )
+        }
+    }
+
+    private fun loadRiwayatAbsensi() {
+        val token = context?.getSharedPreferences("UserData", 0)?.getString("auth_token", "") ?: ""
+        if (token.isEmpty()) return
+
+        progressRiwayat.visibility = View.VISIBLE
+        tvEmptyRiwayat.visibility = View.GONE
+        recyclerRiwayat.visibility = View.GONE
+
+        lifecycleScope.launch {
+            repository.getHistorySiswa(token, 0).fold(
+                onSuccess = { historyData ->
+                    activity?.runOnUiThread {
+                        progressRiwayat.visibility = View.GONE
+                        
+                        // Filter riwayat untuk siswa ini berdasarkan NIS
+                        val riwayatList = historyData.absensi.filter { 
+                            it.nis == student.nis 
+                        }.map { absen ->
+                            RiwayatAbsensi(
+                                tanggal = absen.tanggal,
+                                namaSholat = absen.namaSholat,
+                                status = absen.status,
+                                waktuAbsen = absen.waktuAbsen
+                            )
+                        }
+
+                        if (riwayatList.isNotEmpty()) {
+                            recyclerRiwayat.visibility = View.VISIBLE
+                            recyclerRiwayat.layoutManager = LinearLayoutManager(context)
+                            recyclerRiwayat.adapter = RiwayatAbsensiAdapter(riwayatList)
+                        } else {
+                            tvEmptyRiwayat.visibility = View.VISIBLE
+                        }
+                    }
+                },
+                onFailure = { error ->
+                    activity?.runOnUiThread {
+                        progressRiwayat.visibility = View.GONE
+                        tvEmptyRiwayat.visibility = View.VISIBLE
+                        tvEmptyRiwayat.text = "Gagal memuat riwayat absensi"
                     }
                 }
             )
