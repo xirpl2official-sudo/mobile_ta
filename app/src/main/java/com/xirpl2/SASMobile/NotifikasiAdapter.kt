@@ -23,6 +23,9 @@ class NotifikasiAdapter(private val notificationList: MutableList<Notifikasi>) :
             notifyItemRemoved(position)
             notifyItemRangeChanged(position, notificationList.size)
         }
+        
+        // Update UI berdasarkan status isRead
+        holder.itemView.alpha = if (notification.isRead) 0.6f else 1.0f
     }
 
     override fun getItemCount(): Int {

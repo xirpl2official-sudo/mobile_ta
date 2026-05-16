@@ -10,7 +10,6 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textfield.TextInputLayout
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -232,19 +231,55 @@ class PengajuanIzinActivity : AppCompatActivity() {
     private fun submitPermitRequest() {
         setLoading(true)
 
-        
+        val jenisIzin = if (rbSakit.isChecked) "sakit" else "izin"
+        val startDate = etStartDate.text.toString().trim()
+        val endDate = etEndDate.text.toString().trim()
+        val reason = etReason.text.toString().trim()
+
         lifecycleScope.launch {
-            delay(1500) 
-            
-            setLoading(false)
-            
-            Toast.makeText(
-                this@PengajuanIzinActivity,
-                "Pengajuan izin berhasil dikirim",
-                Toast.LENGTH_LONG
-            ).show()
-            
-            finish()
+            try {
+                val token = getSharedPreferences("UserData", MODE_PRIVATE)
+                    .getString("auth_token", "") ?: ""
+                
+                val jenisIzinBody = okhttp3.RequestBody.create(okhttp3.MultipartBody.FORM, jenisIzin)
+                val startDateBody = okhttp3.RequestBody.create(okhttp3.MultipartBody.FORM, startDate)
+                val endDateBody = okhttp3.RequestBody.create(okhttp3.MultipartBody.FORM, endDate)
+                val reasonBody = okhttp3.RequestBody.create(okhttp3.MultipartBody.FORM, reason)
+
+                val response = RetrofitClient.apiService.createPengajuanIzin(
+                    token = "Bearer $token",
+                    jenisIzin = jenisIzinBody,
+                    tanggalAwal = startDateBody,
+                    tanggalAkhir = endDateBody,
+                    keterangan = reasonBody,
+                    buktiFoto = null
+                )
+
+                setLoading(false)
+
+                if (response.isSuccessful && response.body() != null) {
+                    Toast.makeText(
+                        this@PengajuanIzinActivity,
+                        response.body()?.message ?: "Pengajuan izin berhasil dikirim",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    finish()
+                } else {
+                    val errorMsg = when (response.code()) {
+                        400 -> "Semua field wajib diisi atau jenis izin tidak valid"
+                        409 -> "Pengajuan tumpang-tindih dengan periode yang sudah diajukan"
+                        else -> "Gagal mengirim pengajuan: ${response.message()}"
+                    }
+                    Toast.makeText(this@PengajuanIzinActivity, errorMsg, Toast.LENGTH_LONG).show()
+                }
+            } catch (e: Exception) {
+                setLoading(false)
+                Toast.makeText(
+                    this@PengajuanIzinActivity,
+                    "Terjadi kesalahan: ${e.message}",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
         }
     }
 
@@ -262,15 +297,23 @@ class PengajuanIzinActivity : AppCompatActivity() {
     }
 
     private fun logout() {
-        val sharedPref = getSharedPreferences("UserData", MODE_PRIVATE)
-        with(sharedPref.edit()) {
-            clear()
-            apply()
-        }
+        val token = getSharedPreferences("UserData", MODE_PRIVATE)
+            .getString("auth_token", "") ?: ""
+        
+        lifecycleScope.launch {
+            try {
+                RetrofitClient.apiService.logout("Bearer $token")
+            } catch (_: Exception) { }
+            
+            with(getSharedPreferences("UserData", MODE_PRIVATE).edit()) {
+                clear()
+                apply()
+            }
 
-        val intent = Intent(this, MasukActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
-        finish()
+            val intent = Intent(this@PengajuanIzinActivity, MasukActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+        }
     }
 }
