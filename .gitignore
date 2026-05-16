@@ -8,56 +8,46 @@
 *.dll
 *.exe
 *.out
-*.pyc
-__pycache__/
 
 # Dependencies
-node_modules/
-venv/
-.venv/
+.gradle/
+build/
+dist/
+target/
+
+# Logs and temp files
+*.log
+*.tmp
+*.swp
+
+# Environment
 .env
 .env.local
 *.env.*
 
-# Build directories
-dist/
-build/
-target/
-.gradle/
-
-# Python cache
-.mypy_cache/
-.pytest_cache/
-*.pyc
-__pycache__/
-
-# Java/Kotlin build artifacts
-*.class
-*.jar
-*.war
-*.aar
-
-# Android build artifacts
-app/build/
-*.apk
-*.aab
-
-# IDE files
-.vscode/
+# Editors
 .idea/
-*.swp
-*.swo
-*.tmp
+.vscode/
 
-# System files
-.DS_Store
-Thumbs.db
-*.log
+# Python specific
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
 
 # Coverage reports
 coverage/
 htmlcov/
 .coverage
+
+# MyPy cache
+.mypy_cache/
+.pytest_cache/
 
 # Compressed files
 *.zip
@@ -68,18 +58,10 @@ htmlcov/
 *.xz
 *.7z
 *.rar
-*.zst
-*.lz4
-*.lzh
-*.cab
-*.arj
-*.rpm
-*.deb
 *.Z
 *.lz
 *.lzo
 *.tar.gz
 *.tar.bz2
 *.tar.xz
-*.tar.zst
 ```

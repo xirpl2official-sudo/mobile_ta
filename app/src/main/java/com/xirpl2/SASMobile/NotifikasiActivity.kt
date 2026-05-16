@@ -2,12 +2,16 @@ package com.xirpl2.SASMobile
 
 import android.content.Context
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.xirpl2.SASMobile.databinding.ActivityNotifikasiBinding
-import com.xirpl2.SASMobile.model.Notifikasi
-import com.xirpl2.SASMobile.model.StatusSholat
-import com.xirpl2.SASMobile.model.JadwalSholat
+import com.xirpl2.SASMobile.model.*
+import com.xirpl2.SASMobile.network.RetrofitClient
+import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class NotifikasiActivity : AppCompatActivity() {
@@ -15,6 +19,9 @@ class NotifikasiActivity : AppCompatActivity() {
     private lateinit var binding: ActivityNotifikasiBinding
     private lateinit var notifikasiAdapter: NotifikasiAdapter
     private var notificationList = mutableListOf<Notifikasi>()
+    private var isLoading = false
+    private var currentPage = 1
+    private val limit = 20
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +41,7 @@ class NotifikasiActivity : AppCompatActivity() {
         setupRecyclerView()
         setupButtons()
         updateEmptyState()
+        loadNotifications()
 
         binding.btnBack.setOnClickListener {
             finish()
@@ -59,23 +67,58 @@ class NotifikasiActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
             
-            
-            androidx.appcompat.app.AlertDialog.Builder(this)
-                .setTitle("Hapus semua notifikasi")
-                .setMessage("Apakah Anda yakin ingin menghapus semua notifikasi? Pastikan Anda telah membaca semuanya.")
-                .setPositiveButton("Ya, hapus semua") { _, _ ->
-                    notificationList.clear()
-                    notifikasiAdapter.notifyDataSetChanged()
-                    updateEmptyState()
-                    clearNotificationCounter()
+            // Hapus semua via API
+            lifecycleScope.launch {
+                try {
+                    val token = getSharedPreferences("UserData", MODE_PRIVATE)
+                        .getString("auth_token", "") ?: ""
+                    
+                    val idsToDelete = notificationList.map { it.id }
+                    var successCount = 0
+                    
+                    for (id in idsToDelete) {
+                        try {
+                            RetrofitClient.apiService.deleteNotification("Bearer $token", id)
+                            successCount++
+                        } catch (_: Exception) { }
+                    }
+                    
+                    if (successCount > 0) {
+                        notificationList.removeAll { it.id in idsToDelete }
+                        notifikasiAdapter.notifyDataSetChanged()
+                        updateEmptyState()
+                        clearNotificationCounter()
+                        Toast.makeText(this@NotifikasiActivity, "$successCount notifikasi dihapus", Toast.LENGTH_SHORT).show()
+                    }
+                } catch (e: Exception) {
+                    Toast.makeText(this@NotifikasiActivity, "Gagal menghapus: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
-                .setNegativeButton("Batal", null)
-                .show()
+            }
         }
         binding.btnTandaiSemua.setOnClickListener {
+            if (notificationList.isEmpty()) return@setOnClickListener
             
-            if (notificationList.isNotEmpty()) {
-                clearNotificationCounter()
+            lifecycleScope.launch {
+                try {
+                    val token = getSharedPreferences("UserData", MODE_PRIVATE)
+                        .getString("auth_token", "") ?: ""
+                    
+                    val unreadIds = notificationList.filter { !it.isRead }.map { it.id }
+                    
+                    if (unreadIds.isNotEmpty()) {
+                        RetrofitClient.apiService.bulkReadNotifications(
+                            "Bearer $token",
+                            BulkReadRequest(unreadIds)
+                        )
+                        
+                        notificationList.forEach { it.isRead = true }
+                        notifikasiAdapter.notifyDataSetChanged()
+                        clearNotificationCounter()
+                        Toast.makeText(this@NotifikasiActivity, "Semua notifikasi ditandai sebagai dibaca", Toast.LENGTH_SHORT).show()
+                    }
+                } catch (e: Exception) {
+                    Toast.makeText(this@NotifikasiActivity, "Gagal menandai: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
@@ -92,32 +135,6 @@ class NotifikasiActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        val jenisKelamin = getJenisKelaminFromStorage()
-        val jadwalList = JadwalSholatHelper.generateJadwalSholat(jenisKelamin)
-
-        val upcomingPrayers = jadwalList.filter { it.status == StatusSholat.AKAN_DATANG }
-        val missedPrayers = jadwalList.filter { it.status == StatusSholat.SELESAI }
-
-        for (jadwal in upcomingPrayers) {
-            notificationList.add(
-                Notifikasi(
-                    "Sholat ${jadwal.namaSholat}",
-                    "Waktu sholat ${jadwal.namaSholat} akan segera tiba",
-                    jadwal.jamMulai
-                )
-            )
-        }
-
-        for (jadwal in missedPrayers) {
-            notificationList.add(
-                Notifikasi(
-                    "Sholat ${jadwal.namaSholat}",
-                    "Waktu sholat ${jadwal.namaSholat} telah lewat",
-                    jadwal.jamMulai
-                )
-            )
-        }
-        
         notifikasiAdapter = NotifikasiAdapter(notificationList)
 
         binding.rvNotifikasi.apply {
@@ -126,14 +143,60 @@ class NotifikasiActivity : AppCompatActivity() {
         }
     }
 
-    private fun getJenisKelaminFromStorage(): JadwalSholatHelper.JenisKelamin {
-        val sharedPref = getSharedPreferences("UserData", Context.MODE_PRIVATE)
-        val jenisKelaminStr = sharedPref.getString("jenis_kelamin", "L") ?: "L"
+    private fun loadNotifications() {
+        if (isLoading) return
+        isLoading = true
 
-        return if (jenisKelaminStr == "P") {
-            JadwalSholatHelper.JenisKelamin.PEREMPUAN
-        } else {
-            JadwalSholatHelper.JenisKelamin.LAKI_LAKI
+        lifecycleScope.launch {
+            try {
+                val token = getSharedPreferences("UserData", MODE_PRIVATE)
+                    .getString("auth_token", "") ?: ""
+                
+                val response = RetrofitClient.apiService.getNotifications(
+                    "Bearer $token",
+                    currentPage,
+                    limit
+                )
+
+                isLoading = false
+
+                if (response.isSuccessful && response.body() != null) {
+                    val apiNotifications = response.body()!!.notifications
+                    notificationList.clear()
+                    
+                    for (notif in apiNotifications) {
+                        notificationList.add(
+                            Notifikasi(
+                                id = notif.id,
+                                title = notif.title,
+                                message = notif.message,
+                                time = formatTime(notif.createdAt),
+                                type = notif.type,
+                                isRead = notif.isRead
+                            )
+                        )
+                    }
+                    
+                    notifikasiAdapter.notifyDataSetChanged()
+                    updateEmptyState()
+                } else {
+                    Toast.makeText(this@NotifikasiActivity, "Gagal memuat notifikasi", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                isLoading = false
+                Toast.makeText(this@NotifikasiActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun formatTime(isoString: String): String {
+        return try {
+            val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+            val outputFormat = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault())
+            val date = inputFormat.parse(isoString)
+            if (date != null) outputFormat.format(date) else isoString
+        } catch (e: Exception) {
+            isoString
         }
     }
 }

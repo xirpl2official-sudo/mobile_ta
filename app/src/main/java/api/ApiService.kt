@@ -1,6 +1,8 @@
 package com.xirpl2.SASMobile.network
 
 import com.xirpl2.SASMobile.model.*
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.*
@@ -232,10 +234,15 @@ interface ApiService {
         @QueryMap filters: Map<String, String>
     ): Response<PengajuanIzinList>
 
+    @Multipart
     @POST("v2/pengajuan-izin")
     suspend fun createPengajuanIzin(
         @Header("Authorization") token: String,
-        @Body request: CreatePengajuanIzinRequest
+        @Part("jenis_izin") jenisIzin: RequestBody,
+        @Part("tanggal_awal") tanggalAwal: RequestBody,
+        @Part("tanggal_akhir") tanggalAkhir: RequestBody,
+        @Part("keterangan") keterangan: RequestBody,
+        @Part buktiFoto: MultipartBody.Part? = null
     ): Response<MessageResponse>
 
     @GET("v2/pengajuan-izin/{id}")
@@ -249,6 +256,12 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Path("id") id: Int,
         @Body request: UpdateStatusPengajuanIzinRequest
+    ): Response<MessageResponse>
+
+    @DELETE("v2/pengajuan-izin/{id}")
+    suspend fun deletePengajuanIzin(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int
     ): Response<MessageResponse>
 
     // --- Notifications ---
@@ -392,4 +405,230 @@ interface ApiService {
         @Query("month") month: String,
         @Query("jurusan") jurusan: String
     ): Response<ResponseBody>
+
+    // --- Analytics (FASE 3.1) ---
+
+    @GET("v2/analytics/charts")
+    suspend fun getChartData(
+        @Header("Authorization") token: String
+    ): Response<ApiResponse<com.google.gson.JsonObject>>
+
+    @GET("v2/analytics/pending-attendance")
+    suspend fun getPendingAttendance(
+        @Header("Authorization") token: String
+    ): Response<PendingAttendanceResponse>
+
+    // --- Reports Tambahan (FASE 3.2) ---
+
+    @Streaming
+    @GET("v2/reports/attendances/csv")
+    suspend fun exportAttendanceCSV(
+        @Header("Authorization") token: String,
+        @Query("start_date") startDate: String? = null,
+        @Query("end_date") endDate: String? = null,
+        @Query("jurusan") jurusan: String? = null
+    ): Response<ResponseBody>
+
+    @Streaming
+    @GET("v2/reports/attendances/excel")
+    suspend fun exportAttendanceExcel(
+        @Header("Authorization") token: String,
+        @Query("start_date") startDate: String? = null,
+        @Query("end_date") endDate: String? = null,
+        @Query("jurusan") jurusan: String? = null
+    ): Response<ResponseBody>
+
+    @Streaming
+    @GET("v2/reports/summary/csv")
+    suspend fun exportSummaryCSV(
+        @Header("Authorization") token: String,
+        @Query("start_date") startDate: String? = null,
+        @Query("end_date") endDate: String? = null,
+        @Query("jurusan") jurusan: String? = null
+    ): Response<ResponseBody>
+
+    @Streaming
+    @GET("v2/reports/summary/excel")
+    suspend fun exportSummaryExcel(
+        @Header("Authorization") token: String,
+        @Query("start_date") startDate: String? = null,
+        @Query("end_date") endDate: String? = null,
+        @Query("jurusan") jurusan: String? = null
+    ): Response<ResponseBody>
+
+    // --- Students Tambahan (FASE 3.3) ---
+
+    @GET("v2/students/filters")
+    suspend fun getStudentFilters(@Header("Authorization") token: String): Response<ApiResponse<com.google.gson.JsonObject>>
+
+    @PATCH("v2/students/{nis}/status")
+    suspend fun updateStudentStatus(@Header("Authorization") token: String, @Path("nis") nis: String, @Body request: UpdateStatusRequest): Response<MessageResponse>
+
+    @POST("v2/students/notify-wali-kelas")
+    suspend fun notifyWaliKelas(@Header("Authorization") token: String, @Body request: com.google.gson.JsonObject): Response<MessageResponse>
+
+    @Multipart
+    @POST("v2/students/import")
+    suspend fun importStudents(@Header("Authorization") token: String, @Part file: MultipartBody.Part): Response<MessageResponse>
+
+    @POST("v2/students/import/json")
+    suspend fun importStudentsJSON(@Header("Authorization") token: String, @Body request: com.google.gson.JsonArray): Response<MessageResponse>
+
+    // --- Admin Student Control (FASE 3.4) ---
+
+    @GET("v2/admin/student-control/transitions")
+    suspend fun getStudentTransitions(@Header("Authorization") token: String): Response<StudentTransitionsResponse>
+
+    @POST("v2/admin/student-control/bulk-progression")
+    suspend fun bulkStudentProgression(@Header("Authorization") token: String, @Body request: BulkProgressionRequest): Response<MessageResponse>
+
+    @POST("v2/admin/student-control/bulk-fields")
+    suspend fun updateBulkStudentFields(@Header("Authorization") token: String, @Body request: BulkFieldsRequest): Response<MessageResponse>
+
+    @POST("v2/admin/student-control/annual-rollover")
+    suspend fun annualRollover(@Header("Authorization") token: String, @Body request: AnnualRolloverRequest): Response<MessageResponse>
+
+    @POST("v2/admin/student-control/sequential-progression")
+    suspend fun sequentialProgression(@Header("Authorization") token: String, @Body request: SequentialProgressionRequest): Response<MessageResponse>
+
+    // --- Admin Promotion - Simulate (FASE 3.5) ---
+
+    @POST("v2/admin/promotion/simulate")
+    suspend fun simulatePromotion(@Header("Authorization") token: String, @Body request: PromotionRequest): Response<PromotionResponse>
+
+    // --- Academic Years CRUD (FASE 3.6) ---
+
+    @GET("v2/academic-years")
+    suspend fun getAcademicYears(@Header("Authorization") token: String): Response<AcademicYearListResponse>
+
+    @POST("v2/academic-years")
+    suspend fun createAcademicYear(@Header("Authorization") token: String, @Body request: AcademicYearRequest): Response<AcademicYearResponse>
+
+    @GET("v2/academic-years/{id}")
+    suspend fun getAcademicYear(@Header("Authorization") token: String, @Path("id") id: Int): Response<AcademicYearResponse>
+
+    @PUT("v2/academic-years/{id}")
+    suspend fun updateAcademicYear(@Header("Authorization") token: String, @Path("id") id: Int, @Body request: AcademicYearRequest): Response<AcademicYearResponse>
+
+    @DELETE("v2/academic-years/{id}")
+    suspend fun deleteAcademicYear(@Header("Authorization") token: String, @Path("id") id: Int): Response<MessageResponse>
+
+    // --- Profile Devices (FASE 3.7) ---
+
+    @GET("v2/profile/devices")
+    suspend fun getProfileDevices(@Header("Authorization") token: String): Response<DeviceInfoResponse>
+
+    @DELETE("v2/profile/devices")
+    suspend fun unbindDevice(@Header("Authorization") token: String): Response<MessageResponse>
+
+    // --- Admin Device Management (FASE 3.8) ---
+
+    @GET("v2/admin/device-management")
+    suspend fun getAdminDeviceManagement(@Header("Authorization") token: String): Response<DeviceManagementListResponse>
+
+    @DELETE("v2/admin/device-management/{id}")
+    suspend fun deleteAdminDevice(@Header("Authorization") token: String, @Path("id") id: Int): Response<MessageResponse>
+
+    @GET("v2/admin/device-management/change-requests")
+    suspend fun getDeviceChangeRequests(@Header("Authorization") token: String): Response<DeviceChangeRequestListResponse>
+
+    @PUT("v2/admin/device-management/change-requests/{id}/{action}")
+    suspend fun processDeviceChangeRequest(@Header("Authorization") token: String, @Path("id") id: Int, @Path("action") action: String): Response<MessageResponse>
+
+    // --- Device Change Request (FASE 3.9) ---
+
+    @POST("v2/device/change-request")
+    suspend fun createDeviceChangeRequest(@Header("Authorization") token: String, @Body request: com.google.gson.JsonObject): Response<MessageResponse>
+
+    // --- Class Teachers CRUD (FASE 3.10) ---
+
+    @GET("v2/class-teachers")
+    suspend fun getClassTeachers(@Header("Authorization") token: String): Response<ClassTeacherListResponse>
+
+    @POST("v2/class-teachers")
+    suspend fun createClassTeacher(@Header("Authorization") token: String, @Body request: ClassTeacherRequest): Response<ClassTeacherResponse>
+
+    @GET("v2/class-teachers/{id}")
+    suspend fun getClassTeacher(@Header("Authorization") token: String, @Path("id") id: Int): Response<ClassTeacherResponse>
+
+    @PUT("v2/class-teachers/{id}")
+    suspend fun updateClassTeacher(@Header("Authorization") token: String, @Path("id") id: Int, @Body request: ClassTeacherRequest): Response<ClassTeacherResponse>
+
+    @DELETE("v2/class-teachers/{id}")
+    suspend fun deleteClassTeacher(@Header("Authorization") token: String, @Path("id") id: Int): Response<MessageResponse>
+
+    // --- Prayer Types CRUD (FASE 3.11) ---
+
+    @GET("v2/prayer-types")
+    suspend fun getPrayerTypes(@Header("Authorization") token: String): Response<PrayerTypeListResponse>
+
+    @POST("v2/prayer-types")
+    suspend fun createPrayerType(@Header("Authorization") token: String, @Body request: PrayerTypeRequest): Response<PrayerTypeResponse>
+
+    @GET("v2/prayer-types/{id}")
+    suspend fun getPrayerType(@Header("Authorization") token: String, @Path("id") id: Int): Response<PrayerTypeResponse>
+
+    @PUT("v2/prayer-types/{id}")
+    suspend fun updatePrayerType(@Header("Authorization") token: String, @Path("id") id: Int, @Body request: PrayerTypeRequest): Response<PrayerTypeResponse>
+
+    @DELETE("v2/prayer-types/{id}")
+    suspend fun deletePrayerType(@Header("Authorization") token: String, @Path("id") id: Int): Response<MessageResponse>
+
+    // --- Prayer Times CRUD (FASE 3.12) ---
+
+    @GET("v2/prayer-times")
+    suspend fun getPrayerTimes(@Header("Authorization") token: String): Response<PrayerTimeListResponse>
+
+    @POST("v2/prayer-times")
+    suspend fun createPrayerTime(@Header("Authorization") token: String, @Body request: PrayerTimeRequest): Response<PrayerTimeResponse>
+
+    @GET("v2/prayer-times/{id}")
+    suspend fun getPrayerTime(@Header("Authorization") token: String, @Path("id") id: Int): Response<PrayerTimeResponse>
+
+    @PUT("v2/prayer-times/{id}")
+    suspend fun updatePrayerTime(@Header("Authorization") token: String, @Path("id") id: Int, @Body request: PrayerTimeRequest): Response<PrayerTimeResponse>
+
+    @DELETE("v2/prayer-times/{id}")
+    suspend fun deletePrayerTime(@Header("Authorization") token: String, @Path("id") id: Int): Response<MessageResponse>
+
+    // --- Dhuha & Jurusan (FASE 3.13) ---
+
+    @GET("v2/jurusan/dhuha-schedules")
+    suspend fun getJurusanDhuhaSchedules(@Header("Authorization") token: String): Response<JurusanDhuhaSchedulesResponse>
+
+    @PUT("v2/jurusan/{id}/dhuha-day")
+    suspend fun updateJurusanDhuhaDay(@Header("Authorization") token: String, @Path("id") id: Int, @Body request: DhuhaDayRequest): Response<MessageResponse>
+
+    @GET("v2/dhuha-groups")
+    suspend fun getDhuhaGroups(@Header("Authorization") token: String): Response<DhuhaGroupListResponse>
+
+    @POST("v2/dhuha-groups")
+    suspend fun createDhuhaGroup(@Header("Authorization") token: String, @Body request: DhuhaGroupRequest): Response<DhuhaGroupResponse>
+
+    @PUT("v2/dhuha-groups/{id}")
+    suspend fun updateDhuhaGroup(@Header("Authorization") token: String, @Path("id") id: Int, @Body request: DhuhaGroupRequest): Response<DhuhaGroupResponse>
+
+    @POST("v2/dhuha-groups/weekly")
+    suspend fun createWeeklyDhuhaGroup(@Header("Authorization") token: String, @Body request: WeeklyDhuhaGroupRequest): Response<MessageResponse>
+
+    // --- Pengajuan Izin Tambahan (FASE 3.14) ---
+
+    @GET("v2/pengajuan-izin/{id}/bukti")
+    suspend fun getBuktiFoto(@Header("Authorization") token: String, @Path("id") id: Int): Response<ApiResponse<com.google.gson.JsonObject>>
+
+    // --- Prayer Schedules (FASE 3.15) ---
+
+    @GET("v2/prayer-schedules/dhuha/turns")
+    suspend fun getDhuhaTurnsToday(@Header("Authorization") token: String): Response<ApiResponse<com.google.gson.JsonObject>>
+
+    // --- Data Retention (FASE 3.16) ---
+
+    @GET("v2/data-retention/backups/status")
+    suspend fun getBackupsStatus(@Header("Authorization") token: String): Response<BackupStatusResponse>
+
+    @POST("v2/data-retention/backups/confirm")
+    suspend fun confirmBackup(@Header("Authorization") token: String, @Body request: BackupConfirmRequest): Response<MessageResponse>
+
+    @DELETE("v2/data-retention/backups")
+    suspend fun deleteBackup(@Header("Authorization") token: String): Response<MessageResponse>
 }
