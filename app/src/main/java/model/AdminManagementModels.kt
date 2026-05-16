@@ -37,5 +37,6 @@ data class UpdateWaliKelasRequest(
 )
 
 data class MessageResponse(
+    val status: Boolean? = null,
     val message: String
 )

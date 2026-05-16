@@ -180,7 +180,8 @@ interface ApiService {
         @Query("limit") limit: Int? = null,
         @Query("search") search: String? = null,
         @Query("kelas") kelas: String? = null,
-        @Query("jurusan") jurusan: String? = null
+        @Query("jurusan") jurusan: String? = null,
+        @Query("jk") jk: String? = null
     ): Response<SiswaListPaginatedResponse>
 
     @POST("v2/students")
@@ -225,6 +226,48 @@ interface ApiService {
     suspend fun getUnregisteredStudents(
         @Header("Authorization") token: String
     ): Response<ApiResponse<List<SiswaItem>>>
+
+    // --- Synchronized SMKN 2 Singosari ---
+
+    @GET("v2/prayer-schedules/dhuha/keahlian")
+    suspend fun getJadwalDhuhaKeahlian(
+        @Header("Authorization") token: String
+    ): Response<JadwalDhuhaKeahlianResponse>
+
+    @GET("v2/prayer-schedules/dhuha/detail")
+    suspend fun getSholatDhuhaDetail(
+        @Header("Authorization") token: String
+    ): Response<SholatDhuhaDetailResponse>
+
+    @GET("v2/prayer-schedules/dzuhur/detail")
+    suspend fun getSholatDzuhurDetail(
+        @Header("Authorization") token: String
+    ): Response<SholatDzuhurDetailResponse>
+
+    @POST("v2/prayer-schedules/dhuha/keahlian")
+    suspend fun createJadwalDhuhaKeahlian(
+        @Header("Authorization") token: String,
+        @Body request: JadwalDhuhaKeahlian
+    ): Response<MessageResponse>
+
+    @PUT("v2/prayer-schedules/dhuha/keahlian/{id}")
+    suspend fun updateJadwalDhuhaKeahlian(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int,
+        @Body request: JadwalDhuhaKeahlian
+    ): Response<MessageResponse>
+
+    @PUT("v2/prayer-schedules/dhuha/detail")
+    suspend fun updateSholatDhuha(
+        @Header("Authorization") token: String,
+        @Body request: SholatDhuhaDetail
+    ): Response<MessageResponse>
+
+    @PUT("v2/prayer-schedules/dzuhur/detail")
+    suspend fun updateSholatDzuhur(
+        @Header("Authorization") token: String,
+        @Body request: SholatDzuhurDetail
+    ): Response<MessageResponse>
 
     // --- Pengajuan Izin ---
 
