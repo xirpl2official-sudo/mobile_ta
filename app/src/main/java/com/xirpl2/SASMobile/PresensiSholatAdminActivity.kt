@@ -37,6 +37,7 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
 
     
     private lateinit var presensiAdapter: PresensiAdapter
+    private lateinit var tableHorizontalScrollView: View
 
 
     
@@ -148,6 +149,7 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
         recyclerPresensi = findViewById(R.id.recyclerPresensi)
         progressLoading = findViewById(R.id.progressLoading)
         tvEmptyState = findViewById(R.id.tvEmptyState)
+        tableHorizontalScrollView = findViewById(R.id.tableHorizontalScrollView)
     }
 
     private fun setupRecyclerView() {
@@ -330,9 +332,9 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
         if (show) {
             recyclerPresensi.visibility = View.GONE
             tvEmptyState.visibility = View.GONE
-            findViewById<View>(R.id.tableHorizontalScrollView).visibility = View.GONE
+            tableHorizontalScrollView.visibility = View.GONE
         } else {
-            findViewById<View>(R.id.tableHorizontalScrollView).visibility = View.VISIBLE
+            tableHorizontalScrollView.visibility = View.VISIBLE
         }
     }
 
