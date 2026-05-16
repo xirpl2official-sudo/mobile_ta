@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.xirpl2.SASMobile.model.RiwayatAbsensi
 import com.xirpl2.SASMobile.model.SiswaItem
+import com.xirpl2.SASMobile.model.StatusAbsensi
 import com.xirpl2.SASMobile.repository.BerandaRepository
 import kotlinx.coroutines.launch
 
@@ -139,20 +140,22 @@ class SiswaDetailDialogFragment : DialogFragment() {
         recyclerRiwayat.visibility = View.GONE
 
         lifecycleScope.launch {
-            repository.getHistorySiswa(token, 0).fold(
+            repository.getHistoryStaff(token, search = student.nis).fold(
                 onSuccess = { historyData ->
                     activity?.runOnUiThread {
                         progressRiwayat.visibility = View.GONE
                         
-                        // Filter riwayat untuk siswa ini berdasarkan NIS
-                        val riwayatList = historyData.absensi.filter { 
-                            it.nis == student.nis 
-                        }.map { absen ->
+                        val riwayatList = historyData.absensi.map { absen ->
                             RiwayatAbsensi(
                                 tanggal = absen.tanggal,
-                                namaSholat = absen.namaSholat,
-                                status = absen.status,
-                                waktuAbsen = absen.waktuAbsen
+                                namaSholat = absen.jenis_sholat ?: "Unknown",
+                                status = when(absen.status.uppercase()) {
+                                    "HADIR" -> StatusAbsensi.HADIR
+                                    "SAKIT" -> StatusAbsensi.SAKIT
+                                    "IZIN" -> StatusAbsensi.IZIN
+                                    else -> StatusAbsensi.ALPHA
+                                },
+                                waktuAbsen = absen.deskripsi
                             )
                         }
 
