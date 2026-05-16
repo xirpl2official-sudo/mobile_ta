@@ -93,8 +93,8 @@ class HistorySiswaDialogFragment : DialogFragment() {
             repository.getHistoryStaff(
                 token = token,
                 filters = mapOf(
-                    "start_date" to startDate,
-                    "end_date" to endDate,
+                    "startDate" to startDate,
+                    "endDate" to endDate,
                     "nis" to student.nis
                 )
             ).fold(
