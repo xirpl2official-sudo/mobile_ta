@@ -365,56 +365,44 @@ class LaporanAdminActivity : BaseAdminActivity() {
         val startDate = apiDateFormat.format(tanggalAwal.time)
         val endDate = apiDateFormat.format(tanggalAkhir.time)
 
-        loadJob = lifecycleScope.launch {
-            try {
-                
-                val response = RetrofitClient.apiService.getHistoryStaff(
-                    token = "Bearer $token",
-                    kelas = kelasApi,
-                    jurusan = jurusanApi,
-                    startDate = startDate,
-                    endDate = endDate,
-                    page = currentPage,
-                    limit = pageSize
-                )
-
-                if (response.isSuccessful) {
-                    val respBody = response.body()
-                    val dataWrapper = respBody?.data
-
-                    
-                    if (reset) {
-                        statistik = dataWrapper?.statistik
-                    }
-
-                    
-                    val newItems = dataWrapper?.absensi ?: emptyList()
-                    allItems.addAll(newItems)
-                    
-                    
-                    val pagination = dataWrapper?.pagination
-                    totalItems = pagination?.total_items ?: allItems.size
-                    totalPages = pagination?.total_pages ?: 1
-                    
-                    if (pagination != null) {
-                        isLastPage = currentPage >= totalPages
-                    } else {
-                         
-                        isLastPage = newItems.isEmpty() || newItems.size < pageSize
-                    }
-
+        lifecycleScope.launch {
+            repository.getHistoryStaff(
+                token = token,
+                startDate = startDate,
+                endDate = endDate,
+                kelas = kelasApi,
+                jurusan = jurusanApi,
+                page = currentPage,
+                limit = pageSize
+            ).fold(
+                onSuccess = { data ->
                     runOnUiThread {
+                        if (reset) {
+                            statistik = data.statistik
+                            allItems.clear()
+                        }
+                        
+                        val newItems = data.absensi
+                        allItems.addAll(newItems)
+                        
+                        val pagination = data.pagination
+                        totalItems = pagination?.total_items ?: allItems.size
+                        totalPages = pagination?.total_pages ?: 1
+                        
+                        if (pagination != null) {
+                            isLastPage = currentPage >= totalPages
+                        } else {
+                            isLastPage = newItems.isEmpty() || newItems.size < pageSize
+                        }
+                        
                         showLoading(false)
                         isLoading = false
                         
-                        
                         absensiAdapter.updateData(allItems.toList())
-                        
                         
                         if (reset) {
                             updateStatistikDisplay()
                         }
-                        
                         
                         val currentCount = allItems.size
                         tvDataAbsensiTitle.text = "Data Absensi ($currentCount / $totalItems entri)"
@@ -424,28 +412,20 @@ class LaporanAdminActivity : BaseAdminActivity() {
                         } else {
                             hideEmptyState()
                         }
-                        
                     }
-                } else {
+                },
+                onFailure = { error ->
                     runOnUiThread {
                         showLoading(false)
                         isLoading = false
                         if (allItems.isEmpty()) {
-                            showEmptyState("Gagal memuat data: ${response.message()}")
+                            showEmptyState("Gagal memuat data: ${error.message}")
                         } else {
                             Toast.makeText(this@LaporanAdminActivity, "Gagal memuat halaman berikutnya", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
-            } catch (e: Exception) {
-                runOnUiThread {
-                    showLoading(false)
-                    isLoading = false
-                    if (allItems.isEmpty()) {
-                        showEmptyState("Terjadi kesalahan: ${e.message}")
-                    }
-                }
-            }
+            )
         }
     }
     

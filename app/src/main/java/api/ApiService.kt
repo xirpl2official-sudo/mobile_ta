@@ -110,12 +110,62 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Response<ApiResponse<com.google.gson.JsonObject>>
 
+    @GET("v2/prayer-schedules/dhuha/keahlian")
+    suspend fun getJadwalDhuhaKeahlian(
+        @Header("Authorization") token: String
+    ): Response<JadwalDhuhaKeahlianResponse>
+
+    @GET("v2/prayer-schedules/dhuha/detail")
+    suspend fun getSholatDhuhaDetail(
+        @Header("Authorization") token: String
+    ): Response<SholatDhuhaDetailResponse>
+
+    @GET("v2/prayer-schedules/dzuhur/detail")
+    suspend fun getSholatDzuhurDetail(
+        @Header("Authorization") token: String
+    ): Response<SholatDzuhurDetailResponse>
+
+    @POST("v2/prayer-schedules/dhuha/keahlian")
+    suspend fun createJadwalDhuhaKeahlian(
+        @Header("Authorization") token: String,
+        @Body request: JadwalDhuhaKeahlian
+    ): Response<MessageResponse>
+
+    @PUT("v2/prayer-schedules/dhuha/keahlian/{id}")
+    suspend fun updateJadwalDhuhaKeahlian(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int,
+        @Body request: JadwalDhuhaKeahlian
+    ): Response<MessageResponse>
+
+    @PUT("v2/prayer-schedules/dhuha/{id}")
+    suspend fun updateSholatDhuha(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int,
+        @Body request: SholatDhuhaDetail
+    ): Response<MessageResponse>
+
+    @PUT("v2/prayer-schedules/dzuhur/{id}")
+    suspend fun updateSholatDzuhur(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int,
+        @Body request: SholatDzuhurDetail
+    ): Response<MessageResponse>
+
     // --- Attendance ---
 
     @GET("v2/attendance/history")
     suspend fun getAttendanceHistory(
         @Header("Authorization") token: String,
-        @QueryMap filters: Map<String, String>
+        @Query("kelas") kelas: String? = null,
+        @Query("jurusan") jurusan: String? = null,
+        @Query("jenis_sholat") jenisSholat: String? = null,
+        @Query("search") search: String? = null,
+        @Query("tanggal") tanggal: String? = null,
+        @Query("start_date") startDate: String? = null,
+        @Query("end_date") endDate: String? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null
     ): Response<HistoryStaffResponse>
 
     @POST("v2/attendance/auto-mark")

@@ -3,128 +3,19 @@
 *.class
 *.o
 *.obj
-*.so
-*.a
-*.dll
-*.exe
 *.out
-
+build/
 # Dependencies
 .gradle/
-build/
-
 # Logs and temp files
 *.log
 *.tmp
 *.swp
-
 # Environment
 .env
 .env.local
 *.env.*
-
 # Editors
 .vscode/
 .idea/
-*.iml
-*.iws
-*.swo
-*.swn
-
-# System files
-.DS_Store
-Thumbs.db
-
-# Coverage reports
-coverage/
-htmlcov/
-.coverage
-
-# Python specific
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-env/
-venv/
-.venv/
-pip-log.txt
-pip-delete-this-directory.txt
-.tox/
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.log
-.gradle
-test/reports/
-*.gcda
-*.gcno
-*.gcov
-coverage/
-htmlcov/
-.pytest_cache/
-.mypy_cache/
-.hypothesis/
-
-# Node.js specific
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-/node_modules
-/.pnp
-.pnp.js
-
-# Java specific
-*.class
-*.jar
-*.war
-*.ear
-hs_err_pid*
-
-# Android specific
-*.apk
-*.aab
-local.properties
-.settings/
-loadavg
-bin/
-gen/
-out/
-*.dex
-*.so
-*.dylib
-
-# Build directories
-dist/
-target/
-tmp/
-temp/
-
-# Compressed files
-*.zip
-*.gz
-*.tar
-*.tgz
-*.bz2
-*.xz
-*.7z
-*.rar
-*.zst
-*.lz4
-*.lzh
-*.cab
-*.arj
-*.rpm
-*.deb
-*.Z
-*.lz
-*.lzo
-*.tar.gz
-*.tar.bz2
-*.tar.xz
-*.tar.zst
 ```
