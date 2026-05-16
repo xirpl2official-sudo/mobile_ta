@@ -127,29 +127,23 @@ class GantiKataSandi : AppCompatActivity() {
 
                 setLoading(false)
 
-                 if (response.isSuccessful && response.body() != null) {
-                     val apiResponse = response.body()!!
-                     
-                     
-                     
-                     
-                     val isSuccessByStatus = apiResponse.status == true
-                     val isSuccessByMessage = !apiResponse.message.isNullOrEmpty() &&
-                         (apiResponse.message.contains("berhasil", ignoreCase = true) ||
-                          apiResponse.message.contains("dikirim", ignoreCase = true) ||
-                          apiResponse.message.contains("sukses", ignoreCase = true) ||
-                          apiResponse.message.contains("success", ignoreCase = true))
-                     val isHttpSuccess = response.code() == 200
-                     
-                     android.util.Log.d("GantiKataSandi", "OTP Response - status: $isSuccessByStatus, http: $isHttpSuccess, msgContainsSuccess: $isSuccessByMessage")
-                     android.util.Log.d("GantiKataSandi", "OTP Message: ${apiResponse.message}")
-                     
-                     
-                     
-                     val shouldNavigate = (isSuccessByStatus && isHttpSuccess) ||
-                         (isHttpSuccess && isSuccessByMessage)
-                     
-                     if (shouldNavigate) {
+                if (response.isSuccessful && response.body() != null) {
+                    val apiResponse = response.body()!!
+                    
+                    // ApiResponse<MessageResponse> has message field directly
+                    val isSuccessByMessage = !apiResponse.message.isNullOrEmpty() &&
+                        (apiResponse.message.contains("berhasil", ignoreCase = true) ||
+                         apiResponse.message.contains("dikirim", ignoreCase = true) ||
+                         apiResponse.message.contains("sukses", ignoreCase = true) ||
+                         apiResponse.message.contains("success", ignoreCase = true))
+                    val isHttpSuccess = response.code() == 200
+                    
+                    android.util.Log.d("GantiKataSandi", "OTP Response - http: $isHttpSuccess, msgContainsSuccess: $isSuccessByMessage")
+                    android.util.Log.d("GantiKataSandi", "OTP Message: ${apiResponse.message}")
+                    
+                    val shouldNavigate = isHttpSuccess && isSuccessByMessage
+                    
+                    if (shouldNavigate) {
                          android.util.Log.d("GantiKataSandi", "OTP berhasil dikirim, navigasi ke VerifikasiOtpActivity")
                          
                          MotionToast.createColorToast(

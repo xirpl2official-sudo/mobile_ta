@@ -152,7 +152,7 @@ class DetailAbsensiActivity : AppCompatActivity() {
         
         
         lifecycleScope.launch {
-            repository.getHistoryStaff(token, nis = studentNis).fold(
+            repository.getHistoryStaff(token, filters = mapOf("nis" to studentNis)).fold(
                 onSuccess = { historyStaffData ->
                     runOnUiThread {
                         val absensiList = historyStaffData.absensi

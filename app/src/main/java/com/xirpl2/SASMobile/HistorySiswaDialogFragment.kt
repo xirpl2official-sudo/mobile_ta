@@ -92,9 +92,11 @@ class HistorySiswaDialogFragment : DialogFragment() {
         lifecycleScope.launch {
             repository.getHistoryStaff(
                 token = token,
-                startDate = startDate,
-                endDate = endDate,
-                nis = student.nis
+                filters = mapOf(
+                    "start_date" to startDate,
+                    "end_date" to endDate,
+                    "nis" to student.nis
+                )
             ).fold(
                 onSuccess = { data ->
                     activity?.runOnUiThread {
