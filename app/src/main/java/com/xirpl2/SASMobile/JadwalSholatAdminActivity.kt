@@ -82,13 +82,13 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
                 onSuccess = { list ->
                     android.util.Log.d(TAG, "Dhuha Keahlian loaded successfully: ${list.size} items")
                     dhuhaKeahlianList = list
-                    runOnUiThread {
+                    safeRunOnUiThread {
                         populateDhuhaTable()
                     }
                 },
                 onFailure = { error ->
                     android.util.Log.e(TAG, "Failed to load Dhuha Keahlian: ${error.message}")
-                    runOnUiThread {
+                    safeRunOnUiThread {
                         Toast.makeText(this@JadwalSholatAdminActivity, "Gagal memuat jadwal dhuha: ${error.message}", Toast.LENGTH_LONG).show()
                     }
                 }
@@ -99,7 +99,7 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
             /*
             repository.getSholatDhuhaDetail(token).onSuccess { detail ->
                 android.util.Log.d(TAG, "Sholat Dhuha detail loaded")
-                runOnUiThread {
+                safeRunOnUiThread {
                     findViewById<TextView>(R.id.tvWaktuDhuha)?.text = "Waktu: ${detail.waktuMulai} - ${detail.waktuSelesai}"
                     findViewById<TextView>(R.id.tvHariDhuha)?.text = detail.hari
                     findViewById<TextView>(R.id.tvKelasDhuha)?.text = "Kelas: ${detail.kelas}"
@@ -116,7 +116,7 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
             /*
             repository.getSholatDzuhurDetail(token).onSuccess { detail ->
                 android.util.Log.d(TAG, "Sholat Dzuhur detail loaded")
-                runOnUiThread {
+                safeRunOnUiThread {
                     findViewById<TextView>(R.id.tvWaktuZuhur)?.text = "Waktu: ${detail.waktuMulai} - ${detail.waktuSelesai}"
                     findViewById<TextView>(R.id.tvHariZuhur)?.text = detail.hari
                     findViewById<TextView>(R.id.tvKelasZuhur)?.text = "Kelas: ${detail.kelas}"
@@ -157,9 +157,58 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
     }
 
     override fun onDestroy() {
-        val rvDhuhaSchedule = findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.rvDhuhaSchedule)
-        rvDhuhaSchedule?.adapter = null
+        try {
+            val rvDhuhaSchedule = findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.rvDhuhaSchedule)
+            rvDhuhaSchedule?.adapter = null
+            lifecycleScope.cancel()
+        } catch (e: Exception) {
+            android.util.Log.e(TAG, "Error in onDestroy: ${e.message}")
+        }
         super.onDestroy()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        try {
+            val rvDhuhaSchedule = findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.rvDhuhaSchedule)
+            rvDhuhaSchedule?.clearOnScrollListeners()
+        } catch (e: Exception) {
+            android.util.Log.e(TAG, "Error in onPause: ${e.message}")
+        }
+    }
+
+    private fun safeUIUpdate(action: () -> Unit) {
+        if (!isFinishing && !isDestroyed) {
+            try {
+                action()
+            } catch (e: android.os.DeadObjectException) {
+                android.util.Log.e(TAG, "DeadObjectException during UI update: ${e.message}")
+            } catch (e: Exception) {
+                android.util.Log.e(TAG, "Error during UI update: ${e.message}")
+            }
+        }
+    }
+
+    private fun safeRunOnUiThread(action: () -> Unit) {
+        if (!isFinishing && !isDestroyed) {
+            try {
+                runOnUiThread {
+                    try {
+                        if (!isFinishing && !isDestroyed) {
+                            action()
+                        }
+                    } catch (e: android.os.DeadObjectException) {
+                        android.util.Log.e(TAG, "DeadObjectException in safeRunOnUiThread: ${e.message}")
+                    } catch (e: Exception) {
+                        android.util.Log.e(TAG, "Error in safeRunOnUiThread: ${e.message}")
+                    }
+                }
+            } catch (e: android.os.DeadObjectException) {
+                android.util.Log.e(TAG, "DeadObjectException posting to UI thread: ${e.message}")
+            } catch (e: Exception) {
+                android.util.Log.e(TAG, "Error posting to UI thread: ${e.message}")
+            }
+        }
     }
 
     private fun findJadwalIdByJenis(jenisSholat: String): Int? {
@@ -342,7 +391,7 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
                 val token = getAuthToken()
                 if (token.isEmpty()) {
                     if (!isFinishing && !isDestroyed) {
-                        runOnUiThread {
+                        safeRunOnUiThread {
                             Toast.makeText(this@JadwalSholatAdminActivity, "Sesi telah berakhir", Toast.LENGTH_SHORT).show()
                         }
                     }
@@ -355,7 +404,7 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
                         jadwalList = list
                         updateJadwalUI()
                         val id = list.find { it.jenis_sholat.equals(jenisSholat, ignoreCase = true) }?.id
-                        runOnUiThread {
+                        safeRunOnUiThread {
                             if (!isFinishing && !isDestroyed) {
                                 if (id != null) {
                                     showEditDialog(id, jenisSholat)
@@ -367,7 +416,7 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
                     },
                     onFailure = { error ->
                         if (isFinishing || isDestroyed) return@fold
-                        runOnUiThread {
+                        safeRunOnUiThread {
                             if (!isFinishing && !isDestroyed) {
                                 Toast.makeText(this@JadwalSholatAdminActivity, "Gagal memuat jadwal: ${error.message}", Toast.LENGTH_SHORT).show()
                             }
@@ -502,7 +551,7 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
         lifecycleScope.launch {
             repository.getJadwalSholatById(token, currentJadwalId).fold(
                 onSuccess = { jadwal ->
-                    runOnUiThread {
+                    safeRunOnUiThread {
                         etJamMulai.setText(jadwal.jam_mulai)
                         etJamSelesai.setText(jadwal.jam_selesai)
 
@@ -544,7 +593,7 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
                     }
                 },
                 onFailure = { error ->
-                    runOnUiThread {
+                    safeRunOnUiThread {
                         when (namaSholat) {
                             "Dhuha" -> {
                                 etJamMulai.setText("06:30")
@@ -731,7 +780,7 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
                 }
 
                 if (!isFinishing && !isDestroyed) {
-                    runOnUiThread {
+                    safeRunOnUiThread {
                         if (!isFinishing && !isDestroyed) {
                             if (failCount == 0) {
                                 Toast.makeText(this@JadwalSholatAdminActivity, "✅ Berhasil memperbarui $successCount jadwal", Toast.LENGTH_SHORT).show()
@@ -759,7 +808,7 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
                 repository.updateJadwalSholat(token, jadwalId, request).fold(
                     onSuccess = {
                         if (!isFinishing && !isDestroyed) {
-                            runOnUiThread {
+                            safeRunOnUiThread {
                                 if (!isFinishing && !isDestroyed) {
                                     Toast.makeText(this@JadwalSholatAdminActivity, "✅ Jadwal berhasil diperbarui", Toast.LENGTH_SHORT).show()
                                     dialog.dismiss()
@@ -770,7 +819,7 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
                     },
                     onFailure = { error ->
                         if (!isFinishing && !isDestroyed) {
-                            runOnUiThread {
+                            safeRunOnUiThread {
                                 if (!isFinishing && !isDestroyed) {
                                     val errorMessage = "❌ Gagal menyimpan: ${error.message}"
                                     Toast.makeText(this@JadwalSholatAdminActivity, errorMessage, Toast.LENGTH_LONG).show()
@@ -880,14 +929,14 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
             lifecycleScope.launch {
                 repository.createJadwalSholat(token, request).fold(
                     onSuccess = {
-                        runOnUiThread {
+                        safeRunOnUiThread {
                             Toast.makeText(this@JadwalSholatAdminActivity, "Jadwal berhasil ditambahkan!", Toast.LENGTH_SHORT).show()
                             dialog.dismiss()
                             loadJadwalList()
                         }
                     },
                     onFailure = { error ->
-                        runOnUiThread {
+                        safeRunOnUiThread {
                             Toast.makeText(this@JadwalSholatAdminActivity, "Gagal: ${error.message}", Toast.LENGTH_SHORT).show()
                             btnSimpan.isEnabled = true
                             btnSimpan.text = "SIMPAN JADWAL"
@@ -975,7 +1024,7 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
                     repository.updateJadwalDhuhaKeahlian(token, item.id!!, request)
                 }
 
-                runOnUiThread {
+                safeRunOnUiThread {
                     if (result.isSuccess) {
                         Toast.makeText(this@JadwalSholatAdminActivity, "Berhasil menyimpan", Toast.LENGTH_SHORT).show()
                         dialog.dismiss()
@@ -1019,7 +1068,7 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
         lifecycleScope.launch {
             val token = getAuthToken()
             repository.getSholatDhuhaDetail(token).onSuccess { detail ->
-                runOnUiThread {
+                safeRunOnUiThread {
                     showEditSholatCardDialog(detail.id, "Dhuha", detail.hari, detail.waktuMulai, detail.waktuSelesai, detail.kelas, null)
                 }
             }
@@ -1033,7 +1082,7 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
         lifecycleScope.launch {
             val token = getAuthToken()
             repository.getSholatDzuhurDetail(token).onSuccess { detail ->
-                runOnUiThread {
+                safeRunOnUiThread {
                     showEditSholatCardDialog(detail.id, "Dzuhur", detail.hari, detail.waktuMulai, detail.waktuSelesai, detail.kelas, detail.jurusan)
                 }
             }
@@ -1121,7 +1170,7 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
                     repository.updateSholatDzuhur(token, id, body)
                 }
 
-                runOnUiThread {
+                safeRunOnUiThread {
                     if (result.isSuccess) {
                         Toast.makeText(this@JadwalSholatAdminActivity, "Berhasil diperbarui", Toast.LENGTH_SHORT).show()
                         dialog.dismiss()

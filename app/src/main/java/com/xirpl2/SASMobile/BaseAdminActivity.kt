@@ -272,32 +272,72 @@ abstract class BaseAdminActivity : AppCompatActivity() {
             return
         }
 
-        if (!::drawerLayout.isInitialized) {
-            val intent = Intent(this, activityClass)
-            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            startActivity(intent)
-            finish()
+        if (!::drawerLayout.isInitialized || isFinishing || isDestroyed) {
+            if (!isFinishing && !isDestroyed) {
+                val intent = Intent(this, activityClass)
+                intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                startActivity(intent)
+                finish()
+            }
             return
         }
 
-        drawerLayout.addDrawerListener(object : DrawerLayout.SimpleDrawerListener() {
-            override fun onDrawerClosed(drawerView: View) {
-                drawerLayout.removeDrawerListener(this)
+        try {
+            drawerLayout.addDrawerListener(object : DrawerLayout.SimpleDrawerListener() {
+                override fun onDrawerClosed(drawerView: View) {
+                    try {
+                        drawerLayout.removeDrawerListener(this)
 
-                val intent = Intent(this@BaseAdminActivity, activityClass)
-                intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                
-                startActivity(intent)
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+                        if (isFinishing || isDestroyed) return
 
-                window.decorView.postDelayed({
-                    if (!isFinishing && !isDestroyed) {
-                        finish()
+                        val intent = Intent(this@BaseAdminActivity, activityClass)
+                        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                        
+                        startActivity(intent)
+                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+
+                        window.decorView.postDelayed({
+                            try {
+                                if (!isFinishing && !isDestroyed) {
+                                    finish()
+                                }
+                            } catch (e: android.os.DeadObjectException) {
+                                android.util.Log.e("BaseAdminActivity", "DeadObjectException during finish: ${e.message}")
+                            } catch (e: Exception) {
+                                android.util.Log.e("BaseAdminActivity", "Error during delayed finish: ${e.message}")
+                            }
+                        }, 50)
+                    } catch (e: android.os.DeadObjectException) {
+                        android.util.Log.e("BaseAdminActivity", "DeadObjectException in onDrawerClosed: ${e.message}")
+                    } catch (e: Exception) {
+                        android.util.Log.e("BaseAdminActivity", "Error in onDrawerClosed: ${e.message}")
                     }
-                }, 100)
+                }
+
+                override fun onDrawerOpened(drawerView: View) {}
+            })
+            closeSidebar()
+        } catch (e: android.os.DeadObjectException) {
+            android.util.Log.e("BaseAdminActivity", "DeadObjectException during navigation: ${e.message}")
+            try {
+                val intent = Intent(this, activityClass)
+                intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
+                finish()
+            } catch (e2: Exception) {
+                android.util.Log.e("BaseAdminActivity", "Fallback navigation failed: ${e2.message}")
             }
-        })
-        closeSidebar()
+        } catch (e: Exception) {
+            android.util.Log.e("BaseAdminActivity", "Error during navigation: ${e.message}")
+            try {
+                val intent = Intent(this, activityClass)
+                intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                startActivity(intent)
+                finish()
+            } catch (e2: Exception) {
+                android.util.Log.e("BaseAdminActivity", "Fallback navigation failed: ${e2.message}")
+            }
+        }
     }
 
     protected fun openSidebar() {

@@ -357,24 +357,56 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
         if (::recyclerPresensi.isInitialized) {
             recyclerPresensi.adapter = null
         }
+        try {
+            lifecycleScope.cancel()
+        } catch (e: Exception) {
+            android.util.Log.e(TAG, "Error cancelling lifecycleScope: ${e.message}")
+        }
         super.onDestroy()
     }
 
+    override fun onPause() {
+        super.onPause()
+        try {
+            if (::recyclerPresensi.isInitialized) {
+                recyclerPresensi.clearOnScrollListeners()
+            }
+        } catch (e: Exception) {
+            android.util.Log.e(TAG, "Error in onPause: ${e.message}")
+        }
+    }
+
+    private fun safeUIUpdate(action: () -> Unit) {
+        if (!isFinishing && !isDestroyed) {
+            try {
+                action()
+            } catch (e: android.os.DeadObjectException) {
+                android.util.Log.e(TAG, "DeadObjectException during UI update: ${e.message}")
+            } catch (e: Exception) {
+                android.util.Log.e(TAG, "Error during UI update: ${e.message}")
+            }
+        }
+    }
+
     private fun showLoading(show: Boolean) {
-        progressLoading.visibility = if (show) View.VISIBLE else View.GONE
-        if (show) {
-            recyclerPresensi.visibility = View.GONE
-            tvEmptyState.visibility = View.GONE
-            tableHorizontalScrollView.visibility = View.GONE
-        } else {
-            tableHorizontalScrollView.visibility = View.VISIBLE
+        safeUIUpdate {
+            progressLoading.visibility = if (show) View.VISIBLE else View.GONE
+            if (show) {
+                recyclerPresensi.visibility = View.GONE
+                tvEmptyState.visibility = View.GONE
+                tableHorizontalScrollView.visibility = View.GONE
+            } else {
+                tableHorizontalScrollView.visibility = View.VISIBLE
+            }
         }
     }
 
     private fun showEmptyState(message: String) {
-        tvEmptyState.text = message
-        tvEmptyState.visibility = View.VISIBLE
-        recyclerPresensi.visibility = View.GONE
+        safeUIUpdate {
+            tvEmptyState.text = message
+            tvEmptyState.visibility = View.VISIBLE
+            recyclerPresensi.visibility = View.GONE
+        }
     }
 }
 
