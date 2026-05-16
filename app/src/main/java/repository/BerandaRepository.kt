@@ -408,7 +408,7 @@ class BerandaRepository {
     suspend fun submitAbsensi(
         token: String,
         nis: String,
-        request: AttendanceCreateRequest
+        request: CreateAbsensiRequest
     ): Result<String> {
         return withContext(Dispatchers.IO) {
             try {
@@ -435,7 +435,7 @@ class BerandaRepository {
     suspend fun createAbsensi(
         token: String,
         nis: String,
-        request: AttendanceCreateRequest
+        request: CreateAbsensiRequest
     ): Result<String> = submitAbsensi(token, nis, request)
 
     suspend fun verifyQRCode(

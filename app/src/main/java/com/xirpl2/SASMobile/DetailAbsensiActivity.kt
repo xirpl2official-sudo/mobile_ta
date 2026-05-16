@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -152,9 +153,10 @@ class DetailAbsensiActivity : AppCompatActivity() {
         
         
         lifecycleScope.launch {
+            val filtersMap: Map<String, String>? = studentNis?.let { mapOf("nis" to it) }
             repository.getHistoryStaff(
                 token = token,
-                filters = mapOf("nis" to studentNis)
+                filters = filtersMap
             ).fold(
                 onSuccess = { historyStaffData ->
                     runOnUiThread {
