@@ -3,38 +3,58 @@
 *.class
 *.o
 *.obj
+*.so
+*.a
+*.dll
+*.exe
 *.out
-build/
-target/
+*.pyc
+__pycache__/
 
 # Dependencies
-.gradle/
 node_modules/
 venv/
 .venv/
-__pycache__/
-.mypy_cache/
-.pytest_cache/
-
-# Logs and temp files
-*.log
-*.tmp
-*.swp
-
-# Environment
 .env
 .env.local
 *.env.*
 
-# Editors
+# Build directories
+dist/
+build/
+target/
+.gradle/
+
+# Python cache
+.mypy_cache/
+.pytest_cache/
+*.pyc
+__pycache__/
+
+# Java/Kotlin build artifacts
+*.class
+*.jar
+*.war
+*.aar
+
+# Android build artifacts
+app/build/
+*.apk
+*.aab
+
+# IDE files
 .vscode/
 .idea/
+*.swp
+*.swo
+*.tmp
 
 # System files
 .DS_Store
 Thumbs.db
+*.log
 
-# Coverage
+# Coverage reports
 coverage/
 htmlcov/
 .coverage
