@@ -258,7 +258,7 @@ interface ApiService {
     suspend fun submitAttendance(
         @Header("Authorization") token: String,
         @Path("nis") nis: String,
-        @Body request: AttendanceCreateRequest
+        @Body request: CreateAbsensiRequest
     ): Response<MessageResponse>
 
     @GET("v2/students/unregistered")

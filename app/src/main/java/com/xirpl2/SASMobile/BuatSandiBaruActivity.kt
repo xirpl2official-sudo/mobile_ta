@@ -180,17 +180,6 @@ class BuatSandiBaruActivity : AppCompatActivity() {
                     startActivity(intent)
                     finish()
                 } else {
-                        MotionToast.createColorToast(
-                            this@BuatSandiBaruActivity,
-                            "Gagal",
-                            apiResponse.message ?: "Gagal mengubah password",
-                            MotionToastStyle.ERROR,
-                            Gravity.CENTER,
-                            MotionToast.LONG_DURATION,
-                            null
-                        )
-                    }
-                } else {
                     val errorBody = response.errorBody()?.string()
                     val errorMessage = try {
                         if (!errorBody.isNullOrEmpty()) {
