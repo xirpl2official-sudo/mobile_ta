@@ -7,6 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.xirpl2.SASMobile.R
 import com.xirpl2.SASMobile.model.AbsensiStaffItem
+import java.util.Locale
 
 class PresensiAdapter(
     private var items: List<AbsensiStaffItem> = emptyList()
@@ -31,8 +32,8 @@ class PresensiAdapter(
         val item = items[position]
         
         holder.tvNo.text = (position + 1).toString()
-        holder.tvNis.text = item.nis
-        holder.tvNama.text = item.nama_siswa
+        holder.tvNis.text = item.nis ?: ""
+        holder.tvNama.text = item.nama_siswa ?: ""
         
         
         val kelasDisplay = buildString {
@@ -48,8 +49,8 @@ class PresensiAdapter(
         holder.tvJenisSholat.text = item.jenis_sholat ?: "-"
         
         
-        val status = item.status.lowercase()
-        holder.tvStatus.text = status.replaceFirstChar { it.uppercase() }
+        val status = item.status?.lowercase() ?: "alpha"
+        holder.tvStatus.text = status.replaceFirstChar { if (it.isLowerCase()) it.uppercase() else it.toString() }
         
         val backgroundRes = when (status) {
             "hadir" -> R.drawable.bg_status_hadir

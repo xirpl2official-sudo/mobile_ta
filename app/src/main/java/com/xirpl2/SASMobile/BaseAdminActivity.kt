@@ -49,13 +49,20 @@ abstract class BaseAdminActivity : AppCompatActivity() {
     }
 
     protected fun setupDrawerAndSidebar() {
-        drawerLayout = findViewById(getDrawerLayoutId())
-        sidebarView = findViewById(getNavigationViewId())
+        val drawer = findViewById<DrawerLayout>(getDrawerLayoutId())
+        val sidebar = findViewById<View>(getNavigationViewId())
+        
+        if (drawer != null && sidebar != null) {
+            drawerLayout = drawer
+            sidebarView = sidebar
 
-        setupAdminProfile()
-        setupCloseSidebarButton()
-        applyRoleBasedFiltering()
-        setupMenuItems()
+            setupAdminProfile()
+            setupCloseSidebarButton()
+            applyRoleBasedFiltering()
+            setupMenuItems()
+        } else {
+            android.util.Log.e("BaseAdminActivity", "Drawer or Sidebar view not found!")
+        }
     }
 
     private fun applyRoleBasedFiltering() {
@@ -260,32 +267,49 @@ abstract class BaseAdminActivity : AppCompatActivity() {
     }
 
     protected fun navigateTo(activityClass: Class<out BaseAdminActivity>) {
-        
+        if (this::class.java == activityClass) {
+            closeSidebar()
+            return
+        }
+
+        if (!::drawerLayout.isInitialized) {
+            val intent = Intent(this, activityClass)
+            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            startActivity(intent)
+            finish()
+            return
+        }
+
         drawerLayout.addDrawerListener(object : DrawerLayout.SimpleDrawerListener() {
             override fun onDrawerClosed(drawerView: View) {
                 drawerLayout.removeDrawerListener(this)
-                
+
                 val intent = Intent(this@BaseAdminActivity, activityClass)
+                intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 
-                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
                 startActivity(intent)
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-                
-                
-                if (activityClass != this@BaseAdminActivity::class.java) {
-                    finish()
-                }
+
+                window.decorView.postDelayed({
+                    if (!isFinishing && !isDestroyed) {
+                        finish()
+                    }
+                }, 100)
             }
         })
         closeSidebar()
     }
 
     protected fun openSidebar() {
-        drawerLayout.openDrawer(GravityCompat.START)
+        if (::drawerLayout.isInitialized) {
+            drawerLayout.openDrawer(GravityCompat.START)
+        }
     }
 
     protected fun closeSidebar() {
-        drawerLayout.closeDrawer(GravityCompat.START)
+        if (::drawerLayout.isInitialized) {
+            drawerLayout.closeDrawer(GravityCompat.START)
+        }
     }
 
     protected fun setupMenuIcon() {

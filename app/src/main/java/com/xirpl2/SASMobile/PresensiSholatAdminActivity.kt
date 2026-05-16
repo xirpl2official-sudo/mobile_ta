@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -79,25 +80,43 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_presensi_sholat_admin)
-        setupStatusBar()
+        try {
+            setContentView(R.layout.activity_presensi_sholat_admin)
+            setupStatusBar()
 
-        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+            val mainView = findViewById<View>(R.id.main)
+            if (mainView != null) {
+                androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(mainView) { v, insets ->
+                    val systemBars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars())
+                    v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+                    insets
+                }
+            }
+
+            initViews()
+            setupDrawerAndSidebar()
+            setupMenuIcon()
+            setupRecyclerView()
+            setupSearch()
+            setupFilters()
+            setupInputIzinButton()
+
+            
+            Handler(Looper.getMainLooper()).postDelayed({
+                if (!isFinishing) {
+                    try {
+                        loadData()
+                    } catch (e: Exception) {
+                        android.util.Log.e(TAG, "Error in delayed loadData: ${e.message}", e)
+                    }
+                }
+            }, 100)
+            
+        } catch (e: Exception) {
+            android.util.Log.e(TAG, "Error in onCreate: ${e.message}", e)
+            Toast.makeText(this, "Terjadi kesalahan saat memuat halaman", Toast.LENGTH_SHORT).show()
+            finish()
         }
-
-        initViews()
-        setupDrawerAndSidebar()
-        setupMenuIcon()
-        setupRecyclerView()
-        setupSearch()
-        setupFilters()
-        setupInputIzinButton()
-
-        
-        loadData()
     }
 
     private fun setupInputIzinButton() {
@@ -139,16 +158,16 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
     }
 
     private fun initViews() {
-        tvTitle = findViewById(R.id.tvTitle)
-        etSearch = findViewById(R.id.etSearch)
-        filterKelas = findViewById(R.id.filterKelas)
-        filterJurusan = findViewById(R.id.filterJurusan)
-        filterJenisSholat = findViewById(R.id.filterJenisSholat)
-        tvCountInfo = findViewById(R.id.tvCountInfo)
-        recyclerPresensi = findViewById(R.id.recyclerPresensi)
-        progressLoading = findViewById(R.id.progressLoading)
-        tvEmptyState = findViewById(R.id.tvEmptyState)
-        tableHorizontalScrollView = findViewById(R.id.tableHorizontalScrollView)
+        tvTitle = findViewById(R.id.tvTitle) ?: TextView(this)
+        etSearch = findViewById(R.id.etSearch) ?: EditText(this)
+        filterKelas = findViewById(R.id.filterKelas) ?: TextView(this)
+        filterJurusan = findViewById(R.id.filterJurusan) ?: TextView(this)
+        filterJenisSholat = findViewById(R.id.filterJenisSholat) ?: TextView(this)
+        tvCountInfo = findViewById(R.id.tvCountInfo) ?: TextView(this)
+        recyclerPresensi = findViewById(R.id.recyclerPresensi) ?: RecyclerView(this)
+        progressLoading = findViewById(R.id.progressLoading) ?: ProgressBar(this)
+        tvEmptyState = findViewById(R.id.tvEmptyState) ?: TextView(this)
+        tableHorizontalScrollView = findViewById(R.id.tableHorizontalScrollView) ?: View(this)
     }
 
     private fun setupRecyclerView() {
@@ -255,6 +274,8 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
     }
 
     private fun loadData() {
+        if (isFinishing || isDestroyed) return
+
         val token = getAuthToken()
         if (token.isEmpty()) {
             showEmptyState("Silakan login terlebih dahulu")
@@ -277,7 +298,7 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
         val searchApi = if (searchQuery.isBlank()) null else searchQuery
         
         
-        val todayDate = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+        val todayDate = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US)
             .format(java.util.Date())
 
         lifecycleScope.launch {
@@ -292,6 +313,9 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
                 limit = limit
             ).fold(
                 onSuccess = { data ->
+                    if (isFinishing || isDestroyed) return@fold
+                    isLoading = false
+                    showLoading(false)
                     val items = data.absensi
                     val pagination = data.pagination
 
@@ -313,9 +337,11 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
                     } else {
                         tvEmptyState.visibility = View.GONE
                         recyclerPresensi.visibility = View.VISIBLE
+                        tableHorizontalScrollView.visibility = View.VISIBLE
                     }
                 },
                 onFailure = { error ->
+                    if (isFinishing || isDestroyed) return@fold
                     isLoading = false
                     showLoading(false)
                     if (currentPage == 1) {
@@ -324,6 +350,14 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
                 }
             )
         }
+    }
+
+    override fun onDestroy() {
+        searchRunnable?.let { searchHandler.removeCallbacks(it) }
+        if (::recyclerPresensi.isInitialized) {
+            recyclerPresensi.adapter = null
+        }
+        super.onDestroy()
     }
 
     private fun showLoading(show: Boolean) {

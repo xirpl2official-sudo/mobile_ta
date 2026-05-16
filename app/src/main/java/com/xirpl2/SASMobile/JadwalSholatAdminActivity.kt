@@ -139,6 +139,7 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
         lifecycleScope.launch {
             repository.getJadwalSholat(token).fold(
                 onSuccess = { list ->
+                    if (isFinishing || isDestroyed) return@fold
                     jadwalList = list
 
                     
@@ -149,9 +150,16 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
                     updateJadwalUI()
                 },
                 onFailure = { error ->
+                    if (isFinishing || isDestroyed) return@fold
                 }
             )
         }
+    }
+
+    override fun onDestroy() {
+        val rvDhuhaSchedule = findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.rvDhuhaSchedule)
+        rvDhuhaSchedule?.adapter = null
+        super.onDestroy()
     }
 
     private fun findJadwalIdByJenis(jenisSholat: String): Int? {
@@ -333,28 +341,36 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
             lifecycleScope.launch {
                 val token = getAuthToken()
                 if (token.isEmpty()) {
-                    runOnUiThread {
-                        Toast.makeText(this@JadwalSholatAdminActivity, "Sesi telah berakhir", Toast.LENGTH_SHORT).show()
+                    if (!isFinishing && !isDestroyed) {
+                        runOnUiThread {
+                            Toast.makeText(this@JadwalSholatAdminActivity, "Sesi telah berakhir", Toast.LENGTH_SHORT).show()
+                        }
                     }
                     return@launch
                 }
 
                 repository.getJadwalSholat(token).fold(
                     onSuccess = { list ->
+                        if (isFinishing || isDestroyed) return@fold
                         jadwalList = list
                         updateJadwalUI()
                         val id = list.find { it.jenis_sholat.equals(jenisSholat, ignoreCase = true) }?.id
                         runOnUiThread {
-                            if (id != null) {
-                                showEditDialog(id, jenisSholat)
-                            } else {
-                                Toast.makeText(this@JadwalSholatAdminActivity, "Jadwal $jenisSholat tidak ditemukan", Toast.LENGTH_SHORT).show()
+                            if (!isFinishing && !isDestroyed) {
+                                if (id != null) {
+                                    showEditDialog(id, jenisSholat)
+                                } else {
+                                    Toast.makeText(this@JadwalSholatAdminActivity, "Jadwal $jenisSholat tidak ditemukan", Toast.LENGTH_SHORT).show()
+                                }
                             }
                         }
                     },
                     onFailure = { error ->
+                        if (isFinishing || isDestroyed) return@fold
                         runOnUiThread {
-                            Toast.makeText(this@JadwalSholatAdminActivity, "Gagal memuat jadwal: ${error.message}", Toast.LENGTH_SHORT).show()
+                            if (!isFinishing && !isDestroyed) {
+                                Toast.makeText(this@JadwalSholatAdminActivity, "Gagal memuat jadwal: ${error.message}", Toast.LENGTH_SHORT).show()
+                            }
                         }
                     }
                 )
@@ -714,14 +730,18 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
                     )
                 }
 
-                runOnUiThread {
-                    if (failCount == 0) {
-                        Toast.makeText(this@JadwalSholatAdminActivity, "✅ Berhasil memperbarui $successCount jadwal", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(this@JadwalSholatAdminActivity, "⚠️ $successCount berhasil, $failCount gagal", Toast.LENGTH_LONG).show()
+                if (!isFinishing && !isDestroyed) {
+                    runOnUiThread {
+                        if (!isFinishing && !isDestroyed) {
+                            if (failCount == 0) {
+                                Toast.makeText(this@JadwalSholatAdminActivity, "✅ Berhasil memperbarui $successCount jadwal", Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(this@JadwalSholatAdminActivity, "⚠️ $successCount berhasil, $failCount gagal", Toast.LENGTH_LONG).show()
+                            }
+                            dialog.dismiss()
+                            loadJadwalList()
+                        }
                     }
-                    dialog.dismiss()
-                    loadJadwalList()
                 }
             }
         } else {
@@ -738,16 +758,24 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
             lifecycleScope.launch {
                 repository.updateJadwalSholat(token, jadwalId, request).fold(
                     onSuccess = {
-                        runOnUiThread {
-                            Toast.makeText(this@JadwalSholatAdminActivity, "✅ Jadwal berhasil diperbarui", Toast.LENGTH_SHORT).show()
-                            dialog.dismiss()
-                            loadJadwalList()
+                        if (!isFinishing && !isDestroyed) {
+                            runOnUiThread {
+                                if (!isFinishing && !isDestroyed) {
+                                    Toast.makeText(this@JadwalSholatAdminActivity, "✅ Jadwal berhasil diperbarui", Toast.LENGTH_SHORT).show()
+                                    dialog.dismiss()
+                                    loadJadwalList()
+                                }
+                            }
                         }
                     },
                     onFailure = { error ->
-                        runOnUiThread {
-                            val errorMessage = "❌ Gagal menyimpan: ${error.message}"
-                            Toast.makeText(this@JadwalSholatAdminActivity, errorMessage, Toast.LENGTH_LONG).show()
+                        if (!isFinishing && !isDestroyed) {
+                            runOnUiThread {
+                                if (!isFinishing && !isDestroyed) {
+                                    val errorMessage = "❌ Gagal menyimpan: ${error.message}"
+                                    Toast.makeText(this@JadwalSholatAdminActivity, errorMessage, Toast.LENGTH_LONG).show()
+                                }
+                            }
                         }
                     }
                 )
