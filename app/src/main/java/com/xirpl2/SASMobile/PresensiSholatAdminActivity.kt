@@ -278,28 +278,19 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
             .format(java.util.Date())
 
         lifecycleScope.launch {
-            try {
-
-
-                val response = RetrofitClient.apiService.getHistoryStaff(
-                    token = "Bearer $token",
-                    kelas = kelasApi,
-                    jurusan = jurusanApi,
-                    jenisSholat = jenisSholatApi,
-                    search = searchApi,
-                    tanggal = todayDate,
-                    page = currentPage,
-                    limit = limit
-                )
-
-                isLoading = false
-                showLoading(false)
-
-                if (response.isSuccessful) {
-                    val body = response.body()
-                    val items = body?.data?.absensi ?: emptyList()
-                    val pagination = body?.data?.pagination
-
+            repository.getHistoryStaff(
+                token = token,
+                kelas = kelasApi,
+                jurusan = jurusanApi,
+                jenisSholat = jenisSholatApi,
+                search = searchApi,
+                tanggal = todayDate,
+                page = currentPage,
+                limit = limit
+            ).fold(
+                onSuccess = { data ->
+                    val items = data.absensi
+                    val pagination = data.pagination
 
                     if (currentPage == 1) {
                         dataList.clear()
@@ -307,12 +298,10 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
                     dataList.addAll(items)
                     presensiAdapter.updateData(dataList)
 
-                    
                     isLastPage = pagination?.let {
                         it.page >= it.total_pages
                     } ?: (items.size < limit)
 
-                    
                     val totalItems = pagination?.total_items ?: dataList.size
                     tvCountInfo.text = "Total: $totalItems data"
 
@@ -322,18 +311,15 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
                         tvEmptyState.visibility = View.GONE
                         recyclerPresensi.visibility = View.VISIBLE
                     }
-                } else {
+                },
+                onFailure = { error ->
+                    isLoading = false
+                    showLoading(false)
                     if (currentPage == 1) {
-                        showEmptyState("Gagal memuat data")
+                        showEmptyState("Gagal memuat data: ${error.message}")
                     }
                 }
-            } catch (e: Exception) {
-                isLoading = false
-                if (currentPage == 1) {
-                    showLoading(false)
-                    showEmptyState("Error: ${e.message}")
-                }
-            }
+            )
         }
     }
 

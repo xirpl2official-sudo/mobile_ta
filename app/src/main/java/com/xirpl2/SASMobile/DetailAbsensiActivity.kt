@@ -152,8 +152,10 @@ class DetailAbsensiActivity : AppCompatActivity() {
         
         
         lifecycleScope.launch {
-            val filters = mapOf<String, String>("nis" to studentNis)
-            repository.getHistoryStaff(token, filters).fold(
+            repository.getHistoryStaff(
+                token = token,
+                filters = mapOf("nis" to studentNis)
+            ).fold(
                 onSuccess = { historyStaffData ->
                     runOnUiThread {
                         val absensiList = historyStaffData.absensi
@@ -164,7 +166,11 @@ class DetailAbsensiActivity : AppCompatActivity() {
                         updatePrayerStatuses(absensiList)
                     }
                 },
-                onFailure = {  }
+                onFailure = { error ->
+                    runOnUiThread {
+                        Toast.makeText(this@DetailAbsensiActivity, "Gagal memuat data: ${error.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
             )
         }
     }

@@ -356,12 +356,35 @@ class BerandaRepository {
 
     suspend fun getHistoryStaff(
         token: String,
-        filters: Map<String, String>
+        kelas: String? = null,
+        jurusan: String? = null,
+        jenisSholat: String? = null,
+        search: String? = null,
+        tanggal: String? = null,
+        startDate: String? = null,
+        endDate: String? = null,
+        page: Int? = null,
+        limit: Int? = null,
+        filters: Map<String, String>? = null
     ): Result<HistoryStaffData> {
         return withContext(Dispatchers.IO) {
             try {
+                // If filters map is provided with nis, use it as search parameter
+                val nisFilter = filters?.get("nis")
+                
                 val response: Response<HistoryStaffResponse> =
-                    apiService.getAttendanceHistory("Bearer $token", filters)
+                    apiService.getAttendanceHistory(
+                        "Bearer $token",
+                        kelas ?: filters?.get("kelas"),
+                        jurusan ?: filters?.get("jurusan"),
+                        jenisSholat,
+                        search ?: nisFilter,
+                        tanggal,
+                        startDate,
+                        endDate,
+                        page,
+                        limit
+                    )
 
                 if (!response.isSuccessful) {
                     return@withContext Result.failure(
@@ -408,6 +431,41 @@ class BerandaRepository {
         }
     }
 
+    // Alias for createAbsensi to maintain compatibility
+    suspend fun createAbsensi(
+        token: String,
+        nis: String,
+        request: AttendanceCreateRequest
+    ): Result<String> = submitAbsensi(token, nis, request)
+
+    suspend fun verifyQRCode(
+        token: String,
+        qrToken: String
+    ): Result<QRCodeVerifyData> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val request = QRCodeVerifyRequest(token = qrToken)
+                val response = apiService.verifyQRCode("Bearer $token", request)
+                
+                if (!response.isSuccessful) {
+                    return@withContext Result.failure(
+                        Exception("HTTP Error: ${response.code()} - ${response.message()}")
+                    )
+                }
+                
+                val body = response.body()
+                if (body == null) {
+                    return@withContext Result.failure(Exception("Response body kosong"))
+                }
+                
+                val data = body.data ?: return@withContext Result.failure(Exception("Data verifikasi kosong"))
+                return@withContext Result.success(data)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
     suspend fun getDhuhaToday(token: String): Result<List<DhuhaJurusanData>> {
         return withContext(Dispatchers.IO) {
             try {
@@ -425,6 +483,104 @@ class BerandaRepository {
                 }
 
                 return@withContext Result.success(body.data)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun getJadwalDhuhaKeahlian(token: String): Result<List<JadwalDhuhaKeahlian>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.getJadwalDhuhaKeahlian("Bearer $token")
+                if (!response.isSuccessful) {
+                    return@withContext Result.failure(Exception("HTTP Error: ${response.code()}"))
+                }
+                return@withContext Result.success(response.body()?.data ?: emptyList())
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun getSholatDhuhaDetail(token: String): Result<SholatDhuhaDetail> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.getSholatDhuhaDetail("Bearer $token")
+                if (!response.isSuccessful) {
+                    return@withContext Result.failure(Exception("HTTP Error: ${response.code()}"))
+                }
+                return@withContext Result.success(response.body()?.data ?: throw Exception("Data kosong"))
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun getSholatDzuhurDetail(token: String): Result<SholatDzuhurDetail> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.getSholatDzuhurDetail("Bearer $token")
+                if (!response.isSuccessful) {
+                    return@withContext Result.failure(Exception("HTTP Error: ${response.code()}"))
+                }
+                return@withContext Result.success(response.body()?.data ?: throw Exception("Data kosong"))
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun createJadwalDhuhaKeahlian(token: String, request: JadwalDhuhaKeahlian): Result<String> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.createJadwalDhuhaKeahlian("Bearer $token", request)
+                if (!response.isSuccessful) {
+                    return@withContext Result.failure(Exception("HTTP Error: ${response.code()}"))
+                }
+                return@withContext Result.success(response.body()?.message ?: "Berhasil")
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun updateJadwalDhuhaKeahlian(token: String, id: Int, request: JadwalDhuhaKeahlian): Result<String> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.updateJadwalDhuhaKeahlian("Bearer $token", id, request)
+                if (!response.isSuccessful) {
+                    return@withContext Result.failure(Exception("HTTP Error: ${response.code()}"))
+                }
+                return@withContext Result.success(response.body()?.message ?: "Berhasil")
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun updateSholatDhuha(token: String, id: Int, request: SholatDhuhaDetail): Result<String> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.updateSholatDhuha("Bearer $token", id, request)
+                if (!response.isSuccessful) {
+                    return@withContext Result.failure(Exception("HTTP Error: ${response.code()}"))
+                }
+                return@withContext Result.success(response.body()?.message ?: "Berhasil")
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun updateSholatDzuhur(token: String, id: Int, request: SholatDzuhurDetail): Result<String> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.updateSholatDzuhur("Bearer $token", id, request)
+                if (!response.isSuccessful) {
+                    return@withContext Result.failure(Exception("HTTP Error: ${response.code()}"))
+                }
+                return@withContext Result.success(response.body()?.message ?: "Berhasil")
             } catch (e: Exception) {
                 Result.failure(e)
             }
