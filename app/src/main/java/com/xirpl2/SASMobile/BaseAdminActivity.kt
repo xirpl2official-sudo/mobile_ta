@@ -92,7 +92,7 @@ abstract class BaseAdminActivity : AppCompatActivity() {
                         val tvAdminName = sidebarView.findViewById<TextView>(R.id.tvAdminName)
                         val tvAdminRole = sidebarView.findViewById<TextView>(R.id.tvAdminRole)
                         
-                        tvAdminName?.text = profile?.nama_siswa ?: profile?.name ?: profile?.username ?: "Admin"
+                        tvAdminName?.text = profile?.nama_siswa ?: profile?.nama ?: "Admin"
                         
                         
                         val roleRaw = profile?.role?.lowercase() ?: ""

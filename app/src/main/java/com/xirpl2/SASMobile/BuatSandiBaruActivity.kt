@@ -163,8 +163,8 @@ class BuatSandiBaruActivity : AppCompatActivity() {
 
                 if (response.isSuccessful && response.body() != null) {
                     val apiResponse = response.body()!!
-                    if (apiResponse.status == true) {
-                        MotionToast.createColorToast(
+                    // MessageResponse only has 'message' field, no 'status' - success is implied by HTTP 200
+                    MotionToast.createColorToast(
                             this@BuatSandiBaruActivity,
                             "Berhasil",
                             apiResponse.message ?: "Password berhasil diubah. Silakan login dengan password baru",
@@ -174,12 +174,12 @@ class BuatSandiBaruActivity : AppCompatActivity() {
                             null
                         )
 
-                        
-                        val intent = Intent(this@BuatSandiBaruActivity, MasukActivity::class.java)
-                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        startActivity(intent)
-                        finish()
-                    } else {
+                    
+                    val intent = Intent(this@BuatSandiBaruActivity, MasukActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    finish()
+                } else {
                         MotionToast.createColorToast(
                             this@BuatSandiBaruActivity,
                             "Gagal",
