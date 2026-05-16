@@ -21,7 +21,6 @@ import com.xirpl2.SASMobile.model.PasswordResetRequest
 import com.xirpl2.SASMobile.network.RetrofitClient
 import kotlinx.coroutines.launch
 import android.os.CountDownTimer
-import com.google.gson.Gson
 import java.util.concurrent.TimeUnit
 import www.sanju.motiontoast.MotionToast
 import www.sanju.motiontoast.MotionToastStyle
@@ -113,15 +112,7 @@ class VerifikasiOtpActivity : AppCompatActivity() {
                 if (response.isSuccessful && response.body() != null) {
                     val apiResponse = response.body()!!
                     
-                    
-                    
-                    
-                    val isSuccessByStatus = apiResponse.status == true
-                    val isSuccessByVerified = response.body()?.let { 
-                        val jsonStr = Gson().toJson(it)
-                        jsonStr.contains("\"verified\":true") || 
-                        jsonStr.contains("\"verified\": true")
-                    } ?: false
+                    // MessageResponse hanya memiliki field 'message', success disimpulkan dari HTTP 200
                     val isSuccessByMessage = !apiResponse.message.isNullOrEmpty() &&
                         (apiResponse.message.contains("valid", ignoreCase = true) ||
                          apiResponse.message.contains("sukses", ignoreCase = true) ||
@@ -129,10 +120,8 @@ class VerifikasiOtpActivity : AppCompatActivity() {
                          apiResponse.message.contains("success", ignoreCase = true))
                     val isHttpSuccess = response.code() == 200
                     
-                    
-                    
-                    val shouldNavigate = isHttpSuccess && 
-                        (isSuccessByStatus || isSuccessByVerified || isSuccessByMessage)
+                    // Navigasi jika HTTP sukses dan pesan mengandung kata kunci sukses
+                    val shouldNavigate = isHttpSuccess && isSuccessByMessage
                     
                     if (shouldNavigate) {
                         

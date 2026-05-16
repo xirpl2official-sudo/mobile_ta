@@ -128,17 +128,16 @@ class PengaturanAkunActivity : AppCompatActivity() {
                         val profileData = body?.data
 
                         if (profileData != null) {
-                            
-                            
+                            // Fix: Gunakan properti yang tersedia di AkunLoginResponse
                             currentUserData = UserData(
                                 nis = profileData.nis ?: "",
-                                namaLengkap = profileData.name ?: profileData.username ?: profileData.nama_siswa ?: "",
-                                jenisKelamin = profileData.jk,
-                                email = profileData.email,
+                                namaLengkap = profileData.nama ?: profileData.nama_siswa ?: "",
+                                jenisKelamin = profileData.jk ?: "L",
+                                email = "",  // Email tidak ada di response, kosongkan dulu
                                 fotoProfil = null,
                                 jurusan = profileData.jurusan ?: "",
                                 kelas = profileData.kelas ?: "",
-                                isGoogleAccount = profileData.is_google_acct
+                                isGoogleAccount = false  // is_google_acct tidak ada di response
                             )
                             
                             
