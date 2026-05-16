@@ -76,7 +76,8 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
         android.util.Log.d(TAG, "Loading synchronized data...")
 
         lifecycleScope.launch {
-            // Load Dhuha Keahlian Table
+            // Load Dhuha Keahlian Table - COMMENTED OUT: Phantom API method (not in backend)
+            /*
             repository.getJadwalDhuhaKeahlian(token).fold(
                 onSuccess = { list ->
                     android.util.Log.d(TAG, "Dhuha Keahlian loaded successfully: ${list.size} items")
@@ -92,8 +93,10 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
                     }
                 }
             )
+            */
 
-            // Load Dhuha Detail Card
+            // Load Dhuha Detail Card - COMMENTED OUT: Phantom API method (not in backend)
+            /*
             repository.getSholatDhuhaDetail(token).onSuccess { detail ->
                 android.util.Log.d(TAG, "Sholat Dhuha detail loaded")
                 runOnUiThread {
@@ -107,8 +110,10 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
             }.onFailure { error ->
                 android.util.Log.e(TAG, "Failed to load Sholat Dhuha detail: ${error.message}")
             }
+            */
 
-            // Load Dzuhur Detail Card
+            // Load Dzuhur Detail Card - COMMENTED OUT: Phantom API method (not in backend)
+            /*
             repository.getSholatDzuhurDetail(token).onSuccess { detail ->
                 android.util.Log.d(TAG, "Sholat Dzuhur detail loaded")
                 runOnUiThread {
@@ -123,6 +128,7 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
             }.onFailure { error ->
                 android.util.Log.e(TAG, "Failed to load Sholat Dzuhur detail: ${error.message}")
             }
+            */
         }
     }
 
@@ -931,6 +937,8 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
                 keahlian2 = selectedKeahlian2
             )
 
+            // COMMENTED OUT: Phantom API methods (not in backend)
+            /*
             lifecycleScope.launch {
                 val token = getAuthToken()
                 val result = if (item == null) {
@@ -949,6 +957,7 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
                     }
                 }
             }
+            */
         }
 
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
@@ -977,7 +986,8 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
     }
 
     private fun showEditSholatDhuhaCardDialog(id: Int) {
-        // Implement based on spec
+        // COMMENTED OUT: Phantom API method (not in backend)
+        /*
         lifecycleScope.launch {
             val token = getAuthToken()
             repository.getSholatDhuhaDetail(token).onSuccess { detail ->
@@ -986,9 +996,12 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
                 }
             }
         }
+        */
     }
 
     private fun showEditSholatDzuhurCardDialog(id: Int) {
+        // COMMENTED OUT: Phantom API method (not in backend)
+        /*
         lifecycleScope.launch {
             val token = getAuthToken()
             repository.getSholatDzuhurDetail(token).onSuccess { detail ->
@@ -997,6 +1010,7 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
                 }
             }
         }
+        */
     }
 
     private fun showEditSholatCardDialog(
@@ -1069,6 +1083,8 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
                 }
             }
 
+            // COMMENTED OUT: Phantom API methods updateSholatDhuha/updateSholatDzuhur (not in backend)
+            /*
             lifecycleScope.launch {
                 val token = getAuthToken()
                 val result = if (jenis == "Dhuha") {
@@ -1087,6 +1103,7 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
                     }
                 }
             }
+            */
         }
 
         btnCancel.setOnClickListener { dialog.dismiss() }

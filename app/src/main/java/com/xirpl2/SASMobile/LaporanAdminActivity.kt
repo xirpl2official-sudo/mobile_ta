@@ -21,6 +21,7 @@ import com.xirpl2.SASMobile.adapter.LaporanAbsensiAdapter
 import com.xirpl2.SASMobile.model.AbsensiStaffItem
 import com.xirpl2.SASMobile.model.LaporanStatistik
 import com.xirpl2.SASMobile.network.RetrofitClient
+import com.xirpl2.SASMobile.repository.BerandaRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
