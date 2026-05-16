@@ -142,7 +142,7 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
                 if (!isReadOnly) showDeleteConfirmationDialog(siswa)
             },
             onDetailClick = { siswa ->
-                showHistorySiswaDialog(siswa)
+                showStudentDetailDialog(siswa)
             },
             isReadOnly = isReadOnly
         )
@@ -346,122 +346,19 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
 
     private fun setupButtons() {
         val btnTambah = findViewById<com.google.android.material.button.MaterialButton>(R.id.btnTambah)
-        
-        
+
+
         val role = getSharedPreferences("UserData", Context.MODE_PRIVATE).getString("user_role", "")
         if (role == "wali_kelas" || role == "guru") {
             btnTambah.visibility = View.GONE
         } else {
             btnTambah.visibility = View.VISIBLE
             btnTambah.setOnClickListener {
-                showTambahSiswaDialog()
+                startActivity(android.content.Intent(this, TambahSiswaActivity::class.java))
             }
         }
     }
-    
-    private fun showTambahSiswaDialog() {
-        val dialogView = layoutInflater.inflate(R.layout.dialog_tambah_siswa, null)
-        
-        val etNis = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etNis)
-        val etNama = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etNama)
-        val rgJenisKelamin = dialogView.findViewById<android.widget.RadioGroup>(R.id.rgJenisKelamin)
-        val rbLakiLaki = dialogView.findViewById<android.widget.RadioButton>(R.id.rbLakiLaki)
-        val etKelas = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etKelas)
-        val actvJurusan = dialogView.findViewById<android.widget.AutoCompleteTextView>(R.id.actvJurusan)
-        val btnBatal = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnBatal)
-        val btnSimpan = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnSimpan)
-        val btnClose = dialogView.findViewById<android.widget.ImageView>(R.id.btnClose)
-        
-        
-        val jurusanAdapter = android.widget.ArrayAdapter(
-            this,
-            android.R.layout.simple_dropdown_item_1line,
-            fixedJurusanList
-        )
-        actvJurusan.setAdapter(jurusanAdapter)
-        
-        
-        val dialog = AlertDialog.Builder(this)
-            .setView(dialogView)
-            .setCancelable(false)
-            .create()
-        
-        btnBatal.setOnClickListener {
-            dialog.dismiss()
-        }
-        
-        btnClose.setOnClickListener {
-            dialog.dismiss()
-        }
-        
-        btnSimpan.setOnClickListener {
-            val nis = etNis.text?.toString()?.trim() ?: ""
-            val nama = etNama.text?.toString()?.trim() ?: ""
-            val jenisKelamin = if (rbLakiLaki.isChecked) "L" else "P"
-            val kelas = etKelas.text?.toString()?.trim()?.uppercase() ?: ""
-            val jurusan = actvJurusan.text?.toString()?.trim()?.uppercase() ?: ""
-            
-            
-            if (nis.isEmpty()) {
-                etNis.error = "NIS tidak boleh kosong"
-                return@setOnClickListener
-            }
-            if (nama.isEmpty()) {
-                etNama.error = "Nama tidak boleh kosong"
-                return@setOnClickListener
-            }
-            if (rgJenisKelamin.checkedRadioButtonId == -1) {
-                Toast.makeText(this, "Pilih jenis kelamin", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            if (kelas.isEmpty() || kelas !in listOf("X", "XI", "XII")) {
-                etKelas.error = "Kelas harus X, XI, atau XII"
-                return@setOnClickListener
-            }
-            if (jurusan.isEmpty()) {
-                Toast.makeText(this, "Pilih jurusan", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            
-            
-            val request = com.xirpl2.SASMobile.model.CreateSiswaRequest(
-                nis = nis,
-                nama_siswa = nama,
-                jenis_kelamin = jenisKelamin,
-                kelas = kelas,
-                jurusan = jurusan
-            )
-            
-            
-            btnSimpan.isEnabled = false
-            btnSimpan.text = "Menyimpan..."
-            
-            
-            lifecycleScope.launch {
-                repository.createSiswa(getAuthToken(), request).fold(
-                    onSuccess = { siswa ->
-                        runOnUiThread {
-                            Toast.makeText(this@DataSiswaAdminActivity, "Siswa berhasil ditambahkan!", Toast.LENGTH_SHORT).show()
-                            dialog.dismiss()
-                            
-                            loadStudentData(reset = true)
-                        }
-                    },
-                    onFailure = { error ->
-                        runOnUiThread {
-                            Toast.makeText(this@DataSiswaAdminActivity, "Gagal: ${error.message}", Toast.LENGTH_SHORT).show()
-                            btnSimpan.isEnabled = true
-                            btnSimpan.text = "Simpan"
-                        }
-                    }
-                )
-            }
-        }
-        
-        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
-        dialog.show()
-    }
-    
+
     private fun showEditSiswaDialog(siswa: SiswaItem) {
         val dialogView = layoutInflater.inflate(R.layout.dialog_tambah_siswa, null)
         
@@ -602,12 +499,8 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
         }
     }
 
-    private fun showHistorySiswaDialog(siswa: SiswaItem) {
-        val dialog = PresenceDetailPopUpFragment.newInstance(
-            nis = siswa.nis,
-            jurusan = siswa.jurusan,
-            name = siswa.nama_siswa
-        )
-        dialog.show(supportFragmentManager, "PresenceDetailPopUp")
+    private fun showStudentDetailDialog(siswa: SiswaItem) {
+        val dialog = SiswaDetailDialogFragment.newInstance(siswa)
+        dialog.show(supportFragmentManager, "SiswaDetailDialog")
     }
 }

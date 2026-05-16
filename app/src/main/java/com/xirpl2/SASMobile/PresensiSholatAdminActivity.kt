@@ -104,6 +104,7 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
         val btnInputIzin = findViewById<com.google.android.material.button.MaterialButton>(R.id.btnInputIzin)
         val btnTambah = findViewById<com.google.android.material.button.MaterialButton>(R.id.btnTambah)
         
+        if (btnInputIzin == null || btnTambah == null) return
         
         val role = getSharedPreferences("UserData", MODE_PRIVATE).getString("user_role", "")?.lowercase() ?: ""
         
@@ -124,7 +125,6 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
         
         btnInputIzin.setOnClickListener {
             val dialog = InputIzinDialogFragment.newInstance {
-                
                 refreshData()
             }
             dialog.show(supportFragmentManager, "InputIzinDialog")
@@ -132,7 +132,6 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
 
         btnTambah.setOnClickListener {
             val dialog = TambahAbsensiDialogFragment.newInstance {
-                
                 refreshData()
             }
             dialog.show(supportFragmentManager, "TambahAbsensiDialog")

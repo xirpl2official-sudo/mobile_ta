@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingVertical="8dp"
+    android:background="@android:color/white">
+
+    <TextView
+        android:id="@+id/tvNo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.08"
+        android:text="1"
+        android:textSize="12sp"
+        android:textColor="#333333"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/tvNis"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.20"
+        android:text="6896/805.027"
+        android:textSize="12sp"
+        android:textColor="#333333"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/tvNama"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.40"
+        android:text="Aditia Firmansyah"
+        android:textSize="12sp"
+        android:textColor="#333333"
+        android:paddingHorizontal="4dp" />
+
+    <TextView
+        android:id="@+id/tvJK"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.12"
+        android:text="L"
+        android:textSize="12sp"
+        android:textColor="#333333"
+        android:gravity="center" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnDetail"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="0dp"
+        android:layout_height="32dp"
+        android:layout_weight="0.20"
+        android:text="Detail"
+        android:textSize="10sp"
+        android:padding="0dp"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        app:strokeColor="@color/primary"
+        app:strokeWidth="1dp"
+        android:textColor="@color/primary"
+        app:cornerRadius="4dp" />
+
+</LinearLayout>

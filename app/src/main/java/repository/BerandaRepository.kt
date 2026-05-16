@@ -328,6 +328,30 @@ class BerandaRepository {
         }
     }
 
+    suspend fun getStudentDetail(token: String, nis: String): Result<com.google.gson.JsonObject> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.getStudentDetail("Bearer $token", nis)
+
+                if (!response.isSuccessful) {
+                    return@withContext Result.failure(
+                        Exception("HTTP Error: ${response.code()} - ${response.message()}")
+                    )
+                }
+
+                val body = response.body()
+                if (body == null) {
+                    return@withContext Result.failure(Exception("Response body kosong"))
+                }
+
+                val data = body.data ?: return@withContext Result.failure(Exception("Data siswa tidak tersedia"))
+                return@withContext Result.success(data)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
     suspend fun deleteSiswa(
         token: String,
         nis: String
@@ -483,6 +507,55 @@ class BerandaRepository {
                 }
 
                 return@withContext Result.success(body.data)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun getAdminManagementKelas(token: String): Result<List<KelasManagementItem>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.getAdminManagementKelas("Bearer $token")
+                if (!response.isSuccessful) return@withContext Result.failure(Exception("HTTP Error: ${response.code()}"))
+                return@withContext Result.success(response.body()?.data ?: emptyList())
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun getAdminManagementKelasDetail(token: String, id: Int): Result<KelasManagementDetail> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.getAdminManagementKelasDetail("Bearer $token", id)
+                if (!response.isSuccessful) return@withContext Result.failure(Exception("HTTP Error: ${response.code()}"))
+                val data = response.body()?.data ?: return@withContext Result.failure(Exception("Data tidak ditemukan"))
+                return@withContext Result.success(data)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun updateWaliKelas(token: String, idKelas: Int, idStaff: Int): Result<String> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.updateWaliKelas("Bearer $token", idKelas, UpdateWaliKelasRequest(idStaff))
+                if (!response.isSuccessful) return@withContext Result.failure(Exception("HTTP Error: ${response.code()}"))
+                return@withContext Result.success(response.body()?.message ?: "Berhasil update")
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun getStaffGuruLookup(token: String): Result<List<StaffInfo>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.getStaffGuruLookup("Bearer $token")
+                if (!response.isSuccessful) return@withContext Result.failure(Exception("HTTP Error: ${response.code()}"))
+                return@withContext Result.success(response.body()?.data ?: emptyList())
             } catch (e: Exception) {
                 Result.failure(e)
             }

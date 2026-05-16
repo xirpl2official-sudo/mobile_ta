@@ -25,8 +25,13 @@ abstract class BaseAdminActivity : AppCompatActivity() {
         BERANDA,
         JADWAL_SHOLAT,
         DATA_SISWA,
+        KELOLA_SISWA,
+        KELOLA_KELAS,
         PRESENSI,
+        PENGAJUAN_IZIN,
         LAPORAN,
+        QR_CODE,
+        SISWA_BELUM_TERDAFTAR,
         PENGATURAN,
         LOGOUT
     }
@@ -159,6 +164,26 @@ abstract class BaseAdminActivity : AppCompatActivity() {
 
         
         setupMenuItem(
+            menuId = R.id.menuKelolaSiswa,
+            targetItem = AdminMenuItem.KELOLA_SISWA,
+            currentItem = currentItem,
+            isCardView = currentItem == AdminMenuItem.KELOLA_SISWA
+        ) {
+            
+        }
+
+        
+        setupMenuItem(
+            menuId = R.id.menuKelolaKelas,
+            targetItem = AdminMenuItem.KELOLA_KELAS,
+            currentItem = currentItem,
+            isCardView = currentItem == AdminMenuItem.KELOLA_KELAS
+        ) {
+            navigateTo(KelolaKelasActivity::class.java)
+        }
+
+        
+        setupMenuItem(
             menuId = R.id.menuPresensi,
             targetItem = AdminMenuItem.PRESENSI,
             currentItem = currentItem,
@@ -169,12 +194,32 @@ abstract class BaseAdminActivity : AppCompatActivity() {
 
         
         setupMenuItem(
+            menuId = R.id.menuPengajuanIzin,
+            targetItem = AdminMenuItem.PENGAJUAN_IZIN,
+            currentItem = currentItem,
+            isCardView = currentItem == AdminMenuItem.PENGAJUAN_IZIN
+        ) {
+            
+        }
+
+        
+        setupMenuItem(
             menuId = R.id.menuLaporan,
             targetItem = AdminMenuItem.LAPORAN,
             currentItem = currentItem,
             isCardView = currentItem == AdminMenuItem.LAPORAN
         ) {
             navigateTo(LaporanAdminActivity::class.java)
+        }
+
+        
+        setupMenuItem(
+            menuId = R.id.menuQRCode,
+            targetItem = AdminMenuItem.QR_CODE,
+            currentItem = currentItem,
+            isCardView = currentItem == AdminMenuItem.QR_CODE
+        ) {
+            
         }
 
         

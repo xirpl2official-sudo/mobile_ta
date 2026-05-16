@@ -240,4 +240,6 @@
     <string name="date_range_1">12 Mar - 14 Mar 2024</string>
     <string name="date_range_2">02 Feb - 03 Feb 2024</string>
     <string name="lampiran_surat">Lampiran (Surat Dokter/Pendukung)</string>
+    <string name="KelolaKelas">Kelola Kelas</string>
+    <string name="KelolaSiswa">Kelola Siswa</string>
 </resources>

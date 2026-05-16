@@ -102,6 +102,14 @@
             android:name=".DetailAbsensiActivity"
             android:exported="false"
             android:theme="@style/Theme.SAS_Mobile" />
+        <activity
+            android:launchMode="singleTop"
+            android:name=".TambahSiswaActivity"
+            android:exported="false" />
+        <activity
+            android:launchMode="singleTop"
+            android:name=".KelolaKelasActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

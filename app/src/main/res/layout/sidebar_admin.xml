@@ -240,6 +240,64 @@
 
         
         <LinearLayout
+            android:id="@+id/menuKelolaSiswa"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="14dp"
+            android:gravity="center_vertical"
+            android:background="?attr/selectableItemBackground"
+            android:layout_marginBottom="4dp">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/users"
+                android:contentDescription="Kelola Siswa"
+                app:tint="#666666" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Kelola Siswa"
+                android:textColor="#333333"
+                android:textSize="14sp"
+                android:layout_marginStart="12dp" />
+
+        </LinearLayout>
+
+        
+        <LinearLayout
+            android:id="@+id/menuKelolaKelas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="14dp"
+            android:gravity="center_vertical"
+            android:background="?attr/selectableItemBackground"
+            android:layout_marginBottom="4dp">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/gear"
+                android:contentDescription="Kelola Kelas"
+                app:tint="#666666" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Kelola Kelas"
+                android:textColor="#333333"
+                android:textSize="14sp"
+                android:layout_marginStart="12dp" />
+
+        </LinearLayout>
+
+        
+        <LinearLayout
             android:id="@+id/menuPresensi"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -294,6 +352,45 @@
                 android:textSize="14sp"
                 android:layout_marginStart="12dp" />
 
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/menuPengajuanIzin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="14dp"
+            android:gravity="center_vertical"
+            android:background="?attr/selectableItemBackground"
+            android:layout_marginBottom="4dp">
+            <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_perizinan" app:tint="#666666" />
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Pengajuan Izin" android:textColor="#333333" android:textSize="14sp" android:layout_marginStart="12dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/menuQRCode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="14dp"
+            android:gravity="center_vertical"
+            android:background="?attr/selectableItemBackground"
+            android:layout_marginBottom="4dp">
+            <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_qr_code" app:tint="#666666" />
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="QR Code" android:textColor="#333333" android:textSize="14sp" android:layout_marginStart="12dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/menuSiswaBelumTerdaftar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="14dp"
+            android:gravity="center_vertical"
+            android:background="?attr/selectableItemBackground"
+            android:layout_marginBottom="4dp">
+            <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_user_profile" app:tint="#666666" />
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Siswa Belum Terdaftar" android:textColor="#333333" android:textSize="14sp" android:layout_marginStart="12dp" />
         </LinearLayout>
 
     </LinearLayout>
