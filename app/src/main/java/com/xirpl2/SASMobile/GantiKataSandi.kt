@@ -133,7 +133,8 @@ class GantiKataSandi : AppCompatActivity() {
                      
                      
                      
-                     val isSuccessByStatus = apiResponse.status == true                     val isSuccessByMessage = !apiResponse.message.isNullOrEmpty() &&
+                     val isSuccessByStatus = apiResponse.status == true
+                     val isSuccessByMessage = !apiResponse.message.isNullOrEmpty() &&
                          (apiResponse.message.contains("berhasil", ignoreCase = true) ||
                           apiResponse.message.contains("dikirim", ignoreCase = true) ||
                           apiResponse.message.contains("sukses", ignoreCase = true) ||

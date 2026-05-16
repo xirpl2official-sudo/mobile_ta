@@ -268,14 +268,11 @@ class BerandaActivity : AppCompatActivity() {
             
             
             loadRiwayatAbsensiFromAPI(token)
-            
-            
-            loadStatistikFromAPI(token)
         }
     }
     
     private suspend fun loadJadwalSholatFromAPI(token: String) {
-        repository.getJadwalSholat(token).fold(
+        repository.getJadwalSholatToday(token).fold(
             onSuccess = { jadwalDataList ->
                 
                 val jadwalList = jadwalDataList
@@ -336,36 +333,6 @@ class BerandaActivity : AppCompatActivity() {
                 }
             },
             onFailure = { error ->
-            }
-        )
-    }
-    
-    private suspend fun loadStatistikFromAPI(token: String) {
-        
-        repository.getStatistikAbsensi(token).fold(
-            onSuccess = { statistik ->
-                runOnUiThread {
-                    
-                    tvHadirValue.text = statistik.total_hadir.toString()
-                    tvStatistikValue.text = "${(statistik.persentase_kehadiran * 100).toInt()}%"
-                }
-            },
-            onFailure = { error ->
-            }
-        )
-        
-        
-        repository.getTotalSiswa(token).fold(
-            onSuccess = { totalSiswa ->
-                runOnUiThread {
-                    tvTotalValue.text = totalSiswa.toString()
-                }
-            },
-            onFailure = { error ->
-                
-                runOnUiThread {
-                   
-                }
             }
         )
     }

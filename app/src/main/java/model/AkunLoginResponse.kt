@@ -1,5 +1,10 @@
 package com.xirpl2.SASMobile.model
 
+data class AuthResponse(
+    val message: String,
+    val data: AkunLoginResponse? = null
+)
+
 data class AkunLoginResponse(
     val id: Int? = null,
     val nis: String? = null,           

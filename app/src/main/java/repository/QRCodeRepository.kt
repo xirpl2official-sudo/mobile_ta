@@ -14,7 +14,7 @@ class QRCodeRepository {
         return withContext(Dispatchers.IO) {
             try {
                 val response: Response<QRCodeGenerateResponse> =
-                    apiService.generateQRCode("Bearer $token")
+                    apiService.getCurrentQRCode("Bearer $token")
 
                 if (!response.isSuccessful) {
                     val errorMessage = when (response.code()) {
@@ -38,11 +38,11 @@ class QRCodeRepository {
         }
     }
 
-    suspend fun verifyQRCode(authToken: String, qrToken: String): Result<QRCodeVerifyData> {
+    suspend fun verifyQRCode(authToken: String, qrToken: String): Result<String> {
         return withContext(Dispatchers.IO) {
             try {
                 val request = QRCodeVerifyRequest(token = qrToken)
-                val response: Response<QRCodeVerifyResponse> =
+                val response: Response<MessageResponse> =
                     apiService.verifyQRCode("Bearer $authToken", request)
 
                 if (!response.isSuccessful) {
@@ -61,11 +61,7 @@ class QRCodeRepository {
                     return@withContext Result.failure(Exception("Response body kosong"))
                 }
 
-                if (body.data == null) {
-                    return@withContext Result.failure(Exception(body.message))
-                }
-
-                return@withContext Result.success(body.data)
+                return@withContext Result.success(body.message)
             } catch (e: Exception) {
                 Result.failure(Exception("Gagal terhubung ke server: ${e.message}"))
             }

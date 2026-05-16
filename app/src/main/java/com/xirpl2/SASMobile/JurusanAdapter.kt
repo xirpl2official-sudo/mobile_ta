@@ -31,12 +31,20 @@ class JurusanAdapter(
         
         holder.tvNamaJurusan.text = jurusanData.jurusan
         
-        
+        // Tampilkan waktu sholat jika tersedia
         if (jurusanData.jadwal.isNotEmpty()) {
             val jadwal = jurusanData.jadwal[0] 
-            val waktuMulai = jadwal.jam_mulai.substring(0, 5) 
-            val waktuSelesai = jadwal.jam_selesai.substring(0, 5)
-            holder.tvLabelHariIni.text = "Dhuha ${waktuMulai}-${waktuSelesai}"
+            val rawMulai = jadwal.jam_mulai
+            val rawSelesai = jadwal.jam_selesai
+
+            val waktuMulai = if (rawMulai.length >= 5) rawMulai.substring(0, 5) else rawMulai
+            val waktuSelesai = if (rawSelesai.length >= 5) rawSelesai.substring(0, 5) else rawSelesai
+
+            if (waktuMulai.isNotEmpty() && waktuSelesai.isNotEmpty()) {
+                holder.tvLabelHariIni.text = "Dhuha ${waktuMulai}-${waktuSelesai}"
+            } else {
+                holder.tvLabelHariIni.text = "Dhuha Hari Ini"
+            }
         } else {
             holder.tvLabelHariIni.text = "Dhuha Hari Ini"
         }

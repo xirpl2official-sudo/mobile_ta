@@ -9,9 +9,9 @@ import java.util.concurrent.TimeUnit
 object RetrofitClient {
     // Development URLs:
     // - Android Emulator: http://10.0.2.2:3000/api/
-    // - Physical device (USB): http://192.168.1.100:3000/api/ (change to your computer's IP)
+    // - Physical device (USB): Run 'adb reverse tcp:3000 tcp:3000' and use http://127.0.0.1:3000/api/
     // - Production: https://absensholat-api.vercel.app/api/
-    private const val BASE_URL = "http://10.222.5.204:3000/api/"
+    private const val BASE_URL = "http://127.0.0.1:3000/api/"
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY

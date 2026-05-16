@@ -4,7 +4,8 @@
 
 ### Development (Local)
 - **Android Emulator**: `http://10.0.2.2:3000/api/`
-- **Physical Device**: `http://[YOUR_LOCAL_IP]:3000/api/`
+- **Physical Device (USB)**: `http://127.0.0.1:3000/api/` (Requires running `adb reverse tcp:3000 tcp:3000`)
+- **Physical Device (WiFi)**: `http://[YOUR_LOCAL_IP]:3000/api/`
 - **Localhost**: `http://localhost:3000/api/` (if accessible)
 
 ### Production

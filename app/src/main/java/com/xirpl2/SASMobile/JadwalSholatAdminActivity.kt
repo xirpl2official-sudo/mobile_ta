@@ -26,13 +26,14 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
 
     
     private var jadwalList: List<JadwalSholatData> = emptyList()
+    private var dhuhaKeahlianList: List<com.xirpl2.SASMobile.model.JadwalDhuhaKeahlian> = emptyList()
 
     
     private lateinit var dhuhaAdapter: DhuhaScheduleAdapter
-    private val modifiedDhuhaItems = mutableSetOf<JadwalSholatData>()
 
     
     private val daysOptions = listOf("Semua Hari", "Senin", "Selasa", "Rabu", "Kamis", "Jumat")
+    private val allKeahlian = arrayOf("RPL", "TKJ", "TAV", "AM", "TMT", "BC", "TEI", "DKV")
     private val jurusanOptions = listOf("Semua Jurusan", "TKJ", "RPL", "DKV", "ANM", "BC", "TAV", "TEI", "TMT")
 
     override fun getCurrentMenuItem(): AdminMenuItem = AdminMenuItem.JADWAL_SHOLAT
@@ -59,6 +60,67 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
 
         
         loadJadwalList()
+        loadSynchronizedData()
+    }
+
+    private fun loadSynchronizedData() {
+        val token = getAuthToken()
+        if (token.isEmpty()) {
+            android.util.Log.e(TAG, "Token is empty, skipping loadSynchronizedData")
+            return
+        }
+
+        android.util.Log.d(TAG, "Loading synchronized data...")
+
+        lifecycleScope.launch {
+            // Load Dhuha Keahlian Table
+            repository.getJadwalDhuhaKeahlian(token).fold(
+                onSuccess = { list ->
+                    android.util.Log.d(TAG, "Dhuha Keahlian loaded successfully: ${list.size} items")
+                    dhuhaKeahlianList = list
+                    runOnUiThread {
+                        populateDhuhaTable()
+                    }
+                },
+                onFailure = { error ->
+                    android.util.Log.e(TAG, "Failed to load Dhuha Keahlian: ${error.message}")
+                    runOnUiThread {
+                        Toast.makeText(this@JadwalSholatAdminActivity, "Gagal memuat jadwal dhuha: ${error.message}", Toast.LENGTH_LONG).show()
+                    }
+                }
+            )
+
+            // Load Dhuha Detail Card
+            repository.getSholatDhuhaDetail(token).onSuccess { detail ->
+                android.util.Log.d(TAG, "Sholat Dhuha detail loaded")
+                runOnUiThread {
+                    findViewById<TextView>(R.id.tvWaktuDhuha)?.text = "Waktu: ${detail.waktuMulai} - ${detail.waktuSelesai}"
+                    findViewById<TextView>(R.id.tvHariDhuha)?.text = detail.hari
+                    findViewById<TextView>(R.id.tvKelasDhuha)?.text = "Kelas: ${detail.kelas}"
+                    
+                    // Store ID for editing
+                    findViewById<ImageView>(R.id.btnEditWaktuDhuha)?.tag = detail.id
+                }
+            }.onFailure { error ->
+                android.util.Log.e(TAG, "Failed to load Sholat Dhuha detail: ${error.message}")
+            }
+
+            // Load Dzuhur Detail Card
+            repository.getSholatDzuhurDetail(token).onSuccess { detail ->
+                android.util.Log.d(TAG, "Sholat Dzuhur detail loaded")
+                runOnUiThread {
+                    findViewById<TextView>(R.id.tvWaktuZuhur)?.text = "Waktu: ${detail.waktuMulai} - ${detail.waktuSelesai}"
+                    findViewById<TextView>(R.id.tvHariZuhur)?.text = detail.hari
+                    findViewById<TextView>(R.id.tvKelasZuhur)?.text = "Kelas: ${detail.kelas}"
+                    findViewById<TextView>(R.id.tvJurusanZuhur)?.text = "Jurusan: ${detail.jurusan}"
+                    
+                    // Store ID for editing
+                    findViewById<ImageView>(R.id.btnEditZuhur)?.tag = detail.id
+                }
+            }.onFailure { error ->
+                android.util.Log.e(TAG, "Failed to load Sholat Dzuhur detail: ${error.message}")
+            }
+        }
     }
 
     private fun loadJadwalList() {
@@ -160,33 +222,26 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
     }
 
     private fun populateDhuhaTable() {
-        val rvDhuhaSchedule = findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.rvDhuhaSchedule) ?: return
-
-        val days = listOf("Senin", "Selasa", "Rabu", "Kamis", "Jumat")
-        val dhuhaSchedules = jadwalList.filter { it.jenis_sholat.equals("Dhuha", ignoreCase = true) }
-
-        val rows = days.map { day ->
-            val schedulesForDay = dhuhaSchedules.filter { it.hari.equals(day, ignoreCase = true) }
-            DhuhaDayRow(
-                day = day,
-                slot1 = schedulesForDay.getOrNull(0),
-                slot2 = schedulesForDay.getOrNull(1)
-            )
+        val rvDhuhaSchedule = findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.rvDhuhaSchedule) ?: run {
+            android.util.Log.e(TAG, "RecyclerView rvDhuhaSchedule not found in layout!")
+            return
         }
 
+        android.util.Log.d(TAG, "Populating Dhuha Table with ${dhuhaKeahlianList.size} items")
+
         if (!::dhuhaAdapter.isInitialized) {
+            android.util.Log.d(TAG, "Initializing DhuhaScheduleAdapter")
             dhuhaAdapter = DhuhaScheduleAdapter(
-                rows = rows,
-                onModified = { item ->
-                    
-                    modifiedDhuhaItems.add(item)
-                },
-                onEditClick = null 
+                rows = dhuhaKeahlianList,
+                onEditClick = { item ->
+                    showEditDhuhaKeahlianDialog(item)
+                }
             )
             rvDhuhaSchedule.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
             rvDhuhaSchedule.adapter = dhuhaAdapter
         } else {
-            dhuhaAdapter.updateData(rows)
+            android.util.Log.d(TAG, "Updating existing DhuhaScheduleAdapter with new data")
+            dhuhaAdapter.updateData(dhuhaKeahlianList)
         }
     }
 
@@ -215,7 +270,7 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
 
         
         btnTambah.setOnClickListener {
-            showTambahJadwalDialog()
+            showTambahDhuhaKeahlianDialog()
         }
 
         
@@ -227,7 +282,7 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
             dhuhaAdapter.isEditMode = true
             btnEditDhuha.visibility = View.GONE
             btnSaveDhuha.visibility = View.VISIBLE
-            Toast.makeText(this, "Mode Edit Aktif: Klik dua jurusan untuk bertukar posisi", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Mode Edit Aktif: Klik baris untuk mengedit", Toast.LENGTH_LONG).show()
         }
 
         btnSaveDhuha.setOnClickListener {
@@ -235,20 +290,24 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
             dhuhaAdapter.isEditMode = false
             btnSaveDhuha.visibility = View.GONE
             btnEditDhuha.visibility = View.VISIBLE
-
-            if (modifiedDhuhaItems.isNotEmpty()) {
-                saveSwappedDhuhaItems()
-            } else {
-                Toast.makeText(this, "Tidak ada perubahan yang disimpan.", Toast.LENGTH_SHORT).show()
-            }
         }
 
         
         findViewById<ImageView>(R.id.btnEditWaktuDhuha)?.setOnClickListener {
-            showEditDialogByJenis("Dhuha")
+            val id = it.tag as? Int
+            if (id != null) {
+                showEditSholatDhuhaCardDialog(id)
+            } else {
+                showEditDialogByJenis("Dhuha")
+            }
         }
         findViewById<ImageView>(R.id.btnEditZuhur)?.setOnClickListener {
-            showEditDialogByJenis("Dzuhur")
+            val id = it.tag as? Int
+            if (id != null) {
+                showEditSholatDzuhurCardDialog(id)
+            } else {
+                showEditDialogByJenis("Dzuhur")
+            }
         }
         findViewById<ImageView>(R.id.btnEditJumat)?.setOnClickListener {
             showEditDialogByJenis("Jumat")
@@ -687,54 +746,6 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
         }
     }
 
-    private fun saveSwappedDhuhaItems() {
-        val token = getAuthToken()
-        if (token.isEmpty()) return
-
-        Toast.makeText(this, "Menyimpan pertukaran jadwal...", Toast.LENGTH_SHORT).show()
-
-        lifecycleScope.launch {
-            var allSuccess = true
-            var errorMsg = ""
-
-            for (item in modifiedDhuhaItems) {
-                
-                
-                val request = JadwalSholatUpdateRequest(
-                    jenis_sholat = item.jenis_sholat,
-                    jam_mulai = item.jam_mulai,
-                    jam_selesai = item.jam_selesai,
-                    hari = item.hari,
-                    jurusan = item.jurusan
-                )
-                try {
-                    val result = repository.updateJadwalSholat(token, item.id, request)
-                    if (result.isFailure) {
-                        allSuccess = false
-                        errorMsg = result.exceptionOrNull()?.message ?: "Unknown error"
-                    }
-                } catch (e: Exception) {
-                    allSuccess = false
-                    errorMsg = e.message ?: "Network error"
-                }
-            }
-
-            runOnUiThread {
-                if (allSuccess) {
-                    Toast.makeText(this@JadwalSholatAdminActivity, "✅ Berhasil menukar jadwal!", Toast.LENGTH_SHORT).show()
-                    modifiedDhuhaItems.clear()
-                    
-                    loadJadwalList()
-                } else {
-                    Toast.makeText(this@JadwalSholatAdminActivity, "❌ Gagal menyimpan beberapa jadwal: $errorMsg", Toast.LENGTH_LONG).show()
-                    modifiedDhuhaItems.clear()
-                    
-                    loadJadwalList()
-                }
-            }
-        }
-    }
-
     private fun isValidTimeFormat(time: String): Boolean {
         return try {
             val parts = time.split(":")
@@ -850,6 +861,232 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
         }
 
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.show()
+    }
+
+    private fun showEditDhuhaKeahlianDialog(item: com.xirpl2.SASMobile.model.JadwalDhuhaKeahlian) {
+        showDhuhaKeahlianDialog(item)
+    }
+
+    private fun showTambahDhuhaKeahlianDialog() {
+        showDhuhaKeahlianDialog(null)
+    }
+
+    private fun showDhuhaKeahlianDialog(item: com.xirpl2.SASMobile.model.JadwalDhuhaKeahlian?) {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_dhuha_keahlian, null)
+        val tvTitle = dialogView.findViewById<TextView>(R.id.tvDialogTitle)
+        val actvHari = dialogView.findViewById<AutoCompleteTextView>(R.id.actvHari)
+        val tvKeahlian1 = dialogView.findViewById<TextView>(R.id.tvKeahlian1)
+        val tvKeahlian2 = dialogView.findViewById<TextView>(R.id.tvKeahlian2)
+        val btnCancel = dialogView.findViewById<MaterialButton>(R.id.btnCancel)
+        val btnSave = dialogView.findViewById<MaterialButton>(R.id.btnSave)
+
+        tvTitle.text = if (item == null) "Tambah Jadwal Dhuha" else "Edit Jadwal Dhuha"
+
+        val selectedKeahlian1 = item?.keahlian1?.toMutableList() ?: mutableListOf()
+        val selectedKeahlian2 = item?.keahlian2?.toMutableList() ?: mutableListOf()
+
+        tvKeahlian1.text = selectedKeahlian1.joinToString(", ").ifEmpty { "Pilih Keahlian 1" }
+        tvKeahlian2.text = selectedKeahlian2.joinToString(", ").ifEmpty { "Pilih Keahlian 2" }
+
+        val days = listOf("Senin", "Selasa", "Rabu", "Kamis", "Jumat")
+        actvHari.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, days))
+        if (item != null) {
+            actvHari.setText(item.hari, false)
+        }
+
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setCancelable(true)
+            .create()
+
+        tvKeahlian1.setOnClickListener {
+            showMultiSelectDialog("Pilih Keahlian 1", selectedKeahlian1) {
+                tvKeahlian1.text = selectedKeahlian1.joinToString(", ").ifEmpty { "Pilih Keahlian 1" }
+            }
+        }
+
+        tvKeahlian2.setOnClickListener {
+            showMultiSelectDialog("Pilih Keahlian 2", selectedKeahlian2) {
+                tvKeahlian2.text = selectedKeahlian2.joinToString(", ").ifEmpty { "Pilih Keahlian 2" }
+            }
+        }
+
+        btnCancel.setOnClickListener { dialog.dismiss() }
+
+        btnSave.setOnClickListener {
+            val hari = actvHari.text.toString()
+            if (hari.isEmpty()) {
+                Toast.makeText(this, "Pilih hari", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val request = com.xirpl2.SASMobile.model.JadwalDhuhaKeahlian(
+                id = item?.id,
+                hari = hari,
+                keahlian1 = selectedKeahlian1,
+                keahlian2 = selectedKeahlian2
+            )
+
+            lifecycleScope.launch {
+                val token = getAuthToken()
+                val result = if (item == null) {
+                    repository.createJadwalDhuhaKeahlian(token, request)
+                } else {
+                    repository.updateJadwalDhuhaKeahlian(token, item.id!!, request)
+                }
+
+                runOnUiThread {
+                    if (result.isSuccess) {
+                        Toast.makeText(this@JadwalSholatAdminActivity, "Berhasil menyimpan", Toast.LENGTH_SHORT).show()
+                        dialog.dismiss()
+                        loadSynchronizedData()
+                    } else {
+                        Toast.makeText(this@JadwalSholatAdminActivity, "Gagal: ${result.exceptionOrNull()?.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.show()
+    }
+
+    private fun showMultiSelectDialog(title: String, selectedItems: MutableList<String>, onResult: () -> Unit) {
+        val checkedItems = BooleanArray(allKeahlian.size) { i ->
+            selectedItems.contains(allKeahlian[i])
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle(title)
+            .setMultiChoiceItems(allKeahlian, checkedItems) { _, which, isChecked ->
+                if (isChecked) {
+                    if (!selectedItems.contains(allKeahlian[which])) {
+                        selectedItems.add(allKeahlian[which])
+                    }
+                } else {
+                    selectedItems.remove(allKeahlian[which])
+                }
+            }
+            .setPositiveButton("OK") { _, _ -> onResult() }
+            .setNegativeButton("Batal", null)
+            .show()
+    }
+
+    private fun showEditSholatDhuhaCardDialog(id: Int) {
+        // Implement based on spec
+        lifecycleScope.launch {
+            val token = getAuthToken()
+            repository.getSholatDhuhaDetail(token).onSuccess { detail ->
+                runOnUiThread {
+                    showEditSholatCardDialog(detail.id, "Dhuha", detail.hari, detail.waktuMulai, detail.waktuSelesai, detail.kelas, null)
+                }
+            }
+        }
+    }
+
+    private fun showEditSholatDzuhurCardDialog(id: Int) {
+        lifecycleScope.launch {
+            val token = getAuthToken()
+            repository.getSholatDzuhurDetail(token).onSuccess { detail ->
+                runOnUiThread {
+                    showEditSholatCardDialog(detail.id, "Dzuhur", detail.hari, detail.waktuMulai, detail.waktuSelesai, detail.kelas, detail.jurusan)
+                }
+            }
+        }
+    }
+
+    private fun showEditSholatCardDialog(
+        id: Int,
+        jenis: String,
+        hari: String,
+        mulai: String,
+        selesai: String,
+        kelas: String,
+        jurusan: String?
+    ) {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_edit_jadwal_sholat, null)
+        val tvTitle = dialogView.findViewById<TextView>(R.id.tvDialogTitle)
+        val etJamMulai = dialogView.findViewById<TextInputEditText>(R.id.etJamMulai)
+        val etJamSelesai = dialogView.findViewById<TextInputEditText>(R.id.etJamSelesai)
+        val actvHari = dialogView.findViewById<AutoCompleteTextView>(R.id.actvHari)
+        val actvJurusan = dialogView.findViewById<AutoCompleteTextView>(R.id.actvJurusan)
+        val tilJurusan = dialogView.findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.tilJurusan)
+        val cbKelas10 = dialogView.findViewById<android.widget.CheckBox>(R.id.cbKelas10)
+        val cbKelas11 = dialogView.findViewById<android.widget.CheckBox>(R.id.cbKelas11)
+        val cbKelas12 = dialogView.findViewById<android.widget.CheckBox>(R.id.cbKelas12)
+        val btnSave = dialogView.findViewById<MaterialButton>(R.id.btnSave)
+        val btnCancel = dialogView.findViewById<MaterialButton>(R.id.btnCancel)
+
+        tvTitle.text = "Edit Sholat $jenis"
+        etJamMulai.setText(mulai)
+        etJamSelesai.setText(selesai)
+        
+        val days = listOf("Senin", "Selasa", "Rabu", "Kamis", "Jumat")
+        actvHari.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, days))
+        actvHari.setText(hari, false)
+
+        if (jurusan != null) {
+            tilJurusan.visibility = View.VISIBLE
+            actvJurusan.setText(jurusan)
+        } else {
+            tilJurusan.visibility = View.GONE
+        }
+
+        cbKelas10.isChecked = kelas.contains("10")
+        cbKelas11.isChecked = kelas.contains("11")
+        cbKelas12.isChecked = kelas.contains("12")
+
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+
+        btnSave.setOnClickListener {
+            val updatedMulai = etJamMulai.text.toString()
+            val updatedSelesai = etJamSelesai.text.toString()
+            val updatedHari = actvHari.text.toString()
+            
+            val selectedKelas = mutableListOf<String>()
+            if (cbKelas10.isChecked) selectedKelas.add("Kelas X")
+            if (cbKelas11.isChecked) selectedKelas.add("Kelas XI")
+            if (cbKelas12.isChecked) selectedKelas.add("Kelas XII")
+            if (selectedKelas.size == 3) {
+                selectedKelas.clear()
+                selectedKelas.add("Semua Kelas")
+            }
+            val updatedKelas = selectedKelas.joinToString(", ")
+
+            val body = com.google.gson.JsonObject().apply {
+                addProperty("hari", updatedHari)
+                addProperty("waktu_mulai", updatedMulai)
+                addProperty("waktu_selesai", updatedSelesai)
+                addProperty("kelas", updatedKelas)
+                if (jurusan != null) {
+                    addProperty("jurusan", actvJurusan.text.toString())
+                }
+            }
+
+            lifecycleScope.launch {
+                val token = getAuthToken()
+                val result = if (jenis == "Dhuha") {
+                    repository.updateSholatDhuha(token, id, body)
+                } else {
+                    repository.updateSholatDzuhur(token, id, body)
+                }
+
+                runOnUiThread {
+                    if (result.isSuccess) {
+                        Toast.makeText(this@JadwalSholatAdminActivity, "Berhasil diperbarui", Toast.LENGTH_SHORT).show()
+                        dialog.dismiss()
+                        loadSynchronizedData()
+                    } else {
+                        Toast.makeText(this@JadwalSholatAdminActivity, "Gagal: ${result.exceptionOrNull()?.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+
+        btnCancel.setOnClickListener { dialog.dismiss() }
         dialog.show()
     }
 

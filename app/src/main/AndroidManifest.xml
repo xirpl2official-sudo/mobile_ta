@@ -23,40 +23,52 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:launchMode="singleTop"
             android:name=".BerandaAdminActivity"
             android:exported="false" />
         <activity
+            android:launchMode="singleTop"
             android:name=".BerandaGuruActivity"
             android:exported="false" />
         <activity
+            android:launchMode="singleTop"
             android:name=".JadwalSholatAdminActivity"
             android:exported="false" />
         <activity
+            android:launchMode="singleTop"
             android:name=".DataSiswaAdminActivity"
             android:exported="false" />
         <activity
+            android:launchMode="singleTop"
             android:name=".PresensiSholatAdminActivity"
             android:exported="false" />
         <activity
+            android:launchMode="singleTop"
             android:name=".LaporanAdminActivity"
             android:exported="false" />
 
         <activity
+            android:launchMode="singleTop"
             android:name=".ScanQrActivity"
             android:exported="false" />
         <activity
+            android:launchMode="singleTop"
             android:name=".StaffQRActivity"
             android:exported="false" />
         <activity
+            android:launchMode="singleTop"
             android:name=".BuatSandiBaruActivity"
             android:exported="false" />
         <activity
+            android:launchMode="singleTop"
             android:name=".VerifikasiOtpActivity"
             android:exported="false" /> 
         <activity
+            android:launchMode="singleTop"
             android:name=".BerandaActivity"
             android:exported="false" /> 
         <activity
+            android:launchMode="singleTop"
             android:name=".MasukActivity"
             android:exported="true">
             <intent-filter>
@@ -66,21 +78,27 @@
             </intent-filter>
         </activity> 
         <activity
+            android:launchMode="singleTop"
             android:name=".DaftarActivity"
             android:exported="false" />
         <activity
+            android:launchMode="singleTop"
             android:name=".GantiKataSandi"
             android:exported="false" />
         <activity
+            android:launchMode="singleTop"
             android:name=".PengaturanAkunActivity"
             android:exported="false" />
         <activity
+            android:launchMode="singleTop"
             android:name=".PengajuanIzinActivity"
             android:exported="false" />
         <activity
+            android:launchMode="singleTop"
             android:name=".NotifikasiActivity"
             android:exported="false" />
         <activity
+            android:launchMode="singleTop"
             android:name=".DetailAbsensiActivity"
             android:exported="false"
             android:theme="@style/Theme.SAS_Mobile" />

@@ -2,10 +2,15 @@ package com.xirpl2.SASMobile.model
 import com.google.gson.annotations.SerializedName
 
 data class JadwalSholatListResponse(
-    val message: String,
-    val data: List<JadwalSholatData>,
+    val message: String? = null,
+    val data: List<JadwalSholatData> = emptyList(),
     val pagination: PaginationInfo? = null,
     val filters: JadwalSholatFilters? = null
+)
+
+data class JadwalSholatTodayResponse(
+    val hari: String? = null,
+    val data: List<JadwalSholatData> = emptyList()
 )
 
 data class JadwalSholatFilters(
@@ -17,15 +22,27 @@ data class JadwalSholatFilters(
 data class JadwalSholatData(
     @SerializedName("id_jadwal")
     val id: Int,
-    @SerializedName("jenis_sholat")
-    val jenis_sholat: String,
-    @SerializedName("waktu_mulai")
-    val jam_mulai: String,
-    @SerializedName("waktu_selesai")
-    val jam_selesai: String,
     var hari: String? = null, 
     var jurusan: String? = null, 
-    var kelas: String? = null 
+    var kelas: String? = null,
+    @SerializedName("waktu_sholat")
+    val waktuSholat: WaktuSholatData? = null,
+    @SerializedName("jurusans")
+    val jurusans: List<JurusanResponse>? = null
+) {
+    val jenis_sholat: String
+        get() = waktuSholat?.jenisSholat?.namaJenis ?: ""
+    val jam_mulai: String
+        get() = waktuSholat?.waktuMulai ?: ""
+    val jam_selesai: String
+        get() = waktuSholat?.waktuSelesai ?: ""
+}
+
+data class JurusanResponse(
+    @SerializedName("id_jurusan")
+    val id: Int,
+    @SerializedName("nama_jurusan")
+    val nama: String
 )
 
 data class JadwalSholatDetailResponse(
@@ -35,15 +52,33 @@ data class JadwalSholatDetailResponse(
 
 data class JadwalSholatDetail(
     val id_jadwal: Int = 0,
-    val jenis_sholat: String = "",
-    @SerializedName("waktu_mulai")
-    val jam_mulai: String = "",
-    @SerializedName("waktu_selesai")
-    val jam_selesai: String = "",
     val hari: String? = null,
     val jurusan: String? = null,
     val kelas: String? = null,
-    val created_at: String? = null
+    val created_at: String? = null,
+    @SerializedName("waktu_sholat")
+    val waktuSholat: WaktuSholatData? = null
+) {
+    val jenis_sholat: String
+        get() = waktuSholat?.jenisSholat?.namaJenis ?: ""
+    val jam_mulai: String
+        get() = waktuSholat?.waktuMulai ?: ""
+    val jam_selesai: String
+        get() = waktuSholat?.waktuSelesai ?: ""
+}
+
+data class WaktuSholatData(
+    @SerializedName("waktu_mulai")
+    val waktuMulai: String,
+    @SerializedName("waktu_selesai")
+    val waktuSelesai: String,
+    @SerializedName("jenis_sholat")
+    val jenisSholat: JenisSholatData? = null
+)
+
+data class JenisSholatData(
+    @SerializedName("nama_jenis")
+    val namaJenis: String
 )
 
 data class JadwalSholatUpdateRequest(
@@ -192,7 +227,8 @@ data class AbsensiHistoryItem(
     val hari: String? = null,
     @SerializedName("jenis_sholat")
     val jenis_sholat: String? = null,
-    val status: String = "ALPHA"
+    val status: String = "ALPHA",
+    val waktu_absen: String? = null
 ) {
     fun getPrayerName(): String = jenis_sholat ?: "Unknown"
 }
@@ -261,8 +297,8 @@ data class StatistikStaffData(
 )
 
 data class DhuhaTodayResponse(
-    val message: String,
-    val data: List<DhuhaJurusanData>
+    val message: String? = null,
+    val data: List<DhuhaJurusanData> = emptyList()
 )
 
 data class DhuhaJurusanData(
@@ -273,29 +309,79 @@ data class DhuhaJurusanData(
 data class DhuhaJadwalData(
     val id_jadwal: Int,
     val hari: String,
-    val jenis_sholat: String,
-    @SerializedName("waktu_mulai")
-    val jam_mulai: String,
-    @SerializedName("waktu_selesai")
-    val jam_selesai: String,
-    val jurusan: String,
-    val created_at: String
-)
+    val jurusan: String? = null,
+    val created_at: String? = null,
+    @SerializedName("waktu_sholat")
+    val waktuSholat: WaktuSholatData? = null
+) {
+    val jenis_sholat: String
+        get() = waktuSholat?.jenisSholat?.namaJenis ?: "Dhuha"
+    val jam_mulai: String
+        get() = waktuSholat?.waktuMulai ?: ""
+    val jam_selesai: String
+        get() = waktuSholat?.waktuSelesai ?: ""
+}
 
-data class NotificationResponse(
-    val message: String,
-    val data: List<NotificationItem>,
-    val count: Int
+data class GetNotificationsResponse(
+    val total: Int,
+    val page: Int,
+    val limit: Int,
+    @SerializedName("has_more")
+    val hasMore: Boolean,
+    val notifications: List<NotificationItem> = emptyList()
 )
 
 data class NotificationItem(
-    val nis: String,
-    val nama_siswa: String,
-    val kelas: String,
-    val jurusan: String,
-    val jenis_sholat: String,
-    val waktu_mulai: String,
-    val id_jadwal: Int
+    val id: Int,
+    @SerializedName("user_id")
+    val userId: Int,
+    val title: String,
+    val message: String,
+    val type: String, // reminder, warning, info, success, failure
+    val priority: String, // urgent, warning, info
+    @SerializedName("delivery_type")
+    val deliveryType: String, // toast, notification_center
+    @SerializedName("is_read")
+    val isRead: Boolean,
+    @SerializedName("is_archived")
+    val isArchived: Boolean,
+    @SerializedName("created_at")
+    val createdAt: String,
+    @SerializedName("delivered_at")
+    val deliveredAt: String? = null,
+    @SerializedName("related_id")
+    val relatedId: Int? = null
+)
+
+data class BulkReadRequest(
+    val ids: List<Int>
+)
+
+data class ChangeDeviceRequest(
+    @SerializedName("account_id")
+    val accountId: Int,
+    @SerializedName("hardware_id")
+    val hardwareId: String,
+    @SerializedName("device_name")
+    val deviceName: String? = null,
+    @SerializedName("device_model")
+    val deviceModel: String? = null,
+    @SerializedName("os_version")
+    val osVersion: String? = null,
+    val imei: String? = null,
+    val reason: String? = null
+)
+
+data class HardwareAuthRequest(
+    @SerializedName("hardware_id")
+    val hardwareId: String,
+    @SerializedName("device_name")
+    val deviceName: String? = null,
+    @SerializedName("device_model")
+    val deviceModel: String? = null,
+    @SerializedName("os_version")
+    val osVersion: String? = null,
+    val imei: String? = null
 )
 
 data class DeviceAuthRequest(
@@ -350,42 +436,48 @@ data class BarcodeVerifyRequest(
     val hardwareId: String
 )
 
-data class QRCodeGenerateResponse(
-    val message: String,
-    val data: QRCodeData
+
+// Synchronized SMKN 2 Singosari Spec Models
+data class JadwalDhuhaKeahlianResponse(
+    val data: List<JadwalDhuhaKeahlian> = emptyList()
 )
 
-data class QRCodeData(
-    @SerializedName("qr_code")
-    val qrCode: String,
-    val token: String,
-    @SerializedName("expires_at")
-    val expiresAt: String,
-    @SerializedName("jenis_sholat")
-    val jenisSholat: String,
-    @SerializedName("id_template")
-    val idTemplate: Int
+data class JadwalDhuhaKeahlian(
+    val id: Int? = null,
+    val hari: String,
+    @SerializedName("konsentrasi_keahlian_1")
+    val keahlian1: List<String> = emptyList(),
+    @SerializedName("konsentrasi_keahlian_2")
+    val keahlian2: List<String> = emptyList()
 )
 
-data class QRCodeVerifyRequest(
-    val token: String
+data class SholatDhuhaDetailResponse(
+    val data: SholatDhuhaDetail
 )
 
-data class QRCodeVerifyResponse(
-    val message: String,
-    val data: QRCodeVerifyData
+data class SholatDhuhaDetail(
+    val id: Int,
+    val judul: String,
+    val hari: String,
+    @SerializedName("waktu_mulai")
+    val waktuMulai: String,
+    @SerializedName("waktu_selesai")
+    val waktuSelesai: String,
+    val kelas: String
 )
 
-data class QRCodeVerifyData(
-    val valid: Boolean,
-    val nis: String,
-    @SerializedName("nama_siswa")
-    val namaSiswa: String,
-    val kelas: String,
+data class SholatDzuhurDetailResponse(
+    val data: SholatDzuhurDetail
+)
+
+data class SholatDzuhurDetail(
+    val id: Int,
+    val judul: String,
+    val hari: String,
+    @SerializedName("waktu_mulai")
+    val waktuMulai: String,
+    @SerializedName("waktu_selesai")
+    val waktuSelesai: String,
     val jurusan: String,
-    @SerializedName("jenis_sholat")
-    val jenisSholat: String,
-    val tanggal: String,
-    val status: String
+    val kelas: String
 )
-

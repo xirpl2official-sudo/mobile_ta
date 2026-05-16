@@ -30,15 +30,28 @@ data class CreateSiswaRequest(
     val nis: String,
     val nama_siswa: String,
     @SerializedName("jk")
-    val jenis_kelamin: String,  
-    val kelas: String,           
-    val jurusan: String
+    val jenis_kelamin: String,
+    val id_kelas: Int? = null,
+    val id_jurusan: Int? = null,
+    val id_tahun_masuk: Int? = null,
+    val class_status: String? = null,
+    val status_akademik: String? = null
 )
 
 data class UpdateSiswaRequest(
-    val nama_siswa: String,
+    val nama_siswa: String? = null,
     @SerializedName("jk")
-    val jenis_kelamin: String,  
-    val kelas: String,           
-    val jurusan: String
+    val jenis_kelamin: String? = null,
+    val id_kelas: Int? = null,
+    val id_jurusan: Int? = null,
+    val id_tahun_masuk: Int? = null,
+    val class_status: String? = null,
+    val status_akademik: String? = null
+)
+
+data class SiswaListPaginatedResponse(
+    val message: String,
+    val data: List<SiswaItem> = emptyList(),
+    val pagination: SiswaPaginationInfo? = null,
+    val filters: Map<String, Any>? = null
 )

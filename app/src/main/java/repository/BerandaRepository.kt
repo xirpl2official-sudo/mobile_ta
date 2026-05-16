@@ -14,11 +14,10 @@ class BerandaRepository {
         return withContext(Dispatchers.IO) {
             try {
                 val response: Response<JadwalSholatListResponse> =
-                    apiService.getJadwalSholat(
+                    apiService.getPrayerSchedules(
                         token = "Bearer $token",
                         page = 1,
-                        pageSize = 100,
-                        sortBy = "id_jadwal"
+                        limit = 100
                     )
 
                 if (!response.isSuccessful) {
@@ -32,7 +31,29 @@ class BerandaRepository {
                     return@withContext Result.failure(Exception("Response body kosong"))
                 }
 
-                
+                return@withContext Result.success(body.data)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun getJadwalSholatToday(token: String): Result<List<JadwalSholatData>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.getPrayerSchedulesToday("Bearer $token")
+
+                if (!response.isSuccessful) {
+                    return@withContext Result.failure(
+                        Exception("HTTP Error: ${response.code()} - ${response.message()}")
+                    )
+                }
+
+                val body = response.body()
+                if (body == null) {
+                    return@withContext Result.failure(Exception("Response body kosong"))
+                }
+
                 return@withContext Result.success(body.data)
             } catch (e: Exception) {
                 Result.failure(e)
@@ -44,7 +65,7 @@ class BerandaRepository {
         return withContext(Dispatchers.IO) {
             try {
                 val response: Response<HistorySiswaResponse> =
-                    apiService.getHistorySiswa("Bearer $token", week)
+                    apiService.getMyAttendanceHistory("Bearer $token", week)
 
                 if (!response.isSuccessful) {
                     return@withContext Result.failure(
@@ -57,8 +78,7 @@ class BerandaRepository {
                     return@withContext Result.failure(Exception("Response body kosong"))
                 }
 
-                
-                val data = body.data ?: HistorySiswaData(week = 0, periode = "", absensi = emptyList())
+                val data = body.data ?: HistorySiswaData(periode = "", absensi = emptyList())
                 return@withContext Result.success(data)
             } catch (e: Exception) {
                 Result.failure(e)
@@ -66,43 +86,25 @@ class BerandaRepository {
         }
     }
 
-    suspend fun getUserProfile(token: String): Result<UserData> {
+    suspend fun getUserProfile(token: String): Result<AkunLoginResponse> {
         return withContext(Dispatchers.IO) {
             try {
-                val response: Response<ApiResponse<UserData>> =
-                    apiService.getUserProfile("Bearer $token")
+                val response: Response<AuthResponse> =
+                    apiService.getProfile("Bearer $token")
 
-                handleApiResponse(response)
-            } catch (e: Exception) {
-                Result.failure(e)
-            }
-        }
-    }
+                if (!response.isSuccessful) {
+                    return@withContext Result.failure(
+                        Exception("HTTP Error: ${response.code()} - ${response.message()}")
+                    )
+                }
 
-    suspend fun getStatistikAbsensi(
-        token: String,
-        bulan: Int? = null,
-        tahun: Int? = null
-    ): Result<StatistikData> {
-        return withContext(Dispatchers.IO) {
-            try {
-                val response: Response<ApiResponse<StatistikData>> =
-                    apiService.getStatistikAbsensi("Bearer $token", bulan, tahun)
+                val body = response.body()
+                if (body == null) {
+                    return@withContext Result.failure(Exception("Respons body kosong"))
+                }
 
-                handleApiResponse(response)
-            } catch (e: Exception) {
-                Result.failure(e)
-            }
-        }
-    }
-
-    suspend fun getTotalSiswa(token: String): Result<Int> {
-        return withContext(Dispatchers.IO) {
-            try {
-                val response: Response<ApiResponse<Int>> =
-                    apiService.getTotalSiswa("Bearer $token")
-
-                handleApiResponse(response)
+                val data = body.data ?: return@withContext Result.failure(Exception("Data tidak tersedia"))
+                return@withContext Result.success(data)
             } catch (e: Exception) {
                 Result.failure(e)
             }
@@ -112,7 +114,7 @@ class BerandaRepository {
     suspend fun getJadwalSholatById(token: String, id: Int): Result<JadwalSholatDetail> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.getJadwalSholatById("Bearer $token", id)
+                val response = apiService.getPrayerSchedule("Bearer $token", id)
                 
                 if (!response.isSuccessful) {
                     return@withContext Result.failure(
@@ -138,7 +140,7 @@ class BerandaRepository {
     ): Result<JadwalSholatDetail> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.createJadwalSholat("Bearer $token", request)
+                val response = apiService.createPrayerSchedule("Bearer $token", request)
                 
                 if (!response.isSuccessful) {
                     return@withContext Result.failure(
@@ -165,7 +167,7 @@ class BerandaRepository {
     ): Result<JadwalSholatDetail> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.updateJadwalSholat("Bearer $token", id, request)
+                val response = apiService.updatePrayerSchedule("Bearer $token", id, request)
                 
                 if (!response.isSuccessful) {
                     return@withContext Result.failure(
@@ -188,7 +190,7 @@ class BerandaRepository {
     suspend fun deleteJadwalSholat(token: String, id: Int): Result<String> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.deleteJadwalSholat("Bearer $token", id)
+                val response = apiService.deletePrayerSchedule("Bearer $token", id)
                 
                 if (!response.isSuccessful) {
                     return@withContext Result.failure(
@@ -197,11 +199,11 @@ class BerandaRepository {
                 }
                 
                 val body = response.body()
-                if (body == null || body.status != true) {
-                    return@withContext Result.failure(Exception(body?.message ?: "Gagal menghapus"))
+                if (body == null) {
+                    return@withContext Result.failure(Exception("Gagal menghapus"))
                 }
                 
-                return@withContext Result.success(body.message ?: "Berhasil")
+                return@withContext Result.success(body.message)
             } catch (e: Exception) {
                 Result.failure(e)
             }
@@ -212,7 +214,7 @@ class BerandaRepository {
         return withContext(Dispatchers.IO) {
             try {
                 val response: Response<StatisticsResponse> =
-                    apiService.getStatistics()
+                    apiService.getAttendanceAnalytics()
 
                 if (!response.isSuccessful) {
                     return@withContext Result.failure(
@@ -225,108 +227,7 @@ class BerandaRepository {
                     return@withContext Result.failure(Exception("Respons body kosong"))
                 }
 
-                
                 return@withContext Result.success(body.data)
-            } catch (e: Exception) {
-                Result.failure(e)
-            }
-        }
-    }
-
-    suspend fun getDhuhaToday(token: String): Result<List<DhuhaJurusanData>> {
-        return withContext(Dispatchers.IO) {
-            try {
-                val response: Response<DhuhaTodayResponse> =
-                    apiService.getDhuhaToday("Bearer $token")
-
-                if (!response.isSuccessful) {
-                    return@withContext Result.failure(
-                        Exception("HTTP Error: ${response.code()} - ${response.message()}")
-                    )
-                }
-
-                val body = response.body()
-                if (body == null) {
-                    return@withContext Result.failure(Exception("Response body kosong"))
-                }
-
-                return@withContext Result.success(body.data)
-            } catch (e: Exception) {
-                Result.failure(e)
-            }
-        }
-    }
-
-    private fun <T> handleApiResponse(response: Response<ApiResponse<T>>): Result<T> {
-        if (!response.isSuccessful) {
-            return Result.failure(
-                Exception("HTTP Error: ${response.code()} - ${response.message()}")
-            )
-        }
-
-        val body = response.body()
-        if (body == null) {
-            return Result.failure(Exception("Respons body kosong"))
-        }
-
-        
-        if (body.status == true) {
-            if (body.data != null) {
-                return Result.success(body.data)
-            } else {
-                return Result.failure(Exception("Data tidak tersedia"))
-            }
-        } else {
-            
-            return Result.failure(Exception(body.message ?: "Gagal memproses permintaan"))
-        }
-    }
-
-    suspend fun getHistoryStaff(
-        token: String,
-        startDate: String? = null,
-        endDate: String? = null,
-        kelas: String? = null,
-        jurusan: String? = null,
-        status: String? = null,
-        nis: String? = null,
-        page: Int? = null,
-        limit: Int? = null
-    ): Result<HistoryStaffData> {
-        return withContext(Dispatchers.IO) {
-            try {
-                val response: Response<HistoryStaffResponse> =
-                    apiService.getHistoryStaff(
-                        token = "Bearer $token",
-                        startDate = startDate,
-                        endDate = endDate,
-                        kelas = kelas,
-                        jurusan = jurusan,
-                        status = status,
-                        jenisSholat = null,
-                        search = null,
-                        nis = nis,
-                        page = page,
-                        limit = limit
-                    )
-
-                if (!response.isSuccessful) {
-                    return@withContext Result.failure(
-                        Exception("HTTP Error: ${response.code()} - ${response.message()}")
-                    )
-                }
-
-                val body = response.body()
-                if (body == null) {
-                    return@withContext Result.failure(Exception("Response body kosong"))
-                }
-
-                val data = body.data
-                if (data == null) {
-                    return@withContext Result.failure(Exception("Data kosong"))
-                }
-
-                return@withContext Result.success(data)
             } catch (e: Exception) {
                 Result.failure(e)
             }
@@ -336,23 +237,21 @@ class BerandaRepository {
     suspend fun getSiswaList(
         token: String,
         page: Int = 1,
-        pageSize: Int = 100,
+        limit: Int = 100,
         search: String? = null,
         kelas: String? = null,
-        jurusan: String? = null,
-        jk: String? = null
-    ): Result<SiswaListResponse> {
+        jurusan: String? = null
+    ): Result<SiswaListPaginatedResponse> {
         return withContext(Dispatchers.IO) {
             try {
-                val response: Response<SiswaListResponse> =
-                    apiService.getSiswa(
+                val response: Response<SiswaListPaginatedResponse> =
+                    apiService.getStudents(
                         "Bearer $token",
                         page,
-                        pageSize,
+                        limit,
                         search,
                         kelas,
-                        jurusan,
-                        jk
+                        jurusan
                     )
 
                 if (!response.isSuccessful) {
@@ -379,7 +278,7 @@ class BerandaRepository {
     ): Result<SiswaItem> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.createSiswa("Bearer $token", request)
+                val response = apiService.createStudent("Bearer $token", request)
 
                 if (!response.isSuccessful) {
                     return@withContext Result.failure(
@@ -392,15 +291,7 @@ class BerandaRepository {
                     return@withContext Result.failure(Exception("Response body kosong"))
                 }
 
-                if (body.status != true) {
-                    return@withContext Result.failure(Exception(body.message ?: "Gagal membuat siswa"))
-                }
-
-                val data = body.data
-                if (data == null) {
-                    return@withContext Result.failure(Exception("Data siswa tidak tersedia"))
-                }
-
+                val data = body.data ?: return@withContext Result.failure(Exception("Data siswa tidak tersedia"))
                 return@withContext Result.success(data)
             } catch (e: Exception) {
                 Result.failure(e)
@@ -415,7 +306,7 @@ class BerandaRepository {
     ): Result<SiswaItem> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.updateSiswa("Bearer $token", nis, request)
+                val response = apiService.updateStudent("Bearer $token", nis, request)
 
                 if (!response.isSuccessful) {
                     return@withContext Result.failure(
@@ -428,15 +319,7 @@ class BerandaRepository {
                     return@withContext Result.failure(Exception("Response body kosong"))
                 }
 
-                if (body.status != true) {
-                    return@withContext Result.failure(Exception(body.message ?: "Gagal memperbarui siswa"))
-                }
-
-                val data = body.data
-                if (data == null) {
-                    return@withContext Result.failure(Exception("Data siswa tidak tersedia"))
-                }
-
+                val data = body.data ?: return@withContext Result.failure(Exception("Data siswa tidak tersedia"))
                 return@withContext Result.success(data)
             } catch (e: Exception) {
                 Result.failure(e)
@@ -450,7 +333,7 @@ class BerandaRepository {
     ): Result<String> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.deleteSiswa("Bearer $token", nis)
+                val response = apiService.deleteStudent("Bearer $token", nis)
 
                 if (!response.isSuccessful) {
                     return@withContext Result.failure(
@@ -463,11 +346,7 @@ class BerandaRepository {
                     return@withContext Result.failure(Exception("Response body kosong"))
                 }
 
-                if (body.status != true) {
-                    return@withContext Result.failure(Exception(body.message ?: "Gagal menghapus siswa"))
-                }
-
-                return@withContext Result.success(body.message ?: "Berhasil")
+                return@withContext Result.success(body.message)
             } catch (e: Exception) {
                 Result.failure(e)
             }
@@ -476,33 +355,12 @@ class BerandaRepository {
 
     suspend fun getHistoryStaff(
         token: String,
-        startDate: String? = null,
-        endDate: String? = null,
-        kelas: String? = null,
-        jurusan: String? = null,
-        status: String? = null,
-        jenisSholat: String? = null,
-        search: String? = null,
-        nis: String? = null,
-        page: Int? = null,
-        limit: Int? = null
+        filters: Map<String, String>
     ): Result<HistoryStaffData> {
         return withContext(Dispatchers.IO) {
             try {
                 val response: Response<HistoryStaffResponse> =
-                    apiService.getHistoryStaff(
-                        token = "Bearer $token",
-                        startDate = startDate,
-                        endDate = endDate,
-                        kelas = kelas,
-                        jurusan = jurusan,
-                        status = status,
-                        jenisSholat = null,
-                        search = null,
-                        nis = nis,
-                        page = page,
-                        limit = limit
-                    )
+                    apiService.getAttendanceHistory("Bearer $token", filters)
 
                 if (!response.isSuccessful) {
                     return@withContext Result.failure(
@@ -522,24 +380,15 @@ class BerandaRepository {
             }
         }
     }
+
     suspend fun submitAbsensi(
-        token: String, 
-        latitude: Double, 
-        longitude: Double, 
-        jadwalId: Int,
-        foto: String? = null
-    ): Result<AbsensiResponse> {
+        token: String,
+        nis: String,
+        request: AttendanceCreateRequest
+    ): Result<String> {
         return withContext(Dispatchers.IO) {
             try {
-                val request = AbsensiRequest(
-                    jadwal_sholat_id = jadwalId,
-                    latitude = latitude,
-                    longitude = longitude,
-                    foto = foto
-                )
-                
-                val response = apiService.submitAbsensi("Bearer $token", request)
-                
+                val response = apiService.submitAttendance("Bearer $token", nis, request)                
                 if (!response.isSuccessful) {
                     return@withContext Result.failure(
                         Exception("HTTP Error: ${response.code()} - ${response.message()}")
@@ -551,50 +400,30 @@ class BerandaRepository {
                     return@withContext Result.failure(Exception("Response body kosong"))
                 }
                 
-                if (body.status != true) {
-                    return@withContext Result.failure(Exception(body.message ?: "Gagal submit absensi"))
-                }
-                
-                if (body.data == null) {
-                    return@withContext Result.failure(Exception("Data tidak tersedia"))
-                }
-                
-                return@withContext Result.success(body.data)
+                return@withContext Result.success(body.message)
             } catch (e: Exception) {
                 Result.failure(e)
             }
         }
     }
-    suspend fun createAbsensi(
-        token: String,
-        nis: String,
-        request: CreateAbsensiRequest
-    ): Result<ManualAbsensiResponse> {
+
+    suspend fun getDhuhaToday(token: String): Result<List<DhuhaJurusanData>> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.createAbsensi("Bearer $token", nis, request)
-                
+                val response = apiService.getDhuhaToday("Bearer $token")
+
                 if (!response.isSuccessful) {
                     return@withContext Result.failure(
                         Exception("HTTP Error: ${response.code()} - ${response.message()}")
                     )
                 }
-                
+
                 val body = response.body()
                 if (body == null) {
                     return@withContext Result.failure(Exception("Response body kosong"))
                 }
-                
-                if (body.status != true) {
-                    return@withContext Result.failure(Exception(body.message ?: "Gagal membuat absensi"))
-                }
-                
-                val data = body.data
-                if (data == null) {
-                    return@withContext Result.failure(Exception("Data tidak tersedia"))
-                }
-                
-                return@withContext Result.success(data)
+
+                return@withContext Result.success(body.data)
             } catch (e: Exception) {
                 Result.failure(e)
             }

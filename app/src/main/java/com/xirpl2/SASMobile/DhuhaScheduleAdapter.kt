@@ -1,38 +1,23 @@
 package com.xirpl2.SASMobile
 
 import android.graphics.Color
-import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.xirpl2.SASMobile.model.JadwalSholatData
-
-data class DhuhaDayRow(
-    val day: String,
-    var slot1: JadwalSholatData? = null,
-    var slot2: JadwalSholatData? = null
-)
+import com.xirpl2.SASMobile.model.JadwalDhuhaKeahlian
 
 class DhuhaScheduleAdapter(
-    private var rows: List<DhuhaDayRow>,
-    private val onModified: (item: JadwalSholatData) -> Unit,
-    private val onEditClick: ((id: Int, jenis: String) -> Unit)? = null
+    private var rows: List<JadwalDhuhaKeahlian>,
+    private val onEditClick: ((item: JadwalDhuhaKeahlian) -> Unit)? = null
 ) : RecyclerView.Adapter<DhuhaScheduleAdapter.ViewHolder>() {
 
     var isEditMode = false
         set(value) {
             field = value
-            val size = rows.size
-            if (!value) {
-                selectedItem = null
-            }
-            notifyItemRangeChanged(0, size)
+            notifyDataSetChanged()
         }
-
-    
-    private var selectedItem: Pair<Int, Int>? = null
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvDay: TextView = itemView.findViewById(R.id.tvDay)
@@ -40,64 +25,10 @@ class DhuhaScheduleAdapter(
         val tvJurusan2: TextView = itemView.findViewById(R.id.tvJurusan2)
 
         init {
-            tvJurusan1.setOnClickListener { handleSlotClick(adapterPosition, 1) }
-            tvJurusan2.setOnClickListener { handleSlotClick(adapterPosition, 2) }
-        }
-    }
-
-    private fun handleSlotClick(rowIndex: Int, slotIndex: Int) {
-        if (rowIndex == RecyclerView.NO_POSITION) return
-        val row = rows[rowIndex]
-        val clickedData = if (slotIndex == 1) row.slot1 else row.slot2
-
-        if (!isEditMode) {
-            
-            if (clickedData != null) {
-                onEditClick?.invoke(clickedData.id, "Dhuha")
-            }
-            return
-        }
-
-        
-        if (selectedItem == null) {
-            if (clickedData == null) return 
-            selectedItem = Pair(rowIndex, slotIndex)
-            notifyItemChanged(rowIndex)
-        } else {
-            
-            val firstSelection = selectedItem!!
-            if (firstSelection.first == rowIndex && firstSelection.second == slotIndex) {
-                
-                selectedItem = null
-                notifyItemChanged(rowIndex)
-                return
-            }
-
-            
-            val row1 = rows[firstSelection.first]
-            val data1 = if (firstSelection.second == 1) row1.slot1 else row1.slot2
-            val row2 = rows[rowIndex]
-            val data2 = if (slotIndex == 1) row2.slot1 else row2.slot2
-
-            if (data1 != null) {
-                
-                
-                if (firstSelection.second == 1) row1.slot1 = data2 else row1.slot2 = data2
-                
-                if (slotIndex == 1) row2.slot1 = data1 else row2.slot2 = data1
-
-                
-                data1.hari = row2.day
-                onModified(data1)
-                
-                if (data2 != null) {
-                    data2.hari = row1.day
-                    onModified(data2)
+            itemView.setOnClickListener {
+                if (adapterPosition != RecyclerView.NO_POSITION) {
+                    onEditClick?.invoke(rows[adapterPosition])
                 }
-
-                selectedItem = null
-                notifyItemChanged(firstSelection.first)
-                notifyItemChanged(rowIndex)
             }
         }
     }
@@ -109,35 +40,27 @@ class DhuhaScheduleAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val row = rows[position]
-        holder.tvDay.text = row.day
+        android.util.Log.d("DhuhaAdapter", "Binding row $position: ${row.hari}")
+        holder.tvDay.text = row.hari
         
         holder.itemView.setBackgroundColor(if (position % 2 == 0) Color.WHITE else Color.parseColor("#FAFAFA"))
 
-        bindSlot(holder.tvJurusan1, row.slot1, position, 1)
-        bindSlot(holder.tvJurusan2, row.slot2, position, 2)
-    }
-
-    private fun bindSlot(tv: TextView, data: JadwalSholatData?, rowIndex: Int, slotIndex: Int) {
-        tv.text = data?.jurusan ?: "-"
-        if (data == null) {
-            tv.setTextColor(Color.parseColor("#999999"))
+        holder.tvJurusan1.text = row.keahlian1.joinToString(", ").ifEmpty { "-" }
+        holder.tvJurusan2.text = row.keahlian2.joinToString(", ").ifEmpty { "-" }
+        
+        if (isEditMode) {
+            holder.tvJurusan1.setTextColor(Color.parseColor("#2196F3"))
+            holder.tvJurusan2.setTextColor(Color.parseColor("#2196F3"))
         } else {
-            val isSelected = selectedItem?.first == rowIndex && selectedItem?.second == slotIndex
-            if (isSelected) {
-                
-                tv.setTextColor(Color.parseColor("#2196F3")) 
-            } else {
-                
-                tv.setTextColor(Color.parseColor("#000000")) 
-            }
+            holder.tvJurusan1.setTextColor(Color.BLACK)
+            holder.tvJurusan2.setTextColor(Color.BLACK)
         }
     }
 
     override fun getItemCount(): Int = rows.size
     
-    fun updateData(newRows: List<DhuhaDayRow>) {
+    fun updateData(newRows: List<JadwalDhuhaKeahlian>) {
         this.rows = newRows
-        selectedItem = null
         notifyDataSetChanged()
     }
 }

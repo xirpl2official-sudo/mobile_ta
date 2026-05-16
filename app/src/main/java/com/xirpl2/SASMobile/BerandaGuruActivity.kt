@@ -152,7 +152,7 @@ class BerandaGuruActivity : BaseAdminActivity() {
             try {
                 val response = RetrofitClient.apiService.getNotifications("Bearer $token")
                 if (response.isSuccessful) {
-                    val count = response.body()?.count ?: 0
+                    val count = response.body()?.total ?: 0
                     runOnUiThread {
                         val tvNotifBadge = findViewById<TextView>(R.id.tvNotifBadge)
                         if (tvNotifBadge != null) {
