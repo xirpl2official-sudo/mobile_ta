@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit
 import www.sanju.motiontoast.MotionToast
 import www.sanju.motiontoast.MotionToastStyle
 
-class VerifikasiOtpActivity : AppCompatActivity() {
+class VerifikasiOtpActivity : BaseActivity() {
 
     private var resendTimer: CountDownTimer? = null
     private lateinit var otpBoxes: Array<EditText>

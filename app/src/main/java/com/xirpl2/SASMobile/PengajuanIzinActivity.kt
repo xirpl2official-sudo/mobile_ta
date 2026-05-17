@@ -14,7 +14,7 @@ import com.xirpl2.SASMobile.network.RetrofitClient
 import kotlinx.coroutines.launch
 import java.util.*
 
-class PengajuanIzinActivity : AppCompatActivity() {
+class PengajuanIzinActivity : BaseActivity() {
 
     
     private lateinit var rgPermitType: RadioGroup

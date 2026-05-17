@@ -23,7 +23,6 @@ class BerandaAdminActivity : BaseAdminActivity() {
     private lateinit var tvNamaSholat: TextView
     private lateinit var tvWaktuSholat: TextView
     private lateinit var rvJurusan: RecyclerView
-    private lateinit var btnGenerateQR: com.google.android.material.button.MaterialButton
     
     private lateinit var jurusanAdapter: JurusanAdapter
     
@@ -47,16 +46,16 @@ class BerandaAdminActivity : BaseAdminActivity() {
         setContentView(R.layout.activity_beranda_admin)
         setupStatusBar()
 
-        val topBarContent = findViewById<View>(R.id.topBarContent)
-        applyEdgeToEdge(topBarContent)
+        findViewById<View>(R.id.topBarContent)?.let { topBar ->
+            applyEdgeToEdge(topBar)
+        }
 
         initializeViews()
         setupDrawerAndSidebar()
         setupMenuIcon()
-        setupQRCodeButton()
 
         
-        findViewById<View>(R.id.main).post {
+        findViewById<View>(R.id.main)?.post {
             loadStatistikFromAPI()
             setupJadwalSholat()
             setupJurusanList()
@@ -72,7 +71,6 @@ class BerandaAdminActivity : BaseAdminActivity() {
         tvKehadiranValue = findViewById(R.id.tvKehadiranValue)
         tvNamaSholat = findViewById(R.id.tvNamaSholat)
         tvWaktuSholat = findViewById(R.id.tvWaktuSholat)
-        btnGenerateQR = findViewById(R.id.btnGenerateQR)
     }
     
     private fun loadStatistikFromAPI() {
@@ -107,14 +105,6 @@ class BerandaAdminActivity : BaseAdminActivity() {
         }
     }
     
-    private fun setupQRCodeButton() {
-        val btnGenerateQR = findViewById<com.google.android.material.button.MaterialButton>(R.id.btnGenerateQR)
-        btnGenerateQR.setOnClickListener {
-            
-            startActivity(Intent(this@BerandaAdminActivity, StaffQRActivity::class.java))
-        }
-    }
-    
     override fun onResume() {
         super.onResume()
         setupJadwalSholat()
@@ -143,11 +133,9 @@ class BerandaAdminActivity : BaseAdminActivity() {
                         if (upcomingPrayer != null) {
                             tvNamaSholat.text = upcomingPrayer.namaSholat
                             tvWaktuSholat.text = "Waktu : ${upcomingPrayer.jamMulai} - ${upcomingPrayer.jamSelesai}"
-                            btnGenerateQR.visibility = View.VISIBLE
                         } else {
                             tvNamaSholat.text = "-"
                             tvWaktuSholat.text = "Tidak ada jadwal yang akan datang dalam\nwaktu dekat"
-                            btnGenerateQR.visibility = View.GONE
                         }
                     }
                 },
@@ -219,5 +207,13 @@ class BerandaAdminActivity : BaseAdminActivity() {
                 }
             )
         }
+    }
+
+    override fun onDestroy() {
+        clockHandler.removeCallbacks(clockRunnable)
+        if (::rvJurusan.isInitialized) {
+            rvJurusan.adapter = null
+        }
+        super.onDestroy()
     }
 }

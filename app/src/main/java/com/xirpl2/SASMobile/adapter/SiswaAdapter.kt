@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.CheckBox
 import com.google.android.material.button.MaterialButton
 import android.widget.Toast
 import androidx.recyclerview.widget.DiffUtil
@@ -56,8 +57,9 @@ class SiswaAdapter(
                 .inflate(R.layout.item_loading, parent, false)
             LoadingViewHolder(view)
         } else {
+            val layoutId = if (isReadOnly) R.layout.item_siswa_unregistered_row else R.layout.item_siswa
             val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.item_siswa, parent, false)
+                .inflate(layoutId, parent, false)
             SiswaViewHolder(view)
         }
     }
@@ -77,12 +79,16 @@ class SiswaAdapter(
     class SiswaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val tvNis: TextView = itemView.findViewById(R.id.tvNis)
         private val tvNama: TextView = itemView.findViewById(R.id.tvNama)
-        private val tvJenisKelamin: TextView = itemView.findViewById(R.id.tvJenisKelamin)
+        private val tvJenisKelamin: TextView? = itemView.findViewById(R.id.tvJenisKelamin)
         private val tvKelas: TextView = itemView.findViewById(R.id.tvKelas)
-        private val tvJurusan: TextView = itemView.findViewById(R.id.tvJurusan)
-        private val btnDetailSiswa: MaterialButton = itemView.findViewById(R.id.btnDetailSiswa)
-        private val btnEdit: ImageView = itemView.findViewById(R.id.btnEdit)
-        private val btnDelete: ImageView = itemView.findViewById(R.id.btnDelete)
+        private val tvJurusan: TextView? = itemView.findViewById(R.id.tvJurusan)
+        private val tvWaliKelas: TextView? = itemView.findViewById(R.id.tvWaliKelas)
+        private val btnDetailSiswa: MaterialButton? = itemView.findViewById(R.id.btnDetailSiswa)
+        private val btnDetailRow: MaterialButton? = itemView.findViewById(R.id.btnDetail)
+        private val btnEdit: ImageView? = itemView.findViewById(R.id.btnEdit)
+        private val btnDelete: ImageView? = itemView.findViewById(R.id.btnDelete)
+        private val ivDeviceStatus: ImageView? = itemView.findViewById(R.id.ivDeviceStatus)
+        private val cbRow: CheckBox? = itemView.findViewById<CheckBox>(R.id.cbRow)
 
         fun bind(
             siswa: SiswaItem,
@@ -103,24 +109,42 @@ class SiswaAdapter(
             }
             
             tvNama.text = siswa.nama_siswa
-            tvJenisKelamin.text = if (siswa.jenis_kelamin.isNotEmpty()) {
+            
+            // Device Status Indicator (List Item Mode)
+            ivDeviceStatus?.let { iv ->
+                if (siswa.deviceStatus != null || siswa.hardwareId != null) {
+                    iv.visibility = View.VISIBLE
+                    val color = when {
+                        siswa.deviceStatus == "pending" -> "#FACC15"
+                        siswa.hardwareId != null -> "#22C55E"
+                        else -> "#EF4444"
+                    }
+                    iv.imageTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor(color))
+                } else {
+                    iv.visibility = View.GONE
+                }
+            }
+
+            tvJenisKelamin?.text = if (siswa.jenis_kelamin.isNotEmpty()) {
                 siswa.jenis_kelamin.take(1).uppercase()
             } else {
                 "-"
             }
             tvKelas.text = siswa.kelas
-            tvJurusan.text = siswa.jurusan
+            tvJurusan?.text = siswa.jurusan
+            tvWaliKelas?.text = "-" // Placeholder for Wali Kelas from spec
 
-            btnDetailSiswa.setOnClickListener { onDetailClick(siswa) }
+            val detailButton = btnDetailRow ?: btnDetailSiswa
+            detailButton?.setOnClickListener { onDetailClick(siswa) }
 
             if (isReadOnly) {
-                btnEdit.visibility = View.GONE
-                btnDelete.visibility = View.GONE
+                btnEdit?.visibility = View.GONE
+                btnDelete?.visibility = View.GONE
             } else {
-                btnEdit.visibility = View.VISIBLE
-                btnDelete.visibility = View.VISIBLE
-                btnEdit.setOnClickListener { onEditClick(siswa) }
-                btnDelete.setOnClickListener { onDeleteClick(siswa) }
+                btnEdit?.visibility = View.VISIBLE
+                btnDelete?.visibility = View.VISIBLE
+                btnEdit?.setOnClickListener { onEditClick(siswa) }
+                btnDelete?.setOnClickListener { onDeleteClick(siswa) }
             }
         }
     }

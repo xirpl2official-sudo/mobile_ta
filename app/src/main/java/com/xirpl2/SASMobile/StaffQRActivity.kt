@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
-class StaffQRActivity : AppCompatActivity() {
+class StaffQRActivity : BaseActivity() {
 
     private lateinit var ivQRCode: ImageView
     private lateinit var tvJenisSholat: TextView
@@ -34,8 +34,6 @@ class StaffQRActivity : AppCompatActivity() {
     private lateinit var btnRefresh: MaterialButton
     private lateinit var progressBar: ProgressBar
     private lateinit var containerQR: View
-    private lateinit var containerError: View
-    private lateinit var tvErrorMessage: TextView
 
     private val repository = QRCodeRepository()
     private val berandaRepository = BerandaRepository()
@@ -70,8 +68,6 @@ class StaffQRActivity : AppCompatActivity() {
         btnRefresh = findViewById(R.id.btnRefresh)
         progressBar = findViewById(R.id.progressBar)
         containerQR = findViewById(R.id.containerQR)
-        containerError = findViewById(R.id.containerError)
-        tvErrorMessage = findViewById(R.id.tvErrorMessage)
     }
 
     private fun setupClickListeners() {
@@ -82,11 +78,6 @@ class StaffQRActivity : AppCompatActivity() {
 
         
         btnRefresh.setOnClickListener {
-            loadQRCode()
-        }
-
-        
-        findViewById<MaterialButton>(R.id.btnRetry).setOnClickListener {
             loadQRCode()
         }
     }
@@ -374,23 +365,20 @@ class StaffQRActivity : AppCompatActivity() {
     private fun showLoading() {
         progressBar.visibility = View.VISIBLE
         containerQR.visibility = View.GONE
-        containerError.visibility = View.GONE
         btnRefresh.visibility = View.GONE
     }
 
     private fun showQRCode() {
         progressBar.visibility = View.GONE
         containerQR.visibility = View.VISIBLE
-        containerError.visibility = View.GONE
         btnRefresh.visibility = View.VISIBLE
         ivQRCode.alpha = 1.0f
     }
 
     private fun showError(message: String) {
         progressBar.visibility = View.GONE
-        containerQR.visibility = View.GONE
-        containerError.visibility = View.VISIBLE
-        tvErrorMessage.text = message
+        containerQR.visibility = View.VISIBLE // Keep QR container visible
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
 
     private fun getAuthToken(): String {

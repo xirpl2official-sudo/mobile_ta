@@ -21,7 +21,7 @@ import com.xirpl2.SASMobile.model.QRCodeVerifyData
 import com.xirpl2.SASMobile.repository.QRCodeRepository
 import kotlinx.coroutines.launch
 
-class ScanQrActivity : AppCompatActivity() {
+class ScanQrActivity : BaseActivity() {
 
     private lateinit var barcodeView: BarcodeView
     private lateinit var btnScan: Button

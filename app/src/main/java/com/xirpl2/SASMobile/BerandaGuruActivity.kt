@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.View
 import android.widget.TextView
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,7 +23,6 @@ class BerandaGuruActivity : BaseAdminActivity() {
     private lateinit var tvNamaSholat: TextView
     private lateinit var tvWaktuSholat: TextView
     private lateinit var rvJurusan: RecyclerView
-    private lateinit var btnGenerateQR: com.google.android.material.button.MaterialButton
     
     private lateinit var jurusanAdapter: JurusanAdapter
     
@@ -46,10 +46,8 @@ class BerandaGuruActivity : BaseAdminActivity() {
         setContentView(R.layout.activity_beranda_admin)
         setupStatusBar()
 
-        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+        findViewById<View>(R.id.topBarContent)?.let { topBar ->
+            applyEdgeToEdge(topBar)
         }
 
         initializeViews()
@@ -57,10 +55,7 @@ class BerandaGuruActivity : BaseAdminActivity() {
         setupMenuIcon()
         
         
-        setupQRCodeButton()
-        
-        
-        findViewById<android.view.View>(R.id.main).post {
+        findViewById<android.view.View>(R.id.main)?.post {
             loadStatistik()
             setupJadwalSholat()
             setupJurusanList()
@@ -76,7 +71,6 @@ class BerandaGuruActivity : BaseAdminActivity() {
         tvNamaSholat = findViewById(R.id.tvNamaSholat)
         tvWaktuSholat = findViewById(R.id.tvWaktuSholat)
         rvJurusan = findViewById(R.id.rvJurusan)
-        btnGenerateQR = findViewById(R.id.btnGenerateQR)
     }
     
     private fun loadStatistik() {
@@ -102,13 +96,6 @@ class BerandaGuruActivity : BaseAdminActivity() {
         }
     }
     
-    private fun setupQRCodeButton() {
-        val btnGenerateQR = findViewById<com.google.android.material.button.MaterialButton>(R.id.btnGenerateQR)
-        btnGenerateQR?.setOnClickListener {
-            startActivity(Intent(this@BerandaGuruActivity, StaffQRActivity::class.java))
-        }
-    }
-    
     private fun setupJadwalSholat() {
         val token = getAuthToken()
         if (token.isEmpty()) return
@@ -121,11 +108,9 @@ class BerandaGuruActivity : BaseAdminActivity() {
                         if (upcomingPrayer != null) {
                             tvNamaSholat.text = upcomingPrayer.namaSholat
                             tvWaktuSholat.text = "Waktu : ${upcomingPrayer.jamMulai} - ${upcomingPrayer.jamSelesai}"
-                            btnGenerateQR.visibility = android.view.View.VISIBLE
                         } else {
                             tvNamaSholat.text = "-"
                             tvWaktuSholat.text = "Tidak ada jadwal yang akan datang dalam\nwaktu dekat"
-                            btnGenerateQR.visibility = android.view.View.GONE
                         }
                     }
                 },
@@ -208,5 +193,13 @@ class BerandaGuruActivity : BaseAdminActivity() {
                 }
             )
         }
+    }
+
+    override fun onDestroy() {
+        clockHandler.removeCallbacks(clockRunnable)
+        if (::rvJurusan.isInitialized) {
+            rvJurusan.adapter = null
+        }
+        super.onDestroy()
     }
 }

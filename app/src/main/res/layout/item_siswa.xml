@@ -18,16 +18,34 @@
         android:textSize="12sp" />
 
     
-    <TextView
-        android:id="@+id/tvNama"
+    <LinearLayout
         android:layout_width="220dp"
         android:layout_height="wrap_content"
-        android:gravity="start"
-        android:paddingHorizontal="8dp"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:textColor="#333333"
-        android:textSize="12sp" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="8dp">
+
+        <TextView
+            android:id="@+id/tvNama"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="#333333"
+            android:textSize="12sp" />
+
+        <ImageView
+            android:id="@+id/ivDeviceStatus"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginStart="4dp"
+            android:src="@drawable/bg_circle_indicator"
+            android:visibility="gone"
+            app:tint="@color/gray"
+            xmlns:app="http://schemas.android.com/apk/res-auto" />
+
+    </LinearLayout>
 
     
     <TextView

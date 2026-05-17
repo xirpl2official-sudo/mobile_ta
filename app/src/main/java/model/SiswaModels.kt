@@ -16,7 +16,11 @@ data class SiswaItem(
     @SerializedName("jk")
     val jenis_kelamin: String = "",
     val kelas: String = "",
-    val jurusan: String = ""
+    val jurusan: String = "",
+    @SerializedName("device_status")
+    val deviceStatus: String? = null,
+    @SerializedName("hardware_id")
+    val hardwareId: String? = null
 ) : Serializable
 
 data class SiswaPaginationInfo(

@@ -19,12 +19,14 @@ import com.xirpl2.SASMobile.model.RiwayatAbsensi
 import com.xirpl2.SASMobile.model.SiswaItem
 import com.xirpl2.SASMobile.model.StatusAbsensi
 import com.xirpl2.SASMobile.repository.BerandaRepository
+import com.xirpl2.SASMobile.repository.DeviceRepository
 import kotlinx.coroutines.launch
 
 class SiswaDetailDialogFragment : DialogFragment() {
 
     private lateinit var student: SiswaItem
     private val repository = BerandaRepository()
+    private val deviceRepository = DeviceRepository()
     private val TAG = "SiswaDetailDialog"
 
     private lateinit var tvNis: TextView
@@ -38,6 +40,7 @@ class SiswaDetailDialogFragment : DialogFragment() {
     private lateinit var recyclerRiwayat: RecyclerView
     private lateinit var progressRiwayat: ProgressBar
     private lateinit var tvEmptyRiwayat: TextView
+    private lateinit var btnResetDevice: MaterialButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,9 +73,14 @@ class SiswaDetailDialogFragment : DialogFragment() {
         recyclerRiwayat = view.findViewById(R.id.recyclerRiwayat)
         progressRiwayat = view.findViewById(R.id.progressRiwayat)
         tvEmptyRiwayat = view.findViewById(R.id.tvEmptyRiwayat)
+        btnResetDevice = view.findViewById(R.id.btnResetDevice)
 
         view.findViewById<ImageView>(R.id.btnClose).setOnClickListener { dismiss() }
         view.findViewById<MaterialButton>(R.id.btnTutup).setOnClickListener { dismiss() }
+
+        btnResetDevice.setOnClickListener { resetStudentDevice() }
+        
+        checkAdminRole()
         
         // Initial data from the item
         tvNis.text = student.nis
@@ -84,6 +92,49 @@ class SiswaDetailDialogFragment : DialogFragment() {
             "P" -> "Perempuan"
             else -> student.jenis_kelamin
         }
+    }
+
+    private fun checkAdminRole() {
+        val role = context?.getSharedPreferences("user_session", 0)?.getString("user_role", "")?.lowercase() ?: ""
+        if (role.contains("admin")) {
+            btnResetDevice.visibility = View.VISIBLE
+        } else {
+            btnResetDevice.visibility = View.GONE
+        }
+    }
+
+    private fun resetStudentDevice() {
+        val token = context?.getSharedPreferences("UserData", 0)?.getString("auth_token", "") ?: ""
+        if (token.isEmpty()) return
+
+        androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setTitle("Reset Perangkat")
+            .setMessage("Apakah Anda yakin ingin melepas tautan perangkat untuk siswa ini? Siswa dapat melakukan login kembali di perangkat baru.")
+            .setPositiveButton("Reset") { _, _ ->
+                btnResetDevice.isEnabled = false
+                btnResetDevice.text = "Memproses..."
+                
+                lifecycleScope.launch {
+                    deviceRepository.resetDeviceByNIS(token, student.nis).fold(
+                        onSuccess = { message ->
+                            activity?.runOnUiThread {
+                                Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                                btnResetDevice.isEnabled = true
+                                btnResetDevice.text = "Reset Kunci Perangkat"
+                            }
+                        },
+                        onFailure = { error ->
+                            activity?.runOnUiThread {
+                                Toast.makeText(context, error.message, Toast.LENGTH_LONG).show()
+                                btnResetDevice.isEnabled = true
+                                btnResetDevice.text = "Reset Kunci Perangkat"
+                            }
+                        }
+                    )
+                }
+            }
+            .setNegativeButton("Batal", null)
+            .show()
     }
 
     private fun loadStudentDetail() {

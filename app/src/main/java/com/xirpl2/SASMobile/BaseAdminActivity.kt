@@ -8,7 +8,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -16,7 +15,11 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 
-abstract class BaseAdminActivity : AppCompatActivity() {
+/**
+ * BaseAdminActivity inherits from BaseActivity to provide role-specific sidebar navigation
+ * and administrative layout features while maintaining core system stability.
+ */
+abstract class BaseAdminActivity : BaseActivity() {
 
     protected lateinit var drawerLayout: DrawerLayout
     protected lateinit var sidebarView: View
@@ -31,6 +34,7 @@ abstract class BaseAdminActivity : AppCompatActivity() {
         LAPORAN,
         QR_CODE,
         SISWA_BELUM_TERDAFTAR,
+        MANAJEMEN_PERANGKAT,
         PENGATURAN,
         LOGOUT
     }
@@ -46,8 +50,6 @@ abstract class BaseAdminActivity : AppCompatActivity() {
         
         // Enable Edge-to-Edge
         androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
-        
-        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
     }
 
     protected fun setupDrawerAndSidebar() {
@@ -81,7 +83,7 @@ abstract class BaseAdminActivity : AppCompatActivity() {
         val isGuru = role == "guru"
 
         if (!isAdmin) {
-            
+            sidebarView.findViewById<View>(R.id.menuManajemenPerangkat)?.visibility = View.GONE
             
             if (isWali) {
                 sidebarView.findViewById<View>(R.id.menuJadwalSholat)?.visibility = View.VISIBLE
@@ -106,20 +108,21 @@ abstract class BaseAdminActivity : AppCompatActivity() {
             try {
                 val response = com.xirpl2.SASMobile.network.RetrofitClient.apiService.getProfile("Bearer $token")
                 if (response.isSuccessful) {
-                    val profile = response.body()?.data
-                    runOnUiThread {
-                        val tvAdminName = sidebarView.findViewById<TextView>(R.id.tvAdminName)
-                        val tvAdminRole = sidebarView.findViewById<TextView>(R.id.tvAdminRole)
-                        
-                        tvAdminName?.text = profile?.nama_siswa ?: profile?.nama ?: "Admin"
-                        
-                        
-                        val roleRaw = profile?.role?.lowercase() ?: ""
-                        tvAdminRole?.text = when {
-                            roleRaw.contains("admin") -> "Administrator"
-                            roleRaw.contains("wali") -> "Wali Kelas"
-                            roleRaw.contains("guru") -> "Guru"
-                            else -> "Staff"
+                    val authData = response.body()?.data
+                    if (authData != null && !isFinishing && !isDestroyed) {
+                        runOnUiThread {
+                            val tvAdminName = sidebarView.findViewById<TextView>(R.id.tvAdminName)
+                            val tvAdminRole = sidebarView.findViewById<TextView>(R.id.tvAdminRole)
+                            
+                            tvAdminName?.text = authData.getDisplayName()
+                            
+                            val roleRaw = authData.role?.lowercase() ?: ""
+                            tvAdminRole?.text = when {
+                                roleRaw.contains("admin") -> "Administrator"
+                                roleRaw.contains("wali") -> "Wali Kelas"
+                                roleRaw.contains("guru") -> "Guru"
+                                else -> "Staff"
+                            }
                         }
                     }
                 }
@@ -183,11 +186,15 @@ abstract class BaseAdminActivity : AppCompatActivity() {
 
         
         setupMenuItem(R.id.menuQRCode, AdminMenuItem.QR_CODE, currentItem) {
-            
+            navigateTo(QRCodeAdminActivity::class.java)
         }
 
         setupMenuItem(R.id.menuSiswaBelumTerdaftar, AdminMenuItem.SISWA_BELUM_TERDAFTAR, currentItem) {
-            
+            navigateTo(SiswaBelumTerdaftarAdminActivity::class.java)
+        }
+
+        setupMenuItem(R.id.menuManajemenPerangkat, AdminMenuItem.MANAJEMEN_PERANGKAT, currentItem) {
+            navigateTo(AdminDeviceManagementActivity::class.java)
         }
 
         
@@ -260,72 +267,47 @@ abstract class BaseAdminActivity : AppCompatActivity() {
             return
         }
 
-        if (!::drawerLayout.isInitialized || isFinishing || isDestroyed) {
-            if (!isFinishing && !isDestroyed) {
-                val intent = Intent(this, activityClass)
+        // Use UniversalSafeNavigator for cross-platform stability
+        com.xirpl2.SASMobile.utils.UniversalSafeNavigator.navigateTo(
+            this,
+            activityClass,
+            finishCurrent = true,
+            intentModifier = { intent ->
                 intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                startActivity(intent)
-                finish()
             }
-            return
-        }
+        )
+        
+        closeSidebar()
+    }
 
+    override fun onDestroy() {
+        // Prevent Memory Leaks and excessive Binder transactions
         try {
-            drawerLayout.addDrawerListener(object : DrawerLayout.SimpleDrawerListener() {
-                override fun onDrawerClosed(drawerView: View) {
-                    try {
-                        drawerLayout.removeDrawerListener(this)
-
-                        if (isFinishing || isDestroyed) return
-
-                        val intent = Intent(this@BaseAdminActivity, activityClass)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                        
-                        startActivity(intent)
-                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-
-                        window.decorView.postDelayed({
-                            try {
-                                if (!isFinishing && !isDestroyed) {
-                                    finish()
-                                }
-                            } catch (e: android.os.DeadObjectException) {
-                                android.util.Log.e("BaseAdminActivity", "DeadObjectException during finish: ${e.message}")
-                            } catch (e: Exception) {
-                                android.util.Log.e("BaseAdminActivity", "Error during delayed finish: ${e.message}")
-                            }
-                        }, 50)
-                    } catch (e: android.os.DeadObjectException) {
-                        android.util.Log.e("BaseAdminActivity", "DeadObjectException in onDrawerClosed: ${e.message}")
-                    } catch (e: Exception) {
-                        android.util.Log.e("BaseAdminActivity", "Error in onDrawerClosed: ${e.message}")
-                    }
-                }
-
-                override fun onDrawerOpened(drawerView: View) {}
-            })
-            closeSidebar()
-        } catch (e: android.os.DeadObjectException) {
-            android.util.Log.e("BaseAdminActivity", "DeadObjectException during navigation: ${e.message}")
-            try {
-                val intent = Intent(this, activityClass)
-                intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-                startActivity(intent)
-                finish()
-            } catch (e2: Exception) {
-                android.util.Log.e("BaseAdminActivity", "Fallback navigation failed: ${e2.message}")
+            if (::sidebarView.isInitialized) {
+                // Clear all click listeners to release callback references
+                sidebarView.findViewById<LinearLayout>(R.id.menuBeranda)?.setOnClickListener(null)
+                sidebarView.findViewById<LinearLayout>(R.id.menuJadwalSholat)?.setOnClickListener(null)
+                sidebarView.findViewById<LinearLayout>(R.id.menuDataSiswa)?.setOnClickListener(null)
+                sidebarView.findViewById<LinearLayout>(R.id.menuKelolaSiswa)?.setOnClickListener(null)
+                sidebarView.findViewById<LinearLayout>(R.id.menuKelolaKelas)?.setOnClickListener(null)
+                sidebarView.findViewById<LinearLayout>(R.id.menuPresensi)?.setOnClickListener(null)
+                sidebarView.findViewById<LinearLayout>(R.id.menuPengajuanIzin)?.setOnClickListener(null)
+                sidebarView.findViewById<LinearLayout>(R.id.menuLaporan)?.setOnClickListener(null)
+                sidebarView.findViewById<LinearLayout>(R.id.menuQRCode)?.setOnClickListener(null)
+                sidebarView.findViewById<LinearLayout>(R.id.menuSiswaBelumTerdaftar)?.setOnClickListener(null)
+                sidebarView.findViewById<LinearLayout>(R.id.menuManajemenPerangkat)?.setOnClickListener(null)
+                sidebarView.findViewById<LinearLayout>(R.id.menuPengaturan)?.setOnClickListener(null)
+                sidebarView.findViewById<LinearLayout>(R.id.menuLogout)?.setOnClickListener(null)
+            }
+            
+            if (::drawerLayout.isInitialized) {
+                drawerLayout.setDrawerListener(null)
             }
         } catch (e: Exception) {
-            android.util.Log.e("BaseAdminActivity", "Error during navigation: ${e.message}")
-            try {
-                val intent = Intent(this, activityClass)
-                intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                startActivity(intent)
-                finish()
-            } catch (e2: Exception) {
-                android.util.Log.e("BaseAdminActivity", "Fallback navigation failed: ${e2.message}")
-            }
+            // Safe destruction
         }
+        
+        super.onDestroy()
     }
 
     protected fun openSidebar() {
@@ -359,12 +341,15 @@ abstract class BaseAdminActivity : AppCompatActivity() {
 
                 Toast.makeText(this, "Logout berhasil", Toast.LENGTH_SHORT).show()
 
-                
-                val intent = Intent(this, MasukActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-                overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
-                finish()
+                // Safe logout navigation
+                com.xirpl2.SASMobile.utils.UniversalSafeNavigator.navigateTo(
+                    this,
+                    MasukActivity::class.java,
+                    finishCurrent = true,
+                    intentModifier = { intent ->
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    }
+                )
             }
             .setNegativeButton("Tidak", null)
             .show()
@@ -376,7 +361,7 @@ abstract class BaseAdminActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+        if (::drawerLayout.isInitialized && drawerLayout.isDrawerOpen(GravityCompat.START)) {
             closeSidebar()
         } else {
             super.onBackPressed()

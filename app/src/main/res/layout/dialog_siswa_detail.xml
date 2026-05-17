@@ -233,6 +233,17 @@
                 </FrameLayout>
 
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnResetDevice"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Reset Kunci Perangkat"
+                    android:textColor="@android:color/white"
+                    app:backgroundTint="@color/error_color"
+                    app:cornerRadius="8dp"
+                    android:visibility="gone" />
+
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnTutup"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

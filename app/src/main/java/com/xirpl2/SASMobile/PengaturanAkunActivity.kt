@@ -29,7 +29,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 
-class PengaturanAkunActivity : AppCompatActivity() {
+class PengaturanAkunActivity : BaseActivity() {
 
     private lateinit var btnBack: ImageView
     private lateinit var cardProfilePhoto: CardView

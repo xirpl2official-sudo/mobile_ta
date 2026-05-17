@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 import www.sanju.motiontoast.MotionToast
 import www.sanju.motiontoast.MotionToastStyle
 
-class BuatSandiBaruActivity : AppCompatActivity() {
+class BuatSandiBaruActivity : BaseActivity() {
     private lateinit var passwordLayoutBaru: TextInputLayout
     private lateinit var passwordlayoutKonfirm: TextInputLayout
     private lateinit var etPasswordBaru: EditText

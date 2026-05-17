@@ -19,7 +19,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.textfield.TextInputLayout
 
-class DaftarActivity : AppCompatActivity() {
+class DaftarActivity : BaseActivity() {
 
     private lateinit var etNis: EditText
     private lateinit var etPassword: EditText

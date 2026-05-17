@@ -19,7 +19,7 @@
     <View
         android:id="@+id/VectorAtasMenu"
         android:layout_width="0dp"
-        android:layout_height=" 90dp"
+        android:layout_height="90dp"
         android:background="@color/blue_theme"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -544,23 +544,6 @@
                                 app:layout_constraintStart_toStartOf="@id/tvNamaSholat"
                                 app:layout_constraintTop_toBottomOf="@id/tvNamaSholat"
                                 android:layout_marginTop="@dimen/spacing_tiny" />
-
-                            
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btnGenerateQR"
-                                android:layout_width="@dimen/qr_button_width"
-                                android:layout_height="@dimen/qr_button_height"
-                                android:padding="0dp"
-                                app:backgroundTint="@color/blue_theme"
-                                app:cornerRadius="8dp"
-                                app:icon="@drawable/ic_qr_code"
-                                app:iconSize="20dp"
-                                app:iconTint="@android:color/white"
-                                app:iconGravity="textStart"
-                                app:iconPadding="0dp"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintBottom_toBottomOf="parent" />
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
 

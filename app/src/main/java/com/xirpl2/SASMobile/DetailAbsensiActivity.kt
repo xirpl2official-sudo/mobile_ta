@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
-class DetailAbsensiActivity : AppCompatActivity() {
+class DetailAbsensiActivity : BaseActivity() {
 
     private lateinit var rvDateStrip: RecyclerView
     private lateinit var tvHadirCount: TextView

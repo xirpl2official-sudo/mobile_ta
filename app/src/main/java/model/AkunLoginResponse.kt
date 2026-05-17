@@ -18,18 +18,18 @@ data class AkunLoginResponse(
     val jk: String? = null,
     val jurusan: String? = null,
     val kelas: String? = null,
-    val role: String,                  
-    val token: String
+    val role: String? = null,                  
+    val token: String? = null
 ) {
     fun getDisplayName(): String {
-        return nama_siswa ?: nama ?: "User"
+        return nama_siswa ?: nama ?: name ?: "User"
     }
     
     fun getIdentifier(): String {
-        return nis ?: nip ?: ""
+        return nis ?: nip ?: username ?: ""
     }
     
     fun isStaff(): Boolean {
-        return role.lowercase() in listOf("admin", "guru", "wali_kelas", "wali kelas")
+        return role?.lowercase() in listOf("admin", "guru", "wali_kelas", "wali kelas")
     }
 }

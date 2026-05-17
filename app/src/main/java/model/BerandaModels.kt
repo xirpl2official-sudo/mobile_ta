@@ -357,68 +357,6 @@ data class BulkReadRequest(
     val ids: List<Int>
 )
 
-data class ChangeDeviceRequest(
-    @SerializedName("account_id")
-    val accountId: Int,
-    @SerializedName("hardware_id")
-    val hardwareId: String,
-    @SerializedName("device_name")
-    val deviceName: String? = null,
-    @SerializedName("device_model")
-    val deviceModel: String? = null,
-    @SerializedName("os_version")
-    val osVersion: String? = null,
-    val imei: String? = null,
-    val reason: String? = null
-)
-
-data class HardwareAuthRequest(
-    @SerializedName("hardware_id")
-    val hardwareId: String,
-    @SerializedName("device_name")
-    val deviceName: String? = null,
-    @SerializedName("device_model")
-    val deviceModel: String? = null,
-    @SerializedName("os_version")
-    val osVersion: String? = null,
-    val imei: String? = null
-)
-
-data class DeviceAuthRequest(
-    @SerializedName("hardware_id")
-    val hardwareId: String,
-    val imei: String? = null,
-    @SerializedName("device_name")
-    val deviceName: String? = null,
-    @SerializedName("device_model")
-    val deviceModel: String? = null,
-    @SerializedName("os_version")
-    val osVersion: String? = null
-)
-
-data class DeviceInfoResponse(
-    val message: String? = null,
-    val data: DeviceInfo
-)
-
-data class DeviceInfo(
-    @SerializedName("hardware_id")
-    val hardwareId: String,
-    val imei: String? = null,
-    @SerializedName("device_name")
-    val deviceName: String? = null,
-    @SerializedName("device_model")
-    val deviceModel: String? = null,
-    @SerializedName("os_version")
-    val osVersion: String? = null,
-    @SerializedName("is_verified")
-    val isVerified: Boolean = false,
-    @SerializedName("last_auth_at")
-    val lastAuthAt: String? = null,
-    @SerializedName("changed_at")
-    val changedAt: String? = null
-)
-
 data class BarcodeData(
     val barcode: String,
     val token: String,

@@ -23,7 +23,7 @@ import org.json.JSONObject
 import www.sanju.motiontoast.MotionToast
 import www.sanju.motiontoast.MotionToastStyle
 
-class GantiKataSandi : AppCompatActivity() {
+class GantiKataSandi : BaseActivity() {
     private lateinit var nisLayout: TextInputLayout
     private lateinit var emailLayout: TextInputLayout
     private lateinit var etNis: EditText

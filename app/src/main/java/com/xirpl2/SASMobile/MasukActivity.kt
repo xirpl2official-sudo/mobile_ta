@@ -23,7 +23,7 @@ import androidx.core.content.ContextCompat
 import com.google.android.material.textfield.TextInputLayout
 import com.xirpl2.SASMobile.model.LoginRequest
 
-class MasukActivity : AppCompatActivity() {
+class MasukActivity : BaseActivity() {
 
     private lateinit var etNis: EditText
     private lateinit var etPassword: EditText
@@ -40,18 +40,29 @@ class MasukActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_masuk)
-        window.statusBarColor = 0xFF2886D6.toInt()
         
+        // Edge-to-edge support handled via BaseActivity or specific layout logic
+        window.statusBarColor = 0xFF2886D6.toInt()
         
         @Suppress("DEPRECATION")
         window.decorView.systemUiVisibility = android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+        findViewById<android.view.View>(R.id.main)?.let { mainView ->
+            ViewCompat.setOnApplyWindowInsetsListener(mainView) { v, insets ->
+                val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+                v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+                insets
+            }
         }
 
+        initializeViews()
+        setHintTextColors()
+        checkCameraPermission()
+        checkAndValidateExistingToken()
+        setupClickListeners()
+    }
+
+    private fun initializeViews() {
         etNis = findViewById(R.id.et_nis)
         etPassword = findViewById(R.id.et_password)
         btnMasuk = findViewById(R.id.btn_masuk)
@@ -59,26 +70,19 @@ class MasukActivity : AppCompatActivity() {
         textLupaPassword = findViewById(R.id.textLupaPassword)
         nisLayout = findViewById(R.id.nisLayout)
         passwordLayout = findViewById(R.id.passwordLayout)
+    }
 
-        setHintTextColors()
-
-        checkCameraPermission()
-
-        
-        checkAndValidateExistingToken()
-
+    private fun setupClickListeners() {
         btnMasuk.setOnClickListener {
             loginUser()
         }
 
         textBuatAkun.setOnClickListener {
-            val intent = Intent(this@MasukActivity, DaftarActivity::class.java)
-            startActivity(intent)
+            safeNavigateTo(DaftarActivity::class.java)
         }
 
         textLupaPassword.setOnClickListener {
-            val intent = Intent(this@MasukActivity, GantiKataSandi::class.java)
-            startActivity(intent)
+            safeNavigateTo(GantiKataSandi::class.java)
         }
     }
 
@@ -141,12 +145,12 @@ class MasukActivity : AppCompatActivity() {
                         val body = response.body()
                         val respCode = response.code()
 
-                        if (respCode == 200) {
-                            val userData = body!!.data
+                        if (respCode == 200 && body?.data != null) {
+                            val userData = body.data
                             MotionToast.createColorToast(
                                 this@MasukActivity,
                                 "Berhasil",
-                                "Selamat datang, ${userData?.getDisplayName() ?: ""}!",
+                                "Selamat datang, ${userData.getDisplayName()}!",
                                 MotionToastStyle.SUCCESS,
                                 Gravity.CENTER,
                                 MotionToast.LONG_DURATION,
@@ -156,23 +160,13 @@ class MasukActivity : AppCompatActivity() {
                             
                             saveUserSession(userData)
 
-                            
-                            val roleLower = userData?.role?.lowercase()?.trim()
-                            val targetActivity = when (roleLower) {
-                                "guru", "wali_kelas", "wali kelas" -> BerandaGuruActivity::class.java
-                                "admin" -> BerandaAdminActivity::class.java
-                                "siswa" -> BerandaActivity::class.java
-                                else -> {
-                                    if (userData?.isStaff() == true) {
-                                        if (roleLower?.contains("wali") == true || roleLower?.contains("guru") == true) 
-                                            BerandaGuruActivity::class.java
-                                        else BerandaAdminActivity::class.java
-                                    } else BerandaActivity::class.java
-                                }
+                            // --- DEVICE AUTH INTEGRATION ---
+                            val token = userData.token
+                            if (token != null) {
+                                checkDeviceAuth(token)
+                            } else {
+                                navigateToHome()
                             }
-                            
-                            startActivity(Intent(this@MasukActivity, targetActivity))
-                            finish()
                         } else {
                             MotionToast.createColorToast(
                                 this@MasukActivity,
@@ -284,6 +278,102 @@ class MasukActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun checkDeviceAuth(token: String) {
+        val deviceRepo = com.xirpl2.SASMobile.repository.DeviceRepository()
+        val hardwareId = com.xirpl2.SASMobile.utils.DeviceHelper.getHardwareId(this)
+        val deviceName = com.xirpl2.SASMobile.utils.DeviceHelper.getDeviceName()
+        val deviceModel = com.xirpl2.SASMobile.utils.DeviceHelper.getDeviceModel()
+        val osVersion = com.xirpl2.SASMobile.utils.DeviceHelper.getOsVersion()
+
+        val authRequest = com.xirpl2.SASMobile.model.HardwareAuthRequest(
+            hardwareId = hardwareId,
+            deviceName = deviceName,
+            deviceModel = deviceModel,
+            osVersion = osVersion
+        )
+
+        CoroutineScope(Dispatchers.IO).launch {
+            // First, try to verify
+            val verifyResult = deviceRepo.verifyDevice(token, authRequest)
+            
+            withContext(Dispatchers.Main) {
+                verifyResult.fold(
+                    onSuccess = {
+                        // Device verified, proceed to home
+                        navigateToHome()
+                    },
+                    onFailure = { error ->
+                        // Verification failed, maybe not registered?
+                        registerNewDevice(token, authRequest)
+                    }
+                )
+            }
+        }
+    }
+
+    private fun registerNewDevice(token: String, request: com.xirpl2.SASMobile.model.HardwareAuthRequest) {
+        val deviceRepo = com.xirpl2.SASMobile.repository.DeviceRepository()
+        
+        CoroutineScope(Dispatchers.IO).launch {
+            val registerResult = deviceRepo.registerDevice(token, request)
+            
+            withContext(Dispatchers.Main) {
+                registerResult.fold(
+                    onSuccess = {
+                        MotionToast.createColorToast(
+                            this@MasukActivity,
+                            "Perangkat Terikat",
+                            "Akun Anda telah berhasil dikunci ke perangkat ini.",
+                            MotionToastStyle.INFO,
+                            Gravity.CENTER,
+                            MotionToast.LONG_DURATION,
+                            null
+                        )
+                        navigateToHome()
+                    },
+                    onFailure = { error ->
+                        MotionToast.createColorToast(
+                            this@MasukActivity,
+                            "Keamanan Perangkat",
+                            "Akun ini sudah terikat ke perangkat lain. Silakan minta admin untuk mereset perangkat.",
+                            MotionToastStyle.ERROR,
+                            Gravity.CENTER,
+                            MotionToast.LONG_DURATION,
+                            null
+                        )
+                        clearUserSession()
+                    }
+                )
+            }
+        }
+    }
+
+    private fun navigateToHome() {
+        val sharedPref = getSharedPreferences("user_session", MODE_PRIVATE)
+        val role = sharedPref.getString("user_role", "siswa")
+        
+        val roleLower = role?.lowercase()?.trim()
+        val targetActivity = when (roleLower) {
+            "guru", "wali_kelas", "wali kelas" -> BerandaGuruActivity::class.java
+            "admin" -> BerandaAdminActivity::class.java
+            else -> BerandaActivity::class.java
+        }
+        
+        // Use SafeNavigator for critical login transition
+        com.xirpl2.SASMobile.utils.SafeNavigator.navigateAndFinish(
+            this,
+            targetActivity,
+            { intent ->
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            },
+            250L // Increased delay for login transition
+        )
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
     }
 
     private fun clearUserSession() {

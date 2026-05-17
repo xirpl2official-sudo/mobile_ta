@@ -3,170 +3,108 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="280dp"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
+    android:background="@color/sidebar_bg"
     android:elevation="8dp">
 
-    <!-- Header Sidebar: Blue Background, NO fitsSystemWindows here as padding is dynamic -->
+    <!-- Header Sidebar -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/sidebarHeader"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/blue_theme"
-        android:padding="16dp"
-        android:paddingBottom="20dp"
+        android:padding="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/logoIcon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_sun"
+            app:tint="#F97316"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tvMenuTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Menu"
+            android:layout_marginStart="12dp"
+            android:text="Absensholat"
             android:textColor="@android:color/white"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintBottom_toTopOf="@id/tvMenuSubtitle"
+            app:layout_constraintEnd_toStartOf="@id/btnCloseSidebar"
+            app:layout_constraintStart_toEndOf="@id/logoIcon"
+            app:layout_constraintTop_toTopOf="@id/logoIcon" />
 
         <TextView
             android:id="@+id/tvMenuSubtitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="Absensi Sholat"
-            android:textColor="#DBEAFE"
-            android:textSize="14sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvMenuTitle" />
+            android:text="Portal Administrator"
+            android:textColor="@color/sidebar_text_secondary"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="@id/logoIcon"
+            app:layout_constraintEnd_toEndOf="@id/tvMenuTitle"
+            app:layout_constraintStart_toStartOf="@id/tvMenuTitle" />
 
         <ImageView
             android:id="@+id/btnCloseSidebar"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:padding="4dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:contentDescription="Close"
             android:src="@drawable/ic_close"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:alpha="0.6"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:tint="@android:color/white" />
 
-        <!-- User Profile Card: Embedded INSIDE Blue Header -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardUserProfile"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="0dp"
-            app:cardBackgroundColor="#EFF6FF"
-            app:layout_constraintTop_toBottomOf="@id/tvMenuSubtitle"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="12dp"
-                android:gravity="center_vertical">
-
-                <androidx.cardview.widget.CardView
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    app:cardCornerRadius="24dp"
-                    app:cardElevation="0dp"
-                    app:cardBackgroundColor="@android:color/white">
-
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:src="@drawable/ic_user_profile"
-                        android:padding="10dp"
-                        android:contentDescription="User Profile"
-                        app:tint="@color/blue_theme" />
-
-                </androidx.cardview.widget.CardView>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:layout_marginStart="12dp">
-
-                    <TextView
-                        android:id="@+id/tvAdminName"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Admin"
-                        android:textColor="#1F2937"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvAdminRole"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Administrator"
-                        android:textColor="#6B7280"
-                        android:textSize="12sp"
-                        android:layout_marginTop="1dp" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Menu Items in White Body -->
+    <!-- Navigation Items -->
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@android:color/white"
+        android:layout_marginTop="8dp"
         app:layout_constraintTop_toBottomOf="@id/sidebarHeader"
-        app:layout_constraintBottom_toTopOf="@id/dividerSettings"
+        app:layout_constraintBottom_toTopOf="@id/cardUserProfile"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
         <LinearLayout
-            android:id="@+id/menuItemsContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingHorizontal="16dp"
-            android:paddingTop="16dp">
+            android:paddingHorizontal="12dp">
 
-            <!-- Item Beranda -->
+            <!-- Item Dashboard -->
             <LinearLayout
                 android:id="@+id/menuBeranda"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="12dp"
                 android:gravity="center_vertical"
-                android:background="?attr/selectableItemBackground"
-                android:layout_marginBottom="4dp">
-                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_home" app:tint="@color/icon_sidebar_inactive" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Beranda" android:textColor="@color/text_sidebar_inactive" android:textSize="14sp" android:layout_marginStart="12dp" />
+                android:padding="12dp"
+                android:layout_marginBottom="4dp"
+                android:background="@drawable/bg_sidebar_item_selector">
+                <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_home" app:tint="@color/sidebar_text_secondary" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:text="Dashboard" android:textColor="@color/sidebar_text_secondary" android:textSize="14sp" />
             </LinearLayout>
 
-            <!-- Item Jadwal Sholat -->
+            <!-- Item Jadwal -->
             <LinearLayout
                 android:id="@+id/menuJadwalSholat"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="12dp"
                 android:gravity="center_vertical"
-                android:background="?attr/selectableItemBackground"
-                android:layout_marginBottom="4dp">
-                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_jadwal" app:tint="@color/icon_sidebar_inactive" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Jadwal Sholat" android:textColor="@color/text_sidebar_inactive" android:textSize="14sp" android:layout_marginStart="12dp" />
+                android:padding="12dp"
+                android:layout_marginBottom="4dp"
+                android:background="@drawable/bg_sidebar_item_selector">
+                <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_calendar" app:tint="@color/sidebar_text_secondary" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:text="Jadwal" android:textColor="@color/sidebar_text_secondary" android:textSize="14sp" />
             </LinearLayout>
 
             <!-- Item Data Siswa -->
@@ -175,12 +113,26 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="12dp"
                 android:gravity="center_vertical"
-                android:background="?attr/selectableItemBackground"
-                android:layout_marginBottom="4dp">
-                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/users" app:tint="@color/icon_sidebar_inactive" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Data Siswa" android:textColor="@color/text_sidebar_inactive" android:textSize="14sp" android:layout_marginStart="12dp" />
+                android:padding="12dp"
+                android:layout_marginBottom="4dp"
+                android:background="@drawable/bg_sidebar_item_selector">
+                <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/users" app:tint="@color/sidebar_text_secondary" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:text="Data Siswa" android:textColor="@color/sidebar_text_secondary" android:textSize="14sp" />
+            </LinearLayout>
+
+            <!-- Item Kelola Siswa -->
+            <LinearLayout
+                android:id="@+id/menuKelolaSiswa"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="12dp"
+                android:layout_marginBottom="4dp"
+                android:background="@drawable/bg_sidebar_item_selector">
+                <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/gear" app:tint="@color/sidebar_text_secondary" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:text="Kelola Siswa" android:textColor="@color/sidebar_text_secondary" android:textSize="14sp" />
             </LinearLayout>
 
             <!-- Item Kelola Kelas -->
@@ -189,12 +141,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="12dp"
                 android:gravity="center_vertical"
-                android:background="?attr/selectableItemBackground"
-                android:layout_marginBottom="4dp">
-                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/gear" app:tint="@color/icon_sidebar_inactive" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Kelola Kelas" android:textColor="@color/text_sidebar_inactive" android:textSize="14sp" android:layout_marginStart="12dp" />
+                android:padding="12dp"
+                android:layout_marginBottom="4dp"
+                android:background="@drawable/bg_sidebar_item_selector">
+                <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/gear" app:tint="@color/sidebar_text_secondary" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:text="Kelola Kelas" android:textColor="@color/sidebar_text_secondary" android:textSize="14sp" />
             </LinearLayout>
 
             <!-- Item Presensi -->
@@ -203,26 +155,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="12dp"
                 android:gravity="center_vertical"
-                android:background="?attr/selectableItemBackground"
-                android:layout_marginBottom="4dp">
-                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/clipboard" app:tint="@color/icon_sidebar_inactive" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Presensi" android:textColor="@color/text_sidebar_inactive" android:textSize="14sp" android:layout_marginStart="12dp" />
-            </LinearLayout>
-
-            <!-- Item Laporan -->
-            <LinearLayout
-                android:id="@+id/menuLaporan"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:padding="12dp"
-                android:gravity="center_vertical"
-                android:background="?attr/selectableItemBackground"
-                android:layout_marginBottom="4dp">
-                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/bar" app:tint="@color/icon_sidebar_inactive" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Laporan" android:textColor="@color/text_sidebar_inactive" android:textSize="14sp" android:layout_marginStart="12dp" />
+                android:layout_marginBottom="4dp"
+                android:background="@drawable/bg_sidebar_item_selector">
+                <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_riwayat" app:tint="@color/sidebar_text_secondary" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:text="Presensi" android:textColor="@color/sidebar_text_secondary" android:textSize="14sp" />
             </LinearLayout>
 
             <!-- Item Pengajuan Izin -->
@@ -231,12 +169,26 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="12dp"
                 android:gravity="center_vertical"
-                android:background="?attr/selectableItemBackground"
-                android:layout_marginBottom="4dp">
-                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_perizinan" app:tint="@color/icon_sidebar_inactive" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Pengajuan Izin" android:textColor="@color/text_sidebar_inactive" android:textSize="14sp" android:layout_marginStart="12dp" />
+                android:padding="12dp"
+                android:layout_marginBottom="4dp"
+                android:background="@drawable/bg_sidebar_item_selector">
+                <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_perizinan" app:tint="@color/sidebar_text_secondary" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:text="Pengajuan Izin" android:textColor="@color/sidebar_text_secondary" android:textSize="14sp" />
+            </LinearLayout>
+
+            <!-- Item Laporan -->
+            <LinearLayout
+                android:id="@+id/menuLaporan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="12dp"
+                android:layout_marginBottom="4dp"
+                android:background="@drawable/bg_sidebar_item_selector">
+                <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_statistik" app:tint="@color/sidebar_text_secondary" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:text="Laporan" android:textColor="@color/sidebar_text_secondary" android:textSize="14sp" />
             </LinearLayout>
 
             <!-- Item QR Code -->
@@ -245,12 +197,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="12dp"
                 android:gravity="center_vertical"
-                android:background="?attr/selectableItemBackground"
-                android:layout_marginBottom="4dp">
-                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_qr_code" app:tint="@color/icon_sidebar_inactive" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="QR Code" android:textColor="@color/text_sidebar_inactive" android:textSize="14sp" android:layout_marginStart="12dp" />
+                android:padding="12dp"
+                android:layout_marginBottom="4dp"
+                android:background="@drawable/bg_sidebar_item_selector">
+                <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_qr_code" app:tint="@color/sidebar_text_secondary" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:text="QR Code" android:textColor="@color/sidebar_text_secondary" android:textSize="14sp" />
             </LinearLayout>
 
             <!-- Item Siswa Belum Terdaftar -->
@@ -259,61 +211,129 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="12dp"
                 android:gravity="center_vertical"
-                android:background="?attr/selectableItemBackground"
-                android:layout_marginBottom="4dp">
-                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_user_profile" app:tint="@color/icon_sidebar_inactive" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Siswa Belum Terdaftar" android:textColor="@color/text_sidebar_inactive" android:textSize="14sp" android:layout_marginStart="12dp" />
+                android:padding="12dp"
+                android:layout_marginBottom="4dp"
+                android:background="@drawable/bg_sidebar_item_selector">
+                <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_add" app:tint="@color/sidebar_text_secondary" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:text="Siswa Belum Terdaftar" android:textColor="@color/sidebar_text_secondary" android:textSize="14sp" />
+            </LinearLayout>
+
+            <!-- Item Manajemen Perangkat -->
+            <LinearLayout
+                android:id="@+id/menuManajemenPerangkat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="12dp"
+                android:layout_marginBottom="4dp"
+                android:background="@drawable/bg_sidebar_item_selector">
+                <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/gear" app:tint="@color/sidebar_text_secondary" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:text="Manajemen Perangkat" android:textColor="@color/sidebar_text_secondary" android:textSize="14sp" />
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#33FFFFFF" android:layout_marginVertical="8dp" />
+
+            <!-- Item Pengaturan -->
+            <LinearLayout
+                android:id="@+id/menuPengaturan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="12dp"
+                android:layout_marginBottom="4dp"
+                android:background="@drawable/bg_sidebar_item_selector">
+                <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/gear" app:tint="@color/sidebar_text_secondary" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:text="Pengaturan" android:textColor="@color/sidebar_text_secondary" android:textSize="14sp" />
+            </LinearLayout>
+
+            <!-- Item Logout -->
+            <LinearLayout
+                android:id="@+id/menuLogout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="12dp"
+                android:layout_marginBottom="4dp"
+                android:background="@drawable/bg_sidebar_item_selector">
+                <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_logout" app:tint="@color/error_color" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:text="Keluar" android:textColor="@color/error_color" android:textSize="14sp" />
             </LinearLayout>
 
         </LinearLayout>
     </ScrollView>
 
-    <View
-        android:id="@+id/dividerSettings"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:background="#F3F4F6"
-        android:layout_marginHorizontal="16dp"
-        app:layout_constraintBottom_toTopOf="@id/menuPengaturan"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="8dp" />
-
-    <!-- Item Pengaturan -->
-    <LinearLayout
-        android:id="@+id/menuPengaturan"
-        android:layout_width="0dp"
+    <!-- User Profile Card -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cardUserProfile"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="12dp"
-        android:gravity="center_vertical"
-        android:background="?attr/selectableItemBackground"
-        android:layout_marginHorizontal="16dp"
-        app:layout_constraintBottom_toTopOf="@id/menuLogout"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-        <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/settings" app:tint="@color/icon_sidebar_inactive" />
-        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Pengaturan" android:textColor="@color/text_sidebar_inactive" android:textSize="14sp" android:layout_marginStart="12dp" />
-    </LinearLayout>
+        android:padding="16dp"
+        android:background="#173691"
+        app:layout_constraintBottom_toBottomOf="parent">
 
-    <!-- Item Logout -->
-    <LinearLayout
-        android:id="@+id/menuLogout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="12dp"
-        android:gravity="center_vertical"
-        android:background="?attr/selectableItemBackground"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-        <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_logout" app:tint="@color/text_danger" />
-        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Keluar" android:textColor="@color/text_danger" android:textSize="14sp" android:layout_marginStart="12dp" />
-    </LinearLayout>
+        <ImageView
+            android:id="@+id/ivAvatar"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_user_profile"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:tint="@color/sidebar_text_secondary" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginStart="12dp"
+            app:layout_constraintStart_toEndOf="@id/ivAvatar"
+            app:layout_constraintEnd_toStartOf="@id/ivExpand"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <TextView
+                android:id="@+id/tvAdminName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Budi Santoso"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvAdminEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="admin@sekolah.sch.id"
+                android:textColor="@color/sidebar_text_secondary"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/tvAdminRole"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Administrator"
+                android:textColor="@color/sidebar_text_secondary"
+                android:textSize="10sp"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/ivExpand"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_chevron_right"
+            android:rotation="90"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:tint="@color/sidebar_text_secondary" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

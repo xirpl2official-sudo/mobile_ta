@@ -114,6 +114,18 @@
             android:launchMode="singleTop"
             android:name=".KelolaKelasActivity"
             android:exported="false" />
+        <activity
+            android:launchMode="singleTop"
+            android:name=".QRCodeAdminActivity"
+            android:exported="false" />
+        <activity
+            android:launchMode="singleTop"
+            android:name=".SiswaBelumTerdaftarAdminActivity"
+            android:exported="false" />
+        <activity
+            android:launchMode="singleTop"
+            android:name=".AdminDeviceManagementActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

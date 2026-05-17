@@ -14,7 +14,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class NotifikasiActivity : AppCompatActivity() {
+class NotifikasiActivity : BaseActivity() {
 
     private lateinit var binding: ActivityNotifikasiBinding
     private lateinit var notifikasiAdapter: NotifikasiAdapter

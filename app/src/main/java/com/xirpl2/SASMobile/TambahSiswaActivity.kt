@@ -15,7 +15,7 @@ import com.xirpl2.SASMobile.repository.BerandaRepository
 import kotlinx.coroutines.launch
 import java.util.*
 
-class TambahSiswaActivity : AppCompatActivity() {
+class TambahSiswaActivity : BaseActivity() {
 
     private val repository = BerandaRepository()
     

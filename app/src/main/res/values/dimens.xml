@@ -98,4 +98,6 @@
     <dimen name="constraint_profile_photo_width">0.28</dimen>
     <dimen name="text_foto_profil">16sp</dimen>
 
+    <dimen name="qr_size_v2">200dp</dimen>
+    <dimen name="manual_code_text_size">32sp</dimen>
 </resources>

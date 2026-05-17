@@ -25,7 +25,7 @@ import com.xirpl2.SASMobile.model.StatusAbsensi
 import com.xirpl2.SASMobile.repository.BerandaRepository
 import kotlinx.coroutines.launch
 
-class BerandaActivity : AppCompatActivity() {
+class BerandaActivity : BaseActivity() {
 
     private lateinit var rvJadwalSholat: RecyclerView
     private lateinit var rvRiwayatAbsensi: RecyclerView
@@ -48,23 +48,15 @@ class BerandaActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_beranda)
 
-        
+        // Basic initialization
         initializeViews()
-        
-        
         setupPopupMenu()
-        
-        
         setupJadwalSholat()
         setupRiwayatAbsensi()
-
         setupAbsensiButton()
         setupNotificationButton()
         
-        
         loadStatistics()
-        
-        
         loadRiwayatFromAPI()
     }
     
@@ -506,7 +498,12 @@ class BerandaActivity : AppCompatActivity() {
         }
         
         val filter = IntentFilter("com.xirpl2.SASMobile.NOTIFICATION_COUNT_CHANGED")
-        registerReceiver(notificationCounterBroadcast, filter, android.content.Context.RECEIVER_NOT_EXPORTED)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(notificationCounterBroadcast, filter, android.content.Context.RECEIVER_NOT_EXPORTED)
+        } else {
+            @Suppress("UnspecifiedRegisterReceiverFlag")
+            registerReceiver(notificationCounterBroadcast, filter)
+        }
     }
     
     override fun onPause() {
@@ -518,5 +515,11 @@ class BerandaActivity : AppCompatActivity() {
                 
             }
         }
+    }
+
+    override fun onDestroy() {
+        if (::rvJadwalSholat.isInitialized) rvJadwalSholat.adapter = null
+        if (::rvRiwayatAbsensi.isInitialized) rvRiwayatAbsensi.adapter = null
+        super.onDestroy()
     }
 }
