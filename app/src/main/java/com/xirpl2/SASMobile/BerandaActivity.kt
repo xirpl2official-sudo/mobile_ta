@@ -338,8 +338,13 @@ class BerandaActivity : AppCompatActivity() {
     }
     
     private fun loadStatistics() {
+        val token = getAuthToken()
+        if (token.isEmpty()) return
+        
+        val today = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(java.util.Date())
+
         lifecycleScope.launch {
-            repository.getStatistics().fold(
+            repository.getStatistics(token, today).fold(
                 onSuccess = { statistics ->
                     runOnUiThread {
                         

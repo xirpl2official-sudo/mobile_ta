@@ -1,53 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    
     <color name="primary">#1976D2</color>
     <color name="primary_dark">#1565C0</color>
     <color name="primary_light">#64B5F6</color>
-    
-    
     <color name="background">#F7F9FB</color>
     <color name="surface">#FFFFFF</color>
     <color name="surface_container">#F8FAFC</color>
-    
-    
     <color name="on_background">#191C1E</color>
     <color name="on_surface">#191C1E</color>
     <color name="on_primary">#FFFFFF</color>
-    
-    
     <color name="outline">#E2E8F0</color>
     <color name="outline_variant">#E5E8EB</color>
-    
-    
     <color name="green">#10B981</color>
     <color name="red">#EF4444</color>
     <color name="orange">#F59E0B</color>
     <color name="blue">#3B82F6</color>
     <color name="gray">#64748B</color>
     <color name="gray_light">#94A3B8</color>
-    
-    
     <color name="secondary">#0051D5</color>
     <color name="secondary_light">#E0F2FE</color>
-
-    
-    <color name="slate_50">#F8FAFC</color>
-    <color name="slate_100">#F1F5F9</color>
-    <color name="slate_200">#E2E8F0</color>
-    <color name="slate_300">#CBD5E1</color>
-    <color name="slate_400">#94A3B8</color>
-    <color name="slate_500">#64748B</color>
-    <color name="slate_700">#334155</color>
-    <color name="slate_900">#0F172A</color>
-
-    
     <color name="green_100">#DCFCE7</color>
     <color name="green_700">#15803D</color>
     <color name="orange_400">#FB923C</color>
     <color name="blue_500">#3B82F6</color>
-
-    
     <color name="blue_primary">#1976D2</color>
     <color name="orange_warning">#F59E0B</color>
     <color name="white">#FFFFFF</color>
@@ -56,5 +31,29 @@
     <color name="text_secondary">#64748B</color>
     <color name="text_hint">#94A3B8</color>
     <color name="divider">#E2E8F0</color>
-    
+    <color name="blue_theme">#2886D6</color>
+    <color name="blue_theme_dark">#1E6BB1</color>
+    <color name="blue_theme_light">#EFF6FF</color>
+    <color name="text_sidebar_inactive">#6B7280</color>
+    <color name="icon_sidebar_inactive">#9CA3AF</color>
+    <color name="text_sidebar_active">#FFFFFF</color>
+    <color name="bg_sidebar">#FFFFFF</color>
+    <color name="bg_profile_card">#EFF6FF</color>
+    <color name="text_danger">#EF4444</color>
+    <color name="status_error">#EF4444</color>
+    <color name="status_error_bg">#FEE2E2</color>
+    <color name="status_warning">#F59E0B</color>
+    <color name="status_warning_bg">#FEF3C7</color>
+    <color name="status_success">#10B981</color>
+    <color name="status_success_bg">#D1FAE5</color>
+    <color name="slate_50">#F8FAFC</color>
+    <color name="slate_100">#F1F5F9</color>
+    <color name="slate_200">#E2E8F0</color>
+    <color name="slate_300">#CBD5E1</color>
+    <color name="slate_400">#94A3B8</color>
+    <color name="slate_500">#64748B</color>
+    <color name="slate_600">#475569</color>
+    <color name="slate_700">#334155</color>
+    <color name="slate_800">#1E293B</color>
+    <color name="slate_900">#0F172A</color>
 </resources>

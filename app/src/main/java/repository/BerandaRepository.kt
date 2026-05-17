@@ -210,11 +210,11 @@ class BerandaRepository {
         }
     }
 
-    suspend fun getStatistics(): Result<StatisticsData> {
+    suspend fun getStatistics(token: String, tanggal: String? = null): Result<StatisticsData> {
         return withContext(Dispatchers.IO) {
             try {
                 val response: Response<StatisticsResponse> =
-                    apiService.getAttendanceAnalytics()
+                    apiService.getAttendanceAnalytics("Bearer $token", tanggal)
 
                 if (!response.isSuccessful) {
                     return@withContext Result.failure(

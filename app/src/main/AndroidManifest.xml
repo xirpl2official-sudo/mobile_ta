@@ -95,6 +95,10 @@
             android:exported="false" />
         <activity
             android:launchMode="singleTop"
+            android:name=".PengajuanIzinAdminActivity"
+            android:exported="false" />
+        <activity
+            android:launchMode="singleTop"
             android:name=".NotifikasiActivity"
             android:exported="false" />
         <activity

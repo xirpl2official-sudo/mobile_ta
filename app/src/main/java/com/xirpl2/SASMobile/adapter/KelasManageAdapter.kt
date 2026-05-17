@@ -25,26 +25,90 @@ class KelasManageAdapter(
     private val classStudentsMap = mutableMapOf<Int, List<SiswaItem>>()
 
     inner class KelasViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val layoutJurusanHeader: View = view.findViewById(R.id.layoutJurusanHeader)
+        val tvJurusanTitle: TextView = view.findViewById(R.id.tvJurusanTitle)
+        val tvJurusanCount: TextView = view.findViewById(R.id.tvJurusanCount)
+        
+        val cardContainer: com.google.android.material.card.MaterialCardView = view.findViewById(R.id.cardContainer)
         val tvNamaKelas: TextView = view.findViewById(R.id.tvNamaKelas)
         val badgeSiswaCount: TextView = view.findViewById(R.id.badgeSiswaCount)
+        val badgeWarningWali: View = view.findViewById(R.id.badgeWarningWali)
         val tvWaliKelas: TextView = view.findViewById(R.id.tvWaliKelas)
         val btnUbahWali: MaterialButton = view.findViewById(R.id.btnUbahWali)
         val ivExpand: ImageView = view.findViewById(R.id.ivExpand)
         val layoutExpandable: View = view.findViewById(R.id.layoutExpandable)
+        val emptyStateSiswa: View = view.findViewById(R.id.emptyStateSiswa)
+        val btnEmptyTambahSiswa: MaterialButton = view.findViewById(R.id.btnEmptyTambahSiswa)
         val tvDaftarSiswaTitle: TextView = view.findViewById(R.id.tvDaftarSiswaTitle)
         val recyclerSiswa: RecyclerView = view.findViewById(R.id.recyclerSiswaInClass)
         val pbLoading: ProgressBar = view.findViewById(R.id.pbLoadingSiswa)
         val cardHeader: View = view.findViewById(R.id.cardHeader)
 
         fun bind(kelas: KelasManagementItem, position: Int) {
+            val context = itemView.context
+            
+            val showHeader = position == 0 || kelasList[position - 1].jurusan != kelas.jurusan
+            if (showHeader) {
+                layoutJurusanHeader.visibility = View.VISIBLE
+                tvJurusanTitle.text = kelas.jurusan ?: "Umum"
+                val countInJurusan = kelasList.count { it.jurusan == kelas.jurusan }
+                tvJurusanCount.text = "$countInJurusan Kelas"
+            } else {
+                layoutJurusanHeader.visibility = View.GONE
+            }
+
             tvNamaKelas.text = kelas.label
+            
+            // ISS-004: Semantic Student Badge Colors
             badgeSiswaCount.text = "${kelas.siswa_count} Siswa"
-            tvWaliKelas.text = kelas.wali_kelas ?: "Belum ada wali kelas"
+            when {
+                kelas.siswa_count == 0 -> {
+                    badgeSiswaCount.backgroundTintList = ContextCompat.getColorStateList(context, R.color.status_error)
+                }
+                kelas.siswa_count < 10 -> {
+                    badgeSiswaCount.backgroundTintList = ContextCompat.getColorStateList(context, R.color.status_warning)
+                }
+                else -> {
+                    badgeSiswaCount.backgroundTintList = ContextCompat.getColorStateList(context, R.color.status_success)
+                }
+            }
+            
+            // ISS-002: Warning State for Missing Wali Kelas
+            if (kelas.wali_kelas.isNullOrBlank()) {
+                tvWaliKelas.text = "Wali belum ditentukan"
+                tvWaliKelas.setTextColor(ContextCompat.getColor(context, R.color.status_warning))
+                badgeWarningWali.visibility = View.VISIBLE
+                cardContainer.setStrokeColor(ContextCompat.getColorStateList(context, R.color.status_warning))
+                cardContainer.strokeWidth = context.resources.displayMetrics.density.toInt() * 2
+            } else {
+                tvWaliKelas.text = kelas.wali_kelas
+                tvWaliKelas.setTextColor(android.graphics.Color.parseColor("#334155"))
+                badgeWarningWali.visibility = View.GONE
+                cardContainer.setStrokeColor(ContextCompat.getColorStateList(context, R.color.slate_200))
+                cardContainer.strokeWidth = context.resources.displayMetrics.density.toInt() * 1
+            }
+            
             tvDaftarSiswaTitle.text = "Daftar Siswa (${kelas.siswa_count})"
 
             val isExpanded = expandedPositions.contains(position)
             layoutExpandable.visibility = if (isExpanded) View.VISIBLE else View.GONE
             ivExpand.rotation = if (isExpanded) 90f else 0f
+
+            // ISS-001: Empty State for 0 Students
+            if (isExpanded && kelas.siswa_count == 0) {
+                emptyStateSiswa.visibility = View.VISIBLE
+                recyclerSiswa.visibility = View.GONE
+                tvDaftarSiswaTitle.visibility = View.GONE
+                
+                btnEmptyTambahSiswa.setOnClickListener {
+                    // This should probably navigate to Add Student or trigger a callback
+                    onStudentDetailClick(SiswaItem(id_siswa = 0, nis = "", nama_siswa = "NEW")) 
+                }
+            } else {
+                emptyStateSiswa.visibility = View.GONE
+                recyclerSiswa.visibility = if (isExpanded) View.VISIBLE else View.GONE
+                tvDaftarSiswaTitle.visibility = if (isExpanded) View.VISIBLE else View.GONE
+            }
 
             btnUbahWali.setOnClickListener { onUbahWaliClick(kelas) }
 
@@ -56,14 +120,14 @@ class KelasManageAdapter(
                     expandedPositions.add(position)
                     notifyItemChanged(position)
                     
-                    if (!classStudentsMap.containsKey(kelas.id_kelas)) {
+                    if (kelas.siswa_count > 0 && !classStudentsMap.containsKey(kelas.id_kelas)) {
                         pbLoading.visibility = View.VISIBLE
                         onExpandClick(kelas) { students ->
                             classStudentsMap[kelas.id_kelas] = students
                             pbLoading.visibility = View.GONE
                             setupStudentList(recyclerSiswa, students)
                         }
-                    } else {
+                    } else if (kelas.siswa_count > 0) {
                         setupStudentList(recyclerSiswa, classStudentsMap[kelas.id_kelas]!!)
                     }
                 }

@@ -60,7 +60,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 android:text="Periode: 27 Mar - 2 Apr 2026"
-                android:textColor="#2196F3"
+                android:textColor="@color/blue_theme"
                 android:textSize="13sp"
                 android:textStyle="italic" />
 
@@ -83,7 +83,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
                 android:clipToPadding="false"
-                android:paddingBottom="8dp" />
+                android:paddingBottom="4dp" />
 
             <TextView
                 android:id="@+id/tvEmptyState"

@@ -40,20 +40,15 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
     private val jurusanOptions = listOf("Semua Jurusan", "TKJ", "RPL", "DKV", "ANM", "BC", "TAV", "TEI", "TMT")
 
     override fun getCurrentMenuItem(): AdminMenuItem = AdminMenuItem.JADWAL_SHOLAT
+override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContentView(R.layout.activity_jadwal_sholat_admin)
+    setupStatusBar()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_jadwal_sholat_admin)
-        setupStatusBar()
+    val topBarContent = findViewById<View>(R.id.topBarContent)
+    applyEdgeToEdge(topBarContent)
 
-        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
-
-        
-        setupDrawerAndSidebar()
+    setupDrawerAndSidebar()
 
         
         setupMenuIcon()
@@ -233,17 +228,35 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
             it.jenis_sholat.equals("Dhuha", ignoreCase = true)
         }
 
-        findViewById<TextView>(R.id.tvWaktuDhuha)?.text =
-            if (dhuhaJadwal != null) "Waktu: ${dhuhaJadwal.jam_mulai} - ${dhuhaJadwal.jam_selesai}"
-            else "Waktu: -"
+        findViewById<TextView>(R.id.tvWaktuDhuha)?.apply {
+            if (dhuhaJadwal != null && !dhuhaJadwal.jam_mulai.isNullOrEmpty()) {
+                text = "Waktu: ${dhuhaJadwal.jam_mulai} - ${dhuhaJadwal.jam_selesai}"
+                visibility = View.VISIBLE
+            } else {
+                visibility = View.GONE
+            }
+        }
 
-        findViewById<TextView>(R.id.tvHariDhuha)?.text =
-            if (dhuhaJadwal != null) "${dhuhaJadwal.hari ?: "Semua Hari"}"
-            else "-"
+        findViewById<TextView>(R.id.tvHariDhuha)?.apply {
+            if (dhuhaJadwal != null && !dhuhaJadwal.hari.isNullOrEmpty()) {
+                text = dhuhaJadwal.hari
+                visibility = View.VISIBLE
+            } else {
+                visibility = View.GONE
+            }
+        }
 
-        findViewById<TextView>(R.id.tvKelasDhuha)?.text =
-            if (dhuhaJadwal != null) "Kelas: ${dhuhaJadwal.kelas ?: "Semua Kelas"}"
-            else "Kelas: -"
+        findViewById<TextView>(R.id.tvKelasDhuha)?.apply {
+            if (dhuhaJadwal != null && !dhuhaJadwal.kelas.isNullOrEmpty()) {
+                text = "Kelas: ${dhuhaJadwal.kelas}"
+                visibility = View.VISIBLE
+            } else if (dhuhaJadwal != null) {
+                text = "Kelas: Semua Kelas"
+                visibility = View.VISIBLE
+            } else {
+                visibility = View.GONE
+            }
+        }
 
         
         val zuhurJadwal = jadwalList.find {
@@ -251,17 +264,36 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
         } ?: jadwalList.find {
             it.jenis_sholat.equals("Dzuhur", ignoreCase = true)
         }
-        findViewById<TextView>(R.id.tvWaktuZuhur)?.text =
-            if (zuhurJadwal != null) "Waktu: ${zuhurJadwal.jam_mulai} - ${zuhurJadwal.jam_selesai}"
-            else "Waktu: -"
+        
+        findViewById<TextView>(R.id.tvWaktuZuhur)?.apply {
+            if (zuhurJadwal != null && !zuhurJadwal.jam_mulai.isNullOrEmpty()) {
+                text = "Waktu: ${zuhurJadwal.jam_mulai} - ${zuhurJadwal.jam_selesai}"
+                visibility = View.VISIBLE
+            } else {
+                visibility = View.GONE
+            }
+        }
 
-        findViewById<TextView>(R.id.tvHariZuhur)?.text =
-            if (zuhurJadwal != null) "${zuhurJadwal.hari ?: "Semua Hari"}"
-            else "-"
+        findViewById<TextView>(R.id.tvHariZuhur)?.apply {
+            if (zuhurJadwal != null && !zuhurJadwal.hari.isNullOrEmpty()) {
+                text = zuhurJadwal.hari
+                visibility = View.VISIBLE
+            } else {
+                visibility = View.GONE
+            }
+        }
 
-        findViewById<TextView>(R.id.tvKelasZuhur)?.text =
-            if (zuhurJadwal != null) "Kelas: ${zuhurJadwal.kelas ?: "Semua Kelas"}"
-            else "Kelas: Semua"
+        findViewById<TextView>(R.id.tvKelasZuhur)?.apply {
+            if (zuhurJadwal != null && !zuhurJadwal.kelas.isNullOrEmpty()) {
+                text = "Kelas: ${zuhurJadwal.kelas}"
+                visibility = View.VISIBLE
+            } else if (zuhurJadwal != null) {
+                text = "Kelas: Semua Kelas"
+                visibility = View.VISIBLE
+            } else {
+                visibility = View.GONE
+            }
+        }
 
         
         val jumatJadwal = jadwalList.find {
@@ -269,17 +301,36 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
         } ?: jadwalList.find {
             it.jenis_sholat.equals("Jumat", ignoreCase = true)
         }
-        findViewById<TextView>(R.id.tvWaktuJumat)?.text =
-            if (jumatJadwal != null) "Waktu: ${jumatJadwal.jam_mulai} - ${jumatJadwal.jam_selesai}"
-            else "Waktu: -"
+        
+        findViewById<TextView>(R.id.tvWaktuJumat)?.apply {
+            if (jumatJadwal != null && !jumatJadwal.jam_mulai.isNullOrEmpty()) {
+                text = "Waktu: ${jumatJadwal.jam_mulai} - ${jumatJadwal.jam_selesai}"
+                visibility = View.VISIBLE
+            } else {
+                visibility = View.GONE
+            }
+        }
 
-        findViewById<TextView>(R.id.tvHariJumat)?.text =
-            if (jumatJadwal != null) "${jumatJadwal.hari ?: "Jumat"}"
-            else "-"
+        findViewById<TextView>(R.id.tvHariJumat)?.apply {
+            if (jumatJadwal != null && !jumatJadwal.hari.isNullOrEmpty()) {
+                text = jumatJadwal.hari
+                visibility = View.VISIBLE
+            } else {
+                visibility = View.GONE
+            }
+        }
 
-        findViewById<TextView>(R.id.tvKelasJumat)?.text =
-            if (jumatJadwal != null) "Kelas: ${jumatJadwal.kelas ?: "Semua Kelas"}"
-            else "Kelas: Semua"
+        findViewById<TextView>(R.id.tvKelasJumat)?.apply {
+            if (jumatJadwal != null && !jumatJadwal.kelas.isNullOrEmpty()) {
+                text = "Kelas: ${jumatJadwal.kelas}"
+                visibility = View.VISIBLE
+            } else if (jumatJadwal != null) {
+                text = "Kelas: Semua Kelas"
+                visibility = View.VISIBLE
+            } else {
+                visibility = View.GONE
+            }
+        }
     }
 
     private fun populateDhuhaTable() {

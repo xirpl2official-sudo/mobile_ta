@@ -94,6 +94,6 @@
             android:layout_height="wrap_content"
             android:text="Simpan"
             android:layout_marginStart="8dp"
-            app:backgroundTint="#2196F3"/>
+            app:backgroundTint="@color/blue_theme"/>
     </LinearLayout>
 </LinearLayout>

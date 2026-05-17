@@ -10,7 +10,7 @@
     
     <TextView
         android:id="@+id/tvNis"
-        android:layout_width="100dp"
+        android:layout_width="90dp"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:paddingHorizontal="8dp"
@@ -20,7 +20,7 @@
     
     <TextView
         android:id="@+id/tvNama"
-        android:layout_width="150dp"
+        android:layout_width="220dp"
         android:layout_height="wrap_content"
         android:gravity="start"
         android:paddingHorizontal="8dp"
@@ -58,7 +58,7 @@
         android:paddingHorizontal="8dp"
         android:paddingVertical="4dp"
         android:background="@drawable/bg_badge_jurusan"
-        android:textColor="#2196F3"
+        android:textColor="@color/blue_theme"
         android:textSize="11sp" />
 
     
@@ -100,7 +100,7 @@
             android:layout_marginEnd="8dp"
             android:src="@drawable/ic_edit"
             android:contentDescription="Edit"
-            app:tint="#2196F3"
+            app:tint="@color/blue_theme"
             xmlns:app="http://schemas.android.com/apk/res-auto" />
 
         <ImageView

@@ -47,11 +47,8 @@ class BerandaAdminActivity : BaseAdminActivity() {
         setContentView(R.layout.activity_beranda_admin)
         setupStatusBar()
 
-        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        val topBarContent = findViewById<View>(R.id.topBarContent)
+        applyEdgeToEdge(topBarContent)
 
         initializeViews()
         setupDrawerAndSidebar()
@@ -79,9 +76,14 @@ class BerandaAdminActivity : BaseAdminActivity() {
     }
     
     private fun loadStatistikFromAPI() {
+        val token = getAuthToken()
+        if (token.isEmpty()) return
+        
+        val today = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(java.util.Date())
+
         lifecycleScope.launch {
             
-            repository.getStatistics().fold(
+            repository.getStatistics(token, today).fold(
                 onSuccess = { globalStats ->
                     runOnUiThread {
                         

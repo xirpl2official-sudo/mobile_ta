@@ -137,22 +137,21 @@ object JadwalSholatHelper {
     ): JadwalSholat? {
         val todayIndo = getIndonesianDay(calendar)
 
-        
         val filteredList = list.filter {
             ALLOWED_PRAYERS.any { allowed -> allowed.equals(it.jenis_sholat, ignoreCase = true) } &&
                     isDayMatch(todayIndo, it.hari)
         }
+        
+        if (filteredList.isEmpty()) return null
 
         val now = Calendar.getInstance()
         val currentHour = now.get(Calendar.HOUR_OF_DAY)
         val currentMinute = now.get(Calendar.MINUTE)
         val currentTimeInMinutes = currentHour * 60 + currentMinute
-        val twoHoursAhead = currentTimeInMinutes + 120
 
-        
+        // 1. Check for currently ongoing prayer
         val current = filteredList.find {
-            val status = getStatusSholat(it.jam_mulai, it.jam_selesai)
-            status == StatusSholat.SEDANG_BERLANGSUNG
+            getStatusSholat(it.jam_mulai, it.jam_selesai) == StatusSholat.SEDANG_BERLANGSUNG
         }
         if (current != null) {
             return JadwalSholat(
@@ -163,27 +162,28 @@ object JadwalSholatHelper {
             )
         }
 
-        
-        val upcoming = filteredList.filter {
-            val parts = it.jam_mulai.split(":")
-            val startMinutes = parts[0].toInt() * 60 + parts[1].toInt()
-            startMinutes > currentTimeInMinutes && startMinutes <= twoHoursAhead
-        }.minByOrNull {
+        // 2. Sort by start time
+        val sortedList = filteredList.sortedBy {
             val parts = it.jam_mulai.split(":")
             parts[0].toInt() * 60 + parts[1].toInt()
         }
 
-        if (upcoming != null) {
-            return JadwalSholat(
-                namaSholat = upcoming.jenis_sholat,
-                jamMulai = upcoming.jam_mulai,
-                jamSelesai = upcoming.jam_selesai,
-                status = StatusSholat.AKAN_DATANG
-            )
+        // 3. Find first upcoming
+        val upcoming = sortedList.find {
+            val parts = it.jam_mulai.split(":")
+            val startMinutes = parts[0].toInt() * 60 + parts[1].toInt()
+            startMinutes > currentTimeInMinutes
         }
 
-        
-        return null
+        // 4. Fallback to first schedule (tomorrow) if all passed
+        val nextSchedule = upcoming ?: sortedList.first()
+
+        return JadwalSholat(
+            namaSholat = nextSchedule.jenis_sholat,
+            jamMulai = nextSchedule.jam_mulai,
+            jamSelesai = nextSchedule.jam_selesai,
+            status = StatusSholat.AKAN_DATANG
+        )
     }
 
     fun generateJadwalSholat(jenisKelamin: JenisKelamin): List<JadwalSholat> {

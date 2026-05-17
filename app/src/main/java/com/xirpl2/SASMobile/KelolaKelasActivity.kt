@@ -4,10 +4,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import android.widget.EditText
-import android.widget.ProgressBar
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -27,20 +24,20 @@ class KelolaKelasActivity : BaseAdminActivity() {
     private lateinit var kelasAdapter: KelasManageAdapter
     
     private lateinit var etSearch: EditText
-    private lateinit var btnFilterJurusan: TextView
+    private lateinit var spinnerJurusan: AutoCompleteTextView
     private lateinit var progressLoading: ProgressBar
     private lateinit var tvEmptyState: TextView
     private lateinit var recyclerKelas: RecyclerView
+    private lateinit var iconNotification: ImageView
 
     private var allKelasList = mutableListOf<KelasManagementItem>()
     private var filteredKelasList = mutableListOf<KelasManagementItem>()
     private var staffList = listOf<StaffInfo>()
+    private var majorsList = mutableListOf("Semua Jurusan")
     
     private var selectedJurusan = "Semua Jurusan"
     private var searchQuery = ""
     private var searchJob: Job? = null
-
-    private val fixedJurusanList = listOf("Semua Jurusan", "RPL", "TKJ", "TEI", "TAV", "BC", "TMT", "DKV", "ANM")
 
     override fun getCurrentMenuItem(): AdminMenuItem = AdminMenuItem.KELOLA_KELAS
 
@@ -49,23 +46,29 @@ class KelolaKelasActivity : BaseAdminActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_kelola_kelas)
+        setupStatusBar()
 
-        initViews()
+        val topBarContent = findViewById<View>(R.id.topBarContent)
+        applyEdgeToEdge(topBarContent)
+
+        initializeViews()
         setupDrawerAndSidebar()
         setupMenuIcon()
         setupRecyclerView()
         setupListeners()
+        setupFAB()
         
         loadData()
         loadStaffList()
     }
 
-    private fun initViews() {
+    private fun initializeViews() {
         etSearch = findViewById(R.id.etSearch)
-        btnFilterJurusan = findViewById(R.id.btnFilterJurusan)
+        spinnerJurusan = findViewById(R.id.spinnerJurusan)
         progressLoading = findViewById(R.id.progressLoading)
         tvEmptyState = findViewById(R.id.tvEmptyState)
         recyclerKelas = findViewById(R.id.recyclerKelas)
+        iconNotification = findViewById(R.id.iconNotification)
     }
 
     private fun setupRecyclerView() {
@@ -73,7 +76,13 @@ class KelolaKelasActivity : BaseAdminActivity() {
             kelasList = filteredKelasList,
             onUbahWaliClick = { kelas -> showUbahWaliDialog(kelas) },
             onExpandClick = { kelas, callback -> loadStudentsInClass(kelas.id_kelas, callback) },
-            onStudentDetailClick = { siswa -> showStudentDetail(siswa) }
+            onStudentDetailClick = { siswa -> 
+                if (siswa.id_siswa == 0) {
+                   Toast.makeText(this, "Membuka form tambah siswa...", Toast.LENGTH_SHORT).show()
+                } else {
+                   showStudentDetail(siswa)
+                }
+            }
         )
         recyclerKelas.apply {
             layoutManager = LinearLayoutManager(this@KelolaKelasActivity)
@@ -95,8 +104,19 @@ class KelolaKelasActivity : BaseAdminActivity() {
             override fun afterTextChanged(s: Editable?) {}
         })
 
-        btnFilterJurusan.setOnClickListener {
-            showJurusanPicker()
+        spinnerJurusan.setOnItemClickListener { parent, _, position, _ ->
+            selectedJurusan = parent.getItemAtPosition(position).toString()
+            applyFilters()
+        }
+
+        iconNotification.setOnClickListener {
+            Toast.makeText(this, "Belum ada notifikasi baru", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun setupFAB() {
+        findViewById<View>(R.id.fabAddKelas).setOnClickListener {
+            showTambahKelasDialog()
         }
     }
 
@@ -113,6 +133,10 @@ class KelolaKelasActivity : BaseAdminActivity() {
                 onSuccess = { list ->
                     allKelasList.clear()
                     allKelasList.addAll(list)
+                    
+                    val majors = list.mapNotNull { it.jurusan }.distinct().sorted()
+                    setupJurusanDropdown(majors)
+
                     applyFilters()
                     
                     progressLoading.visibility = View.GONE
@@ -125,6 +149,16 @@ class KelolaKelasActivity : BaseAdminActivity() {
                 }
             )
         }
+    }
+
+    private fun setupJurusanDropdown(majors: List<String>) {
+        majorsList.clear()
+        majorsList.add("Semua Jurusan")
+        majorsList.addAll(majors)
+
+        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, majorsList)
+        spinnerJurusan.setAdapter(adapter)
+        spinnerJurusan.setText(majorsList[0], false)
     }
 
     private fun loadStaffList() {
@@ -145,23 +179,13 @@ class KelolaKelasActivity : BaseAdminActivity() {
                              (kelas.wali_kelas?.contains(searchQuery, ignoreCase = true) ?: false)
             val matchJurusan = selectedJurusan == "Semua Jurusan" || kelas.jurusan == selectedJurusan
             matchSearch && matchJurusan
-        }
+        }.sortedWith(compareBy({ it.jurusan }, { it.label }))
+        
         filteredKelasList.addAll(result)
         kelasAdapter.updateData(filteredKelasList)
         
         tvEmptyState.visibility = if (filteredKelasList.isEmpty()) View.VISIBLE else View.GONE
         recyclerKelas.visibility = if (filteredKelasList.isNotEmpty()) View.VISIBLE else View.GONE
-    }
-
-    private fun showJurusanPicker() {
-        MaterialAlertDialogBuilder(this)
-            .setTitle("Pilih Jurusan")
-            .setItems(fixedJurusanList.toTypedArray()) { _, which ->
-                selectedJurusan = fixedJurusanList[which]
-                btnFilterJurusan.text = selectedJurusan
-                applyFilters()
-            }
-            .show()
     }
 
     private fun loadStudentsInClass(idKelas: Int, callback: (List<SiswaItem>) -> Unit) {
@@ -220,5 +244,9 @@ class KelolaKelasActivity : BaseAdminActivity() {
     private fun showStudentDetail(siswa: SiswaItem) {
         val dialog = SiswaDetailDialogFragment.newInstance(siswa)
         dialog.show(supportFragmentManager, "SiswaDetailDialog")
+    }
+
+    private fun showTambahKelasDialog() {
+        Toast.makeText(this, "Fitur Tambah Kelas sedang disiapkan", Toast.LENGTH_SHORT).show()
     }
 }

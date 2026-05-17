@@ -75,7 +75,7 @@
             android:layout_height="wrap_content"
             android:text="10:00"
             android:textSize="11sp"
-            android:textColor="#2886D6"
+            android:textColor="@color/blue_theme"
             android:fontFamily="@font/poppins_medium"
             android:layout_marginStart="12dp"
             android:layout_marginTop="6dp"

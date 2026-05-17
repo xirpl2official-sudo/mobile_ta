@@ -98,20 +98,16 @@ class LaporanAdminActivity : BaseAdminActivity() {
     private val apiDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
     override fun getCurrentMenuItem(): AdminMenuItem = AdminMenuItem.LAPORAN
+override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContentView(R.layout.activity_laporan_admin)
+    setupStatusBar()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_laporan_admin)
-        setupStatusBar()
+    val topBarContent = findViewById<View>(R.id.topBarContent)
+    applyEdgeToEdge(topBarContent)
 
-        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
-
-        initViews()
-        setupDrawerAndSidebar()
+    initViews()
+    setupDrawerAndSidebar()
         setupMenuIcon()
         setupRecyclerView()
         setupFilters()
@@ -385,7 +381,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
                         }
                         
                         val newItems = data.absensi
-                        allItems.addAll(newItems)
+                        allItems.addAll(newItems ?: emptyList())
                         
                         val pagination = data.pagination
                         totalItems = pagination?.total_items ?: allItems.size

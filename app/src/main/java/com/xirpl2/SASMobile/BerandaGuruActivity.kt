@@ -80,8 +80,13 @@ class BerandaGuruActivity : BaseAdminActivity() {
     }
     
     private fun loadStatistik() {
+        val token = getAuthToken()
+        if (token.isEmpty()) return
+        
+        val today = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(java.util.Date())
+
         lifecycleScope.launch {
-            repository.getStatistics().fold(
+            repository.getStatistics(token, today).fold(
                 onSuccess = { stats ->
                     runOnUiThread {
                         tvTotalSiswaValue.text = stats.total_siswa.toString()

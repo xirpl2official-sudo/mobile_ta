@@ -84,13 +84,9 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
             setContentView(R.layout.activity_presensi_sholat_admin)
             setupStatusBar()
 
-            val mainView = findViewById<View>(R.id.main)
-            if (mainView != null) {
-                androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(mainView) { v, insets ->
-                    val systemBars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars())
-                    v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-                    insets
-                }
+            val topBarContent = findViewById<View>(R.id.topBarContent)
+            if (topBarContent != null) {
+                applyEdgeToEdge(topBarContent)
             }
 
             initViews()
@@ -308,7 +304,7 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
                 jurusan = jurusanApi,
                 jenisSholat = jenisSholatApi,
                 search = searchApi,
-                tanggal = todayDate,
+                tanggal = null, // Set to null to fetch all riwayat by default
                 page = currentPage,
                 limit = limit
             ).fold(
@@ -322,12 +318,12 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
                     if (currentPage == 1) {
                         dataList.clear()
                     }
-                    dataList.addAll(items)
+                    dataList.addAll(items ?: emptyList())
                     presensiAdapter.updateData(dataList)
 
                     isLastPage = pagination?.let {
                         it.page >= it.total_pages
-                    } ?: (items.size < limit)
+                    } ?: ((items?.size ?: 0) < limit)
 
                     val totalItems = pagination?.total_items ?: dataList.size
                     tvCountInfo.text = "Total: $totalItems data"
@@ -388,7 +384,7 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
             progressLoading.visibility = if (show) View.VISIBLE else View.GONE
             if (show) {
                 recyclerPresensi.visibility = View.GONE
-                tvEmptyState.visibility = View.GONE
+                findViewById<View>(R.id.emptyStateContainer)?.visibility = View.GONE
                 tableHorizontalScrollView.visibility = View.GONE
             } else {
                 tableHorizontalScrollView.visibility = View.VISIBLE
@@ -399,8 +395,9 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
     private fun showEmptyState(message: String) {
         safeUIUpdate {
             tvEmptyState.text = message
-            tvEmptyState.visibility = View.VISIBLE
+            findViewById<View>(R.id.emptyStateContainer)?.visibility = View.VISIBLE
             recyclerPresensi.visibility = View.GONE
+            tableHorizontalScrollView.visibility = View.GONE
         }
     }
 }

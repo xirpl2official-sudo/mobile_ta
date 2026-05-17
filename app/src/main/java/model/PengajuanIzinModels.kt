@@ -37,7 +37,9 @@ data class PengajuanIzin(
     val updatedAt: String,
     val siswa: SiswaItem? = null,
     @SerializedName("staff_approver")
-    val staffApprover: StaffInfo? = null
+    val staffApprover: StaffInfo? = null,
+    @SerializedName("bukti_foto")
+    val buktiFoto: String? = null
 )
 
 data class StaffInfo(

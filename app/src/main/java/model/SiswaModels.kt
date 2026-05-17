@@ -23,6 +23,7 @@ data class SiswaPaginationInfo(
     val page: Int = 1,
     val page_size: Int = 100,
     val total_pages: Int = 1,
+    @SerializedName(value = "total_items", alternate = ["total", "recordsTotal", "totalItems"])
     val total_items: Int = 0
 )
 

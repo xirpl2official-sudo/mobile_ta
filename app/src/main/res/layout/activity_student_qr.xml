@@ -13,11 +13,10 @@
         android:id="@+id/header"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@drawable/bg_menu_atas"
+        android:background="@color/blue_theme"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.08"/>
+        app:layout_constraintEnd_toEndOf="parent" />
 
     
     <ImageView
@@ -223,10 +222,9 @@
         android:id="@+id/Bawah"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@drawable/bg_menu_atas"
+        android:background="@color/blue_theme"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.08"/>
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

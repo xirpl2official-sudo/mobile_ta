@@ -337,7 +337,10 @@ interface ApiService {
     // --- Analytics ---
 
     @GET("v2/analytics/attendance")
-    suspend fun getAttendanceAnalytics(): Response<StatisticsResponse>
+    suspend fun getAttendanceAnalytics(
+        @Header("Authorization") token: String,
+        @Query("tanggal") tanggal: String? = null
+    ): Response<StatisticsResponse>
 
     // --- Admin Control ---
 

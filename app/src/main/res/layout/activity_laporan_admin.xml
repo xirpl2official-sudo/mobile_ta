@@ -19,82 +19,74 @@
         <View
             android:id="@+id/VectorAtasMenu"
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@drawable/bg_menu_atas"
+            android:layout_height=" 90dp"
+            android:background="@color/blue_theme"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent="0.08" />
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/topBarContent"
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
+            android:layout_height="wrap_content"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
             android:background="@android:color/transparent"
+            android:paddingBottom="4dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+                            <ImageView
+            android:id="@+id/iconMenu"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/menu"
+            android:contentDescription="@string/Menu"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:tint="@android:color/white" />
+
+        <ImageView
+            android:id="@+id/logoSekolah"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/logo_smk"
+            android:contentDescription="Logo SMKN 2"
+            app:layout_constraintStart_toEndOf="@id/iconMenu"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginStart="8dp" />
+
+        <TextView
+            android:id="@+id/textDashboard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Laporan"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/logoSekolah"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/textNamaSekolah"
+            app:layout_constraintVertical_chainStyle="packed"
+            android:layout_marginStart="8dp" />
+
+        <TextView
+            android:id="@+id/textNamaSekolah"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="SMK Negeri 2 Singosari"
+            android:textColor="#DBEAFE"
+            android:textSize="12sp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            app:layout_constraintStart_toStartOf="@id/textDashboard"
+            app:layout_constraintTop_toBottomOf="@id/textDashboard"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent="0.08">
-
-            
-            <ImageView
-                android:id="@+id/iconMenu"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:src="@drawable/menu"
-                android:contentDescription="@string/Menu"
-                app:layout_constraintDimensionRatio="1:1"
-                app:layout_constraintHeight_percent="0.4"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent" />
-
-            
-            <ImageView
-                android:id="@+id/logoSekolah"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:src="@drawable/logo_smk"
-                android:contentDescription="@string/LogoSMKN2"
-                app:layout_constraintDimensionRatio="1:1"
-                app:layout_constraintHeight_percent="0.8"
-                app:layout_constraintStart_toEndOf="@id/iconMenu"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_marginStart="14dp" />
-
-            
-            <TextView
-                android:id="@+id/textDashboard"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/Laporan"
-                android:textColor="#FFFFFF"
-                android:textSize="@dimen/text_beranda"
-                android:textStyle="bold"
-                app:layout_constraintStart_toEndOf="@id/logoSekolah"
-                app:layout_constraintTop_toTopOf="@id/logoSekolah"
-                app:layout_constraintBottom_toTopOf="@id/textNamaSekolah"
-                app:layout_constraintVertical_chainStyle="packed"
-                android:layout_marginStart="10dp" />
-
-            
-            <TextView
-                android:id="@+id/textNamaSekolah"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@string/Stemdasi"
-                android:textColor="#E0E0E0"
-                android:textSize="@dimen/text_smkn2s"
-                android:ellipsize="end"
-                android:maxLines="1"
-                app:layout_constraintStart_toStartOf="@id/textDashboard"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textDashboard"
-                app:layout_constraintBottom_toBottomOf="@id/logoSekolah"
-                android:layout_marginEnd="8dp" />
+            android:layout_marginEnd="8dp" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -359,7 +351,7 @@
                                         android:layout_height="match_parent"
                                         android:gravity="center"
                                         android:text="@string/PlaceholderNol"
-                                        android:textColor="#2196F3"
+                                        android:textColor="@color/blue_theme"
                                         android:textSize="20sp"
                                         android:textStyle="bold" />
 
@@ -535,7 +527,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="48dp"
                             android:orientation="horizontal"
-                            android:background="#2196F3"
+                            android:background="@color/blue_theme"
                             android:gravity="center_vertical">
 
                             <TextView

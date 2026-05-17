@@ -25,7 +25,6 @@ abstract class BaseAdminActivity : AppCompatActivity() {
         BERANDA,
         JADWAL_SHOLAT,
         DATA_SISWA,
-        KELOLA_SISWA,
         KELOLA_KELAS,
         PRESENSI,
         PENGAJUAN_IZIN,
@@ -45,6 +44,9 @@ abstract class BaseAdminActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
+        // Enable Edge-to-Edge
+        androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
+        
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
     }
 
@@ -55,6 +57,11 @@ abstract class BaseAdminActivity : AppCompatActivity() {
         if (drawer != null && sidebar != null) {
             drawerLayout = drawer
             sidebarView = sidebar
+
+            val sidebarHeader = sidebar.findViewById<View>(R.id.sidebarHeader)
+            if (sidebarHeader != null) {
+                applyEdgeToEdge(sidebarHeader)
+            }
 
             setupAdminProfile()
             setupCloseSidebarButton()
@@ -155,11 +162,6 @@ abstract class BaseAdminActivity : AppCompatActivity() {
         }
 
         
-        setupMenuItem(R.id.menuKelolaSiswa, AdminMenuItem.KELOLA_SISWA, currentItem) {
-            
-        }
-
-        
         setupMenuItem(R.id.menuKelolaKelas, AdminMenuItem.KELOLA_KELAS, currentItem) {
             navigateTo(KelolaKelasActivity::class.java)
         }
@@ -171,7 +173,7 @@ abstract class BaseAdminActivity : AppCompatActivity() {
 
         
         setupMenuItem(R.id.menuPengajuanIzin, AdminMenuItem.PENGAJUAN_IZIN, currentItem) {
-            
+            navigateTo(PengajuanIzinAdminActivity::class.java)
         }
 
         
@@ -212,16 +214,17 @@ abstract class BaseAdminActivity : AppCompatActivity() {
         val isActive = targetItem == currentItem
 
         if (isActive) {
-            
-            menuView.setBackgroundColor(0xFF2886D6.toInt()) 
-            
+            // Active item: blue theme background, white text/icon
+            menuView.setBackgroundResource(R.drawable.bg_input_rounded)
+            menuView.backgroundTintList = android.content.res.ColorStateList.valueOf(androidx.core.content.ContextCompat.getColor(this, R.color.blue_theme))
             
             for (i in 0 until menuView.childCount) {
                 val child = menuView.getChildAt(i)
                 if (child is ImageView) {
-                    child.setColorFilter(0xFFFFFFFF.toInt())
+                    child.setColorFilter(androidx.core.content.ContextCompat.getColor(this, android.R.color.white))
                 } else if (child is TextView) {
-                    child.setTextColor(0xFFFFFFFF.toInt())
+                    child.setTextColor(androidx.core.content.ContextCompat.getColor(this, android.R.color.white))
+                    child.setTypeface(null, android.graphics.Typeface.BOLD)
                 }
             }
         }
@@ -232,6 +235,22 @@ abstract class BaseAdminActivity : AppCompatActivity() {
             } else {
                 onClick()
             }
+        }
+    }
+
+    protected fun setupStatusBar() {
+        window.statusBarColor = android.graphics.Color.TRANSPARENT
+        // Ensure status bar icons are light (white)
+        androidx.core.view.WindowCompat.getInsetsController(window, window.decorView).apply {
+            isAppearanceLightStatusBars = false
+        }
+    }
+
+    protected fun applyEdgeToEdge(view: View) {
+        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+            val statusBars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.statusBars())
+            v.setPadding(v.paddingLeft, statusBars.top, v.paddingRight, v.paddingBottom)
+            insets
         }
     }
 
@@ -349,10 +368,6 @@ abstract class BaseAdminActivity : AppCompatActivity() {
             }
             .setNegativeButton("Tidak", null)
             .show()
-    }
-
-    protected fun setupStatusBar() {
-        window.statusBarColor = 0xFF000000.toInt()
     }
 
     protected fun getAuthToken(): String {

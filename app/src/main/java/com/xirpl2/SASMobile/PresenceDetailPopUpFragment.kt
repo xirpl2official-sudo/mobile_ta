@@ -137,7 +137,7 @@ class PresenceDetailPopUpFragment : DialogFragment() {
                 onSuccess = { data ->
                     activity?.runOnUiThread {
                         allAbsensiList.clear()
-                        allAbsensiList.addAll(data.absensi)
+                        allAbsensiList.addAll(data.absensi ?: emptyList())
                         
                         
                         data.statistik?.let { stat ->
