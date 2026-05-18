@@ -116,6 +116,10 @@
             android:exported="false" />
         <activity
             android:launchMode="singleTop"
+            android:name=".KelolaGuruAdminActivity"
+            android:exported="false" />
+        <activity
+            android:launchMode="singleTop"
             android:name=".QRCodeAdminActivity"
             android:exported="false" />
         <activity

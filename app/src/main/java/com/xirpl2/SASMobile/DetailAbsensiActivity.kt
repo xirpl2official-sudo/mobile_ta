@@ -56,7 +56,7 @@ class DetailAbsensiActivity : BaseActivity() {
 
         findViewById<View>(R.id.btnTutup).setOnClickListener {
             finish()
-            overridePendingTransition(0, R.anim.slide_out_bottom)
+            overridePendingTransition(0, 0)
         }
     }
 

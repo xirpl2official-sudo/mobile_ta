@@ -21,7 +21,7 @@ object UniversalSafeNavigator {
     @Volatile
     private var lastNavigationTime = 0L
     private const val NAVIGATION_THRESHOLD = 1000L // 1 second spam protection
-    private const val DEFAULT_TRANSITION_DELAY = 300L // Stable buffer for all manufacturers
+    private const val DEFAULT_TRANSITION_DELAY = 50L // Reduced for instant feel with disabled animations
     private const val NAVIGATION_TIMEOUT = 2000L // 2 seconds safety timeout
 
     private val navigationExecutor = Executors.newSingleThreadExecutor()
@@ -58,12 +58,16 @@ object UniversalSafeNavigator {
                         }
 
                         context.startActivity(intent)
+                        if (context is Activity) {
+                            context.overridePendingTransition(0, 0)
+                        }
 
                         if (finishCurrent && context is Activity) {
                             // Deferred finish to prevent DeadObjectException during transition
                             Handler(Looper.getMainLooper()).postDelayed({
                                 if (!context.isFinishing && !context.isDestroyed) {
                                     context.finish()
+                                    context.overridePendingTransition(0, 0)
                                 }
                             }, DEFAULT_TRANSITION_DELAY)
                         }

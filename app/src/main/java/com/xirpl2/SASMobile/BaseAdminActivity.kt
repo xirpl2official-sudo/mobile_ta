@@ -33,6 +33,7 @@ abstract class BaseAdminActivity : BaseActivity() {
         JADWAL_SHOLAT,
         DATA_SISWA,
         KELOLA_KELAS,
+        KELOLA_GURU,
         PRESENSI,
         PENGAJUAN_IZIN,
         LAPORAN,
@@ -63,7 +64,7 @@ abstract class BaseAdminActivity : BaseActivity() {
                 } else {
                     isEnabled = false
                     onBackPressedDispatcher.onBackPressed()
-                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+                    overridePendingTransition(0, 0)
                 }
             }
         })
@@ -186,6 +187,10 @@ abstract class BaseAdminActivity : BaseActivity() {
             navigateTo(KelolaKelasActivity::class.java)
         }
 
+        setupMenuItem(R.id.menuKelolaGuru, AdminMenuItem.KELOLA_GURU, currentItem) {
+            navigateTo(KelolaGuruAdminActivity::class.java)
+        }
+
         
         setupMenuItem(R.id.menuPresensi, AdminMenuItem.PRESENSI, currentItem) {
             navigateTo(PresensiSholatAdminActivity::class.java)
@@ -218,7 +223,7 @@ abstract class BaseAdminActivity : BaseActivity() {
         sidebarView.findViewById<LinearLayout>(R.id.menuPengaturan)?.setOnClickListener {
             closeSidebar()
             startActivity(Intent(this, PengaturanAkunActivity::class.java))
-            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+            overridePendingTransition(0, 0)
         }
 
         
@@ -306,6 +311,7 @@ abstract class BaseAdminActivity : BaseActivity() {
                 sidebarView.findViewById<LinearLayout>(R.id.menuJadwalSholat)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuDataSiswa)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuKelolaKelas)?.setOnClickListener(null)
+                sidebarView.findViewById<LinearLayout>(R.id.menuKelolaGuru)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuPresensi)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuPengajuanIzin)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuLaporan)?.setOnClickListener(null)
@@ -391,6 +397,6 @@ abstract class BaseAdminActivity : BaseActivity() {
 
     override fun finish() {
         super.finish()
-        overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+        overridePendingTransition(0, 0)
     }
 }

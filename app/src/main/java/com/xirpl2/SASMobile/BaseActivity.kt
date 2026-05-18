@@ -117,4 +117,9 @@ abstract class BaseActivity : AppCompatActivity() {
         Log.d(TAG, "onDestroy: ${this::class.java.simpleName}")
         super.onDestroy()
     }
+
+    override fun finish() {
+        super.finish()
+        overridePendingTransition(0, 0)
+    }
 }
