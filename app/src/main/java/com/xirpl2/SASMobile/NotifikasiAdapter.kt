@@ -6,8 +6,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.xirpl2.SASMobile.databinding.ItemNotifikasiBinding
 import com.xirpl2.SASMobile.model.Notifikasi
 
-class NotifikasiAdapter(private val notificationList: MutableList<Notifikasi>) :
-    RecyclerView.Adapter<NotifikasiAdapter.NotifikasiViewHolder>() {
+class NotifikasiAdapter(
+    private val notificationList: MutableList<Notifikasi>,
+    private val onItemClick: ((Notifikasi, Int) -> Unit)? = null,
+    private val onDeleteClick: ((Notifikasi, Int) -> Unit)? = null
+) : RecyclerView.Adapter<NotifikasiAdapter.NotifikasiViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotifikasiViewHolder {
         val binding =
@@ -18,13 +21,23 @@ class NotifikasiAdapter(private val notificationList: MutableList<Notifikasi>) :
     override fun onBindViewHolder(holder: NotifikasiViewHolder, position: Int) {
         val notification = notificationList[position]
         holder.bind(notification)
-        holder.binding.btnDelete.setOnClickListener {
-            notificationList.removeAt(position)
-            notifyItemRemoved(position)
-            notifyItemRangeChanged(position, notificationList.size)
+        
+        // Mark-as-read on click
+        holder.itemView.setOnClickListener {
+            val pos = holder.adapterPosition
+            if (pos != RecyclerView.NO_POSITION) {
+                onItemClick?.invoke(notificationList[pos], pos)
+            }
         }
         
-        // Update UI berdasarkan status isRead
+        holder.binding.btnDelete.setOnClickListener {
+            val pos = holder.adapterPosition
+            if (pos != RecyclerView.NO_POSITION) {
+                onDeleteClick?.invoke(notificationList[pos], pos)
+            }
+        }
+        
+        // Update UI based on isRead status
         holder.itemView.alpha = if (notification.isRead) 0.6f else 1.0f
     }
 

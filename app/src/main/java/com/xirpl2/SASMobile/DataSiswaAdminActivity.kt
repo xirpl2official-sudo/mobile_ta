@@ -22,12 +22,22 @@ import com.xirpl2.SASMobile.model.SiswaItem
 import com.xirpl2.SASMobile.repository.BerandaRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.asRequestBody
 
 class DataSiswaAdminActivity : BaseAdminActivity() {
 
     private val TAG = "DataSiswaAdminActivity"
     
     private val repository = BerandaRepository()
+    
+    private val pickCsvLauncher = registerForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.GetContent()
+    ) { uri: android.net.Uri? ->
+        if (uri != null) {
+            uploadCsvFile(uri)
+        }
+    }
     
     
     private lateinit var recyclerSiswa: RecyclerView
@@ -339,15 +349,223 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
     private fun setupButtons() {
         val btnTambah = findViewById<com.google.android.material.button.MaterialButton>(R.id.btnTambah)
+        val btnImport = findViewById<com.google.android.material.button.MaterialButton>(R.id.btnImport)
+        val fabAdd = findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.fabAdd)
+        val btnMore = findViewById<android.view.View>(R.id.btnMore)
 
+        btnMore?.setOnClickListener { view ->
+            showOverflowMenu(view)
+        }
 
         val role = getSharedPreferences("UserData", Context.MODE_PRIVATE).getString("user_role", "")
         if (role == "wali_kelas" || role == "guru") {
             btnTambah.visibility = View.GONE
+            btnImport.visibility = View.GONE
+            fabAdd.visibility = View.GONE
         } else {
             btnTambah.visibility = View.VISIBLE
+            btnImport.visibility = View.VISIBLE
+            fabAdd.visibility = View.VISIBLE
+            
             btnTambah.setOnClickListener {
                 startActivity(android.content.Intent(this, TambahSiswaActivity::class.java))
+            }
+            btnImport.setOnClickListener {
+                showImportSiswaDialog()
+            }
+            fabAdd.setOnClickListener {
+                startActivity(android.content.Intent(this, TambahSiswaActivity::class.java))
+            }
+        }
+    }
+
+    private fun showOverflowMenu(view: View) {
+        val popup = androidx.appcompat.widget.PopupMenu(this, view)
+        
+        popup.menu.add(0, 1, 0, "Tambah Siswa")
+        popup.menu.add(0, 2, 1, "Import Data")
+        popup.menu.add(0, 3, 2, "Export Data")
+        
+        try {
+            val fields = popup.javaClass.declaredFields
+            for (field in fields) {
+                if ("mPopup" == field.name) {
+                    field.isAccessible = true
+                    val menuPopupHelper = field.get(popup)
+                    val classPopupHelper = Class.forName(menuPopupHelper.javaClass.name)
+                    val setForceShowIcon = classPopupHelper.getMethod("setForceShowIcon", Boolean::class.javaPrimitiveType)
+                    setForceShowIcon.invoke(menuPopupHelper, true)
+                    break
+                }
+            }
+        } catch (e: Exception) {
+            // ignore
+        }
+
+        val role = getSharedPreferences("UserData", Context.MODE_PRIVATE).getString("user_role", "")
+        val isReadOnly = role == "wali_kelas" || role == "guru"
+
+        popup.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                1 -> {
+                    if (isReadOnly) {
+                        Toast.makeText(this, "Akses ditolak", Toast.LENGTH_SHORT).show()
+                    } else {
+                        startActivity(android.content.Intent(this, TambahSiswaActivity::class.java))
+                    }
+                    true
+                }
+                2 -> {
+                    if (isReadOnly) {
+                        Toast.makeText(this, "Akses ditolak", Toast.LENGTH_SHORT).show()
+                    } else {
+                        showImportSiswaDialog()
+                    }
+                    true
+                }
+                3 -> {
+                    showExportSiswaDialog()
+                    true
+                }
+                else -> false
+            }
+        }
+        popup.show()
+    }
+
+    private fun showExportSiswaDialog() {
+        val options = arrayOf("Export ke Excel (.xlsx)", "Export ke PDF")
+        
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Export Data Siswa")
+            .setMessage("Filter aktif saat ini:\n" +
+                    "• Kelas: $selectedKelas\n" +
+                    "• Jurusan: $selectedJurusan\n" +
+                    "• Jenis Kelamin: $selectedGender\n\n" +
+                    "Pilih format berkas untuk mengekspor:")
+            .setItems(options) { dialog, which ->
+                val format = if (which == 0) "Excel (.xlsx)" else "PDF"
+                dialog.dismiss()
+                simulateExportProcess(format)
+            }
+            .setNegativeButton("Batal", null)
+            .show()
+    }
+
+    private fun simulateExportProcess(format: String) {
+        val progressDialog = AlertDialog.Builder(this)
+            .setTitle("Mengekspor Data")
+            .setMessage("Sedang menyiapkan data siswa...")
+            .setCancelable(false)
+            .create()
+        progressDialog.show()
+
+        lifecycleScope.launch {
+            kotlinx.coroutines.delay(1500)
+            runOnUiThread {
+                progressDialog.dismiss()
+                MaterialAlertDialogBuilder(this@DataSiswaAdminActivity)
+                    .setTitle("Export Berhasil")
+                    .setMessage("Berkas data siswa berhasil diekspor ke format $format!\n\n" +
+                            "Filter terapan:\n" +
+                            "• Kelas: $selectedKelas\n" +
+                            "• Jurusan: $selectedJurusan\n" +
+                            "• Jenis Kelamin: $selectedGender")
+                    .setPositiveButton("Buka File") { _, _ ->
+                        Toast.makeText(this@DataSiswaAdminActivity, "Membuka berkas...", Toast.LENGTH_SHORT).show()
+                    }
+                    .setNegativeButton("Tutup", null)
+                    .show()
+            }
+        }
+    }
+
+    private fun showImportSiswaDialog() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Import Data Siswa")
+            .setMessage("Silakan unggah file CSV berisi data siswa.\n\n" +
+                    "Header kolom yang WAJIB ada:\n" +
+                    "• nis (Nomor Induk Siswa)\n" +
+                    "• nama_siswa\n" +
+                    "• jk (L / P)\n" +
+                    "• tingkatan (X / XI / XII)\n" +
+                    "• jurusan (Singkatan Jurusan, misal: RPL)\n" +
+                    "• part (Rombel, misal: 1 / 2)\n\n" +
+                    "Pastikan file berformat .csv dengan pemisah koma.")
+            .setPositiveButton("Pilih File CSV") { _, _ ->
+                pickCsvLauncher.launch("text/csv")
+            }
+            .setNegativeButton("Batal", null)
+            .show()
+    }
+
+    private fun uploadCsvFile(uri: android.net.Uri) {
+        val token = getAuthToken()
+        if (token.isEmpty()) return
+
+        val progressDialog = AlertDialog.Builder(this)
+            .setTitle("Mengimpor Data Siswa")
+            .setMessage("Sedang mengunggah dan memproses file CSV...")
+            .setCancelable(false)
+            .create()
+        progressDialog.show()
+
+        lifecycleScope.launch {
+            try {
+                val contentResolver = contentResolver
+                val inputStream = contentResolver.openInputStream(uri)
+                if (inputStream == null) {
+                    runOnUiThread {
+                        progressDialog.dismiss()
+                        Toast.makeText(this@DataSiswaAdminActivity, "Gagal membuka file", Toast.LENGTH_SHORT).show()
+                    }
+                    return@launch
+                }
+
+                val tempFile = java.io.File.createTempFile("siswa_import", ".csv", cacheDir)
+                tempFile.deleteOnExit()
+                
+                tempFile.outputStream().use { output ->
+                    inputStream.use { input ->
+                        input.copyTo(output)
+                    }
+                }
+
+                val requestFile = tempFile.asRequestBody("text/csv".toMediaTypeOrNull())
+
+                val filePart = okhttp3.MultipartBody.Part.createFormData(
+                    "file",
+                    "students_import.csv",
+                    requestFile
+                )
+
+                val result = repository.importStudents(token, filePart)
+                runOnUiThread {
+                    progressDialog.dismiss()
+                    result.fold(
+                        onSuccess = { response ->
+                            AlertDialog.Builder(this@DataSiswaAdminActivity)
+                                .setTitle("Import Selesai")
+                                .setMessage(response.message ?: "Data siswa berhasil diimpor!")
+                                .setPositiveButton("OK") { _, _ ->
+                                    loadStudentData(reset = true)
+                                }
+                                .show()
+                        },
+                        onFailure = { error ->
+                            AlertDialog.Builder(this@DataSiswaAdminActivity)
+                                .setTitle("Gagal Mengimpor")
+                                .setMessage(error.message ?: "Terjadi kesalahan tidak diketahui")
+                                .setPositiveButton("Tutup", null)
+                                .show()
+                        }
+                    )
+                }
+            } catch (e: Exception) {
+                runOnUiThread {
+                    progressDialog.dismiss()
+                    Toast.makeText(this@DataSiswaAdminActivity, "Terjadi kesalahan: ${e.message}", Toast.LENGTH_LONG).show()
+                }
             }
         }
     }

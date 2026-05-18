@@ -222,6 +222,12 @@ data class DhuhaDayRequest(
     val hari_dhuha: String
 )
 
+data class JadwalDhuhaTimeUpdateRequest(
+    val waktu_mulai: String,
+    val waktu_selesai: String,
+    val hari: String
+)
+
 data class DhuhaGroupListResponse(
     val message: String? = null,
     val data: List<DhuhaGroup> = emptyList()

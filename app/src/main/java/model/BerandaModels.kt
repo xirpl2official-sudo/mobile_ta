@@ -381,12 +381,9 @@ data class JadwalDhuhaKeahlianResponse(
 )
 
 data class JadwalDhuhaKeahlian(
-    val id: Int? = null,
     val hari: String,
-    @SerializedName("konsentrasi_keahlian_1")
-    val keahlian1: List<String> = emptyList(),
-    @SerializedName("konsentrasi_keahlian_2")
-    val keahlian2: List<String> = emptyList()
+    val jurusan1: JurusanDhuhaSchedule? = null,
+    val jurusan2: JurusanDhuhaSchedule? = null
 )
 
 data class SholatDhuhaDetailResponse(

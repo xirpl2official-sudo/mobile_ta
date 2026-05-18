@@ -9,9 +9,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.xirpl2.SASMobile.model.RiwayatAbsensi
 import com.xirpl2.SASMobile.model.StatusAbsensi
 
-class RiwayatAbsensiAdapter(
-    private val riwayatList: List<RiwayatAbsensi>
-) : RecyclerView.Adapter<RiwayatAbsensiAdapter.RiwayatViewHolder>() {
+import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.DiffUtil
+
+class RiwayatAbsensiAdapter : ListAdapter<RiwayatAbsensi, RiwayatAbsensiAdapter.RiwayatViewHolder>(RiwayatDiffCallback()) {
 
     inner class RiwayatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvTanggal: TextView = itemView.findViewById(R.id.tvTanggal)
@@ -27,7 +28,7 @@ class RiwayatAbsensiAdapter(
     }
 
     override fun onBindViewHolder(holder: RiwayatViewHolder, position: Int) {
-        val riwayat = riwayatList[position]
+        val riwayat = getItem(position)
 
         holder.tvTanggal.text = riwayat.tanggal
         holder.tvWaktu.text = riwayat.waktuAbsen ?: "-"
@@ -65,6 +66,15 @@ class RiwayatAbsensiAdapter(
             }
         }
     }
+}
 
-    override fun getItemCount(): Int = riwayatList.size
+class RiwayatDiffCallback : DiffUtil.ItemCallback<RiwayatAbsensi>() {
+    override fun areItemsTheSame(oldItem: RiwayatAbsensi, newItem: RiwayatAbsensi): Boolean {
+        // You might want to use a unique identifier if available, otherwise just fall back to content matching
+        return oldItem.tanggal == newItem.tanggal && oldItem.namaSholat == newItem.namaSholat
+    }
+
+    override fun areContentsTheSame(oldItem: RiwayatAbsensi, newItem: RiwayatAbsensi): Boolean {
+        return oldItem == newItem
+    }
 }

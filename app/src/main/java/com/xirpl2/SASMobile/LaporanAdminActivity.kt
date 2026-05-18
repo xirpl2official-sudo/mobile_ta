@@ -63,6 +63,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
     
     
     private lateinit var btnExportExcel: MaterialButton
+    private lateinit var btnExportPdf: MaterialButton
 
     
     private lateinit var absensiAdapter: LaporanAbsensiAdapter
@@ -147,6 +148,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
         
         
         btnExportExcel = findViewById(R.id.btnExportExcel)
+        btnExportPdf = findViewById(R.id.btnExportPdf)
     }
 
     private fun setupRecyclerView() {
@@ -218,6 +220,10 @@ override fun onCreate(savedInstanceState: Bundle?) {
         btnExportExcel.setOnClickListener {
             downloadExcelReport()
         }
+        
+        btnExportPdf.setOnClickListener {
+            downloadPdfReport()
+        }
     }
 
     private fun downloadExcelReport() {
@@ -276,11 +282,11 @@ override fun onCreate(savedInstanceState: Bundle?) {
         }
     }
 
-    private fun saveFileToDownloads(body: ResponseBody, fileName: String): Boolean {
+    private fun saveFileToDownloads(body: ResponseBody, fileName: String, mimeType: String = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"): Boolean {
         return try {
             val contentValues = ContentValues().apply {
                 put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
-                put(MediaStore.MediaColumns.MIME_TYPE, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                put(MediaStore.MediaColumns.MIME_TYPE, mimeType)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
                 }
@@ -299,6 +305,62 @@ override fun onCreate(savedInstanceState: Bundle?) {
             } ?: false
         } catch (e: Exception) {
             false
+        }
+    }
+
+    private fun downloadPdfReport() {
+        val token = getAuthToken()
+        if (token.isEmpty()) {
+            Toast.makeText(this, "Sesi habis, silakan login ulang", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val startDate = apiDateFormat.format(tanggalAwal.time)
+        val jurusanApi = if (selectedJurusan == "Semua Jurusan") null else selectedJurusan
+        val kelasApi = if (selectedKelas == "Semua Kelas") null else selectedKelas
+
+        showLoading(true)
+        btnExportPdf.isEnabled = false
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val response = RetrofitClient.apiService.exportAttendancePdf(
+                    token = "Bearer $token",
+                    tanggal = startDate,
+                    kelas = kelasApi,
+                    jurusan = jurusanApi
+                )
+
+                if (response.isSuccessful) {
+                    val body = response.body()
+                    if (body != null) {
+                        val fileName = "Laporan_Absensi_${selectedJurusan.replace(" ", "_")}_$startDate.pdf"
+                        val success = saveFileToDownloads(body, fileName, "application/pdf")
+
+                        withContext(Dispatchers.Main) {
+                            showLoading(false)
+                            btnExportPdf.isEnabled = true
+                            if (success) {
+                                Toast.makeText(this@LaporanAdminActivity, "PDF berhasil diunduh ke folder Download", Toast.LENGTH_LONG).show()
+                            } else {
+                                Toast.makeText(this@LaporanAdminActivity, "Gagal menyimpan file", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        showLoading(false)
+                        btnExportPdf.isEnabled = true
+                        Toast.makeText(this@LaporanAdminActivity, "Gagal mengunduh PDF: ${response.message()}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    showLoading(false)
+                    btnExportPdf.isEnabled = true
+                    Toast.makeText(this@LaporanAdminActivity, "Terjadi kesalahan: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="280dp"
+    android:layout_width="300dp"
     android:layout_height="match_parent"
-    android:background="@color/sidebar_bg"
+    android:background="@android:color/white"
     android:elevation="8dp">
 
     <!-- Header Sidebar -->
@@ -11,55 +11,123 @@
         android:id="@+id/sidebarHeader"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:padding="20dp"
+        android:background="@color/blue_theme"
+        android:paddingBottom="24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/logoIcon"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:src="@drawable/ic_sun"
-            app:tint="#F97316"
+        <!-- Top text and close button padding container -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/headerTopSection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="24dp"
+            android:paddingTop="32dp"
+            app:layout_constraintTop_toTopOf="parent">
+            
+            <TextView
+                android:id="@+id/tvMenuTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Menu"
+                android:textColor="@android:color/white"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/btnCloseSidebar"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:contentDescription="Close"
+                android:src="@drawable/ic_close"
+                android:layout_marginTop="4dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tvMenuTitle"
+                app:tint="@android:color/white" />
+
+            <TextView
+                android:id="@+id/tvMenuSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Absensi Sholat"
+                android:textColor="#F0F0F0"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvMenuTitle" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- User Profile Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardUserProfile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginHorizontal="16dp"
+            app:cardBackgroundColor="@android:color/white"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:layout_constraintTop_toBottomOf="@id/headerTopSection"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent">
 
-        <TextView
-            android:id="@+id/tvMenuTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:text="Absensholat"
-            android:textColor="@android:color/white"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@id/tvMenuSubtitle"
-            app:layout_constraintEnd_toStartOf="@id/btnCloseSidebar"
-            app:layout_constraintStart_toEndOf="@id/logoIcon"
-            app:layout_constraintTop_toTopOf="@id/logoIcon" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="16dp">
 
-        <TextView
-            android:id="@+id/tvMenuSubtitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="Portal Administrator"
-            android:textColor="@color/sidebar_text_secondary"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="@id/logoIcon"
-            app:layout_constraintEnd_toEndOf="@id/tvMenuTitle"
-            app:layout_constraintStart_toStartOf="@id/tvMenuTitle" />
+                <FrameLayout
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/bg_circle_light_blue">
 
-        <ImageView
-            android:id="@+id/btnCloseSidebar"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:contentDescription="Close"
-            android:src="@drawable/ic_close"
-            android:alpha="0.6"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="@android:color/white" />
+                    <ImageView
+                        android:id="@+id/ivAvatar"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_user_profile"
+                        app:tint="@color/blue_theme" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvAdminName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Budi Santoso"
+                        android:textColor="@color/slate_800"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvAdminRole"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Administrator"
+                        android:textColor="@color/slate_500"
+                        android:textSize="12sp" />
+                        
+                    <TextView
+                        android:id="@+id/tvAdminEmail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -68,29 +136,30 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@id/sidebarHeader"
-        app:layout_constraintBottom_toTopOf="@id/cardUserProfile"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/sidebarHeader">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingHorizontal="12dp">
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="12dp">
 
-            <!-- Item Dashboard -->
+            <!-- Item Dashboard / Beranda -->
             <LinearLayout
                 android:id="@+id/menuBeranda"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:padding="12dp"
+                android:padding="16dp"
                 android:layout_marginBottom="4dp"
                 android:background="@drawable/bg_sidebar_item_selector">
-                <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_home" app:tint="@color/sidebar_text_secondary" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:text="Dashboard" android:textColor="@color/sidebar_text_secondary" android:textSize="14sp" />
+                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_home" app:tint="@color/slate_500" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Beranda" android:textColor="@color/slate_700" android:textSize="15sp" />
             </LinearLayout>
 
             <!-- Item Jadwal -->
@@ -100,11 +169,11 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:padding="12dp"
+                android:padding="16dp"
                 android:layout_marginBottom="4dp"
                 android:background="@drawable/bg_sidebar_item_selector">
-                <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_calendar" app:tint="@color/sidebar_text_secondary" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:text="Jadwal" android:textColor="@color/sidebar_text_secondary" android:textSize="14sp" />
+                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_clock" app:tint="@color/slate_500" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Jadwal Sholat" android:textColor="@color/slate_700" android:textSize="15sp" />
             </LinearLayout>
 
             <!-- Item Data Siswa -->
@@ -114,26 +183,13 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:padding="12dp"
+                android:padding="16dp"
                 android:layout_marginBottom="4dp"
                 android:background="@drawable/bg_sidebar_item_selector">
-                <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/users" app:tint="@color/sidebar_text_secondary" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:text="Data Siswa" android:textColor="@color/sidebar_text_secondary" android:textSize="14sp" />
+                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/users" app:tint="@color/slate_500" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Data Siswa" android:textColor="@color/slate_700" android:textSize="15sp" />
             </LinearLayout>
 
-            <!-- Item Kelola Siswa -->
-            <LinearLayout
-                android:id="@+id/menuKelolaSiswa"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:padding="12dp"
-                android:layout_marginBottom="4dp"
-                android:background="@drawable/bg_sidebar_item_selector">
-                <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/gear" app:tint="@color/sidebar_text_secondary" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:text="Kelola Siswa" android:textColor="@color/sidebar_text_secondary" android:textSize="14sp" />
-            </LinearLayout>
 
             <!-- Item Kelola Kelas -->
             <LinearLayout
@@ -142,11 +198,11 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:padding="12dp"
+                android:padding="16dp"
                 android:layout_marginBottom="4dp"
                 android:background="@drawable/bg_sidebar_item_selector">
-                <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/gear" app:tint="@color/sidebar_text_secondary" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:text="Kelola Kelas" android:textColor="@color/sidebar_text_secondary" android:textSize="14sp" />
+                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/gear" app:tint="@color/slate_500" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Kelola Kelas" android:textColor="@color/slate_700" android:textSize="15sp" />
             </LinearLayout>
 
             <!-- Item Presensi -->
@@ -156,25 +212,11 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:padding="12dp"
+                android:padding="16dp"
                 android:layout_marginBottom="4dp"
                 android:background="@drawable/bg_sidebar_item_selector">
-                <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_riwayat" app:tint="@color/sidebar_text_secondary" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:text="Presensi" android:textColor="@color/sidebar_text_secondary" android:textSize="14sp" />
-            </LinearLayout>
-
-            <!-- Item Pengajuan Izin -->
-            <LinearLayout
-                android:id="@+id/menuPengajuanIzin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:padding="12dp"
-                android:layout_marginBottom="4dp"
-                android:background="@drawable/bg_sidebar_item_selector">
-                <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_perizinan" app:tint="@color/sidebar_text_secondary" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:text="Pengajuan Izin" android:textColor="@color/sidebar_text_secondary" android:textSize="14sp" />
+                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_calendar" app:tint="@color/slate_500" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Presensi" android:textColor="@color/slate_700" android:textSize="15sp" />
             </LinearLayout>
 
             <!-- Item Laporan -->
@@ -184,11 +226,25 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:padding="12dp"
+                android:padding="16dp"
                 android:layout_marginBottom="4dp"
                 android:background="@drawable/bg_sidebar_item_selector">
-                <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_statistik" app:tint="@color/sidebar_text_secondary" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:text="Laporan" android:textColor="@color/sidebar_text_secondary" android:textSize="14sp" />
+                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_statistik" app:tint="@color/slate_500" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Laporan" android:textColor="@color/slate_700" android:textSize="15sp" />
+            </LinearLayout>
+
+            <!-- Item Pengajuan Izin -->
+            <LinearLayout
+                android:id="@+id/menuPengajuanIzin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="16dp"
+                android:layout_marginBottom="4dp"
+                android:background="@drawable/bg_sidebar_item_selector">
+                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_perizinan" app:tint="@color/slate_500" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Pengajuan Izin" android:textColor="@color/slate_700" android:textSize="15sp" />
             </LinearLayout>
 
             <!-- Item QR Code -->
@@ -198,11 +254,11 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:padding="12dp"
+                android:padding="16dp"
                 android:layout_marginBottom="4dp"
                 android:background="@drawable/bg_sidebar_item_selector">
-                <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_qr_code" app:tint="@color/sidebar_text_secondary" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:text="QR Code" android:textColor="@color/sidebar_text_secondary" android:textSize="14sp" />
+                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_qr_code" app:tint="@color/slate_500" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="QR Code" android:textColor="@color/slate_700" android:textSize="15sp" />
             </LinearLayout>
 
             <!-- Item Siswa Belum Terdaftar -->
@@ -212,11 +268,11 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:padding="12dp"
+                android:padding="16dp"
                 android:layout_marginBottom="4dp"
                 android:background="@drawable/bg_sidebar_item_selector">
-                <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_add" app:tint="@color/sidebar_text_secondary" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:text="Siswa Belum Terdaftar" android:textColor="@color/sidebar_text_secondary" android:textSize="14sp" />
+                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_user_profile" app:tint="@color/slate_500" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Siswa Belum Terdaftar" android:textColor="@color/slate_700" android:textSize="15sp" />
             </LinearLayout>
 
             <!-- Item Manajemen Perangkat -->
@@ -226,14 +282,19 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:padding="12dp"
+                android:padding="16dp"
                 android:layout_marginBottom="4dp"
                 android:background="@drawable/bg_sidebar_item_selector">
-                <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/gear" app:tint="@color/sidebar_text_secondary" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:text="Manajemen Perangkat" android:textColor="@color/sidebar_text_secondary" android:textSize="14sp" />
+                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/gear" app:tint="@color/slate_500" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Manajemen Perangkat" android:textColor="@color/slate_700" android:textSize="15sp" />
             </LinearLayout>
 
-            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#33FFFFFF" android:layout_marginVertical="8dp" />
+            <View 
+                android:layout_width="match_parent" 
+                android:layout_height="1dp" 
+                android:background="#E0E0E0" 
+                android:layout_marginVertical="12dp" 
+                android:layout_marginHorizontal="8dp" />
 
             <!-- Item Pengaturan -->
             <LinearLayout
@@ -242,11 +303,11 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:padding="12dp"
+                android:padding="16dp"
                 android:layout_marginBottom="4dp"
                 android:background="@drawable/bg_sidebar_item_selector">
-                <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/gear" app:tint="@color/sidebar_text_secondary" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:text="Pengaturan" android:textColor="@color/sidebar_text_secondary" android:textSize="14sp" />
+                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/gear" app:tint="@color/slate_500" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Pengaturan" android:textColor="@color/slate_700" android:textSize="15sp" />
             </LinearLayout>
 
             <!-- Item Logout -->
@@ -256,84 +317,14 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:padding="12dp"
-                android:layout_marginBottom="4dp"
+                android:padding="16dp"
+                android:layout_marginBottom="24dp"
                 android:background="@drawable/bg_sidebar_item_selector">
-                <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_logout" app:tint="@color/error_color" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:text="Keluar" android:textColor="@color/error_color" android:textSize="14sp" />
+                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_logout" app:tint="@color/error_color" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Keluar" android:textColor="@color/error_color" android:textSize="15sp" />
             </LinearLayout>
 
         </LinearLayout>
     </ScrollView>
-
-    <!-- User Profile Card -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/cardUserProfile"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:background="#173691"
-        app:layout_constraintBottom_toBottomOf="parent">
-
-        <ImageView
-            android:id="@+id/ivAvatar"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/ic_user_profile"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:tint="@color/sidebar_text_secondary" />
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginStart="12dp"
-            app:layout_constraintStart_toEndOf="@id/ivAvatar"
-            app:layout_constraintEnd_toStartOf="@id/ivExpand"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent">
-
-            <TextView
-                android:id="@+id/tvAdminName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Budi Santoso"
-                android:textColor="@android:color/white"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tvAdminEmail"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="admin@sekolah.sch.id"
-                android:textColor="@color/sidebar_text_secondary"
-                android:textSize="11sp" />
-
-            <TextView
-                android:id="@+id/tvAdminRole"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Administrator"
-                android:textColor="@color/sidebar_text_secondary"
-                android:textSize="10sp"
-                android:visibility="gone" />
-
-        </LinearLayout>
-
-        <ImageView
-            android:id="@+id/ivExpand"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:src="@drawable/ic_chevron_right"
-            android:rotation="90"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:tint="@color/sidebar_text_secondary" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

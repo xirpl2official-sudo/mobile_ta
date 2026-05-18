@@ -41,6 +41,8 @@ interface ApiService {
         @Body request: ResetPasswordRequest
     ): Response<MessageResponse>
 
+
+
     @GET("v2/auth/profile")
     suspend fun getProfile(
         @Header("Authorization") token: String
@@ -56,6 +58,18 @@ interface ApiService {
     suspend fun verifyChangeEmail(
         @Header("Authorization") token: String,
         @Body request: VerifyEmailOTPRequest
+    ): Response<MessageResponse>
+
+    @POST("v2/auth/change-password")
+    suspend fun changePassword(
+        @Header("Authorization") token: String,
+        @Body request: ChangePasswordRequest
+    ): Response<MessageResponse>
+
+    @POST("v2/auth/verify-account")
+    suspend fun verifyAccount(
+        @Header("Authorization") token: String,
+        @Body request: VerifyAccountRequest
     ): Response<MessageResponse>
 
     @POST("v2/auth/tokens/refresh")
@@ -224,8 +238,13 @@ interface ApiService {
 
     @GET("v2/students/unregistered")
     suspend fun getUnregisteredStudents(
-        @Header("Authorization") token: String
-    ): Response<ApiResponse<List<SiswaItem>>>
+        @Header("Authorization") token: String,
+        @Query("page") page: Int? = null,
+        @Query("page_size") pageSize: Int? = null,
+        @Query("search") search: String? = null,
+        @Query("jurusan") jurusan: String? = null,
+        @Query("wali_kelas") waliKelas: String? = null
+    ): Response<SiswaListPaginatedResponse>
 
     // --- Synchronized SMKN 2 Singosari ---
 
@@ -584,7 +603,7 @@ interface ApiService {
     // --- Device Change Request (FASE 3.9) ---
 
     @POST("v2/device/change-request")
-    suspend fun createDeviceChangeRequest(@Header("Authorization") token: String, @Body request: com.google.gson.JsonObject): Response<MessageResponse>
+    suspend fun createDeviceChangeRequest(@Header("Authorization") token: String, @Body request: DeviceChangeRequestBody): Response<MessageResponse>
 
     // --- Class Teachers CRUD (FASE 3.10) ---
 
@@ -664,6 +683,9 @@ interface ApiService {
 
     // --- Prayer Schedules (FASE 3.15) ---
 
+    @PUT("v2/prayer-schedules/dhuha/{id}")
+    suspend fun updateJadwalDhuhaTime(@Header("Authorization") token: String, @Path("id") idJurusan: Int, @Body request: com.xirpl2.SASMobile.model.JadwalDhuhaTimeUpdateRequest): Response<MessageResponse>
+
     @GET("v2/prayer-schedules/dhuha/turns")
     suspend fun getDhuhaTurnsToday(@Header("Authorization") token: String): Response<ApiResponse<com.google.gson.JsonObject>>
 
@@ -677,4 +699,15 @@ interface ApiService {
 
     @DELETE("v2/data-retention/backups")
     suspend fun deleteBackup(@Header("Authorization") token: String): Response<MessageResponse>
+
+    // --- Reports: PDF Export ---
+
+    @GET("v2/reports/attendances/pdf")
+    @Streaming
+    suspend fun exportAttendancePdf(
+        @Header("Authorization") token: String,
+        @Query("tanggal") tanggal: String? = null,
+        @Query("kelas") kelas: String? = null,
+        @Query("jurusan") jurusan: String? = null
+    ): Response<ResponseBody>
 }

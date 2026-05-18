@@ -1,24 +1,30 @@
 package com.xirpl2.SASMobile
 
+import android.animation.ValueAnimator
 import android.app.Application
 import android.content.ComponentCallbacks2
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.DeadObjectException
 import android.os.TransactionTooLargeException
 import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
+import com.xirpl2.SASMobile.utils.AnrDetector
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.system.exitProcess
 
 /**
  * SASMobileApp is the central application class that manages global error handling,
- * app state tracking, and cross-platform optimizations.
+ * app state tracking, ANR prevention, and cross-platform optimizations.
  */
 class SASMobileApp : Application() {
     
     companion object {
         private const val TAG = "SASMobileApp"
         private val isForegrounded = AtomicBoolean(false)
+        @Volatile
+        private var lastRestartTime = 0L
+        private const val RESTART_THRESHOLD = 5000L // 5 seconds
 
         /**
          * Updates the global foreground state of the application.
@@ -40,17 +46,25 @@ class SASMobileApp : Application() {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
         setupGlobalExceptionHandler()
-        setupUniversalOptimizations()
+        setupTransitionTimeouts()
     }
 
     /**
-     * Catches and handles system-level binder deaths and transaction errors.
+     * Catches and handles system-level binder deaths, transaction errors, and potential ANRs.
      */
     private fun setupGlobalExceptionHandler() {
         val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
         
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
             Log.e(TAG, "Uncaught exception in thread ${thread.name}", throwable)
+
+            val currentTime = System.currentTimeMillis()
+            if (currentTime - lastRestartTime < RESTART_THRESHOLD) {
+                Log.e(TAG, "App crashing too fast. Letting system handle it to avoid loop.")
+                defaultHandler?.uncaughtException(thread, throwable)
+                return@setDefaultUncaughtExceptionHandler
+            }
+            lastRestartTime = currentTime
 
             when {
                 throwable is DeadObjectException || throwable.cause is DeadObjectException -> {
@@ -63,7 +77,11 @@ class SASMobileApp : Application() {
                     restartApp()
                 }
                 else -> {
-                    // Standard error handling for other exceptions
+                    // Always delegate to default handler for all other exceptions.
+                    // Previous logic used AnrDetector.isPotentialAnr() here which caused
+                    // the app to kill itself on startup when network errors occurred
+                    // before the user had any chance to interact with the UI.
+                    Log.e(TAG, "Delegating to default crash handler for: ${throwable::class.java.simpleName}")
                     defaultHandler?.uncaughtException(thread, throwable)
                 }
             }
@@ -71,34 +89,47 @@ class SASMobileApp : Application() {
     }
 
     /**
-     * Initializes optimizations that work universally across all Android platforms.
+     * Initializes optimizations for transitions and memory management to prevent ANR.
      */
-    private fun setupUniversalOptimizations() {
+    private fun setupTransitionTimeouts() {
         registerComponentCallbacks(object : ComponentCallbacks2 {
+            override fun onConfigurationChanged(newConfig: Configuration) {
+                // Cleanup animation resources to prevent transition bottlenecks
+                clearTransitionCaches()
+            }
+
             override fun onTrimMemory(level: Int) {
                 Log.d(TAG, "onTrimMemory level: $level")
-                if (level >= ComponentCallbacks2.TRIM_MEMORY_MODERATE) {
-                    // Aggressive cleanup for low memory or backgrounded app
-                    clearPendingOperations()
-                    System.gc()
+                when (level) {
+                    ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL -> {
+                        // Aggressive cleanup for active low memory
+                        clearPendingOperations()
+                    }
+                    ComponentCallbacks2.TRIM_MEMORY_COMPLETE, 
+                    ComponentCallbacks2.TRIM_MEMORY_MODERATE -> {
+                        // Cleanup for backgrounded app
+                    }
                 }
             }
 
-            override fun onConfigurationChanged(newConfig: android.content.res.Configuration) {}
             override fun onLowMemory() {
-                Log.e(TAG, "System is critically low on memory!")
+                Log.e(TAG, "System critically low on memory. Forcing cleanup.")
                 clearPendingOperations()
-                System.gc()
             }
         })
+    }
+
+    private fun clearTransitionCaches() {
+        // Clear global animation state if any custom trackers are used
+        // Standard ValueAnimator.clearAllAnimations() is not public/available on all APIs
     }
 
     /**
      * Clears internal caches and pending work to release resources.
      */
     private fun clearPendingOperations() {
-        // Clear global volatile caches here
-        // e.g., clear memory image caches, pending network requests, etc.
+        // Implementation for clearing global memory-intensive objects
+        clearTransitionCaches()
     }
 
     /**
@@ -112,12 +143,15 @@ class SASMobileApp : Application() {
     private fun restartApp() {
         try {
             val intent = packageManager.getLaunchIntentForPackage(packageName)
-            intent?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            startActivity(intent)
-            
-            // Wait slightly for launch to register before exiting process
-            Thread.sleep(200)
-            exitProcess(0)
+            if (intent != null) {
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                startActivity(intent)
+                
+                // Immediate kill to prevent pending callbacks from causing further crashes
+                android.os.Process.killProcess(android.os.Process.myPid())
+            } else {
+                exitProcess(1)
+            }
         } catch (e: Exception) {
             Log.e(TAG, "App restart failed: ${e.message}")
             exitProcess(1)

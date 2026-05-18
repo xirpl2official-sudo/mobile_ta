@@ -20,7 +20,9 @@ import com.xirpl2.SASMobile.model.SiswaItem
 import com.xirpl2.SASMobile.model.StatusAbsensi
 import com.xirpl2.SASMobile.repository.BerandaRepository
 import com.xirpl2.SASMobile.repository.DeviceRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class SiswaDetailDialogFragment : DialogFragment() {
 
@@ -44,7 +46,12 @@ class SiswaDetailDialogFragment : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        student = arguments?.getSerializable("student") as SiswaItem
+        student = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            arguments?.getSerializable("student", SiswaItem::class.java)!!
+        } else {
+            @Suppress("DEPRECATION")
+            arguments?.getSerializable("student") as SiswaItem
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -115,22 +122,23 @@ class SiswaDetailDialogFragment : DialogFragment() {
                 btnResetDevice.text = "Memproses..."
                 
                 lifecycleScope.launch {
-                    deviceRepository.resetDeviceByNIS(token, student.nis).fold(
-                        onSuccess = { message ->
-                            activity?.runOnUiThread {
-                                Toast.makeText(context, message, Toast.LENGTH_LONG).show()
-                                btnResetDevice.isEnabled = true
-                                btnResetDevice.text = "Reset Kunci Perangkat"
-                            }
-                        },
-                        onFailure = { error ->
-                            activity?.runOnUiThread {
-                                Toast.makeText(context, error.message, Toast.LENGTH_LONG).show()
-                                btnResetDevice.isEnabled = true
-                                btnResetDevice.text = "Reset Kunci Perangkat"
-                            }
+                    val result = deviceRepository.resetDeviceByNIS(token, student.nis)
+                    withContext(kotlinx.coroutines.Dispatchers.Main) {
+                        if (isAdded) {
+                            result.fold(
+                                onSuccess = { message ->
+                                    Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                                    btnResetDevice.isEnabled = true
+                                    btnResetDevice.text = "Reset Kunci Perangkat"
+                                },
+                                onFailure = { error ->
+                                    Toast.makeText(context, error.message, Toast.LENGTH_LONG).show()
+                                    btnResetDevice.isEnabled = true
+                                    btnResetDevice.text = "Reset Kunci Perangkat"
+                                }
+                            )
                         }
-                    )
+                    }
                 }
             }
             .setNegativeButton("Batal", null)
@@ -145,40 +153,41 @@ class SiswaDetailDialogFragment : DialogFragment() {
         layoutContent.visibility = View.INVISIBLE
 
         lifecycleScope.launch {
-            repository.getStudentDetail(token, student.nis).fold(
-                onSuccess = { data ->
-                    activity?.runOnUiThread {
-                        progressBar.visibility = View.GONE
-                        layoutContent.visibility = View.VISIBLE
-                        
-                        // Binding dynamic data from API
-                        try {
-                            tvNis.text = if (data.has("nis")) data.get("nis").asString else student.nis
-                            tvNama.text = if (data.has("nama_siswa")) data.get("nama_siswa").asString else student.nama_siswa
-                            tvJurusan.text = if (data.has("jurusan")) data.get("jurusan").asString else student.jurusan
-                            tvKelas.text = if (data.has("kelas")) data.get("kelas").asString else student.kelas
+            val result = repository.getStudentDetail(token, student.nis)
+            withContext(kotlinx.coroutines.Dispatchers.Main) {
+                if (isAdded) {
+                    result.fold(
+                        onSuccess = { data ->
+                            progressBar.visibility = View.GONE
+                            layoutContent.visibility = View.VISIBLE
                             
-                            val jk = if (data.has("jk")) data.get("jk").asString else student.jenis_kelamin
-                            tvJenisKelamin.text = when(jk.uppercase()) {
-                                "L" -> "Laki-laki"
-                                "P" -> "Perempuan"
-                                else -> jk
+                            // Binding dynamic data from API
+                            try {
+                                tvNis.text = if (data.has("nis")) data.get("nis").asString else student.nis
+                                tvNama.text = if (data.has("nama_siswa")) data.get("nama_siswa").asString else student.nama_siswa
+                                tvJurusan.text = if (data.has("jurusan")) data.get("jurusan").asString else student.jurusan
+                                tvKelas.text = if (data.has("kelas")) data.get("kelas").asString else student.kelas
+                                
+                                val jk = if (data.has("jk")) data.get("jk").asString else student.jenis_kelamin
+                                tvJenisKelamin.text = when(jk.uppercase()) {
+                                    "L" -> "Laki-laki"
+                                    "P" -> "Perempuan"
+                                    else -> jk
+                                }
+                                
+                                tvAgama.text = if (data.has("agama")) data.get("agama").asString else "-"
+                            } catch (e: Exception) {
+                                // Fallback to basic info if JSON parsing fails
                             }
-                            
-                            tvAgama.text = if (data.has("agama")) data.get("agama").asString else "-"
-                        } catch (e: Exception) {
-                            // Fallback to basic info if JSON parsing fails
+                        },
+                        onFailure = { error ->
+                            progressBar.visibility = View.GONE
+                            layoutContent.visibility = View.VISIBLE
+                            Toast.makeText(context, "Gagal memuat detail siswa. Silakan coba lagi.", Toast.LENGTH_SHORT).show()
                         }
-                    }
-                },
-                onFailure = { error ->
-                    activity?.runOnUiThread {
-                        progressBar.visibility = View.GONE
-                        layoutContent.visibility = View.VISIBLE
-                        Toast.makeText(context, "Gagal memuat detail siswa. Silakan coba lagi.", Toast.LENGTH_SHORT).show()
-                    }
+                    )
                 }
-            )
+            }
         }
     }
 
@@ -191,42 +200,45 @@ class SiswaDetailDialogFragment : DialogFragment() {
         recyclerRiwayat.visibility = View.GONE
 
         lifecycleScope.launch {
-            repository.getHistoryStaff(token, search = student.nis).fold(
-                onSuccess = { historyData ->
-                    activity?.runOnUiThread {
-                        progressRiwayat.visibility = View.GONE
-                        
-                        val riwayatList = historyData.absensi.map { absen ->
-                            RiwayatAbsensi(
-                                tanggal = absen.tanggal,
-                                namaSholat = absen.jenis_sholat ?: "Unknown",
-                                status = when(absen.status.uppercase()) {
-                                    "HADIR" -> StatusAbsensi.HADIR
-                                    "SAKIT" -> StatusAbsensi.SAKIT
-                                    "IZIN" -> StatusAbsensi.IZIN
-                                    else -> StatusAbsensi.ALPHA
-                                },
-                                waktuAbsen = absen.deskripsi
-                            )
-                        }
+            val result = repository.getHistoryStaff(token, search = student.nis)
+            withContext(kotlinx.coroutines.Dispatchers.Main) {
+                if (isAdded) {
+                    result.fold(
+                        onSuccess = { historyData ->
+                            progressRiwayat.visibility = View.GONE
+                            
+                            val riwayatList = historyData.absensi.map { absen ->
+                                RiwayatAbsensi(
+                                    tanggal = absen.tanggal,
+                                    namaSholat = absen.jenis_sholat ?: "Unknown",
+                                    status = when(absen.status.uppercase()) {
+                                        "HADIR" -> StatusAbsensi.HADIR
+                                        "SAKIT" -> StatusAbsensi.SAKIT
+                                        "IZIN" -> StatusAbsensi.IZIN
+                                        else -> StatusAbsensi.ALPHA
+                                    },
+                                    waktuAbsen = absen.deskripsi
+                                )
+                            }
 
-                        if (riwayatList.isNotEmpty()) {
-                            recyclerRiwayat.visibility = View.VISIBLE
-                            recyclerRiwayat.layoutManager = LinearLayoutManager(context)
-                            recyclerRiwayat.adapter = RiwayatAbsensiAdapter(riwayatList)
-                        } else {
+                            if (riwayatList.isNotEmpty()) {
+                                recyclerRiwayat.visibility = View.VISIBLE
+                                recyclerRiwayat.layoutManager = LinearLayoutManager(context)
+                                val adapter = RiwayatAbsensiAdapter()
+                                recyclerRiwayat.adapter = adapter
+                                adapter.submitList(riwayatList)
+                            } else {
+                                tvEmptyRiwayat.visibility = View.VISIBLE
+                            }
+                        },
+                        onFailure = { error ->
+                            progressRiwayat.visibility = View.GONE
                             tvEmptyRiwayat.visibility = View.VISIBLE
+                            tvEmptyRiwayat.text = "Gagal memuat riwayat absensi"
                         }
-                    }
-                },
-                onFailure = { error ->
-                    activity?.runOnUiThread {
-                        progressRiwayat.visibility = View.GONE
-                        tvEmptyRiwayat.visibility = View.VISIBLE
-                        tvEmptyRiwayat.text = "Gagal memuat riwayat absensi"
-                    }
+                    )
                 }
-            )
+            }
         }
     }
 

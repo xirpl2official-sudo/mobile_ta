@@ -126,6 +126,10 @@
             android:launchMode="singleTop"
             android:name=".AdminDeviceManagementActivity"
             android:exported="false" />
+        <activity
+            android:launchMode="singleTop"
+            android:name=".VerifyAccountActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

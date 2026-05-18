@@ -9,10 +9,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.google.android.material.textfield.TextInputEditText
 import com.xirpl2.SASMobile.adapter.SiswaAdapter
 import com.xirpl2.SASMobile.model.SiswaItem
 import com.xirpl2.SASMobile.network.RetrofitClient
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
@@ -21,13 +21,22 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
     private lateinit var swipeRefresh: SwipeRefreshLayout
     private lateinit var progressBar: ProgressBar
     private lateinit var layoutEmpty: LinearLayout
-    private lateinit var etSearch: TextInputEditText
+    private lateinit var etSearch: EditText
     private lateinit var acJurusan: AutoCompleteTextView
     private lateinit var acWaliKelas: AutoCompleteTextView
     private lateinit var cbSelectAll: CheckBox
+    private lateinit var tvCountInfo: TextView
     
     private lateinit var adapter: SiswaAdapter
-    private var allStudents = listOf<SiswaItem>()
+    
+    private var searchQuery: String = ""
+    private var selectedJurusanId: Int? = null
+    private var selectedWaliStaffId: Int? = null
+    
+    private val searchHandler = android.os.Handler(android.os.Looper.getMainLooper())
+    private var searchRunnable: Runnable? = null
+    private val searchDebounceMs = 300L
+    private var loadingJob: Job? = null
 
     override fun getCurrentMenuItem(): AdminMenuItem = AdminMenuItem.SISWA_BELUM_TERDAFTAR
 
@@ -36,6 +45,9 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
         setContentView(R.layout.activity_siswa_belum_terdaftar_admin)
         setupStatusBar()
 
+        val topBarContent = findViewById<View>(R.id.topBarContent)
+        applyEdgeToEdge(topBarContent)
+
         initializeViews()
         setupRecyclerView()
         setupFilters()
@@ -43,6 +55,12 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
         setupMenuIcon()
         
         loadUnregisteredStudents()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        searchRunnable?.let { searchHandler.removeCallbacks(it) }
+        loadingJob?.cancel()
     }
 
     private fun initializeViews() {
@@ -54,12 +72,13 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
         acJurusan = findViewById(R.id.acJurusan)
         acWaliKelas = findViewById(R.id.acWaliKelas)
         cbSelectAll = findViewById(R.id.cbSelectAll)
+        tvCountInfo = findViewById(R.id.tvCountInfo)
 
         swipeRefresh.setOnRefreshListener {
             loadUnregisteredStudents()
         }
 
-        findViewById<View>(R.id.toolbar).setOnClickListener { openSidebar() }
+        findViewById<View>(R.id.iconMenu).setOnClickListener { openSidebar() }
     }
 
     private fun setupRecyclerView() {
@@ -77,45 +96,65 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
     }
 
     private fun setupFilters() {
+        val token = getAuthToken()
+        if (token.isEmpty()) return
+
+        // 1. Setup Search with Debounce
         etSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                applyFilters()
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                searchRunnable?.let { searchHandler.removeCallbacks(it) }
+                searchRunnable = Runnable {
+                    val newQuery = s?.toString()?.trim() ?: ""
+                    if (newQuery != searchQuery) {
+                        searchQuery = newQuery
+                        loadUnregisteredStudents()
+                    }
+                }
+                searchHandler.postDelayed(searchRunnable!!, searchDebounceMs)
             }
-            override fun afterTextChanged(s: Editable?) {}
         })
 
-        // Dummy options for Jurusan and Wali Kelas as per spec
-        val jurusanOptions = listOf("Semua Jurusan", "TAV", "RPL", "TKJ", "MM")
-        val waliOptions = listOf("Semua Wali Kelas", "Bu Ani", "Pak Budi", "Ibu Siti")
-
-        val jurusanAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, jurusanOptions)
-        acJurusan.setAdapter(jurusanAdapter)
-        acJurusan.setText(jurusanOptions[0], false)
-        acJurusan.setOnItemClickListener { _, _, _, _ -> applyFilters() }
-
-        val waliAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, waliOptions)
-        acWaliKelas.setAdapter(waliAdapter)
-        acWaliKelas.setText(waliOptions[0], false)
-        acWaliKelas.setOnItemClickListener { _, _, _, _ -> applyFilters() }
-    }
-
-    private fun applyFilters() {
-        val query = etSearch.text.toString().lowercase()
-        val selectedJurusan = acJurusan.text.toString()
-        
-        val filteredList = allStudents.filter { student ->
-            val matchesSearch = student.nama_siswa.lowercase().contains(query) || 
-                               student.nis.contains(query)
-            
-            val matchesJurusan = selectedJurusan == "Semua Jurusan" || 
-                                student.jurusan.equals(selectedJurusan, ignoreCase = true)
-            
-            matchesSearch && matchesJurusan
+        // 2. Fetch & Populate Jurusan
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitClient.apiService.getJurusanLookup("Bearer $token")
+                if (response.isSuccessful) {
+                    val list = response.body()?.data ?: emptyList()
+                    val options = listOf("Semua Jurusan") + list.map { it.nama }
+                    val spinnerAdapter = ArrayAdapter(this@SiswaBelumTerdaftarAdminActivity, android.R.layout.simple_dropdown_item_1line, options)
+                    acJurusan.setAdapter(spinnerAdapter)
+                    acJurusan.setText(options[0], false)
+                    acJurusan.setOnItemClickListener { _, _, position, _ ->
+                        selectedJurusanId = if (position == 0) null else list[position - 1].id
+                        loadUnregisteredStudents()
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
 
-        adapter.submitList(filteredList)
-        layoutEmpty.visibility = if (filteredList.isEmpty()) View.VISIBLE else View.GONE
+        // 3. Fetch & Populate Wali Kelas (Staff Guru)
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitClient.apiService.getStaffGuruLookup("Bearer $token")
+                if (response.isSuccessful) {
+                    val list = response.body()?.data ?: emptyList()
+                    val options = listOf("Semua Wali") + list.map { it.nama }
+                    val spinnerAdapter = ArrayAdapter(this@SiswaBelumTerdaftarAdminActivity, android.R.layout.simple_dropdown_item_1line, options)
+                    acWaliKelas.setAdapter(spinnerAdapter)
+                    acWaliKelas.setText(options[0], false)
+                    acWaliKelas.setOnItemClickListener { _, _, position, _ ->
+                        selectedWaliStaffId = if (position == 0) null else list[position - 1].id_staff
+                        loadUnregisteredStudents()
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     private fun loadUnregisteredStudents() {
@@ -123,24 +162,39 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
         if (token.isEmpty()) return
 
         showLoading(true)
-        lifecycleScope.launch {
+        loadingJob?.cancel()
+
+        loadingJob = lifecycleScope.launch {
             try {
-                val response = RetrofitClient.apiService.getUnregisteredStudents("Bearer $token")
-                
+                val response = RetrofitClient.apiService.getUnregisteredStudents(
+                    token = "Bearer $token",
+                    page = 1,
+                    pageSize = 100,
+                    search = if (searchQuery.isNotEmpty()) searchQuery else null,
+                    jurusan = selectedJurusanId?.toString(),
+                    waliKelas = selectedWaliStaffId?.toString()
+                )
+
                 runOnUiThread {
                     showLoading(false)
                     if (response.isSuccessful) {
-                        allStudents = response.body()?.data ?: emptyList()
-                        applyFilters()
+                        val body = response.body()
+                        val students = body?.data ?: emptyList()
+                        adapter.submitList(students)
+
+                        val total = body?.pagination?.total_items ?: students.size
+                        tvCountInfo.text = "Menampilkan ${students.size} dari $total data"
+
+                        layoutEmpty.visibility = if (students.isEmpty()) View.VISIBLE else View.GONE
                     } else {
-                        Toast.makeText(this@SiswaBelumTerdaftarAdminActivity, 
+                        Toast.makeText(this@SiswaBelumTerdaftarAdminActivity,
                             "Gagal mengambil data: ${response.code()}", Toast.LENGTH_SHORT).show()
                     }
                 }
             } catch (e: Exception) {
                 runOnUiThread {
                     showLoading(false)
-                    Toast.makeText(this@SiswaBelumTerdaftarAdminActivity, 
+                    Toast.makeText(this@SiswaBelumTerdaftarAdminActivity,
                         "Error: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }

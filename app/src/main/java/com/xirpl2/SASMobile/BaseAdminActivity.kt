@@ -3,16 +3,20 @@ package com.xirpl2.SASMobile
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.cardview.widget.CardView
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.xirpl2.SASMobile.network.RetrofitClient
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 /**
@@ -50,6 +54,19 @@ abstract class BaseAdminActivity : BaseActivity() {
         
         // Enable Edge-to-Edge
         androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
+        
+        // Handle back press with modern API
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (::drawerLayout.isInitialized && drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    closeSidebar()
+                } else {
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
+                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+                }
+            }
+        })
     }
 
     protected fun setupDrawerAndSidebar() {
@@ -222,7 +239,7 @@ abstract class BaseAdminActivity : BaseActivity() {
 
         if (isActive) {
             // Active item: blue theme background, white text/icon
-            menuView.setBackgroundResource(R.drawable.bg_input_rounded)
+            menuView.setBackgroundResource(R.drawable.bg_sidebar_item_active)
             menuView.backgroundTintList = android.content.res.ColorStateList.valueOf(androidx.core.content.ContextCompat.getColor(this, R.color.blue_theme))
             
             for (i in 0 until menuView.childCount) {
@@ -288,7 +305,6 @@ abstract class BaseAdminActivity : BaseActivity() {
                 sidebarView.findViewById<LinearLayout>(R.id.menuBeranda)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuJadwalSholat)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuDataSiswa)?.setOnClickListener(null)
-                sidebarView.findViewById<LinearLayout>(R.id.menuKelolaSiswa)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuKelolaKelas)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuPresensi)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuPengajuanIzin)?.setOnClickListener(null)
@@ -333,23 +349,35 @@ abstract class BaseAdminActivity : BaseActivity() {
             .setTitle("Keluar")
             .setMessage("Apakah Anda yakin ingin keluar?")
             .setPositiveButton("Ya") { _, _ ->
+                val token = getAuthToken()
                 
-                getSharedPreferences("UserData", Context.MODE_PRIVATE)
-                    .edit().clear().apply()
-                getSharedPreferences("user_session", Context.MODE_PRIVATE)
-                    .edit().clear().apply()
-
-                Toast.makeText(this, "Logout berhasil", Toast.LENGTH_SHORT).show()
-
-                // Safe logout navigation
-                com.xirpl2.SASMobile.utils.UniversalSafeNavigator.navigateTo(
-                    this,
-                    MasukActivity::class.java,
-                    finishCurrent = true,
-                    intentModifier = { intent ->
-                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                lifecycleScope.launch(Dispatchers.IO) {
+                    // Call logout API to invalidate token on server
+                    try {
+                        if (token.isNotEmpty()) {
+                            RetrofitClient.apiService.logout("Bearer $token")
+                        }
+                    } catch (e: Exception) {
+                        Log.w("BaseAdminActivity", "Logout API call failed (non-critical): ${e.message}")
                     }
-                )
+                    
+                    launch(Dispatchers.Main) {
+                        // Clear ALL SharedPreferences stores
+                        getSharedPreferences("UserData", Context.MODE_PRIVATE)
+                            .edit().clear().apply()
+                        getSharedPreferences("user_session", Context.MODE_PRIVATE)
+                            .edit().clear().apply()
+                        getSharedPreferences("NotificationData", Context.MODE_PRIVATE)
+                            .edit().clear().apply()
+
+                        Toast.makeText(this@BaseAdminActivity, "Logout berhasil", Toast.LENGTH_SHORT).show()
+
+                        val intent = Intent(this@BaseAdminActivity, MasukActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        startActivity(intent)
+                        finish()
+                    }
+                }
             }
             .setNegativeButton("Tidak", null)
             .show()
@@ -360,14 +388,6 @@ abstract class BaseAdminActivity : BaseActivity() {
             .getString("auth_token", "") ?: ""
     }
 
-    override fun onBackPressed() {
-        if (::drawerLayout.isInitialized && drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            closeSidebar()
-        } else {
-            super.onBackPressed()
-            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
-        }
-    }
 
     override fun finish() {
         super.finish()

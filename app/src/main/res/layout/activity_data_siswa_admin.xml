@@ -83,8 +83,19 @@
             app:layout_constraintStart_toStartOf="@id/textDashboard"
             app:layout_constraintTop_toBottomOf="@id/textDashboard"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btnMore"
             android:layout_marginEnd="8dp" />
+
+        <ImageView
+            android:id="@+id/btnMore"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_more_vert"
+            android:contentDescription="Menu lainnya"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:tint="@android:color/white" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -118,6 +129,21 @@
                     android:textColor="#000000"
                     android:textSize="20sp"
                     android:textStyle="bold" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnImport"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="8dp"
+                    android:text="Import"
+                    android:textColor="@color/blue_theme"
+                    android:textSize="12sp"
+                    app:icon="@drawable/ic_cloud_upload"
+                    app:iconTint="@color/blue_theme"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    app:strokeColor="@color/blue_theme"
+                    app:strokeWidth="1dp"
+                    app:cornerRadius="8dp" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnTambah"
@@ -274,6 +300,7 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:background="@color/blue_theme"
+                        android:paddingVertical="12dp"
                         android:gravity="center_vertical">
 
                         <TextView
@@ -360,7 +387,19 @@
 
             </HorizontalScrollView>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabAdd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="24dp"
+            android:src="@drawable/ic_add"
+            app:backgroundTint="@color/blue_theme"
+            app:tint="@android:color/white"
+            app:elevation="6dp"
+            android:contentDescription="Tambah siswa baru"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

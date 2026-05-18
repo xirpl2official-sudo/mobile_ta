@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.widget.ImageView
@@ -22,7 +23,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xirpl2.SASMobile.model.JadwalSholat
 import com.xirpl2.SASMobile.model.RiwayatAbsensi
 import com.xirpl2.SASMobile.model.StatusAbsensi
+import com.xirpl2.SASMobile.network.RetrofitClient
 import com.xirpl2.SASMobile.repository.BerandaRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class BerandaActivity : BaseActivity() {
@@ -43,6 +46,9 @@ class BerandaActivity : BaseActivity() {
     
     private var notificationCounterBroadcast: BroadcastReceiver? = null
     private lateinit var notificationCounter: android.widget.TextView
+    
+    // Guard against duplicate loadAllData calls from onCreate+onResume race condition
+    private var isDataLoaded = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,8 +62,22 @@ class BerandaActivity : BaseActivity() {
         setupAbsensiButton()
         setupNotificationButton()
         
+        // Load data is handled in onResume to prevent duplicate calls and race conditions
+    }
+
+    private fun loadAllData() {
+        val token = getAuthToken()
+        if (token.isEmpty()) {
+            Toast.makeText(this, "Sesi berakhir, silakan login kembali", Toast.LENGTH_SHORT).show()
+            return
+        }
+        
         loadStatistics()
         loadRiwayatFromAPI()
+        
+        lifecycleScope.launch {
+            loadJadwalSholatFromAPI(token)
+        }
     }
     
     private fun initializeViews() {
@@ -66,11 +86,11 @@ class BerandaActivity : BaseActivity() {
         tvTotalValue = findViewById(R.id.tvTotalValue)
         tvHadirValue = findViewById(R.id.tvHadirValue)
         tvStatistikValue = findViewById(R.id.tvStatistikValue)
+        notificationCounter = findViewById(R.id.notificationCounter)
     }
 
     private fun setupNotificationButton() {
         val iconNotifikasi = findViewById<ImageView>(R.id.iconNotifikasi)
-        notificationCounter = findViewById<android.widget.TextView>(R.id.notificationCounter)
         
         iconNotifikasi.setOnClickListener {
             startActivity(Intent(this, NotifikasiActivity::class.java))
@@ -107,7 +127,7 @@ class BerandaActivity : BaseActivity() {
     private fun setupJadwalSholat() {
         
         
-        jadwalAdapter = JadwalSholatAdapter(emptyList())
+        jadwalAdapter = JadwalSholatAdapter()
 
         
         rvJadwalSholat.apply {
@@ -119,10 +139,7 @@ class BerandaActivity : BaseActivity() {
 
     private fun setupRiwayatAbsensi() {
         
-        val emptyList = emptyList<RiwayatAbsensi>()
-
-        
-        riwayatAdapter = RiwayatAbsensiAdapter(emptyList)
+        riwayatAdapter = RiwayatAbsensiAdapter()
 
         
         rvRiwayatAbsensi.apply {
@@ -228,39 +245,38 @@ class BerandaActivity : BaseActivity() {
             .setTitle("Keluar")
             .setMessage("Apakah Anda yakin ingin keluar?")
             .setPositiveButton("Ya") { _, _ ->
+                val token = getAuthToken()
                 
-                val sharedPref = getSharedPreferences("user_session", Context.MODE_PRIVATE)
-                sharedPref.edit().clear().apply()
-                
-                
-                Toast.makeText(this, "Logout berhasil", Toast.LENGTH_SHORT).show()
-                
-                
-                val intent = Intent(this, MasukActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-                finish()
+                lifecycleScope.launch(Dispatchers.IO) {
+                    // Call logout API to invalidate token on server
+                    try {
+                        if (token.isNotEmpty()) {
+                            RetrofitClient.apiService.logout("Bearer $token")
+                        }
+                    } catch (e: Exception) {
+                        Log.w(TAG, "Logout API call failed (non-critical): ${e.message}")
+                    }
+                    
+                    launch(Dispatchers.Main) {
+                        // Clear ALL SharedPreferences stores
+                        getSharedPreferences("user_session", Context.MODE_PRIVATE)
+                            .edit().clear().apply()
+                        getSharedPreferences("UserData", Context.MODE_PRIVATE)
+                            .edit().clear().apply()
+                        getSharedPreferences("NotificationData", Context.MODE_PRIVATE)
+                            .edit().clear().apply()
+                        
+                        Toast.makeText(this@BerandaActivity, "Logout berhasil", Toast.LENGTH_SHORT).show()
+                        
+                        val intent = Intent(this@BerandaActivity, MasukActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        startActivity(intent)
+                        finish()
+                    }
+                }
             }
             .setNegativeButton("Tidak", null)
             .show()
-    }
-    
-    private fun loadDataFromAPI() {
-        val token = getAuthToken()
-        
-        if (token.isEmpty()) {
-            Toast.makeText(this, "Session expired, please login again", Toast.LENGTH_SHORT).show()
-            
-            return
-        }
-        
-        lifecycleScope.launch {
-            
-            loadJadwalSholatFromAPI(token)
-            
-            
-            loadRiwayatAbsensiFromAPI(token)
-        }
     }
     
     private suspend fun loadJadwalSholatFromAPI(token: String) {
@@ -284,47 +300,15 @@ class BerandaActivity : BaseActivity() {
                 
                 
                 runOnUiThread {
-                    jadwalAdapter = JadwalSholatAdapter(jadwalList)
-                    rvJadwalSholat.adapter = jadwalAdapter
-                }
-            },
-            onFailure = { error ->
-                
-            }
-        )
-    }
-    
-    private suspend fun loadRiwayatAbsensiFromAPI(token: String) {
-        repository.getHistorySiswa(token, 0).fold(
-            onSuccess = { historyData ->
-                
-                val absensiList = historyData.absensi ?: emptyList()
-                
-                
-                val riwayatList = absensiList.map { data ->
-                    val status = when (data.status.uppercase()) {
-                        "HADIR" -> StatusAbsensi.HADIR
-                        "ALPHA" -> StatusAbsensi.ALPHA
-                        "SAKIT" -> StatusAbsensi.SAKIT
-                        "IZIN" -> StatusAbsensi.IZIN
-                        else -> StatusAbsensi.ALPHA
+                    if (!::jadwalAdapter.isInitialized) {
+                        jadwalAdapter = JadwalSholatAdapter()
+                        rvJadwalSholat.adapter = jadwalAdapter
                     }
-                    
-                    RiwayatAbsensi(
-                        tanggal = formatTanggal(data.tanggal),
-                        namaSholat = data.getPrayerName(),
-                        status = status,
-                        waktuAbsen = formatWaktu(data.waktu_absen)
-                    )
-                }
-                
-                
-                runOnUiThread {
-                    riwayatAdapter = RiwayatAbsensiAdapter(riwayatList)
-                    rvRiwayatAbsensi.adapter = riwayatAdapter
+                    jadwalAdapter.submitList(jadwalList)
                 }
             },
             onFailure = { error ->
+                Log.w(TAG, "Failed to load jadwal sholat: ${error.message}")
             }
         )
     }
@@ -349,7 +333,7 @@ class BerandaActivity : BaseActivity() {
                     }
                 },
                 onFailure = { error ->
-                    
+                    Log.w(TAG, "Failed to load statistics: ${error.message}")
                 }
             )
         }
@@ -406,13 +390,19 @@ class BerandaActivity : BaseActivity() {
 
     
     fun refreshJadwalSholat(newData: List<JadwalSholat>) {
-        jadwalAdapter = JadwalSholatAdapter(newData)
-        rvJadwalSholat.adapter = jadwalAdapter
+        if (!::jadwalAdapter.isInitialized) {
+            jadwalAdapter = JadwalSholatAdapter()
+            rvJadwalSholat.adapter = jadwalAdapter
+        }
+        jadwalAdapter.submitList(newData)
     }
 
     fun refreshRiwayatAbsensi(newData: List<RiwayatAbsensi>) {
-        riwayatAdapter = RiwayatAbsensiAdapter(newData)
-        rvRiwayatAbsensi.adapter = riwayatAdapter
+        if (!::riwayatAdapter.isInitialized) {
+            riwayatAdapter = RiwayatAbsensiAdapter()
+            rvRiwayatAbsensi.adapter = riwayatAdapter
+        }
+        riwayatAdapter.submitList(newData)
     }
     
     private fun loadRiwayatFromAPI() {
@@ -456,14 +446,17 @@ class BerandaActivity : BaseActivity() {
                         
                         tvHadirValue.text = hadirCount.toString()
                         
-                        if (riwayatList.isEmpty()) {
-                        } else {
-                            riwayatAdapter = RiwayatAbsensiAdapter(riwayatList)
-                            rvRiwayatAbsensi.adapter = riwayatAdapter
+                        if (riwayatList.isNotEmpty()) {
+                            if (!::riwayatAdapter.isInitialized) {
+                                riwayatAdapter = RiwayatAbsensiAdapter()
+                                rvRiwayatAbsensi.adapter = riwayatAdapter
+                            }
+                            riwayatAdapter.submitList(riwayatList)
                         }
                     }
                 },
                 onFailure = { error ->
+                    Log.w(TAG, "Failed to load riwayat absensi: ${error.message}")
                 }
             )
         }
@@ -473,15 +466,10 @@ class BerandaActivity : BaseActivity() {
         super.onResume()
         updateNotificationCounter()
         
-        
         val token = getAuthToken()
-        if (token.isNotEmpty()) {
-            lifecycleScope.launch {
-                loadJadwalSholatFromAPI(token)
-                
-                loadRiwayatFromAPI() 
-                loadStatistics()
-            }
+        if (token.isNotEmpty() && !isDataLoaded) {
+            isDataLoaded = true
+            loadAllData()
         }
         
         

@@ -18,7 +18,8 @@ data class AkunLoginResponse(
     val jk: String? = null,
     val jurusan: String? = null,
     val kelas: String? = null,
-    val role: String? = null,                  
+    val role: String? = null,
+    val is_verified: Boolean? = null,
     val token: String? = null
 ) {
     fun getDisplayName(): String {

@@ -135,11 +135,53 @@ class NotifikasiActivity : BaseActivity() {
     }
 
     private fun setupRecyclerView() {
-        notifikasiAdapter = NotifikasiAdapter(notificationList)
+        notifikasiAdapter = NotifikasiAdapter(
+            notificationList,
+            onItemClick = { notif, position ->
+                if (!notif.isRead) {
+                    markNotificationRead(notif, position)
+                }
+            },
+            onDeleteClick = { notif, position ->
+                deleteNotification(notif, position)
+            }
+        )
 
         binding.rvNotifikasi.apply {
             layoutManager = LinearLayoutManager(this@NotifikasiActivity)
             adapter = notifikasiAdapter
+        }
+    }
+    
+    private fun markNotificationRead(notif: Notifikasi, position: Int) {
+        val token = getSharedPreferences("UserData", MODE_PRIVATE)
+            .getString("auth_token", "") ?: ""
+        
+        lifecycleScope.launch {
+            try {
+                RetrofitClient.apiService.markNotificationRead("Bearer $token", notif.id)
+                notif.isRead = true
+                notifikasiAdapter.notifyItemChanged(position)
+            } catch (e: Exception) {
+                // Silently fail — notification is still visible
+            }
+        }
+    }
+    
+    private fun deleteNotification(notif: Notifikasi, position: Int) {
+        val token = getSharedPreferences("UserData", MODE_PRIVATE)
+            .getString("auth_token", "") ?: ""
+        
+        lifecycleScope.launch {
+            try {
+                RetrofitClient.apiService.deleteNotification("Bearer $token", notif.id)
+                notificationList.removeAt(position)
+                notifikasiAdapter.notifyItemRemoved(position)
+                notifikasiAdapter.notifyItemRangeChanged(position, notificationList.size)
+                updateEmptyState()
+            } catch (e: Exception) {
+                Toast.makeText(this@NotifikasiActivity, "Gagal menghapus notifikasi", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

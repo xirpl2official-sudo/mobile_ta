@@ -71,8 +71,6 @@ override fun onCreate(savedInstanceState: Bundle?) {
         android.util.Log.d(TAG, "Loading synchronized data...")
 
         lifecycleScope.launch {
-            // Load Dhuha Keahlian Table - COMMENTED OUT: Phantom API method (not in backend)
-            /*
             repository.getJadwalDhuhaKeahlian(token).fold(
                 onSuccess = { list ->
                     android.util.Log.d(TAG, "Dhuha Keahlian loaded successfully: ${list.size} items")
@@ -88,7 +86,6 @@ override fun onCreate(savedInstanceState: Bundle?) {
                     }
                 }
             )
-            */
 
             // Load Dhuha Detail Card - COMMENTED OUT: Phantom API method (not in backend)
             /*
@@ -345,8 +342,8 @@ override fun onCreate(savedInstanceState: Bundle?) {
             android.util.Log.d(TAG, "Initializing DhuhaScheduleAdapter")
             dhuhaAdapter = DhuhaScheduleAdapter(
                 rows = dhuhaKeahlianList,
-                onEditClick = { item ->
-                    showEditDhuhaKeahlianDialog(item)
+                onSwap = { row1, col1, row2, col2 ->
+                    handleSwap(row1, col1, row2, col2)
                 }
             )
             rvDhuhaSchedule.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
@@ -355,6 +352,30 @@ override fun onCreate(savedInstanceState: Bundle?) {
             android.util.Log.d(TAG, "Updating existing DhuhaScheduleAdapter with new data")
             dhuhaAdapter.updateData(dhuhaKeahlianList)
         }
+    }
+
+    private fun handleSwap(row1: Int, col1: Int, row2: Int, col2: Int) {
+        val list = dhuhaKeahlianList.toMutableList()
+        val item1 = list[row1]
+        val item2 = list[row2]
+        
+        val j1 = if (col1 == 1) item1.jurusan1 else item1.jurusan2
+        val j2 = if (col2 == 1) item2.jurusan1 else item2.jurusan2
+        
+        val newItem1 = if (col1 == 1) item1.copy(jurusan1 = j2) else item1.copy(jurusan2 = j2)
+        val newItem2 = if (row1 == row2) {
+            if (col2 == 1) newItem1.copy(jurusan1 = j1) else newItem1.copy(jurusan2 = j1)
+        } else {
+            if (col2 == 1) item2.copy(jurusan1 = j1) else item2.copy(jurusan2 = j1)
+        }
+        
+        list[row1] = newItem1
+        if (row1 != row2) {
+            list[row2] = newItem2
+        }
+        
+        dhuhaKeahlianList = list
+        dhuhaAdapter.updateData(dhuhaKeahlianList)
     }
 
     private fun setupButtons() {
@@ -380,9 +401,8 @@ override fun onCreate(savedInstanceState: Bundle?) {
             return  
         }
 
-        
         btnTambah.setOnClickListener {
-            showTambahDhuhaKeahlianDialog()
+            showTambahJadwalDialog()
         }
 
         
@@ -402,6 +422,30 @@ override fun onCreate(savedInstanceState: Bundle?) {
             dhuhaAdapter.isEditMode = false
             btnSaveDhuha.visibility = View.GONE
             btnEditDhuha.visibility = View.VISIBLE
+            
+            val updates = mutableListOf<Pair<Int, String>>()
+            dhuhaKeahlianList.forEach { daySchedule ->
+                val day = daySchedule.hari
+                daySchedule.jurusan1?.id_jurusan?.let { updates.add(it to day) }
+                daySchedule.jurusan2?.id_jurusan?.let { updates.add(it to day) }
+            }
+            
+            lifecycleScope.launch {
+                val token = getAuthToken()
+                var hasError = false
+                updates.forEach { (id, day) ->
+                    val res = repository.updateJurusanDhuhaDay(token, id, day)
+                    if (res.isFailure) hasError = true
+                }
+                safeRunOnUiThread {
+                    if (hasError) {
+                        Toast.makeText(this@JadwalSholatAdminActivity, "Beberapa perubahan gagal disimpan", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this@JadwalSholatAdminActivity, "Jadwal Dhuha berhasil disimpan", Toast.LENGTH_SHORT).show()
+                    }
+                    loadSynchronizedData()
+                }
+            }
         }
 
         
@@ -996,130 +1040,82 @@ override fun onCreate(savedInstanceState: Bundle?) {
         dialog.show()
     }
 
-    private fun showEditDhuhaKeahlianDialog(item: com.xirpl2.SASMobile.model.JadwalDhuhaKeahlian) {
-        showDhuhaKeahlianDialog(item)
-    }
 
-    private fun showTambahDhuhaKeahlianDialog() {
-        showDhuhaKeahlianDialog(null)
-    }
 
-    private fun showDhuhaKeahlianDialog(item: com.xirpl2.SASMobile.model.JadwalDhuhaKeahlian?) {
-        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_dhuha_keahlian, null)
+    private fun showEditSholatDhuhaCardDialog(id: Int) {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_edit_jadwal_sholat, null)
         val tvTitle = dialogView.findViewById<TextView>(R.id.tvDialogTitle)
+        val etJamMulai = dialogView.findViewById<TextInputEditText>(R.id.etJamMulai)
+        val etJamSelesai = dialogView.findViewById<TextInputEditText>(R.id.etJamSelesai)
         val actvHari = dialogView.findViewById<AutoCompleteTextView>(R.id.actvHari)
-        val tvKeahlian1 = dialogView.findViewById<TextView>(R.id.tvKeahlian1)
-        val tvKeahlian2 = dialogView.findViewById<TextView>(R.id.tvKeahlian2)
-        val btnCancel = dialogView.findViewById<MaterialButton>(R.id.btnCancel)
+        val actvJurusan = dialogView.findViewById<AutoCompleteTextView>(R.id.actvJurusan)
+        val tilJurusan = dialogView.findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.tilJurusan)
         val btnSave = dialogView.findViewById<MaterialButton>(R.id.btnSave)
+        val btnCancel = dialogView.findViewById<MaterialButton>(R.id.btnCancel)
 
-        tvTitle.text = if (item == null) "Tambah Jadwal Dhuha" else "Edit Jadwal Dhuha"
-
-        val selectedKeahlian1 = item?.keahlian1?.toMutableList() ?: mutableListOf()
-        val selectedKeahlian2 = item?.keahlian2?.toMutableList() ?: mutableListOf()
-
-        tvKeahlian1.text = selectedKeahlian1.joinToString(", ").ifEmpty { "Pilih Keahlian 1" }
-        tvKeahlian2.text = selectedKeahlian2.joinToString(", ").ifEmpty { "Pilih Keahlian 2" }
-
-        val days = listOf("Senin", "Selasa", "Rabu", "Kamis", "Jumat")
+        tvTitle.text = "Edit Waktu Dhuha Keahlian"
+        tilJurusan.visibility = View.VISIBLE
+        actvJurusan.setText("Semua Jurusan", false)
+        val days = listOf("Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Semua Hari")
         actvHari.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, days))
-        if (item != null) {
-            actvHari.setText(item.hari, false)
-        }
+        actvHari.setText("Semua Hari", false)
 
-        val dialog = AlertDialog.Builder(this)
-            .setView(dialogView)
-            .setCancelable(true)
-            .create()
+        val jurusanOptions = listOf("Semua Jurusan") + dhuhaKeahlianList.flatMap { listOfNotNull(it.jurusan1, it.jurusan2) }.map { it.nama_jurusan }
+        actvJurusan.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, jurusanOptions))
 
-        tvKeahlian1.setOnClickListener {
-            showMultiSelectDialog("Pilih Keahlian 1", selectedKeahlian1) {
-                tvKeahlian1.text = selectedKeahlian1.joinToString(", ").ifEmpty { "Pilih Keahlian 1" }
+        val dialog = AlertDialog.Builder(this).setView(dialogView).create()
+
+        btnSave.setOnClickListener {
+            val updatedMulai = etJamMulai.text.toString().trim()
+            val updatedSelesai = etJamSelesai.text.toString().trim()
+            val updatedHari = actvHari.text.toString().trim()
+            val selectedJurusan = actvJurusan.text.toString().trim()
+
+            if (updatedMulai.isEmpty() || updatedSelesai.isEmpty()) {
+                Toast.makeText(this, "Isi waktu mulai dan selesai", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
-        }
 
-        tvKeahlian2.setOnClickListener {
-            showMultiSelectDialog("Pilih Keahlian 2", selectedKeahlian2) {
-                tvKeahlian2.text = selectedKeahlian2.joinToString(", ").ifEmpty { "Pilih Keahlian 2" }
+            btnSave.isEnabled = false
+            btnSave.text = "MENYIMPAN..."
+
+            val jurusansToUpdate = if (selectedJurusan == "Semua Jurusan") {
+                dhuhaKeahlianList.flatMap { listOfNotNull(it.jurusan1, it.jurusan2) }
+            } else {
+                dhuhaKeahlianList.flatMap { listOfNotNull(it.jurusan1, it.jurusan2) }.filter { it.nama_jurusan == selectedJurusan }
+            }
+
+            lifecycleScope.launch {
+                val token = getAuthToken()
+                var hasError = false
+                jurusansToUpdate.forEach { jur ->
+                    val h = if (updatedHari == "Semua Hari" || updatedHari.isEmpty()) jur.hari_dhuha ?: "" else updatedHari
+                    val req = com.xirpl2.SASMobile.model.JadwalDhuhaTimeUpdateRequest(
+                        waktu_mulai = updatedMulai,
+                        waktu_selesai = updatedSelesai,
+                        hari = h
+                    )
+                    val res = repository.updateJadwalDhuhaTime(token, jur.id_jurusan, req)
+                    if (res.isFailure) hasError = true
+                }
+                
+                safeRunOnUiThread {
+                    if (hasError) {
+                        Toast.makeText(this@JadwalSholatAdminActivity, "Gagal memperbarui beberapa jadwal", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this@JadwalSholatAdminActivity, "Waktu Dhuha berhasil diperbarui", Toast.LENGTH_SHORT).show()
+                        dialog.dismiss()
+                        loadSynchronizedData()
+                    }
+                    btnSave.isEnabled = true
+                    btnSave.text = "SIMPAN JADWAL"
+                }
             }
         }
 
         btnCancel.setOnClickListener { dialog.dismiss() }
-
-        btnSave.setOnClickListener {
-            val hari = actvHari.text.toString()
-            if (hari.isEmpty()) {
-                Toast.makeText(this, "Pilih hari", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            val request = com.xirpl2.SASMobile.model.JadwalDhuhaKeahlian(
-                id = item?.id,
-                hari = hari,
-                keahlian1 = selectedKeahlian1,
-                keahlian2 = selectedKeahlian2
-            )
-
-            // COMMENTED OUT: Phantom API methods (not in backend)
-            /*
-            lifecycleScope.launch {
-                val token = getAuthToken()
-                val result = if (item == null) {
-                    repository.createJadwalDhuhaKeahlian(token, request)
-                } else {
-                    repository.updateJadwalDhuhaKeahlian(token, item.id!!, request)
-                }
-
-                safeRunOnUiThread {
-                    if (result.isSuccess) {
-                        Toast.makeText(this@JadwalSholatAdminActivity, "Berhasil menyimpan", Toast.LENGTH_SHORT).show()
-                        dialog.dismiss()
-                        loadSynchronizedData()
-                    } else {
-                        Toast.makeText(this@JadwalSholatAdminActivity, "Gagal: ${result.exceptionOrNull()?.message}", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-            */
-        }
-
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
         dialog.show()
-    }
-
-    private fun showMultiSelectDialog(title: String, selectedItems: MutableList<String>, onResult: () -> Unit) {
-        val checkedItems = BooleanArray(allKeahlian.size) { i ->
-            selectedItems.contains(allKeahlian[i])
-        }
-
-        AlertDialog.Builder(this)
-            .setTitle(title)
-            .setMultiChoiceItems(allKeahlian, checkedItems) { _, which, isChecked ->
-                if (isChecked) {
-                    if (!selectedItems.contains(allKeahlian[which])) {
-                        selectedItems.add(allKeahlian[which])
-                    }
-                } else {
-                    selectedItems.remove(allKeahlian[which])
-                }
-            }
-            .setPositiveButton("OK") { _, _ -> onResult() }
-            .setNegativeButton("Batal", null)
-            .show()
-    }
-
-    private fun showEditSholatDhuhaCardDialog(id: Int) {
-        // COMMENTED OUT: Phantom API method (not in backend)
-        /*
-        lifecycleScope.launch {
-            val token = getAuthToken()
-            repository.getSholatDhuhaDetail(token).onSuccess { detail ->
-                safeRunOnUiThread {
-                    showEditSholatCardDialog(detail.id, "Dhuha", detail.hari, detail.waktuMulai, detail.waktuSelesai, detail.kelas, null)
-                }
-            }
-        }
-        */
     }
 
     private fun showEditSholatDzuhurCardDialog(id: Int) {

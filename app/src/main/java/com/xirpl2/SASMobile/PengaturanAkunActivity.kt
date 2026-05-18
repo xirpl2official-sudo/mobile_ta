@@ -21,6 +21,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
+import com.xirpl2.SASMobile.model.ChangePasswordRequest
+import com.xirpl2.SASMobile.model.DeviceChangeRequestBody
 import com.xirpl2.SASMobile.model.UserProfile
 import com.xirpl2.SASMobile.network.RetrofitClient
 import kotlinx.coroutines.Dispatchers
@@ -102,8 +104,21 @@ class PengaturanAkunActivity : BaseActivity() {
         }
         
         
+        // Change password
         tvChangeEmail.setOnClickListener {
             showChangeEmailDialog()
+        }
+        
+        // Change password button
+        val btnChangePassword = findViewById<com.google.android.material.button.MaterialButton>(R.id.btnChangePassword)
+        btnChangePassword?.setOnClickListener {
+            showChangePasswordDialog()
+        }
+
+        // Device change request button
+        val btnDeviceChangeRequest = findViewById<com.google.android.material.button.MaterialButton>(R.id.btnDeviceChangeRequest)
+        btnDeviceChangeRequest?.setOnClickListener {
+            showDeviceChangeDialog()
         }
     }
 
@@ -385,4 +400,250 @@ class PengaturanAkunActivity : BaseActivity() {
         val kelas: String = "",
         val isGoogleAccount: Boolean = false
     )
+    
+    private fun showChangePasswordDialog() {
+        val dialogBuilder = AlertDialog.Builder(this)
+        val inflater = layoutInflater
+        val dialogView = inflater.inflate(R.layout.dialog_ubah_password, null)
+        
+        dialogBuilder.setView(dialogView)
+        val alertDialog = dialogBuilder.create()
+        alertDialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        
+        val etCurrentPassword = dialogView.findViewById<EditText>(R.id.etCurrentPassword)
+        val etNewPassword = dialogView.findViewById<EditText>(R.id.etNewPassword)
+        val etConfirmPassword = dialogView.findViewById<EditText>(R.id.etConfirmPassword)
+        val tilCurrentPassword = dialogView.findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.tilCurrentPassword)
+        val tilNewPassword = dialogView.findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.tilNewPassword)
+        val tilConfirmPassword = dialogView.findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.tilConfirmPassword)
+        val btnClose = dialogView.findViewById<ImageView>(R.id.btnClosePassword)
+        val btnBatal = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnBatalPassword)
+        val btnSimpan = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnSimpanPassword)
+        
+        btnClose.setOnClickListener { alertDialog.dismiss() }
+        btnBatal.setOnClickListener { alertDialog.dismiss() }
+        
+        btnSimpan.setOnClickListener {
+            val currentPwd = etCurrentPassword.text.toString()
+            val newPwd = etNewPassword.text.toString()
+            val confirmPwd = etConfirmPassword.text.toString()
+            
+            // Validate
+            var isValid = true
+            
+            if (currentPwd.isEmpty()) {
+                tilCurrentPassword.error = "Wajib diisi"
+                isValid = false
+            } else {
+                tilCurrentPassword.error = null
+            }
+            
+            if (newPwd.isEmpty()) {
+                tilNewPassword.error = "Wajib diisi"
+                isValid = false
+            } else if (newPwd.length < 8) {
+                tilNewPassword.error = "Minimal 8 karakter"
+                isValid = false
+            } else {
+                tilNewPassword.error = null
+            }
+            
+            if (confirmPwd != newPwd) {
+                tilConfirmPassword.error = "Kata sandi tidak cocok"
+                isValid = false
+            } else {
+                tilConfirmPassword.error = null
+            }
+            
+            if (!isValid) return@setOnClickListener
+            
+            btnSimpan.isEnabled = false
+            btnSimpan.text = "Menyimpan..."
+            
+            changePassword(currentPwd, newPwd) { success, message ->
+                runOnUiThread {
+                    btnSimpan.isEnabled = true
+                    btnSimpan.text = "Simpan"
+                    
+                    if (success) {
+                        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+                        alertDialog.dismiss()
+                    } else {
+                        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
+        
+        alertDialog.show()
+    }
+    
+    private fun changePassword(currentPassword: String, newPassword: String, callback: (Boolean, String) -> Unit) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val sharedPref = getSharedPreferences("user_session", Context.MODE_PRIVATE)
+                val token = sharedPref.getString("auth_token", null)
+                    ?: getSharedPreferences("UserData", Context.MODE_PRIVATE)
+                        .getString("auth_token", null)
+                
+                if (token == null) {
+                    withContext(Dispatchers.Main) {
+                        callback(false, "Token tidak ditemukan. Silakan login kembali")
+                    }
+                    return@launch
+                }
+                
+                val request = ChangePasswordRequest(
+                    currentPassword = currentPassword,
+                    newPassword = newPassword
+                )
+                
+                val response = RetrofitClient.apiService.changePassword("Bearer $token", request)
+                
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful) {
+                        callback(true, response.body()?.message ?: "Kata sandi berhasil diubah")
+                    } else {
+                        val errorBody = response.errorBody()?.string()
+                        val errorMessage = try {
+                            if (!errorBody.isNullOrEmpty()) {
+                                org.json.JSONObject(errorBody).optString("message", "Gagal mengubah kata sandi")
+                            } else {
+                                when (response.code()) {
+                                    400 -> "Format data tidak valid"
+                                    401 -> "Kata sandi saat ini salah"
+                                    404 -> "Akun tidak ditemukan"
+                                    else -> "Gagal mengubah kata sandi (${response.code()})"
+                                }
+                            }
+                        } catch (e: Exception) {
+                            "Gagal mengubah kata sandi (${response.code()})"
+                        }
+                        callback(false, errorMessage)
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    val errorMsg = when (e) {
+                        is java.net.UnknownHostException -> "Tidak dapat terhubung ke server"
+                        is java.net.SocketTimeoutException -> "Koneksi timeout"
+                        else -> "Terjadi kesalahan: ${e.message}"
+                    }
+                    callback(false, errorMsg)
+                }
+            }
+        }
+    }
+
+    private fun showDeviceChangeDialog() {
+        val dialogBuilder = AlertDialog.Builder(this)
+        val inflater = layoutInflater
+        val dialogView = inflater.inflate(R.layout.dialog_device_change, null)
+        
+        dialogBuilder.setView(dialogView)
+        val alertDialog = dialogBuilder.create()
+        alertDialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        
+        val etAlasan = dialogView.findViewById<EditText>(R.id.etAlasan)
+        val tilAlasan = dialogView.findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.tilAlasan)
+        val btnClose = dialogView.findViewById<ImageView>(R.id.btnCloseDevice)
+        val btnBatal = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnBatalDevice)
+        val btnKirim = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnKirimDevice)
+        
+        btnClose.setOnClickListener { alertDialog.dismiss() }
+        btnBatal.setOnClickListener { alertDialog.dismiss() }
+        
+        btnKirim.setOnClickListener {
+            val alasan = etAlasan.text.toString().trim()
+            
+            if (alasan.isEmpty()) {
+                tilAlasan.error = "Wajib diisi"
+                return@setOnClickListener
+            } else if (alasan.length < 10) {
+                tilAlasan.error = "Minimal 10 karakter"
+                return@setOnClickListener
+            } else {
+                tilAlasan.error = null
+            }
+            
+            btnKirim.isEnabled = false
+            btnKirim.text = "Mengirim..."
+            
+            submitDeviceChangeRequest(alasan) { success, message ->
+                runOnUiThread {
+                    btnKirim.isEnabled = true
+                    btnKirim.text = "Kirim Pengajuan"
+                    
+                    if (success) {
+                        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+                        alertDialog.dismiss()
+                    } else {
+                        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
+        
+        alertDialog.show()
+    }
+
+    private fun submitDeviceChangeRequest(alasan: String, callback: (Boolean, String) -> Unit) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val sharedPref = getSharedPreferences("user_session", Context.MODE_PRIVATE)
+                val token = sharedPref.getString("auth_token", null)
+                    ?: getSharedPreferences("UserData", Context.MODE_PRIVATE)
+                        .getString("auth_token", null)
+                
+                if (token == null) {
+                    withContext(Dispatchers.Main) {
+                        callback(false, "Token tidak ditemukan. Silakan login kembali")
+                    }
+                    return@launch
+                }
+                
+                // Get current device ID
+                val hardwareId = android.provider.Settings.Secure.getString(contentResolver, android.provider.Settings.Secure.ANDROID_ID)
+                
+                val request = DeviceChangeRequestBody(
+                    newHardwareId = hardwareId,
+                    alasan = alasan
+                )
+                
+                val response = RetrofitClient.apiService.createDeviceChangeRequest("Bearer $token", request)
+                
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful) {
+                        callback(true, response.body()?.message ?: "Pengajuan berhasil dikirim")
+                    } else {
+                        val errorBody = response.errorBody()?.string()
+                        val errorMessage = try {
+                            if (!errorBody.isNullOrEmpty()) {
+                                org.json.JSONObject(errorBody).optString("message", "Gagal mengirim pengajuan")
+                            } else {
+                                when (response.code()) {
+                                    400 -> "Format data tidak valid"
+                                    404 -> "Perangkat saat ini tidak ditemukan"
+                                    409 -> "Anda sudah memiliki pengajuan yang belum diproses"
+                                    else -> "Gagal mengirim pengajuan (${response.code()})"
+                                }
+                            }
+                        } catch (e: Exception) {
+                            "Gagal mengirim pengajuan (${response.code()})"
+                        }
+                        callback(false, errorMessage)
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    val errorMsg = when (e) {
+                        is java.net.UnknownHostException -> "Tidak dapat terhubung ke server"
+                        is java.net.SocketTimeoutException -> "Koneksi timeout"
+                        else -> "Terjadi kesalahan: ${e.message}"
+                    }
+                    callback(false, errorMsg)
+                }
+            }
+        }
+    }
 }

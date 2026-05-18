@@ -38,6 +38,59 @@ class BerandaRepository {
         }
     }
 
+    suspend fun getJadwalDhuhaKeahlian(token: String): Result<List<com.xirpl2.SASMobile.model.JadwalDhuhaKeahlian>> {
+        return try {
+            val response = apiService.getJurusanDhuhaSchedules("Bearer $token")
+            if (response.isSuccessful) {
+                val jurusans = response.body()?.data ?: emptyList()
+                val days = listOf("Senin", "Selasa", "Rabu", "Kamis")
+                val grouped = jurusans.filter { it.hari_dhuha != null && it.hari_dhuha.isNotEmpty() }.groupBy { it.hari_dhuha!! }
+                
+                val resultList = days.map { day ->
+                    val jurusansOnDay = grouped[day] ?: emptyList()
+                    val j1 = if (jurusansOnDay.isNotEmpty()) jurusansOnDay[0] else null
+                    val j2 = if (jurusansOnDay.size > 1) jurusansOnDay[1] else null
+                    com.xirpl2.SASMobile.model.JadwalDhuhaKeahlian(
+                        hari = day,
+                        jurusan1 = j1,
+                        jurusan2 = j2
+                    )
+                }
+                Result.success(resultList)
+            } else {
+                Result.failure(Exception(response.message()))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun updateJurusanDhuhaDay(token: String, id: Int, hari: String): Result<Boolean> {
+        return try {
+            val response = apiService.updateJurusanDhuhaDay("Bearer $token", id, com.xirpl2.SASMobile.model.DhuhaDayRequest(hari_dhuha = hari))
+            if (response.isSuccessful) {
+                Result.success(true)
+            } else {
+                Result.failure(Exception(response.message()))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun updateJadwalDhuhaTime(token: String, idJurusan: Int, request: com.xirpl2.SASMobile.model.JadwalDhuhaTimeUpdateRequest): Result<Boolean> {
+        return try {
+            val response = apiService.updateJadwalDhuhaTime("Bearer $token", idJurusan, request)
+            if (response.isSuccessful) {
+                Result.success(true)
+            } else {
+                Result.failure(Exception(response.message()))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     suspend fun getJadwalSholatToday(token: String): Result<List<JadwalSholatData>> {
         return withContext(Dispatchers.IO) {
             try {
@@ -556,6 +609,29 @@ class BerandaRepository {
                 val response = apiService.getStaffGuruLookup("Bearer $token")
                 if (!response.isSuccessful) return@withContext Result.failure(Exception("HTTP Error: ${response.code()}"))
                 return@withContext Result.success(response.body()?.data ?: emptyList())
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun importStudents(token: String, filePart: okhttp3.MultipartBody.Part): Result<MessageResponse> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.importStudents("Bearer $token", filePart)
+                if (!response.isSuccessful) {
+                    val errorBody = response.errorBody()?.string()
+                    val msg = if (!errorBody.isNullOrEmpty()) {
+                        try {
+                            org.json.JSONObject(errorBody).getString("message")
+                        } catch (e: Exception) {
+                            errorBody
+                        }
+                    } else response.message()
+                    return@withContext Result.failure(Exception(msg))
+                }
+                val body = response.body() ?: return@withContext Result.failure(Exception("Response body kosong"))
+                Result.success(body)
             } catch (e: Exception) {
                 Result.failure(e)
             }

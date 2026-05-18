@@ -485,6 +485,17 @@
                         android:textColor="@android:color/white"
                         android:textSize="11sp"
                         app:backgroundTint="#4CAF50"
+                        app:cornerRadius="8dp"
+                        android:layout_marginEnd="6dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnExportPdf"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="Export PDF"
+                        android:textColor="@android:color/white"
+                        android:textSize="11sp"
+                        app:backgroundTint="#F44336"
                         app:cornerRadius="8dp" />
 
                 </LinearLayout>

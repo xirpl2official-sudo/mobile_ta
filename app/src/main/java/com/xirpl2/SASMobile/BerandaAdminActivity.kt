@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.lifecycle.lifecycleScope
@@ -54,8 +55,8 @@ class BerandaAdminActivity : BaseAdminActivity() {
         setupDrawerAndSidebar()
         setupMenuIcon()
 
-        
-        findViewById<View>(R.id.main)?.post {
+        // Load data safely
+        if (!isFinishing && !isDestroyed) {
             loadStatistikFromAPI()
             setupJadwalSholat()
             setupJurusanList()
@@ -80,26 +81,18 @@ class BerandaAdminActivity : BaseAdminActivity() {
         val today = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(java.util.Date())
 
         lifecycleScope.launch {
-            
             repository.getStatistics(token, today).fold(
                 onSuccess = { globalStats ->
-                    runOnUiThread {
-                        
+                    if (!isFinishing && !isDestroyed) {
                         tvTotalSiswaValue.text = globalStats.total_siswa.toString()
-
-                        
                         tvHadirHariIniValue.text = globalStats.total_kehadiran_hari_ini.toString()
-
-                        
                         val izinSakit = globalStats.total_izin_hari_ini + globalStats.total_sakit_hari_ini
                         tvIzinSakitValue.text = izinSakit.toString()
-
-                        
                         tvKehadiranValue.text = globalStats.total_alpha_hari_ini.toString()
-
                     }
                 },
                 onFailure = { error ->
+                    Log.w(TAG, "Failed to load statistics: ${error.message}")
                 }
             )
         }
@@ -129,17 +122,18 @@ class BerandaAdminActivity : BaseAdminActivity() {
             repository.getJadwalSholat(token).fold(
                 onSuccess = { list ->
                     val upcomingPrayer = JadwalSholatHelper.getUpcomingPrayerFromList(list)
-                    runOnUiThread {
+                    if (!isFinishing && !isDestroyed) {
                         if (upcomingPrayer != null) {
                             tvNamaSholat.text = upcomingPrayer.namaSholat
                             tvWaktuSholat.text = "Waktu : ${upcomingPrayer.jamMulai} - ${upcomingPrayer.jamSelesai}"
                         } else {
                             tvNamaSholat.text = "-"
-                            tvWaktuSholat.text = "Tidak ada jadwal yang akan datang dalam\nwaktu dekat"
+                            tvWaktuSholat.text = "Tidak ada jadwal yang akan datang"
                         }
                     }
                 },
                 onFailure = { error ->
+                    Log.w(TAG, "Failed to load jadwal sholat: ${error.message}")
                 }
             )
         }
@@ -167,6 +161,7 @@ class BerandaAdminActivity : BaseAdminActivity() {
                     }
                 }
             } catch (e: Exception) {
+                Log.w(TAG, "Failed to load notification count: ${e.message}")
             }
         }
     }
@@ -181,7 +176,7 @@ class BerandaAdminActivity : BaseAdminActivity() {
         lifecycleScope.launch {
             repository.getDhuhaToday(token).fold(
                 onSuccess = { dhuhaData ->
-                    runOnUiThread {
+                    if (!isFinishing && !isDestroyed) {
                         val safeData = dhuhaData ?: emptyList()
                         jurusanAdapter = JurusanAdapter(safeData)
                         
@@ -190,12 +185,10 @@ class BerandaAdminActivity : BaseAdminActivity() {
                             adapter = jurusanAdapter
                             isNestedScrollingEnabled = false
                         }
-                        
                     }
                 },
                 onFailure = { error ->
-                    
-                    runOnUiThread {
+                    if (!isFinishing && !isDestroyed) {
                         jurusanAdapter = JurusanAdapter(emptyList<DhuhaJurusanData>())
                         
                         rvJurusan.apply {

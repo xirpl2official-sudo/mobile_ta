@@ -25,6 +25,7 @@ data class SiswaItem(
 
 data class SiswaPaginationInfo(
     val page: Int = 1,
+    @SerializedName(value = "page_size", alternate = ["limit"])
     val page_size: Int = 100,
     val total_pages: Int = 1,
     @SerializedName(value = "total_items", alternate = ["total", "recordsTotal", "totalItems"])
@@ -59,8 +60,9 @@ data class UpdateSiswaRequest(
 )
 
 data class SiswaListPaginatedResponse(
-    val message: String,
+    val message: String? = null,
     val data: List<SiswaItem> = emptyList(),
+    @SerializedName(value = "pagination", alternate = ["meta"])
     val pagination: SiswaPaginationInfo? = null,
     val filters: Map<String, Any>? = null
 )

@@ -10,14 +10,34 @@ import com.xirpl2.SASMobile.model.JadwalDhuhaKeahlian
 
 class DhuhaScheduleAdapter(
     private var rows: List<JadwalDhuhaKeahlian>,
-    private val onEditClick: ((item: JadwalDhuhaKeahlian) -> Unit)? = null
+    private val onSwap: ((row1: Int, col1: Int, row2: Int, col2: Int) -> Unit)? = null
 ) : RecyclerView.Adapter<DhuhaScheduleAdapter.ViewHolder>() {
 
     var isEditMode = false
         set(value) {
             field = value
+            selectedRow = -1
+            selectedCol = -1
             notifyDataSetChanged()
         }
+
+    private var selectedRow = -1
+    private var selectedCol = -1
+
+    private fun handleItemClick(row: Int, col: Int) {
+        if (!isEditMode) return
+        
+        if (selectedRow == -1 && selectedCol == -1) {
+            selectedRow = row
+            selectedCol = col
+            notifyDataSetChanged()
+        } else {
+            // Swap triggered
+            onSwap?.invoke(selectedRow, selectedCol, row, col)
+            selectedRow = -1
+            selectedCol = -1
+        }
+    }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvDay: TextView = itemView.findViewById(R.id.tvDay)
@@ -25,9 +45,14 @@ class DhuhaScheduleAdapter(
         val tvJurusan2: TextView = itemView.findViewById(R.id.tvJurusan2)
 
         init {
-            itemView.setOnClickListener {
+            tvJurusan1.setOnClickListener {
                 if (adapterPosition != RecyclerView.NO_POSITION) {
-                    onEditClick?.invoke(rows[adapterPosition])
+                    handleItemClick(adapterPosition, 1)
+                }
+            }
+            tvJurusan2.setOnClickListener {
+                if (adapterPosition != RecyclerView.NO_POSITION) {
+                    handleItemClick(adapterPosition, 2)
                 }
             }
         }
@@ -45,15 +70,31 @@ class DhuhaScheduleAdapter(
         
         holder.itemView.setBackgroundColor(if (position % 2 == 0) Color.WHITE else Color.parseColor("#FAFAFA"))
 
-        holder.tvJurusan1.text = row.keahlian1.joinToString(", ").ifEmpty { "-" }
-        holder.tvJurusan2.text = row.keahlian2.joinToString(", ").ifEmpty { "-" }
+        holder.tvJurusan1.text = row.jurusan1?.nama_jurusan ?: "-"
+        holder.tvJurusan2.text = row.jurusan2?.nama_jurusan ?: "-"
         
         if (isEditMode) {
-            holder.tvJurusan1.setTextColor(Color.parseColor("#2196F3"))
-            holder.tvJurusan2.setTextColor(Color.parseColor("#2196F3"))
+            val isSelected1 = (position == selectedRow && selectedCol == 1)
+            val isSelected2 = (position == selectedRow && selectedCol == 2)
+            
+            holder.tvJurusan1.setTextColor(if (isSelected1) Color.WHITE else Color.parseColor("#1E3A8A"))
+            if (isSelected1) {
+                holder.tvJurusan1.setBackgroundResource(R.drawable.bg_selected_jurusan)
+            } else {
+                holder.tvJurusan1.setBackgroundResource(0)
+            }
+            
+            holder.tvJurusan2.setTextColor(if (isSelected2) Color.WHITE else Color.parseColor("#1E3A8A"))
+            if (isSelected2) {
+                holder.tvJurusan2.setBackgroundResource(R.drawable.bg_selected_jurusan)
+            } else {
+                holder.tvJurusan2.setBackgroundResource(0)
+            }
         } else {
             holder.tvJurusan1.setTextColor(Color.BLACK)
+            holder.tvJurusan1.setBackgroundResource(0)
             holder.tvJurusan2.setTextColor(Color.BLACK)
+            holder.tvJurusan2.setBackgroundResource(0)
         }
     }
 

@@ -1,14 +1,19 @@
 package com.xirpl2.SASMobile
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.view.Gravity
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import www.sanju.motiontoast.MotionToast
 import www.sanju.motiontoast.MotionToastStyle
@@ -17,11 +22,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import androidx.lifecycle.lifecycleScope
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.content.ContextCompat
 import com.google.android.material.textfield.TextInputLayout
 import com.xirpl2.SASMobile.model.LoginRequest
+import com.xirpl2.SASMobile.utils.AnrDetector
+import kotlinx.coroutines.delay
 
 class MasukActivity : BaseActivity() {
 
@@ -32,34 +41,51 @@ class MasukActivity : BaseActivity() {
     private lateinit var textLupaPassword: TextView
     private lateinit var nisLayout: TextInputLayout
     private lateinit var passwordLayout: TextInputLayout
+    
+    private val inputHandler = Handler(Looper.getMainLooper())
+    private var autoLoginJob: kotlinx.coroutines.Job? = null
 
     companion object {
         private const val CAMERA_PERMISSION_CODE = 100
+        private const val TAG = "MasukActivity"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_masuk)
-        
-        // Edge-to-edge support handled via BaseActivity or specific layout logic
-        window.statusBarColor = 0xFF2886D6.toInt()
-        
-        @Suppress("DEPRECATION")
-        window.decorView.systemUiVisibility = android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-
-        findViewById<android.view.View>(R.id.main)?.let { mainView ->
-            ViewCompat.setOnApplyWindowInsetsListener(mainView) { v, insets ->
-                val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-                v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-                insets
+        try {
+            setContentView(R.layout.activity_masuk)
+            
+            // UI Styling
+            window.statusBarColor = 0xFF2886D6.toInt()
+            WindowInsetsControllerCompat(window, window.decorView).apply {
+                isAppearanceLightStatusBars = true
             }
-        }
 
-        initializeViews()
-        setHintTextColors()
-        checkCameraPermission()
-        checkAndValidateExistingToken()
-        setupClickListeners()
+            findViewById<android.view.View>(R.id.main)?.let { mainView ->
+                ViewCompat.setOnApplyWindowInsetsListener(mainView) { v, insets ->
+                    val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+                    v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+                    insets
+                }
+            }
+
+            initializeViews()
+            setupNonBlockingInputHandling()
+            setHintTextColors()
+            checkCameraPermission()
+            
+            // Delay auto-login check using lifecycleScope for automatic cancellation
+            autoLoginJob = lifecycleScope.launch {
+                delay(500)
+                if (!isFinishing && !isDestroyed) {
+                    checkAndValidateExistingToken()
+                }
+            }
+            
+            setupClickListeners()
+        } catch (e: Exception) {
+            Log.e(TAG, "Crash in onCreate: ${e.message}")
+        }
     }
 
     private fun initializeViews() {
@@ -72,16 +98,43 @@ class MasukActivity : BaseActivity() {
         passwordLayout = findViewById(R.id.passwordLayout)
     }
 
+    /**
+     * Prevents ANR by handling IME operations outside the immediate UI focus call.
+     */
+    private fun setupNonBlockingInputHandling() {
+        val inputViews = listOf(etNis, etPassword)
+        inputViews.forEach { view ->
+            view.setOnFocusChangeListener { v, hasFocus ->
+                if (hasFocus) {
+                    AnrDetector.recordUiInteraction()
+                    inputHandler.postDelayed({
+                        try {
+                            if (!isFinishing && !isDestroyed) {
+                                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                                imm.showSoftInput(v, InputMethodManager.SHOW_IMPLICIT)
+                            }
+                        } catch (e: Exception) {
+                            Log.e(TAG, "Keyboard focus handling error", e)
+                        }
+                    }, 100)
+                }
+            }
+        }
+    }
+
     private fun setupClickListeners() {
         btnMasuk.setOnClickListener {
+            AnrDetector.recordUiInteraction()
             loginUser()
         }
 
         textBuatAkun.setOnClickListener {
+            AnrDetector.recordUiInteraction()
             safeNavigateTo(DaftarActivity::class.java)
         }
 
         textLupaPassword.setOnClickListener {
+            AnrDetector.recordUiInteraction()
             safeNavigateTo(GantiKataSandi::class.java)
         }
     }
@@ -89,17 +142,6 @@ class MasukActivity : BaseActivity() {
     private fun checkCameraPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_CODE)
-        }
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == CAMERA_PERMISSION_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                
-            } else {
-                
-            }
         }
     }
 
@@ -113,97 +155,57 @@ class MasukActivity : BaseActivity() {
         val nisOrUsername = etNis.text.toString().trim()
         val password = etPassword.text.toString()
 
-        
         if (nisOrUsername.isEmpty() || password.isEmpty()) {
-            MotionToast.createColorToast(
-                this,
-                "Gagal",
-                "NIS/Username dan Password wajib diisi!",
-                MotionToastStyle.ERROR,
-                Gravity.CENTER,
-                MotionToast.LONG_DURATION,
-                null
-            )
+            showToast("Gagal", "NIS/Username dan Password wajib diisi!", MotionToastStyle.ERROR)
             return
         }
 
-        
+        // Cancel auto login if manual login is started
+        autoLoginJob?.cancel()
+
         btnMasuk.isEnabled = false
         btnMasuk.text = "Masuk..."
 
-        
-        CoroutineScope(Dispatchers.IO).launch {
+        lifecycleScope.launch(Dispatchers.IO) {
             try {
-                
                 val response = RetrofitClient.apiService.login(LoginRequest(identifier = nisOrUsername, password = password))
 
                 withContext(Dispatchers.Main) {
+                    if (isFinishing || isDestroyed) return@withContext
+                    
                     btnMasuk.isEnabled = true
                     btnMasuk.text = "Masuk"
 
                     if (response.isSuccessful) {
                         val body = response.body()
-                        val respCode = response.code()
-
-                        if (respCode == 200 && body?.data != null) {
+                        if (body?.data != null) {
                             val userData = body.data
-                            MotionToast.createColorToast(
-                                this@MasukActivity,
-                                "Berhasil",
-                                "Selamat datang, ${userData.getDisplayName()}!",
-                                MotionToastStyle.SUCCESS,
-                                Gravity.CENTER,
-                                MotionToast.LONG_DURATION,
-                                null
-                            )
-
-                            
+                            showToast("Berhasil", "Selamat datang, ${userData.getDisplayName()}!", MotionToastStyle.SUCCESS)
                             saveUserSession(userData)
-
-                            // --- DEVICE AUTH INTEGRATION ---
+    
+                            // Reset lock sebelum navigasi apapun (toast bisa trigger onPause)
+                            isTransitioning.set(false)      // ← TAMBAHKAN
+                            anrWatchdogActive.set(false)    // ← TAMBAHKAN
+                            
                             val token = userData.token
-                            if (token != null) {
+                            if (userData.is_verified == false) {
+                                safeNavigateTo(VerifyAccountActivity::class.java)
+                            } else if (token != null) {
                                 checkDeviceAuth(token)
                             } else {
                                 navigateToHome()
                             }
-                        } else {
-                            MotionToast.createColorToast(
-                                this@MasukActivity,
-                                "Gagal",
-                                body?.message ?: "Login gagal",
-                                MotionToastStyle.ERROR,
-                                Gravity.CENTER,
-                                MotionToast.LONG_DURATION,
-                                null
-                            )
                         }
                     } else {
-                        val errorBody = response.errorBody()?.string()
-                        MotionToast.createColorToast(
-                            this@MasukActivity,
-                            "Gagal",
-                            "NIS atau password salah",
-                            MotionToastStyle.ERROR,
-                            Gravity.CENTER,
-                            MotionToast.LONG_DURATION,
-                            null
-                        )
+                        showToast("Gagal", "NIS atau password salah", MotionToastStyle.ERROR)
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
+                    if (isFinishing || isDestroyed) return@withContext
                     btnMasuk.isEnabled = true
                     btnMasuk.text = "Masuk"
-                    MotionToast.createColorToast(
-                        this@MasukActivity,
-                        "Error",
-                        "Error: ${e.message}",
-                        MotionToastStyle.ERROR,
-                        Gravity.CENTER,
-                        MotionToast.LONG_DURATION,
-                        null
-                    )
+                    showToast("Error", "Error: ${e.message}", MotionToastStyle.ERROR)
                 }
             }
         }
@@ -222,10 +224,10 @@ class MasukActivity : BaseActivity() {
             putString("user_kelas", user.kelas ?: "")
             putString("user_jurusan", user.jurusan ?: "")
             putString("user_role", user.role)
+            putBoolean("is_verified", user.is_verified ?: true)
             putString("auth_token", user.token)
             apply()
         }
-        
         
         val userDataPref = getSharedPreferences("UserData", MODE_PRIVATE)
         with(userDataPref.edit()) {
@@ -243,38 +245,41 @@ class MasukActivity : BaseActivity() {
         val token = sharedPref.getString("auth_token", null)
         val role = sharedPref.getString("user_role", "siswa")
 
-        if (token.isNullOrEmpty()) {
-            return
-        }
+        if (token.isNullOrEmpty()) return
 
-        
-        
-        CoroutineScope(Dispatchers.IO).launch {
+        lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val response = RetrofitClient.apiService.getProfile("Bearer $token")
 
                 withContext(Dispatchers.Main) {
+                    if (isFinishing || isDestroyed) return@withContext
+                    
                     if (response.isSuccessful && response.code() == 200) {
+                        val isVerified = sharedPref.getBoolean("is_verified", true)
                         
-                        
-                        val roleLower = role?.lowercase()?.trim()
-                        val targetActivity = when (roleLower) {
-                            "guru", "wali_kelas", "wali kelas" -> BerandaGuruActivity::class.java
-                            "admin" -> BerandaAdminActivity::class.java
-                            else -> BerandaActivity::class.java
+                        val targetActivity = if (!isVerified) {
+                            VerifyAccountActivity::class.java
+                        } else {
+                            val roleLower = role?.lowercase()?.trim()
+                            when (roleLower) {
+                                "guru", "wali_kelas", "wali kelas" -> BerandaGuruActivity::class.java
+                                "admin" -> BerandaAdminActivity::class.java
+                                else -> BerandaActivity::class.java
+                            }
                         }
                         
-                        startActivity(Intent(this@MasukActivity, targetActivity))
+                        val intent = Intent(this@MasukActivity, targetActivity)
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        startActivity(intent)
                         finish()
                     } else {
-                        
                         clearUserSession()
                     }
                 }
             } catch (e: Exception) {
+                Log.w(TAG, "Auto-login token validation failed (expected on physical devices without API): ${e.message}")
                 withContext(Dispatchers.Main) {
-                    
-                    clearUserSession()
+                    if (!isFinishing && !isDestroyed) clearUserSession()
                 }
             }
         }
@@ -294,20 +299,13 @@ class MasukActivity : BaseActivity() {
             osVersion = osVersion
         )
 
-        CoroutineScope(Dispatchers.IO).launch {
-            // First, try to verify
+        lifecycleScope.launch(Dispatchers.IO) {
             val verifyResult = deviceRepo.verifyDevice(token, authRequest)
-            
             withContext(Dispatchers.Main) {
+                if (isFinishing || isDestroyed) return@withContext
                 verifyResult.fold(
-                    onSuccess = {
-                        // Device verified, proceed to home
-                        navigateToHome()
-                    },
-                    onFailure = { error ->
-                        // Verification failed, maybe not registered?
-                        registerNewDevice(token, authRequest)
-                    }
+                    onSuccess = { navigateToHome() },
+                    onFailure = { registerNewDevice(token, authRequest) }
                 )
             }
         }
@@ -315,34 +313,17 @@ class MasukActivity : BaseActivity() {
 
     private fun registerNewDevice(token: String, request: com.xirpl2.SASMobile.model.HardwareAuthRequest) {
         val deviceRepo = com.xirpl2.SASMobile.repository.DeviceRepository()
-        
-        CoroutineScope(Dispatchers.IO).launch {
+        lifecycleScope.launch(Dispatchers.IO) {
             val registerResult = deviceRepo.registerDevice(token, request)
-            
             withContext(Dispatchers.Main) {
+                if (isFinishing || isDestroyed) return@withContext
                 registerResult.fold(
                     onSuccess = {
-                        MotionToast.createColorToast(
-                            this@MasukActivity,
-                            "Perangkat Terikat",
-                            "Akun Anda telah berhasil dikunci ke perangkat ini.",
-                            MotionToastStyle.INFO,
-                            Gravity.CENTER,
-                            MotionToast.LONG_DURATION,
-                            null
-                        )
+                        showToast("Perangkat Terikat", "Akun Anda telah berhasil dikunci ke perangkat ini.", MotionToastStyle.INFO)
                         navigateToHome()
                     },
-                    onFailure = { error ->
-                        MotionToast.createColorToast(
-                            this@MasukActivity,
-                            "Keamanan Perangkat",
-                            "Akun ini sudah terikat ke perangkat lain. Silakan minta admin untuk mereset perangkat.",
-                            MotionToastStyle.ERROR,
-                            Gravity.CENTER,
-                            MotionToast.LONG_DURATION,
-                            null
-                        )
+                    onFailure = {
+                        showToast("Keamanan Perangkat", "Akun ini sudah terikat ke perangkat lain. Silakan minta admin untuk mereset perangkat.", MotionToastStyle.ERROR)
                         clearUserSession()
                     }
                 )
@@ -351,6 +332,9 @@ class MasukActivity : BaseActivity() {
     }
 
     private fun navigateToHome() {
+        isTransitioning.set(false)
+        anrWatchdogActive.set(false)  // ← TAMBAHKAN INI (line baru setelah 168)
+
         val sharedPref = getSharedPreferences("user_session", MODE_PRIVATE)
         val role = sharedPref.getString("user_role", "siswa")
         
@@ -361,19 +345,15 @@ class MasukActivity : BaseActivity() {
             else -> BerandaActivity::class.java
         }
         
-        // Use SafeNavigator for critical login transition
-        com.xirpl2.SASMobile.utils.SafeNavigator.navigateAndFinish(
-            this,
-            targetActivity,
-            { intent ->
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            },
-            250L // Increased delay for login transition
-        )
+        val intent = Intent(this, targetActivity)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    private fun showToast(title: String, message: String, style: MotionToastStyle) {
+        if (isFinishing || isDestroyed) return
+        android.widget.Toast.makeText(this, message, android.widget.Toast.LENGTH_SHORT).show()
     }
 
     private fun clearUserSession() {

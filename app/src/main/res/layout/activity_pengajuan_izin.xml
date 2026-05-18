@@ -327,7 +327,89 @@
 
                         </com.google.android.material.textfield.TextInputLayout>
 
+                        <!-- Bukti Foto Section -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            android:letterSpacing="0.05"
+                            android:text="BUKTI FOTO (OPSIONAL)"
+                            android:textAllCaps="true"
+                            android:textColor="@color/slate_500"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
 
+                        <FrameLayout
+                            android:id="@+id/layoutUploadPhoto"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="20dp"
+                            android:background="@drawable/bg_file_upload_dashed"
+                            android:padding="16dp"
+                            android:clickable="true"
+                            android:focusable="true">
+
+                            <LinearLayout
+                                android:id="@+id/layoutUploadPlaceholder"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:gravity="center">
+
+                                <ImageView
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:src="@drawable/ic_cloud_upload"
+                                    android:contentDescription="Upload"
+                                    app:tint="@color/slate_400" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:text="Ketuk untuk unggah foto bukti"
+                                    android:textColor="@color/slate_500"
+                                    android:textSize="13sp"
+                                    android:gravity="center" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:text="JPG, PNG (Maks. 5MB)"
+                                    android:textColor="@color/slate_400"
+                                    android:textSize="11sp" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/layoutPhotoPreview"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:gravity="center"
+                                android:visibility="gone">
+
+                                <ImageView
+                                    android:id="@+id/ivPhotoPreview"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="180dp"
+                                    android:scaleType="centerCrop"
+                                    android:contentDescription="Preview foto" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btnRemovePhoto"
+                                    style="@style/Widget.Material3.Button.TextButton"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Hapus Foto"
+                                    android:textColor="@color/error_color"
+                                    android:textSize="12sp"
+                                    app:icon="@drawable/ic_close"
+                                    app:iconTint="@color/error_color"
+                                    app:iconSize="14dp" />
+                            </LinearLayout>
+
+                        </FrameLayout>
 
                         
                         <View

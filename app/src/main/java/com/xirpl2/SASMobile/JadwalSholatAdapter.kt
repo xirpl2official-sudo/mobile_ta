@@ -11,9 +11,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.xirpl2.SASMobile.model.JadwalSholat
 import com.xirpl2.SASMobile.model.StatusSholat
 
-class JadwalSholatAdapter(
-    private val jadwalList: List<JadwalSholat>
-) : RecyclerView.Adapter<JadwalSholatAdapter.JadwalViewHolder>() {
+import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.DiffUtil
+
+class JadwalSholatAdapter : ListAdapter<JadwalSholat, JadwalSholatAdapter.JadwalViewHolder>(JadwalDiffCallback()) {
 
     inner class JadwalViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val cardJadwalItem: androidx.cardview.widget.CardView = itemView.findViewById(R.id.cardJadwalItem)
@@ -30,7 +31,7 @@ class JadwalSholatAdapter(
     }
 
     override fun onBindViewHolder(holder: JadwalViewHolder, position: Int) {
-        val jadwal = jadwalList[position]
+        val jadwal = getItem(position)
 
         holder.tvNamaSholat.text = jadwal.namaSholat
         holder.tvJamSholat.text = "${jadwal.jamMulai} - ${jadwal.jamSelesai}"
@@ -69,6 +70,14 @@ class JadwalSholatAdapter(
             }
         }
     }
+}
 
-    override fun getItemCount(): Int = jadwalList.size
+class JadwalDiffCallback : DiffUtil.ItemCallback<JadwalSholat>() {
+    override fun areItemsTheSame(oldItem: JadwalSholat, newItem: JadwalSholat): Boolean {
+        return oldItem.id == newItem.id
+    }
+
+    override fun areContentsTheSame(oldItem: JadwalSholat, newItem: JadwalSholat): Boolean {
+        return oldItem == newItem
+    }
 }

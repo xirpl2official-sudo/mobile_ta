@@ -35,6 +35,9 @@ class AdminDeviceManagementActivity : BaseAdminActivity() {
         setContentView(R.layout.activity_admin_device_management)
         setupStatusBar()
 
+        val topBarContent = findViewById<View>(R.id.topBarContent)
+        applyEdgeToEdge(topBarContent)
+
         initializeViews()
         setupDrawerAndSidebar()
         setupMenuIcon()

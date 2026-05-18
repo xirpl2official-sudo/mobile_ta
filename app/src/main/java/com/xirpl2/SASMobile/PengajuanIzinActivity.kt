@@ -2,9 +2,11 @@ package com.xirpl2.SASMobile
 
 import android.app.DatePickerDialog
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.*
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -12,11 +14,16 @@ import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textfield.TextInputLayout
 import com.xirpl2.SASMobile.network.RetrofitClient
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
+import java.io.FileOutputStream
 import java.util.*
 
 class PengajuanIzinActivity : BaseActivity() {
 
-    
+    // Form fields
     private lateinit var rgPermitType: RadioGroup
     private lateinit var rbSakit: RadioButton
     private lateinit var rbIzin: RadioButton
@@ -32,8 +39,25 @@ class PengajuanIzinActivity : BaseActivity() {
     private lateinit var btnMenu: ImageView
     private lateinit var btnBack: ImageView
 
+    // Photo upload
+    private lateinit var layoutUploadPhoto: FrameLayout
+    private lateinit var layoutUploadPlaceholder: LinearLayout
+    private lateinit var layoutPhotoPreview: LinearLayout
+    private lateinit var ivPhotoPreview: ImageView
+    private lateinit var btnRemovePhoto: com.google.android.material.button.MaterialButton
+    private var selectedPhotoUri: Uri? = null
 
     private val calendar = Calendar.getInstance()
+
+    // Photo picker launcher
+    private val photoPickerLauncher = registerForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            selectedPhotoUri = it
+            showPhotoPreview(it)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +70,7 @@ class PengajuanIzinActivity : BaseActivity() {
         setupSubmitButton()
         setupBackButton()
         setupCancelButton()
+        setupPhotoUpload()
     }
 
     private fun initializeViews() {
@@ -62,11 +87,38 @@ class PengajuanIzinActivity : BaseActivity() {
         btnCancel = findViewById(R.id.btnCancel)
         btnMenu = findViewById(R.id.btnMenu)
         btnBack = findViewById(R.id.btnBack)
+
+        // Photo upload views
+        layoutUploadPhoto = findViewById(R.id.layoutUploadPhoto)
+        layoutUploadPlaceholder = findViewById(R.id.layoutUploadPlaceholder)
+        layoutPhotoPreview = findViewById(R.id.layoutPhotoPreview)
+        ivPhotoPreview = findViewById(R.id.ivPhotoPreview)
+        btnRemovePhoto = findViewById(R.id.btnRemovePhoto)
+    }
+
+    private fun setupPhotoUpload() {
+        layoutUploadPhoto.setOnClickListener {
+            if (selectedPhotoUri == null) {
+                photoPickerLauncher.launch("image/*")
+            }
+        }
+
+        btnRemovePhoto.setOnClickListener {
+            selectedPhotoUri = null
+            layoutUploadPlaceholder.visibility = View.VISIBLE
+            layoutPhotoPreview.visibility = View.GONE
+        }
+    }
+
+    private fun showPhotoPreview(uri: Uri) {
+        ivPhotoPreview.setImageURI(uri)
+        layoutUploadPlaceholder.visibility = View.GONE
+        layoutPhotoPreview.visibility = View.VISIBLE
     }
 
     private fun setupPermitTypes() {
         rgPermitType.setOnCheckedChangeListener { _, _ ->
-            
+            // No-op for now
         }
     }
 
@@ -108,8 +160,6 @@ class PengajuanIzinActivity : BaseActivity() {
         }
     }
 
-
-
     private fun setupMenu() {
         val bottomSheetDialog = BottomSheetDialog(this)
         val bottomSheetView = layoutInflater.inflate(R.layout.bottom_sheet_menu, null)
@@ -127,7 +177,7 @@ class PengajuanIzinActivity : BaseActivity() {
                     Toast.makeText(this, "Fitur dalam pengembangan", Toast.LENGTH_SHORT).show()
                 }
                 R.id.nav_pengajuan_izin -> {
-                    
+                    // Already here
                 }
                 R.id.nav_profile -> {
                     startActivity(Intent(this, PengaturanAkunActivity::class.java))
@@ -168,13 +218,11 @@ class PengajuanIzinActivity : BaseActivity() {
     private fun validateForm(): Boolean {
         var isValid = true
 
-        
         if (rgPermitType.checkedRadioButtonId == -1) {
             Toast.makeText(this, "Pilih jenis perizinan", Toast.LENGTH_SHORT).show()
             isValid = false
         }
 
-        
         val startDate = etStartDate.text.toString().trim()
         if (startDate.isEmpty()) {
             tilStartDate.error = "Pilih tanggal mulai"
@@ -183,7 +231,6 @@ class PengajuanIzinActivity : BaseActivity() {
             tilStartDate.error = null
         }
 
-        
         val endDate = etEndDate.text.toString().trim()
         if (endDate.isEmpty()) {
             tilEndDate.error = "Pilih tanggal berakhir"
@@ -192,7 +239,6 @@ class PengajuanIzinActivity : BaseActivity() {
             tilEndDate.error = null
         }
 
-        
         if (startDate.isNotEmpty() && endDate.isNotEmpty()) {
             try {
                 val start = parseDate(startDate)
@@ -207,7 +253,6 @@ class PengajuanIzinActivity : BaseActivity() {
             }
         }
 
-        
         val reason = etReason.text.toString().trim()
         if (reason.isEmpty()) {
             tilReason.error = "Isi alasan perizinan"
@@ -247,13 +292,16 @@ class PengajuanIzinActivity : BaseActivity() {
                 val endDateBody = okhttp3.RequestBody.create(okhttp3.MultipartBody.FORM, endDate)
                 val reasonBody = okhttp3.RequestBody.create(okhttp3.MultipartBody.FORM, reason)
 
+                // Prepare photo part if selected
+                val photoPart = preparePhotoPart()
+
                 val response = RetrofitClient.apiService.createPengajuanIzin(
                     token = "Bearer $token",
                     jenisIzin = jenisIzinBody,
                     tanggalAwal = startDateBody,
                     tanggalAkhir = endDateBody,
                     keterangan = reasonBody,
-                    buktiFoto = null
+                    buktiFoto = photoPart
                 )
 
                 setLoading(false)
@@ -284,10 +332,28 @@ class PengajuanIzinActivity : BaseActivity() {
         }
     }
 
+    private fun preparePhotoPart(): MultipartBody.Part? {
+        val uri = selectedPhotoUri ?: return null
+        
+        return try {
+            val inputStream = contentResolver.openInputStream(uri) ?: return null
+            val tempFile = File.createTempFile("bukti_foto_", ".jpg", cacheDir)
+            FileOutputStream(tempFile).use { outputStream ->
+                inputStream.copyTo(outputStream)
+            }
+            inputStream.close()
+            
+            val requestBody = tempFile.asRequestBody("image/*".toMediaTypeOrNull())
+            MultipartBody.Part.createFormData("bukti_foto", tempFile.name, requestBody)
+        } catch (e: Exception) {
+            android.util.Log.w("PengajuanIzin", "Failed to prepare photo: ${e.message}")
+            null
+        }
+    }
+
     private fun setLoading(isLoading: Boolean) {
         btnSubmit.isEnabled = !isLoading
         btnSubmit.text = if (isLoading) "Mengirim..." else getString(R.string.kirim_pengajuan)
-        
         
         rbSakit.isEnabled = !isLoading
         rbIzin.isEnabled = !isLoading
@@ -295,6 +361,7 @@ class PengajuanIzinActivity : BaseActivity() {
         etEndDate.isEnabled = !isLoading
         etReason.isEnabled = !isLoading
         btnCancel.isEnabled = !isLoading
+        layoutUploadPhoto.isClickable = !isLoading
     }
 
     private fun logout() {
@@ -303,10 +370,21 @@ class PengajuanIzinActivity : BaseActivity() {
         
         lifecycleScope.launch {
             try {
-                RetrofitClient.apiService.logout("Bearer $token")
+                if (token.isNotEmpty()) {
+                    RetrofitClient.apiService.logout("Bearer $token")
+                }
             } catch (_: Exception) { }
             
+            // Clear ALL SharedPreferences stores
             with(getSharedPreferences("UserData", MODE_PRIVATE).edit()) {
+                clear()
+                apply()
+            }
+            with(getSharedPreferences("user_session", MODE_PRIVATE).edit()) {
+                clear()
+                apply()
+            }
+            with(getSharedPreferences("NotificationData", MODE_PRIVATE).edit()) {
                 clear()
                 apply()
             }
