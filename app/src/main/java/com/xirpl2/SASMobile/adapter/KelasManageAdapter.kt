@@ -34,6 +34,8 @@ class KelasManageAdapter(
         val badgeSiswaCount: TextView = view.findViewById(R.id.badgeSiswaCount)
         val badgeWarningWali: View = view.findViewById(R.id.badgeWarningWali)
         val tvWaliKelas: TextView = view.findViewById(R.id.tvWaliKelas)
+        val tvSectionWaliTitle: TextView = view.findViewById(R.id.tvSectionWaliTitle)
+        val tvSectionWaliSubtitle: TextView = view.findViewById(R.id.tvSectionWaliSubtitle)
         val btnUbahWali: MaterialButton = view.findViewById(R.id.btnUbahWali)
         val ivExpand: ImageView = view.findViewById(R.id.ivExpand)
         val layoutExpandable: View = view.findViewById(R.id.layoutExpandable)
@@ -80,12 +82,20 @@ class KelasManageAdapter(
                 badgeWarningWali.visibility = View.VISIBLE
                 cardContainer.setStrokeColor(ContextCompat.getColorStateList(context, R.color.status_warning))
                 cardContainer.strokeWidth = context.resources.displayMetrics.density.toInt() * 2
+
+                tvSectionWaliTitle.text = "Wali Kelas"
+                tvSectionWaliSubtitle.text = "Pilih guru yang bertanggung jawab atas kelas ini."
+                btnUbahWali.text = "Atur Wali"
             } else {
                 tvWaliKelas.text = kelas.wali_kelas
                 tvWaliKelas.setTextColor(android.graphics.Color.parseColor("#334155"))
                 badgeWarningWali.visibility = View.GONE
                 cardContainer.setStrokeColor(ContextCompat.getColorStateList(context, R.color.slate_200))
                 cardContainer.strokeWidth = context.resources.displayMetrics.density.toInt() * 1
+
+                tvSectionWaliTitle.text = kelas.wali_kelas
+                tvSectionWaliSubtitle.text = "Wali Kelas saat ini"
+                btnUbahWali.text = "Ganti Wali"
             }
             
             tvDaftarSiswaTitle.text = "Daftar Siswa (${kelas.siswa_count})"

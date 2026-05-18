@@ -86,100 +86,54 @@ class QRCodeAdminActivity : BaseAdminActivity() {
         lifecycleScope.launch {
             berandaRepository.getJadwalSholat(token).fold(
                 onSuccess = { jadwalList ->
-                    val upcomingPrayer = findUpcomingPrayerFromAPI(jadwalList)
+                    val upcomingPrayer = JadwalSholatHelper.getUpcomingPrayerFromList(jadwalList)
+                    
                     if (upcomingPrayer == null) {
-                        showError("Tidak ada jadwal sholat saat ini")
+                        runOnUiThread {
+                            showError("Tidak ada jadwal sholat saat ini")
+                        }
                         return@fold
                     }
                     
                     if (upcomingPrayer.status == StatusSholat.SELESAI) {
-                        showError("Waktu sholat ${upcomingPrayer.namaSholat} telah berakhir.\n\nQR Code tidak tersedia di luar waktu sholat.")
+                        runOnUiThread {
+                            showError("Waktu sholat ${upcomingPrayer.namaSholat} telah berakhir.\n\nQR Code tidak tersedia di luar waktu sholat.")
+                        }
                         return@fold
                     }
                     
                     generateQRCode(token)
                 },
                 onFailure = { error ->
-                    showError("Gagal memuat jadwal sholat: ${error.message}")
+                    runOnUiThread {
+                        showError("Gagal memuat jadwal sholat: ${error.message}")
+                    }
                 }
             )
         }
     }
 
-    private fun findUpcomingPrayerFromAPI(jadwalList: List<JadwalSholatData>): JadwalSholat? {
-        val todayIndo = getHariIni()
-        
-        for (jadwal in jadwalList) {
-            if (allowedPrayers.none { it.equals(jadwal.jenis_sholat, ignoreCase = true) }) continue
-            if (jadwal.hari != null && !jadwal.hari.equals(todayIndo, ignoreCase = true)) continue
-
-            val status = getStatusFromAPI(jadwal.jam_mulai, jadwal.jam_selesai)
-            if (status == StatusSholat.SEDANG_BERLANGSUNG || status == StatusSholat.AKAN_DATANG) {
-                return JadwalSholat(
-                    namaSholat = jadwal.jenis_sholat,
-                    jamMulai = jadwal.jam_mulai,
-                    jamSelesai = jadwal.jam_selesai,
-                    status = status
-                )
-            }
-        }
-        
-        val todaySchedules = jadwalList.filter { it.hari == null || it.hari.equals(todayIndo, ignoreCase = true) }
-        return todaySchedules.lastOrNull()?.let {
-            val status = getStatusFromAPI(it.jam_mulai, it.jam_selesai)
-            JadwalSholat(
-                namaSholat = it.jenis_sholat,
-                jamMulai = it.jam_mulai,
-                jamSelesai = it.jam_selesai,
-                status = status
-            )
-        }
-    }
-
-    private fun getHariIni(): String {
-        val calendar = Calendar.getInstance()
-        return when (calendar.get(Calendar.DAY_OF_WEEK)) {
-            Calendar.SUNDAY -> "Minggu"
-            Calendar.MONDAY -> "Senin"
-            Calendar.TUESDAY -> "Selasa"
-            Calendar.WEDNESDAY -> "Rabu"
-            Calendar.THURSDAY -> "Kamis"
-            Calendar.FRIDAY -> "Jumat"
-            Calendar.SATURDAY -> "Sabtu"
-            else -> "Senin"
-        }
-    }
-
     private fun getStatusFromAPI(jamMulai: String, jamSelesai: String): StatusSholat {
-        val now = Calendar.getInstance()
-        val currentTimeInMinutes = now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE)
-        
-        val mulaiParts = jamMulai.split(":")
-        val mulaiInMinutes = mulaiParts[0].toInt() * 60 + mulaiParts[1].toInt()
-        
-        val selesaiParts = jamSelesai.split(":")
-        val selesaiInMinutes = selesaiParts[0].toInt() * 60 + selesaiParts[1].toInt()
-        
-        return when {
-            currentTimeInMinutes in mulaiInMinutes..selesaiInMinutes -> StatusSholat.SEDANG_BERLANGSUNG
-            currentTimeInMinutes < mulaiInMinutes -> StatusSholat.AKAN_DATANG
-            else -> StatusSholat.SELESAI
-        }
+        return JadwalSholatHelper.getStatusSholat(jamMulai, jamSelesai)
     }
 
     private fun generateQRCode(token: String) {
         lifecycleScope.launch {
             qrRepository.generateQRCode(token).fold(
                 onSuccess = { qrData ->
-                    if (!allowedPrayers.contains(qrData.jenis_sholat)) {
-                        showError("QR Code hanya tersedia untuk sholat Dhuha, Dhuhur, dan Jumat.")
-                        return@launch
+                    runOnUiThread {
+                        if (!allowedPrayers.contains(qrData.jenis_sholat)) {
+                            showError("QR Code hanya tersedia untuk sholat Dhuha, Dhuhur, dan Jumat.")
+                            return@runOnUiThread
+                        }
+                        displayQRCode(qrData)
+                        showQRCode()
                     }
-                    displayQRCode(qrData)
-                    showQRCode()
                 },
                 onFailure = { error ->
-                    showError(error.message ?: "Gagal generate QR code")
+                    runOnUiThread {
+                        showError(error.message ?: "Gagal generate QR code")
+                    }
                 }
             )
         }
@@ -265,9 +219,11 @@ class QRCodeAdminActivity : BaseAdminActivity() {
     }
 
     private fun showError(message: String) {
-        progressBar.visibility = View.GONE
-        containerQR.visibility = View.VISIBLE
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+        runOnUiThread {
+            progressBar.visibility = View.GONE
+            containerQR.visibility = View.VISIBLE
+            Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+        }
     }
 
     override fun onDestroy() {

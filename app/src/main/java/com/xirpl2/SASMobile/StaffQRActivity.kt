@@ -82,89 +82,8 @@ class StaffQRActivity : BaseActivity() {
         }
     }
 
-    private fun findUpcomingPrayerFromAPI(jadwalList: List<JadwalSholatData>): JadwalSholat? {
-        val hariIni = getHariIni()
-        
-        
-        for (jadwal in jadwalList) {
-            
-            if (allowedPrayers.none { it.equals(jadwal.jenis_sholat, ignoreCase = true) }) {
-                continue
-            }
-
-            
-            if (jadwal.hari != null && !jadwal.hari.equals(hariIni, ignoreCase = true)) {
-                continue
-            }
-
-            val status = getStatusFromAPI(jadwal.jam_mulai, jadwal.jam_selesai)
-            
-            if (status == StatusSholat.SEDANG_BERLANGSUNG || 
-                status == StatusSholat.AKAN_DATANG) {
-                return JadwalSholat(
-                    namaSholat = jadwal.jenis_sholat,
-                    jamMulai = jadwal.jam_mulai,
-                    jamSelesai = jadwal.jam_selesai,
-                    status = status
-                )
-            }
-        }
-        
-        
-        
-        val todaySchedules = jadwalList.filter { 
-            it.hari == null || it.hari.equals(hariIni, ignoreCase = true) 
-        }
-        
-        val lastJadwal = todaySchedules.lastOrNull()
-        return lastJadwal?.let {
-            val status = getStatusFromAPI(it.jam_mulai, it.jam_selesai)
-            JadwalSholat(
-                namaSholat = it.jenis_sholat,
-                jamMulai = it.jam_mulai,
-                jamSelesai = it.jam_selesai,
-                status = status
-            )
-        }
-    }
-    
-    private fun getHariIni(): String {
-        val calendar = Calendar.getInstance()
-        return when (calendar.get(Calendar.DAY_OF_WEEK)) {
-            Calendar.SUNDAY -> "Minggu"
-            Calendar.MONDAY -> "Senin"
-            Calendar.TUESDAY -> "Selasa"
-            Calendar.WEDNESDAY -> "Rabu"
-            Calendar.THURSDAY -> "Kamis"
-            Calendar.FRIDAY -> "Jumat"
-            Calendar.SATURDAY -> "Sabtu"
-            else -> "Senin"
-        }
-    }
-    
     private fun getStatusFromAPI(jamMulai: String, jamSelesai: String): StatusSholat {
-        val now = Calendar.getInstance()
-        val currentHour = now.get(Calendar.HOUR_OF_DAY)
-        val currentMinute = now.get(Calendar.MINUTE)
-        val currentTimeInMinutes = currentHour * 60 + currentMinute
-        
-        
-        val mulaiParts = jamMulai.split(":")
-        val mulaiHour = mulaiParts[0].toInt()
-        val mulaiMinute = mulaiParts[1].toInt()
-        val mulaiInMinutes = mulaiHour * 60 + mulaiMinute
-        
-        
-        val selesaiParts = jamSelesai.split(":")
-        val selesaiHour = selesaiParts[0].toInt()
-        val selesaiMinute = selesaiParts[1].toInt()
-        val selesaiInMinutes = selesaiHour * 60 + selesaiMinute
-        
-        return when {
-            currentTimeInMinutes in mulaiInMinutes..selesaiInMinutes -> StatusSholat.SEDANG_BERLANGSUNG
-            currentTimeInMinutes < mulaiInMinutes -> StatusSholat.AKAN_DATANG
-            else -> StatusSholat.SELESAI
-        }
+        return JadwalSholatHelper.getStatusSholat(jamMulai, jamSelesai)
     }
     
     private fun loadQRCode() {
@@ -178,11 +97,9 @@ class StaffQRActivity : BaseActivity() {
         showLoading()
         
         lifecycleScope.launch {
-            
             berandaRepository.getJadwalSholat(token).fold(
                 onSuccess = { jadwalList ->
-                    
-                    val upcomingPrayer = findUpcomingPrayerFromAPI(jadwalList)
+                    val upcomingPrayer = JadwalSholatHelper.getUpcomingPrayerFromList(jadwalList)
                     
                     if (upcomingPrayer == null) {
                         runOnUiThread {
@@ -191,22 +108,12 @@ class StaffQRActivity : BaseActivity() {
                         return@fold
                     }
                     
-                    
-                    
-                        
-                            
-                        
-                        
-                    
-                    
-                    
                     if (upcomingPrayer.status == StatusSholat.SELESAI) {
                         runOnUiThread {
                             showError("Waktu sholat ${upcomingPrayer.namaSholat} telah berakhir.\n\nQR Code tidak tersedia di luar waktu sholat.")
                         }
                         return@fold
                     }
-                    
                     
                     generateQRCode(token)
                 },
@@ -224,7 +131,6 @@ class StaffQRActivity : BaseActivity() {
             repository.generateQRCode(token).fold(
                 onSuccess = { qrData ->
                     runOnUiThread {
-                        
                         if (!allowedPrayers.contains(qrData.jenis_sholat)) {
                             showError("QR Code hanya tersedia untuk sholat Dhuha, Dhuhur, dan Jumat.")
                             return@runOnUiThread
@@ -245,10 +151,7 @@ class StaffQRActivity : BaseActivity() {
     }
 
     private fun displayQRCode(qrData: QRCodeData) {
-        
         tvJenisSholat.text = "Sholat ${qrData.jenis_sholat}"
-        
-        
         val bitmap = decodeBase64ToBitmap(qrData.qr_code)
         if (bitmap != null) {
             ivQRCode.setImageBitmap(bitmap)
@@ -256,88 +159,52 @@ class StaffQRActivity : BaseActivity() {
             showError("Gagal memuat gambar QR code")
             return
         }
-
-        
         startCountdown(qrData.expires_at)
-        
-        
         tvStatus.text = "QR Code Aktif"
         tvStatus.setTextColor(getColor(android.R.color.holo_green_dark))
-        
-        
         tvInstructions.text = "Tampilkan QR code ini di layar/proyektor.\nSiswa dapat memindai untuk absensi."
         tvInstructions.visibility = View.VISIBLE
     }
 
     private fun decodeBase64ToBitmap(base64String: String): Bitmap? {
         return try {
-            
-            val pureBase64 = if (base64String.contains(",")) {
-                base64String.substringAfter(",")
-            } else {
-                base64String
-            }
-            
+            val pureBase64 = if (base64String.contains(",")) base64String.substringAfter(",") else base64String
             val decodedBytes = Base64.decode(pureBase64, Base64.DEFAULT)
             BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
-        } catch (e: Exception) {
-            null
-        }
+        } catch (e: Exception) { null }
     }
 
     private fun startCountdown(expiresAt: String) {
-        
         countDownTimer?.cancel()
-        
         try {
-            
             val expiryTime = parseExpiryTime(expiresAt)
-            val currentTime = System.currentTimeMillis()
-            val remainingTime = expiryTime - currentTime
-            
+            val remainingTime = expiryTime - System.currentTimeMillis()
             if (remainingTime <= 0) {
                 onQRCodeExpired()
                 return
             }
-            
             countDownTimer = object : CountDownTimer(remainingTime, 1000) {
                 override fun onTick(millisUntilFinished: Long) {
                     val minutes = (millisUntilFinished / 1000) / 60
                     val seconds = (millisUntilFinished / 1000) % 60
                     tvCountdown.text = String.format("Berlaku: %02d:%02d", minutes, seconds)
-                    
-                    
-                    if (millisUntilFinished < 60000) {
-                        tvCountdown.setTextColor(getColor(android.R.color.holo_red_light))
-                    } else {
-                        tvCountdown.setTextColor(getColor(android.R.color.holo_green_dark))
-                    }
+                    tvCountdown.setTextColor(getColor(if (millisUntilFinished < 60000) android.R.color.holo_red_light else android.R.color.holo_green_dark))
                 }
-
-                override fun onFinish() {
-                    onQRCodeExpired()
-                }
+                override fun onFinish() { onQRCodeExpired() }
             }.start()
-            
-        } catch (e: Exception) {
-            tvCountdown.text = "Waktu tidak tersedia"
-        }
+        } catch (e: Exception) { tvCountdown.text = "Waktu tidak tersedia" }
     }
 
     private fun parseExpiryTime(expiresAt: String): Long {
         return try {
-            
             val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
             format.timeZone = TimeZone.getTimeZone("UTC")
             format.parse(expiresAt)?.time ?: 0L
         } catch (e: Exception) {
             try {
-                
                 val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault())
                 format.parse(expiresAt)?.time ?: 0L
-            } catch (e2: Exception) {
-                0L
-            }
+            } catch (e2: Exception) { 0L }
         }
     }
 
@@ -347,19 +214,8 @@ class StaffQRActivity : BaseActivity() {
         tvStatus.text = "QR Code Expired"
         tvStatus.setTextColor(getColor(android.R.color.holo_red_dark))
         tvInstructions.text = "Tekan tombol refresh untuk generate QR code baru"
-        
-        
         ivQRCode.alpha = 0.5f
-        
-        
         btnRefresh.visibility = View.VISIBLE
-        
-        
-        android.os.Handler(mainLooper).postDelayed({
-            if (!isFinishing && !isDestroyed) {
-                loadQRCode()
-            }
-        }, 2000)
     }
 
     private fun showLoading() {
@@ -376,9 +232,11 @@ class StaffQRActivity : BaseActivity() {
     }
 
     private fun showError(message: String) {
-        progressBar.visibility = View.GONE
-        containerQR.visibility = View.VISIBLE // Keep QR container visible
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+        runOnUiThread {
+            progressBar.visibility = View.GONE
+            containerQR.visibility = View.VISIBLE // Keep QR container visible
+            Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun getAuthToken(): String {

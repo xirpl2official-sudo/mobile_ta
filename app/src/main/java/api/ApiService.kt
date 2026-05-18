@@ -710,4 +710,85 @@ interface ApiService {
         @Query("kelas") kelas: String? = null,
         @Query("jurusan") jurusan: String? = null
     ): Response<ResponseBody>
+
+    @GET("v2/reports/attendance/pdf")
+    @Streaming
+    suspend fun exportAttendanceReportPdf(
+        @Header("Authorization") token: String,
+        @Query("start_date") startDate: String? = null,
+        @Query("end_date") endDate: String? = null,
+        @Query("jurusan") jurusan: String? = null
+    ): Response<ResponseBody>
+
+    // --- Admin Guru Management ---
+
+    @GET("v2/admin/management/guru")
+    suspend fun getAdminGuruList(
+        @Header("Authorization") token: String,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query("search") search: String? = null,
+        @Query("has_wali_kelas") hasWaliKelas: String? = null,
+        @Query("sort_by") sortBy: String? = null,
+        @Query("sort_order") sortOrder: String? = null
+    ): Response<GuruListResponse>
+
+    @POST("v2/admin/management/guru")
+    suspend fun createGuru(
+        @Header("Authorization") token: String,
+        @Body request: CreateGuruRequest
+    ): Response<GuruDetailResponse>
+
+    @GET("v2/admin/management/guru/{id}")
+    suspend fun getGuruDetail(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int
+    ): Response<GuruDetailResponse>
+
+    @PUT("v2/admin/management/guru/{id}")
+    suspend fun updateGuru(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int,
+        @Body request: UpdateGuruRequest
+    ): Response<GuruDetailResponse>
+
+    @DELETE("v2/admin/management/guru/{id}")
+    suspend fun deleteGuru(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int
+    ): Response<Void>
+
+    @PUT("v2/admin/management/guru/{id}/wali-kelas")
+    suspend fun assignGuruWaliKelas(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int,
+        @Body request: AssignWaliKelasGuruRequest
+    ): Response<GuruDetailResponse>
+
+    @DELETE("v2/admin/management/guru/{id}/wali-kelas")
+    suspend fun removeGuruWaliKelas(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int
+    ): Response<MessageResponse>
+
+    // --- Admin Wali Kelas Management ---
+
+    @GET("v2/admin/management/wali-kelas")
+    suspend fun getAdminWaliKelasList(
+        @Header("Authorization") token: String,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query("search") search: String? = null,
+        @Query("kelas_id") kelasId: Int? = null,
+        @Query("staff_id") staffId: Int? = null
+    ): Response<WaliKelasManagementListResponse>
+
+    @GET("v2/admin/management/wali-kelas/history")
+    suspend fun getAdminWaliKelasHistory(
+        @Header("Authorization") token: String,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query("search") search: String? = null,
+        @Query("is_active") isActive: String? = null
+    ): Response<WaliKelasManagementListResponse>
 }

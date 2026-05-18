@@ -348,34 +348,10 @@ override fun onCreate(savedInstanceState: Bundle?) {
     }
 
     private fun setupButtons() {
-        val btnTambah = findViewById<com.google.android.material.button.MaterialButton>(R.id.btnTambah)
-        val btnImport = findViewById<com.google.android.material.button.MaterialButton>(R.id.btnImport)
-        val fabAdd = findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.fabAdd)
         val btnMore = findViewById<android.view.View>(R.id.btnMore)
 
         btnMore?.setOnClickListener { view ->
             showOverflowMenu(view)
-        }
-
-        val role = getSharedPreferences("UserData", Context.MODE_PRIVATE).getString("user_role", "")
-        if (role == "wali_kelas" || role == "guru") {
-            btnTambah.visibility = View.GONE
-            btnImport.visibility = View.GONE
-            fabAdd.visibility = View.GONE
-        } else {
-            btnTambah.visibility = View.VISIBLE
-            btnImport.visibility = View.VISIBLE
-            fabAdd.visibility = View.VISIBLE
-            
-            btnTambah.setOnClickListener {
-                startActivity(android.content.Intent(this, TambahSiswaActivity::class.java))
-            }
-            btnImport.setOnClickListener {
-                showImportSiswaDialog()
-            }
-            fabAdd.setOnClickListener {
-                startActivity(android.content.Intent(this, TambahSiswaActivity::class.java))
-            }
         }
     }
 

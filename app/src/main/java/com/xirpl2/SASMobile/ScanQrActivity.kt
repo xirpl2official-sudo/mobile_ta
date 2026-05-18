@@ -203,16 +203,16 @@ class ScanQrActivity : BaseActivity() {
         Toast.makeText(this, "Kehadiran berhasil dicatat!", Toast.LENGTH_SHORT).show()
     }
 
-    private fun formatTime(waktuAbsen: String): String {
+    private fun formatTime(waktuAbsen: String?): String {
+        if (waktuAbsen.isNullOrBlank()) return "--:--"
         return try {
-            
             if (waktuAbsen.contains("T")) {
                 val timePart = waktuAbsen.substringAfter("T").substringBefore("Z")
                 val parts = timePart.split(":")
                 if (parts.size >= 2) {
                     "${parts[0]}:${parts[1]}"
                 } else {
-                    waktuAbsen
+                    waktuAbsen.take(5)
                 }
             } else if (waktuAbsen.contains(" ")) {
                 waktuAbsen.substringAfter(" ").take(5)
@@ -220,33 +220,41 @@ class ScanQrActivity : BaseActivity() {
                 waktuAbsen.take(5)
             }
         } catch (e: Exception) {
-            waktuAbsen
+            waktuAbsen.take(5)
         }
     }
 
     private fun showStatus(message: String, isSuccess: Boolean) {
-        tvStatus.text = message
-        tvStatus.visibility = View.VISIBLE
-        tvStatus.setTextColor(
-            if (isSuccess) getColor(android.R.color.holo_green_dark)
-            else getColor(android.R.color.holo_red_dark)
-        )
+        runOnUiThread {
+            tvStatus.text = message
+            tvStatus.visibility = View.VISIBLE
+            tvStatus.setTextColor(
+                if (isSuccess) getColor(android.R.color.holo_green_dark)
+                else getColor(android.R.color.holo_red_dark)
+            )
+        }
     }
 
     private fun hideResult() {
-        cardResult.visibility = View.GONE
+        runOnUiThread {
+            cardResult.visibility = View.GONE
+        }
     }
 
     private fun showLoading() {
-        progressBar.visibility = View.VISIBLE
-        btnScan.isEnabled = false
-        btnScan.alpha = 0.5f
+        runOnUiThread {
+            progressBar.visibility = View.VISIBLE
+            btnScan.isEnabled = false
+            btnScan.alpha = 0.5f
+        }
     }
 
     private fun hideLoading() {
-        progressBar.visibility = View.GONE
-        btnScan.isEnabled = true
-        btnScan.alpha = 1.0f
+        runOnUiThread {
+            progressBar.visibility = View.GONE
+            btnScan.isEnabled = true
+            btnScan.alpha = 1.0f
+        }
     }
 
     private fun getAuthToken(): String {

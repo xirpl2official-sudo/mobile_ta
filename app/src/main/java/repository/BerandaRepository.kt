@@ -637,4 +637,161 @@ class BerandaRepository {
             }
         }
     }
+
+    // --- Guru Management ---
+
+    suspend fun getGuruList(
+        token: String,
+        page: Int? = null,
+        limit: Int? = null,
+        search: String? = null,
+        hasWaliKelas: String? = null
+    ): Result<GuruListResponse> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.getAdminGuruList("Bearer $token", page, limit, search, hasWaliKelas)
+                if (!response.isSuccessful) return@withContext Result.failure(Exception("HTTP Error: ${response.code()}"))
+                val body = response.body() ?: return@withContext Result.failure(Exception("Response body kosong"))
+                Result.success(body)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun createGuru(token: String, request: CreateGuruRequest): Result<GuruItem> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.createGuru("Bearer $token", request)
+                if (!response.isSuccessful) {
+                    val errorBody = response.errorBody()?.string()
+                    val msg = if (!errorBody.isNullOrEmpty()) {
+                        try { org.json.JSONObject(errorBody).getString("message") } catch (e: Exception) { errorBody }
+                    } else response.message()
+                    return@withContext Result.failure(Exception(msg))
+                }
+                val body = response.body() ?: return@withContext Result.failure(Exception("Response body kosong"))
+                Result.success(body.data)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun getGuruDetail(token: String, id: Int): Result<GuruItem> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.getGuruDetail("Bearer $token", id)
+                if (!response.isSuccessful) return@withContext Result.failure(Exception("HTTP Error: ${response.code()}"))
+                val body = response.body() ?: return@withContext Result.failure(Exception("Response body kosong"))
+                Result.success(body.data)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun updateGuru(token: String, id: Int, request: UpdateGuruRequest): Result<GuruItem> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.updateGuru("Bearer $token", id, request)
+                if (!response.isSuccessful) {
+                    val errorBody = response.errorBody()?.string()
+                    val msg = if (!errorBody.isNullOrEmpty()) {
+                        try { org.json.JSONObject(errorBody).getString("message") } catch (e: Exception) { errorBody }
+                    } else response.message()
+                    return@withContext Result.failure(Exception(msg))
+                }
+                val body = response.body() ?: return@withContext Result.failure(Exception("Response body kosong"))
+                Result.success(body.data)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun deleteGuru(token: String, id: Int): Result<String> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.deleteGuru("Bearer $token", id)
+                if (!response.isSuccessful) return@withContext Result.failure(Exception("HTTP Error: ${response.code()}"))
+                Result.success("Guru berhasil dihapus")
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun assignGuruWaliKelas(token: String, guruId: Int, idKelas: Int): Result<GuruItem> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.assignGuruWaliKelas(
+                    "Bearer $token", guruId, AssignWaliKelasGuruRequest(idKelas)
+                )
+                if (!response.isSuccessful) {
+                    val errorBody = response.errorBody()?.string()
+                    val msg = if (!errorBody.isNullOrEmpty()) {
+                        try { org.json.JSONObject(errorBody).getString("message") } catch (e: Exception) { errorBody }
+                    } else response.message()
+                    return@withContext Result.failure(Exception(msg))
+                }
+                val body = response.body() ?: return@withContext Result.failure(Exception("Response body kosong"))
+                Result.success(body.data)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun removeGuruWaliKelas(token: String, guruId: Int): Result<String> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.removeGuruWaliKelas("Bearer $token", guruId)
+                if (!response.isSuccessful) return@withContext Result.failure(Exception("HTTP Error: ${response.code()}"))
+                Result.success(response.body()?.message ?: "Berhasil dihapus")
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    // --- Wali Kelas Management ---
+
+    suspend fun getWaliKelasList(
+        token: String,
+        page: Int? = null,
+        limit: Int? = null,
+        search: String? = null
+    ): Result<WaliKelasManagementListResponse> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.getAdminWaliKelasList("Bearer $token", page, limit, search)
+                if (!response.isSuccessful) return@withContext Result.failure(Exception("HTTP Error: ${response.code()}"))
+                val body = response.body() ?: return@withContext Result.failure(Exception("Response body kosong"))
+                Result.success(body)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun getWaliKelasHistory(
+        token: String,
+        page: Int? = null,
+        limit: Int? = null,
+        search: String? = null,
+        isActive: String? = null
+    ): Result<WaliKelasManagementListResponse> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.getAdminWaliKelasHistory("Bearer $token", page, limit, search, isActive)
+                if (!response.isSuccessful) return@withContext Result.failure(Exception("HTTP Error: ${response.code()}"))
+                val body = response.body() ?: return@withContext Result.failure(Exception("Response body kosong"))
+                Result.success(body)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
 }
+

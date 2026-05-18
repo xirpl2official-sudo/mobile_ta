@@ -378,6 +378,16 @@
                             android:paddingHorizontal="8dp"
                             android:gravity="center" />
 
+                        <TextView
+                            android:layout_width="80dp"
+                            android:layout_height="wrap_content"
+                            android:text="Detail"
+                            android:textColor="@android:color/white"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:paddingHorizontal="8dp"
+                            android:gravity="center" />
+
                     </LinearLayout>
 
                     
