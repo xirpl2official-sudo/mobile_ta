@@ -45,6 +45,7 @@ class PengajuanIzinActivity : BaseActivity() {
     private lateinit var layoutPhotoPreview: LinearLayout
     private lateinit var ivPhotoPreview: ImageView
     private lateinit var btnRemovePhoto: com.google.android.material.button.MaterialButton
+    private lateinit var tvPhotoLabel: TextView
     private var selectedPhotoUri: Uri? = null
 
     private val calendar = Calendar.getInstance()
@@ -94,6 +95,7 @@ class PengajuanIzinActivity : BaseActivity() {
         layoutPhotoPreview = findViewById(R.id.layoutPhotoPreview)
         ivPhotoPreview = findViewById(R.id.ivPhotoPreview)
         btnRemovePhoto = findViewById(R.id.btnRemovePhoto)
+        tvPhotoLabel = findViewById(R.id.tvPhotoLabel)
     }
 
     private fun setupPhotoUpload() {
@@ -117,8 +119,14 @@ class PengajuanIzinActivity : BaseActivity() {
     }
 
     private fun setupPermitTypes() {
-        rgPermitType.setOnCheckedChangeListener { _, _ ->
-            // No-op for now
+        rgPermitType.setOnCheckedChangeListener { _, checkedId ->
+            if (checkedId == R.id.rbSakit) {
+                tvPhotoLabel.text = "BUKTI FOTO (WAJIB)"
+                tvPhotoLabel.setTextColor(getColor(android.R.color.holo_red_dark))
+            } else {
+                tvPhotoLabel.text = "BUKTI FOTO (OPSIONAL)"
+                tvPhotoLabel.setTextColor(getColor(R.color.slate_500))
+            }
         }
     }
 
@@ -262,6 +270,11 @@ class PengajuanIzinActivity : BaseActivity() {
             isValid = false
         } else {
             tilReason.error = null
+        }
+
+        if (rbSakit.isChecked && selectedPhotoUri == null) {
+            Toast.makeText(this, "Lampirkan bukti foto (surat dokter/resep) untuk izin sakit", Toast.LENGTH_SHORT).show()
+            isValid = false
         }
 
         return isValid

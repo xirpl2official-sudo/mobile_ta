@@ -264,7 +264,9 @@ class ScanQrActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
-        
+        if (cardResult.visibility != View.VISIBLE && !isProcessing) {
+            barcodeView.resume()
+        }
     }
 
     override fun onPause() {

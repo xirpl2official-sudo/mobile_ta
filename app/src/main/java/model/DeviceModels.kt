@@ -22,6 +22,8 @@ data class DeviceInfo(
 data class HardwareAuthRequest(
     @SerializedName("hardware_id")
     val hardwareId: String,
+    @SerializedName("imei")
+    val imei: String = "",
     @SerializedName("device_name")
     val deviceName: String,
     @SerializedName("device_model")
@@ -38,3 +40,4 @@ data class ChangeDeviceRequest(
     @SerializedName("reason")
     val reason: String
 )
+

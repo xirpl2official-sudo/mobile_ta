@@ -14,6 +14,8 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
+import com.xirpl2.SASMobile.adapter.PrayerScheduleAdapter
+import com.xirpl2.SASMobile.adapter.PrayerScheduleItem
 import com.xirpl2.SASMobile.model.JadwalDhuhaKeahlian
 import com.xirpl2.SASMobile.model.JadwalSholatData
 import com.xirpl2.SASMobile.model.JadwalSholatUpdateRequest
@@ -31,10 +33,6 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
     private var jadwalList: List<JadwalSholatData> = emptyList()
     private var dhuhaKeahlianList: List<com.xirpl2.SASMobile.model.JadwalDhuhaKeahlian> = emptyList()
 
-    
-    private lateinit var dhuhaAdapter: DhuhaScheduleAdapter
-
-    
     private val daysOptions = listOf("Semua Hari", "Senin", "Selasa", "Rabu", "Kamis", "Jumat")
     private val allKeahlian = arrayOf("RPL", "TKJ", "TAV", "AM", "TMT", "BC", "TEI", "DKV")
     private val jurusanOptions = listOf("Semua Jurusan", "TKJ", "RPL", "DKV", "ANM", "BC", "TAV", "TEI", "TMT")
@@ -50,10 +48,12 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
     setupDrawerAndSidebar()
 
-        
+        rvPrayerSchedules = findViewById(R.id.rvPrayerSchedules)
+        rvPrayerSchedules.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
+        rvPrayerSchedules.isNestedScrollingEnabled = false
+
         setupMenuIcon()
 
-        
         setupButtons()
 
         
@@ -76,7 +76,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
                     android.util.Log.d(TAG, "Dhuha Keahlian loaded successfully: ${list.size} items")
                     dhuhaKeahlianList = list
                     safeRunOnUiThread {
-                        populateDhuhaTable()
+                        updateJadwalUI()
                     }
                 },
                 onFailure = { error ->
@@ -149,16 +149,18 @@ override fun onCreate(savedInstanceState: Bundle?) {
     }
 
     override fun onDestroy() {
-        val rvDhuhaSchedule = findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.rvDhuhaSchedule)
-        rvDhuhaSchedule?.adapter = null
+        if (::rvPrayerSchedules.isInitialized) {
+            rvPrayerSchedules.adapter = null
+        }
         super.onDestroy()
     }
 
     override fun onPause() {
         super.onPause()
         try {
-            val rvDhuhaSchedule = findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.rvDhuhaSchedule)
-            rvDhuhaSchedule?.clearOnScrollListeners()
+            if (::rvPrayerSchedules.isInitialized) {
+                rvPrayerSchedules.clearOnScrollListeners()
+            }
         } catch (e: Exception) {
             android.util.Log.e(TAG, "Error in onPause: ${e.message}")
         }
@@ -215,144 +217,85 @@ override fun onCreate(savedInstanceState: Bundle?) {
     }
 
     private fun updateJadwalUI() {
-        
-        populateDhuhaTable()
+        val items = mutableListOf<PrayerScheduleItem>()
 
-        
-        val dhuhaJadwal = jadwalList.find {
-            it.jenis_sholat.equals("Dhuha", ignoreCase = true) && it.jurusan.isNullOrEmpty()
-        } ?: jadwalList.find {
-            it.jenis_sholat.equals("Dhuha", ignoreCase = true)
-        }
+        // Add Dhuha Keahlian table first
+        items.add(PrayerScheduleItem.DhuhaKeahlian(dhuhaKeahlianList))
 
-        findViewById<TextView>(R.id.tvWaktuDhuha)?.apply {
-            if (dhuhaJadwal != null && !dhuhaJadwal.jam_mulai.isNullOrEmpty()) {
-                text = "Waktu: ${dhuhaJadwal.jam_mulai} - ${dhuhaJadwal.jam_selesai}"
-                visibility = View.VISIBLE
-            } else {
-                visibility = View.GONE
+        // Build generic prayer cards from API data (group by jenis_sholat, skip per-jurusan entries)
+        val genericPrayers = jadwalList.filter { it.jurusan.isNullOrEmpty() }
+        val groupedByType = genericPrayers.groupBy { it.jenis_sholat.lowercase() }
+
+        // Preferred display order
+        val displayOrder = listOf("dhuha", "dzuhur", "jumat")
+        val addedTypes = mutableSetOf<String>()
+
+        for (type in displayOrder) {
+            val jadwal = groupedByType[type]?.firstOrNull()
+            if (jadwal != null) {
+                items.add(PrayerScheduleItem.PrayerCard(jadwal))
+                addedTypes.add(type)
             }
         }
 
-        findViewById<TextView>(R.id.tvHariDhuha)?.apply {
-            if (dhuhaJadwal != null && !dhuhaJadwal.hari.isNullOrEmpty()) {
-                text = dhuhaJadwal.hari
-                visibility = View.VISIBLE
-            } else {
-                visibility = View.GONE
+        // Add any remaining types not in displayOrder
+        for ((type, jadwals) in groupedByType) {
+            if (type !in addedTypes && jadwals.isNotEmpty()) {
+                items.add(PrayerScheduleItem.PrayerCard(jadwals.first()))
             }
         }
 
-        findViewById<TextView>(R.id.tvKelasDhuha)?.apply {
-            if (dhuhaJadwal != null && !dhuhaJadwal.kelas.isNullOrEmpty()) {
-                text = "Kelas: ${dhuhaJadwal.kelas}"
-                visibility = View.VISIBLE
-            } else if (dhuhaJadwal != null) {
-                text = "Kelas: Semua Kelas"
-                visibility = View.VISIBLE
-            } else {
-                visibility = View.GONE
-            }
-        }
-
-        
-        val zuhurJadwal = jadwalList.find {
-            it.jenis_sholat.equals("Dzuhur", ignoreCase = true) && it.jurusan.isNullOrEmpty()
-        } ?: jadwalList.find {
-            it.jenis_sholat.equals("Dzuhur", ignoreCase = true)
-        }
-        
-        findViewById<TextView>(R.id.tvWaktuZuhur)?.apply {
-            if (zuhurJadwal != null && !zuhurJadwal.jam_mulai.isNullOrEmpty()) {
-                text = "Waktu: ${zuhurJadwal.jam_mulai} - ${zuhurJadwal.jam_selesai}"
-                visibility = View.VISIBLE
-            } else {
-                visibility = View.GONE
-            }
-        }
-
-        findViewById<TextView>(R.id.tvHariZuhur)?.apply {
-            if (zuhurJadwal != null && !zuhurJadwal.hari.isNullOrEmpty()) {
-                text = zuhurJadwal.hari
-                visibility = View.VISIBLE
-            } else {
-                visibility = View.GONE
-            }
-        }
-
-        findViewById<TextView>(R.id.tvKelasZuhur)?.apply {
-            if (zuhurJadwal != null && !zuhurJadwal.kelas.isNullOrEmpty()) {
-                text = "Kelas: ${zuhurJadwal.kelas}"
-                visibility = View.VISIBLE
-            } else if (zuhurJadwal != null) {
-                text = "Kelas: Semua Kelas"
-                visibility = View.VISIBLE
-            } else {
-                visibility = View.GONE
-            }
-        }
-
-        
-        val jumatJadwal = jadwalList.find {
-            it.jenis_sholat.equals("Jumat", ignoreCase = true) && it.jurusan.isNullOrEmpty()
-        } ?: jadwalList.find {
-            it.jenis_sholat.equals("Jumat", ignoreCase = true)
-        }
-        
-        findViewById<TextView>(R.id.tvWaktuJumat)?.apply {
-            if (jumatJadwal != null && !jumatJadwal.jam_mulai.isNullOrEmpty()) {
-                text = "Waktu: ${jumatJadwal.jam_mulai} - ${jumatJadwal.jam_selesai}"
-                visibility = View.VISIBLE
-            } else {
-                visibility = View.GONE
-            }
-        }
-
-        findViewById<TextView>(R.id.tvHariJumat)?.apply {
-            if (jumatJadwal != null && !jumatJadwal.hari.isNullOrEmpty()) {
-                text = jumatJadwal.hari
-                visibility = View.VISIBLE
-            } else {
-                visibility = View.GONE
-            }
-        }
-
-        findViewById<TextView>(R.id.tvKelasJumat)?.apply {
-            if (jumatJadwal != null && !jumatJadwal.kelas.isNullOrEmpty()) {
-                text = "Kelas: ${jumatJadwal.kelas}"
-                visibility = View.VISIBLE
-            } else if (jumatJadwal != null) {
-                text = "Kelas: Semua Kelas"
-                visibility = View.VISIBLE
-            } else {
-                visibility = View.GONE
-            }
-        }
-    }
-
-    private fun populateDhuhaTable() {
-        val rvDhuhaSchedule = findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.rvDhuhaSchedule) ?: run {
-            android.util.Log.e(TAG, "RecyclerView rvDhuhaSchedule not found in layout!")
-            return
-        }
-
-        android.util.Log.d(TAG, "Populating Dhuha Table with ${dhuhaKeahlianList.size} items")
-
-        if (!::dhuhaAdapter.isInitialized) {
-            android.util.Log.d(TAG, "Initializing DhuhaScheduleAdapter")
-            dhuhaAdapter = DhuhaScheduleAdapter(
-                rows = dhuhaKeahlianList,
-                onSwap = { row1, col1, row2, col2 ->
+        if (prayerAdapter == null) {
+            prayerAdapter = PrayerScheduleAdapter(
+                items = items,
+                canEdit = canUserEdit(),
+                onEditPrayer = { jenisSholat -> showEditDialogByJenis(jenisSholat) },
+                onDhuhaKeahlianSwap = { row1, col1, row2, col2 ->
                     handleSwap(row1, col1, row2, col2)
-                }
+                    prayerAdapter?.getDhuhaAdapter()?.updateData(dhuhaKeahlianList)
+                },
+                onSaveDhuhaKeahlian = { saveDhuhaKeahlianToApi() }
             )
-            rvDhuhaSchedule.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
-            rvDhuhaSchedule.adapter = dhuhaAdapter
+            rvPrayerSchedules.adapter = prayerAdapter
         } else {
-            android.util.Log.d(TAG, "Updating existing DhuhaScheduleAdapter with new data")
-            dhuhaAdapter.updateData(dhuhaKeahlianList)
+            prayerAdapter?.updateItems(items)
         }
     }
+
+    private fun canUserEdit(): Boolean {
+        val role = getSharedPreferences("UserData", MODE_PRIVATE).getString("user_role", "")?.lowercase() ?: ""
+        val isReadOnly = role.contains("wali") || role == "guru"
+        return !isReadOnly && role.contains("admin")
+    }
+
+    private fun saveDhuhaKeahlianToApi() {
+        val updates = mutableListOf<Pair<Int, String>>()
+        dhuhaKeahlianList.forEach { daySchedule ->
+            val day = daySchedule.hari
+            daySchedule.jurusan1?.id_jurusan?.let { updates.add(it to day) }
+            daySchedule.jurusan2?.id_jurusan?.let { updates.add(it to day) }
+        }
+
+        lifecycleScope.launch {
+            val token = getAuthToken()
+            var hasError = false
+            updates.forEach { (id, day) ->
+                val res = repository.updateJurusanDhuhaDay(token, id, day)
+                if (res.isFailure) hasError = true
+            }
+            safeRunOnUiThread {
+                if (hasError) {
+                    Toast.makeText(this@JadwalSholatAdminActivity, "Beberapa perubahan gagal disimpan", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this@JadwalSholatAdminActivity, "Jadwal Dhuha berhasil disimpan", Toast.LENGTH_SHORT).show()
+                }
+                loadSynchronizedData()
+            }
+        }
+    }
+
+    private lateinit var rvPrayerSchedules: androidx.recyclerview.widget.RecyclerView
+    private var prayerAdapter: PrayerScheduleAdapter? = null
 
     private fun handleSwap(row1: Int, col1: Int, row2: Int, col2: Int) {
         val list = dhuhaKeahlianList.toMutableList()
@@ -375,98 +318,19 @@ override fun onCreate(savedInstanceState: Bundle?) {
         }
         
         dhuhaKeahlianList = list
-        dhuhaAdapter.updateData(dhuhaKeahlianList)
     }
 
     private fun setupButtons() {
         val btnTambah = findViewById<MaterialButton>(R.id.btnTambah)
-        val role = getSharedPreferences("UserData", MODE_PRIVATE).getString("user_role", "")?.lowercase() ?: ""
 
-        
-        val isReadOnly = role.contains("wali") || role == "guru"
-        val canEdit = !isReadOnly && role.contains("admin") 
-
-        
-        if (!canEdit) {
-            
+        if (!canUserEdit()) {
             btnTambah.visibility = View.GONE
-            findViewById<ImageView>(R.id.btnEditDhuha)?.visibility = View.GONE
-            findViewById<ImageView>(R.id.btnEditWaktuDhuha)?.visibility = View.GONE
-            findViewById<ImageView>(R.id.btnEditZuhur)?.visibility = View.GONE
-            findViewById<ImageView>(R.id.btnEditJumat)?.visibility = View.GONE
-            findViewById<MaterialButton>(R.id.btnSaveDhuha)?.visibility = View.GONE
-
-            
-            
-            return  
+            prayerAdapter?.canEdit = false
+            return
         }
 
         btnTambah.setOnClickListener {
             showTambahJadwalDialog()
-        }
-
-        
-        val btnEditDhuha = findViewById<ImageView>(R.id.btnEditDhuha)
-        val btnSaveDhuha = findViewById<MaterialButton>(R.id.btnSaveDhuha)
-
-        btnEditDhuha.setOnClickListener {
-            if (!::dhuhaAdapter.isInitialized) return@setOnClickListener
-            dhuhaAdapter.isEditMode = true
-            btnEditDhuha.visibility = View.GONE
-            btnSaveDhuha.visibility = View.VISIBLE
-            Toast.makeText(this, "Mode Edit Aktif: Klik baris untuk mengedit", Toast.LENGTH_LONG).show()
-        }
-
-        btnSaveDhuha.setOnClickListener {
-            if (!::dhuhaAdapter.isInitialized) return@setOnClickListener
-            dhuhaAdapter.isEditMode = false
-            btnSaveDhuha.visibility = View.GONE
-            btnEditDhuha.visibility = View.VISIBLE
-            
-            val updates = mutableListOf<Pair<Int, String>>()
-            dhuhaKeahlianList.forEach { daySchedule ->
-                val day = daySchedule.hari
-                daySchedule.jurusan1?.id_jurusan?.let { updates.add(it to day) }
-                daySchedule.jurusan2?.id_jurusan?.let { updates.add(it to day) }
-            }
-            
-            lifecycleScope.launch {
-                val token = getAuthToken()
-                var hasError = false
-                updates.forEach { (id, day) ->
-                    val res = repository.updateJurusanDhuhaDay(token, id, day)
-                    if (res.isFailure) hasError = true
-                }
-                safeRunOnUiThread {
-                    if (hasError) {
-                        Toast.makeText(this@JadwalSholatAdminActivity, "Beberapa perubahan gagal disimpan", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(this@JadwalSholatAdminActivity, "Jadwal Dhuha berhasil disimpan", Toast.LENGTH_SHORT).show()
-                    }
-                    loadSynchronizedData()
-                }
-            }
-        }
-
-        
-        findViewById<ImageView>(R.id.btnEditWaktuDhuha)?.setOnClickListener {
-            val id = it.tag as? Int
-            if (id != null) {
-                showEditSholatDhuhaCardDialog(id)
-            } else {
-                showEditDialogByJenis("Dhuha")
-            }
-        }
-        findViewById<ImageView>(R.id.btnEditZuhur)?.setOnClickListener {
-            val id = it.tag as? Int
-            if (id != null) {
-                showEditSholatDzuhurCardDialog(id)
-            } else {
-                showEditDialogByJenis("Dzuhur")
-            }
-        }
-        findViewById<ImageView>(R.id.btnEditJumat)?.setOnClickListener {
-            showEditDialogByJenis("Jumat")
         }
     }
 

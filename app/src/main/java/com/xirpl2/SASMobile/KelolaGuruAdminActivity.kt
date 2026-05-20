@@ -25,7 +25,7 @@ class KelolaGuruAdminActivity : BaseAdminActivity() {
 
     private lateinit var recyclerGuru: RecyclerView
     private lateinit var progressLoading: ProgressBar
-    private lateinit var tvEmptyState: TextView
+    private lateinit var tvEmptyState: View
     private lateinit var etSearch: EditText
     private lateinit var tvCountInfo: TextView
 
@@ -51,12 +51,23 @@ class KelolaGuruAdminActivity : BaseAdminActivity() {
         loadDataGuru()
     }
 
+    override fun onResume() {
+        super.onResume()
+        // Reload data whenever this activity resumes (e.g. after adding or editing a guru)
+        loadDataGuru(etSearch.text.toString())
+    }
+
     private fun initViews() {
         recyclerGuru = findViewById(R.id.recyclerGuru)
         progressLoading = findViewById(R.id.progressLoading)
         tvEmptyState = findViewById(R.id.tvEmptyState)
         etSearch = findViewById(R.id.etSearch)
         tvCountInfo = findViewById(R.id.tvCountInfo)
+
+        val fabAddGuru = findViewById<View>(R.id.fabAddGuru)
+        fabAddGuru?.setOnClickListener {
+            safeNavigateTo(TambahGuruActivity::class.java)
+        }
     }
 
     private fun setupRecyclerView() {

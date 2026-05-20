@@ -43,7 +43,7 @@ class BerandaGuruActivity : BaseAdminActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_beranda_admin)
+        setContentView(R.layout.activity_beranda_guru)
         setupStatusBar()
 
         findViewById<View>(R.id.topBarContent)?.let { topBar ->

@@ -219,7 +219,6 @@ abstract class BaseAdminActivity : BaseActivity() {
             navigateTo(AdminDeviceManagementActivity::class.java)
         }
 
-        
         sidebarView.findViewById<LinearLayout>(R.id.menuPengaturan)?.setOnClickListener {
             closeSidebar()
             startActivity(Intent(this, PengaturanAkunActivity::class.java))

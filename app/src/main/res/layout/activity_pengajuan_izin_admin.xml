@@ -21,9 +21,9 @@
 
         <!-- Header: Sticky Top Bar -->
         <View
-            android:id="@+id/topBarBackground"
+            android:id="@+id/VectorAtasMenu"
             android:layout_width="0dp"
-            android:layout_height=" 90dp"
+            android:layout_height="90dp"
             android:background="@color/blue_theme"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"

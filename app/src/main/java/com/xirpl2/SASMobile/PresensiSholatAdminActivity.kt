@@ -304,7 +304,7 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
                 jurusan = jurusanApi,
                 jenisSholat = jenisSholatApi,
                 search = searchApi,
-                tanggal = null, // Set to null to fetch all riwayat by default
+                tanggal = todayDate,
                 page = currentPage,
                 limit = limit
             ).fold(

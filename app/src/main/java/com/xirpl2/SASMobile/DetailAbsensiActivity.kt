@@ -33,18 +33,19 @@ class DetailAbsensiActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.fragment_presence_detail)
-        
-        
-        findViewById<View>(R.id.handleBar)?.visibility = View.GONE
-        findViewById<View>(R.id.main_container)?.setBackgroundColor(resources.getColor(android.R.color.white))
+        setContentView(R.layout.activity_detail_absensi)
 
-        
+        initializeViews()
+
+        // Setup back button
+        findViewById<android.widget.ImageView>(R.id.iconBack)?.setOnClickListener {
+            finish()
+            overridePendingTransition(0, 0)
+        }
+
         studentNis = intent.getStringExtra("student_nis")
         studentMajor = intent.getStringExtra("student_major")
         val studentName = intent.getStringExtra("student_name")
-
-        initializeViews()
         
         if (studentName != null) {
             tvTitle.text = "Detail Absensi: $studentName"

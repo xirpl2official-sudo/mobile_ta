@@ -26,13 +26,12 @@ class DhuhaScheduleAdapter(
 
     private fun handleItemClick(row: Int, col: Int) {
         if (!isEditMode) return
-        
+
         if (selectedRow == -1 && selectedCol == -1) {
             selectedRow = row
             selectedCol = col
             notifyDataSetChanged()
         } else {
-            // Swap triggered
             onSwap?.invoke(selectedRow, selectedCol, row, col)
             selectedRow = -1
             selectedCol = -1
@@ -65,25 +64,24 @@ class DhuhaScheduleAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val row = rows[position]
-        android.util.Log.d("DhuhaAdapter", "Binding row $position: ${row.hari}")
         holder.tvDay.text = row.hari
-        
+
         holder.itemView.setBackgroundColor(if (position % 2 == 0) Color.WHITE else Color.parseColor("#FAFAFA"))
 
         holder.tvJurusan1.text = row.jurusan1?.nama_jurusan ?: "-"
         holder.tvJurusan2.text = row.jurusan2?.nama_jurusan ?: "-"
-        
+
         if (isEditMode) {
             val isSelected1 = (position == selectedRow && selectedCol == 1)
             val isSelected2 = (position == selectedRow && selectedCol == 2)
-            
+
             holder.tvJurusan1.setTextColor(if (isSelected1) Color.WHITE else Color.parseColor("#1E3A8A"))
             if (isSelected1) {
                 holder.tvJurusan1.setBackgroundResource(R.drawable.bg_selected_jurusan)
             } else {
                 holder.tvJurusan1.setBackgroundResource(0)
             }
-            
+
             holder.tvJurusan2.setTextColor(if (isSelected2) Color.WHITE else Color.parseColor("#1E3A8A"))
             if (isSelected2) {
                 holder.tvJurusan2.setBackgroundResource(R.drawable.bg_selected_jurusan)
@@ -99,7 +97,7 @@ class DhuhaScheduleAdapter(
     }
 
     override fun getItemCount(): Int = rows.size
-    
+
     fun updateData(newRows: List<JadwalDhuhaKeahlian>) {
         this.rows = newRows
         notifyDataSetChanged()

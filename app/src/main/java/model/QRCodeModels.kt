@@ -41,5 +41,6 @@ data class AbsensiVerifyInfo(
     val jenis_sholat: String,
     val tanggal: String,
     val waktu_absen: String,
-    val status: String             
+    val status: String
 )
+

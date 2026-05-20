@@ -7,33 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.ProgressBar
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.button.MaterialButton
-import com.xirpl2.SASMobile.model.RiwayatAbsensi
 import com.xirpl2.SASMobile.model.SiswaItem
-import com.xirpl2.SASMobile.model.StatusAbsensi
-import com.xirpl2.SASMobile.repository.BerandaRepository
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class SiswaDetailDialogFragment : DialogFragment() {
 
     private lateinit var student: SiswaItem
-    private val repository = BerandaRepository()
-    private val TAG = "SiswaDetailDialog"
-
-    private lateinit var progressBar: ProgressBar
-    private lateinit var layoutContent: View
-    private lateinit var recyclerRiwayat: RecyclerView
-    private lateinit var progressRiwayat: ProgressBar
-    private lateinit var tvEmptyRiwayat: TextView
-    private lateinit var btnDownload: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,83 +34,36 @@ class SiswaDetailDialogFragment : DialogFragment() {
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
 
-        initViews(view)
-        loadRiwayatAbsensi()
-    }
-
-    private fun initViews(view: View) {
-        progressBar = view.findViewById(R.id.progressBar)
-        layoutContent = view.findViewById(R.id.layoutContent)
-        recyclerRiwayat = view.findViewById(R.id.recyclerRiwayat)
-        progressRiwayat = view.findViewById(R.id.progressRiwayat)
-        tvEmptyRiwayat = view.findViewById(R.id.tvEmptyRiwayat)
-        btnDownload = view.findViewById(R.id.btnDownload)
-
         view.findViewById<ImageView>(R.id.btnClose).setOnClickListener { dismiss() }
-        
-        btnDownload.setOnClickListener { downloadHistory() }
+
+        populateStudentDetails(view)
     }
 
-    private fun downloadHistory() {
-        Toast.makeText(context, "Menyiapkan berkas riwayat absensi...", Toast.LENGTH_SHORT).show()
-        // In a real app, this would trigger a download from the backend or generate a local report
-        // For this task, we'll simulate the download process
-        lifecycleScope.launch {
-            kotlinx.coroutines.delay(1500)
-            if (isAdded) {
-                Toast.makeText(context, "Riwayat absensi ${student.nama_siswa} berhasil diunduh!", Toast.LENGTH_LONG).show()
-            }
+    private fun populateStudentDetails(view: View) {
+        view.findViewById<TextView>(R.id.tvNis).text = student.nis.ifEmpty { "-" }
+        view.findViewById<TextView>(R.id.tvNama).text = student.nama_siswa.ifEmpty { "-" }
+        view.findViewById<TextView>(R.id.tvJenisKelamin).text = when (student.jenis_kelamin.uppercase()) {
+            "L" -> "Laki-laki"
+            "P" -> "Perempuan"
+            else -> student.jenis_kelamin.ifEmpty { "-" }
         }
-    }
+        view.findViewById<TextView>(R.id.tvKelas).text = student.kelas.ifEmpty { "-" }
+        view.findViewById<TextView>(R.id.tvJurusan).text = student.jurusan.ifEmpty { "-" }
 
-    private fun loadRiwayatAbsensi() {
-        val token = context?.getSharedPreferences("UserData", 0)?.getString("auth_token", "") ?: ""
-        if (token.isEmpty()) return
-
-        progressRiwayat.visibility = View.VISIBLE
-        tvEmptyRiwayat.visibility = View.GONE
-        recyclerRiwayat.visibility = View.GONE
-
-        lifecycleScope.launch {
-            // Using a high limit to get more history
-            val result = repository.getHistoryStaff(token, search = student.nis, limit = 100)
-            withContext(kotlinx.coroutines.Dispatchers.Main) {
-                if (isAdded) {
-                    result.fold(
-                        onSuccess = { historyData ->
-                            progressRiwayat.visibility = View.GONE
-                            
-                            val riwayatList = historyData.absensi.map { absen ->
-                                RiwayatAbsensi(
-                                    tanggal = absen.tanggal,
-                                    namaSholat = absen.jenis_sholat ?: "Unknown",
-                                    status = when(absen.status.uppercase()) {
-                                        "HADIR" -> StatusAbsensi.HADIR
-                                        "SAKIT" -> StatusAbsensi.SAKIT
-                                        "IZIN" -> StatusAbsensi.IZIN
-                                        else -> StatusAbsensi.ALPHA
-                                    },
-                                    waktuAbsen = absen.deskripsi
-                                )
-                            }.sortedByDescending { it.tanggal } // Sort latest first
-
-                            if (riwayatList.isNotEmpty()) {
-                                recyclerRiwayat.visibility = View.VISIBLE
-                                recyclerRiwayat.layoutManager = LinearLayoutManager(context)
-                                val adapter = RiwayatAbsensiAdapter()
-                                recyclerRiwayat.adapter = adapter
-                                adapter.submitList(riwayatList)
-                            } else {
-                                tvEmptyRiwayat.visibility = View.VISIBLE
-                            }
-                        },
-                        onFailure = { error ->
-                            progressRiwayat.visibility = View.GONE
-                            tvEmptyRiwayat.visibility = View.VISIBLE
-                            tvEmptyRiwayat.text = "Gagal memuat riwayat absensi"
-                        }
-                    )
-                }
+        val tvDeviceStatus = view.findViewById<TextView>(R.id.tvDeviceStatus)
+        val status = student.deviceStatus?.lowercase()
+        when {
+            status == "verified" || status == "terdaftar" -> {
+                tvDeviceStatus.text = "Terverifikasi"
+                tvDeviceStatus.setTextColor(Color.parseColor("#10B981"))
+            }
+            status == "pending" -> {
+                tvDeviceStatus.text = "Menunggu Verifikasi"
+                tvDeviceStatus.setTextColor(Color.parseColor("#F59E0B"))
+            }
+            else -> {
+                tvDeviceStatus.text = "Belum Terdaftar"
+                tvDeviceStatus.setTextColor(Color.parseColor("#9CA3AF"))
             }
         }
     }

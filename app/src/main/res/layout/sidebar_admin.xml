@@ -39,11 +39,11 @@
 
             <ImageView
                 android:id="@+id/btnCloseSidebar"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:contentDescription="Close"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:padding="12dp"
+                android:contentDescription="Tutup menu"
                 android:src="@drawable/ic_close"
-                android:layout_marginTop="4dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/tvMenuTitle"
                 app:tint="@android:color/white" />
@@ -158,7 +158,7 @@
                 android:padding="16dp"
                 android:layout_marginBottom="4dp"
                 android:background="@drawable/bg_sidebar_item_selector">
-                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_home" app:tint="@color/slate_500" />
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_home" android:contentDescription="Beranda" app:tint="@color/slate_500" />
                 <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Beranda" android:textColor="@color/slate_700" android:textSize="15sp" />
             </LinearLayout>
 
@@ -172,7 +172,7 @@
                 android:padding="16dp"
                 android:layout_marginBottom="4dp"
                 android:background="@drawable/bg_sidebar_item_selector">
-                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_clock" app:tint="@color/slate_500" />
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_clock" android:contentDescription="Jadwal Sholat" app:tint="@color/slate_500" />
                 <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Jadwal Sholat" android:textColor="@color/slate_700" android:textSize="15sp" />
             </LinearLayout>
 
@@ -186,7 +186,7 @@
                 android:padding="16dp"
                 android:layout_marginBottom="4dp"
                 android:background="@drawable/bg_sidebar_item_selector">
-                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/users" app:tint="@color/slate_500" />
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/users" android:contentDescription="Data Siswa" app:tint="@color/slate_500" />
                 <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Data Siswa" android:textColor="@color/slate_700" android:textSize="15sp" />
             </LinearLayout>
 
@@ -201,7 +201,7 @@
                 android:padding="16dp"
                 android:layout_marginBottom="4dp"
                 android:background="@drawable/bg_sidebar_item_selector">
-                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/gear" app:tint="@color/slate_500" />
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/gear" android:contentDescription="Kelola Kelas" app:tint="@color/slate_500" />
                 <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Kelola Kelas" android:textColor="@color/slate_700" android:textSize="15sp" />
             </LinearLayout>
 
@@ -215,7 +215,7 @@
                 android:padding="16dp"
                 android:layout_marginBottom="4dp"
                 android:background="@drawable/bg_sidebar_item_selector">
-                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_user_profile" app:tint="@color/slate_500" />
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_user_profile" android:contentDescription="Kelola Guru" app:tint="@color/slate_500" />
                 <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Kelola Guru" android:textColor="@color/slate_700" android:textSize="15sp" />
             </LinearLayout>
 
@@ -229,7 +229,7 @@
                 android:padding="16dp"
                 android:layout_marginBottom="4dp"
                 android:background="@drawable/bg_sidebar_item_selector">
-                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_calendar" app:tint="@color/slate_500" />
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_calendar" android:contentDescription="Presensi" app:tint="@color/slate_500" />
                 <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Presensi" android:textColor="@color/slate_700" android:textSize="15sp" />
             </LinearLayout>
 
@@ -243,7 +243,7 @@
                 android:padding="16dp"
                 android:layout_marginBottom="4dp"
                 android:background="@drawable/bg_sidebar_item_selector">
-                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_statistik" app:tint="@color/slate_500" />
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_statistik" android:contentDescription="Laporan" app:tint="@color/slate_500" />
                 <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Laporan" android:textColor="@color/slate_700" android:textSize="15sp" />
             </LinearLayout>
 
@@ -257,7 +257,7 @@
                 android:padding="16dp"
                 android:layout_marginBottom="4dp"
                 android:background="@drawable/bg_sidebar_item_selector">
-                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_perizinan" app:tint="@color/slate_500" />
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_perizinan" android:contentDescription="Pengajuan Izin" app:tint="@color/slate_500" />
                 <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Pengajuan Izin" android:textColor="@color/slate_700" android:textSize="15sp" />
             </LinearLayout>
 
@@ -271,7 +271,7 @@
                 android:padding="16dp"
                 android:layout_marginBottom="4dp"
                 android:background="@drawable/bg_sidebar_item_selector">
-                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_qr_code" app:tint="@color/slate_500" />
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_qr_code" android:contentDescription="QR Code" app:tint="@color/slate_500" />
                 <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="QR Code" android:textColor="@color/slate_700" android:textSize="15sp" />
             </LinearLayout>
 
@@ -285,7 +285,7 @@
                 android:padding="16dp"
                 android:layout_marginBottom="4dp"
                 android:background="@drawable/bg_sidebar_item_selector">
-                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_user_profile" app:tint="@color/slate_500" />
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_user_profile" android:contentDescription="Siswa Belum Terdaftar" app:tint="@color/slate_500" />
                 <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Siswa Belum Terdaftar" android:textColor="@color/slate_700" android:textSize="15sp" />
             </LinearLayout>
 
@@ -299,11 +299,11 @@
                 android:padding="16dp"
                 android:layout_marginBottom="4dp"
                 android:background="@drawable/bg_sidebar_item_selector">
-                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/gear" app:tint="@color/slate_500" />
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/gear" android:contentDescription="Manajemen Perangkat" app:tint="@color/slate_500" />
                 <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Manajemen Perangkat" android:textColor="@color/slate_700" android:textSize="15sp" />
             </LinearLayout>
 
-            <View 
+            <View
                 android:layout_width="match_parent" 
                 android:layout_height="1dp" 
                 android:background="#E0E0E0" 
@@ -320,7 +320,7 @@
                 android:padding="16dp"
                 android:layout_marginBottom="4dp"
                 android:background="@drawable/bg_sidebar_item_selector">
-                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/gear" app:tint="@color/slate_500" />
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/gear" android:contentDescription="Pengaturan" app:tint="@color/slate_500" />
                 <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Pengaturan" android:textColor="@color/slate_700" android:textSize="15sp" />
             </LinearLayout>
 
@@ -334,7 +334,7 @@
                 android:padding="16dp"
                 android:layout_marginBottom="24dp"
                 android:background="@drawable/bg_sidebar_item_selector">
-                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_logout" app:tint="@color/error_color" />
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_logout" android:contentDescription="Keluar" app:tint="@color/error_color" />
                 <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Keluar" android:textColor="@color/error_color" android:textSize="15sp" />
             </LinearLayout>
 

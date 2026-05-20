@@ -20,10 +20,11 @@
             android:orientation="vertical"
             android:padding="24dp">
 
+            <!-- Header -->
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp">
+                android:layout_marginBottom="16dp">
 
                 <TextView
                     android:id="@+id/tvTitle"
@@ -45,73 +46,139 @@
                     app:tint="#999999" />
             </RelativeLayout>
 
-            <ProgressBar
-                android:id="@+id/progressBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="20dp"
-                android:visibility="gone" />
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#E5E7EB"
+                android:layout_marginBottom="16dp" />
 
+            <!-- Student Info -->
             <LinearLayout
                 android:id="@+id/layoutContent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
+                <!-- NIS -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="0dp"
-                    android:layout_marginBottom="8dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
+                    android:layout_marginBottom="12dp"
+                    android:orientation="vertical">
                     <TextView
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Riwayat Absensi"
-                        android:textColor="#333333"
-                        android:textSize="14sp"
+                        android:text="NIS"
+                        android:textColor="#9CA3AF"
+                        android:textSize="12sp" />
+                    <TextView
+                        android:id="@+id/tvNis"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#1F2937"
+                        android:textSize="15sp"
                         android:textStyle="bold" />
-
-                    <ImageView
-                        android:id="@+id/btnDownload"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:padding="2dp"
-                        android:src="@drawable/ic_download"
-                        app:tint="@color/primary"
-                        android:contentDescription="Download Riwayat" />
                 </LinearLayout>
 
-                <FrameLayout
+                <!-- Nama -->
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="350dp">
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recyclerRiwayat"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:visibility="gone" />
-
-                    <ProgressBar
-                        android:id="@+id/progressRiwayat"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:visibility="gone" />
-
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:orientation="vertical">
                     <TextView
-                        android:id="@+id/tvEmptyRiwayat"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:text="Tidak ada data riwayat"
-                        android:textColor="#999999"
-                        android:visibility="visible" />
-                </FrameLayout>
+                        android:text="Nama Lengkap"
+                        android:textColor="#9CA3AF"
+                        android:textSize="12sp" />
+                    <TextView
+                        android:id="@+id/tvNama"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#1F2937"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Jenis Kelamin -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Jenis Kelamin"
+                        android:textColor="#9CA3AF"
+                        android:textSize="12sp" />
+                    <TextView
+                        android:id="@+id/tvJenisKelamin"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#1F2937"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <!-- Kelas -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Kelas"
+                        android:textColor="#9CA3AF"
+                        android:textSize="12sp" />
+                    <TextView
+                        android:id="@+id/tvKelas"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#1F2937"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <!-- Jurusan -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Jurusan"
+                        android:textColor="#9CA3AF"
+                        android:textSize="12sp" />
+                    <TextView
+                        android:id="@+id/tvJurusan"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#1F2937"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <!-- Status Device -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Status Perangkat"
+                        android:textColor="#9CA3AF"
+                        android:textSize="12sp" />
+                    <TextView
+                        android:id="@+id/tvDeviceStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="15sp" />
+                </LinearLayout>
 
             </LinearLayout>
 
