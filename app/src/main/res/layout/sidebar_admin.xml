@@ -176,7 +176,7 @@
                 <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Jadwal Sholat" android:textColor="@color/slate_700" android:textSize="15sp" />
             </LinearLayout>
 
-            <!-- Item Data Siswa -->
+            <!-- Item Kelola Siswa -->
             <LinearLayout
                 android:id="@+id/menuDataSiswa"
                 android:layout_width="match_parent"
@@ -186,8 +186,8 @@
                 android:padding="16dp"
                 android:layout_marginBottom="4dp"
                 android:background="@drawable/bg_sidebar_item_selector">
-                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/users" android:contentDescription="Data Siswa" app:tint="@color/slate_500" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Data Siswa" android:textColor="@color/slate_700" android:textSize="15sp" />
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/users" android:contentDescription="Kelola Siswa" app:tint="@color/slate_500" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Kelola Siswa" android:textColor="@color/slate_700" android:textSize="15sp" />
             </LinearLayout>
 
 
@@ -233,20 +233,6 @@
                 <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Presensi" android:textColor="@color/slate_700" android:textSize="15sp" />
             </LinearLayout>
 
-            <!-- Item Laporan -->
-            <LinearLayout
-                android:id="@+id/menuLaporan"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:padding="16dp"
-                android:layout_marginBottom="4dp"
-                android:background="@drawable/bg_sidebar_item_selector">
-                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_statistik" android:contentDescription="Laporan" app:tint="@color/slate_500" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Laporan" android:textColor="@color/slate_700" android:textSize="15sp" />
-            </LinearLayout>
-
             <!-- Item Pengajuan Izin -->
             <LinearLayout
                 android:id="@+id/menuPengajuanIzin"
@@ -259,6 +245,20 @@
                 android:background="@drawable/bg_sidebar_item_selector">
                 <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_perizinan" android:contentDescription="Pengajuan Izin" app:tint="@color/slate_500" />
                 <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Pengajuan Izin" android:textColor="@color/slate_700" android:textSize="15sp" />
+            </LinearLayout>
+
+            <!-- Item Laporan -->
+            <LinearLayout
+                android:id="@+id/menuLaporan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="16dp"
+                android:layout_marginBottom="4dp"
+                android:background="@drawable/bg_sidebar_item_selector">
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_statistik" android:contentDescription="Laporan" app:tint="@color/slate_500" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Laporan" android:textColor="@color/slate_700" android:textSize="15sp" />
             </LinearLayout>
 
             <!-- Item QR Code -->
@@ -289,7 +289,7 @@
                 <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Siswa Belum Terdaftar" android:textColor="@color/slate_700" android:textSize="15sp" />
             </LinearLayout>
 
-            <!-- Item Manajemen Perangkat -->
+            <!-- Item Perangkat Siswa -->
             <LinearLayout
                 android:id="@+id/menuManajemenPerangkat"
                 android:layout_width="match_parent"
@@ -299,8 +299,8 @@
                 android:padding="16dp"
                 android:layout_marginBottom="4dp"
                 android:background="@drawable/bg_sidebar_item_selector">
-                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/gear" android:contentDescription="Manajemen Perangkat" app:tint="@color/slate_500" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Manajemen Perangkat" android:textColor="@color/slate_700" android:textSize="15sp" />
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/gear" android:contentDescription="Perangkat Siswa" app:tint="@color/slate_500" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Perangkat Siswa" android:textColor="@color/slate_700" android:textSize="15sp" />
             </LinearLayout>
 
             <View

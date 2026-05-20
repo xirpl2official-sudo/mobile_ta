@@ -95,24 +95,26 @@ abstract class BaseAdminActivity : BaseActivity() {
     private fun applyRoleBasedFiltering() {
         val role = getSharedPreferences("user_session", Context.MODE_PRIVATE)
             .getString("user_role", "")?.lowercase() ?: ""
-            
+
         val isWali = role.contains("wali")
         val isAdmin = role.contains("admin")
         val isGuru = role == "guru"
 
         if (!isAdmin) {
+            // Non-admin: hide admin-only items
+            sidebarView.findViewById<View>(R.id.menuKelolaKelas)?.visibility = View.GONE
+            sidebarView.findViewById<View>(R.id.menuKelolaGuru)?.visibility = View.GONE
+            sidebarView.findViewById<View>(R.id.menuQRCode)?.visibility = View.GONE
             sidebarView.findViewById<View>(R.id.menuManajemenPerangkat)?.visibility = View.GONE
-            
+
             if (isWali) {
+                // Wali Kelas: Dashboard, Jadwal, Kelola Siswa, Presensi, Pengajuan Izin, Laporan, Siswa Belum Terdaftar
                 sidebarView.findViewById<View>(R.id.menuJadwalSholat)?.visibility = View.VISIBLE
                 sidebarView.findViewById<View>(R.id.menuDataSiswa)?.visibility = View.VISIBLE
             } else {
+                // Guru biasa: hide Jadwal, Kelola Siswa, Presensi
                 sidebarView.findViewById<View>(R.id.menuJadwalSholat)?.visibility = View.GONE
                 sidebarView.findViewById<View>(R.id.menuDataSiswa)?.visibility = View.GONE
-            }
-            
-            if (isGuru && !isWali) {
-                
                 sidebarView.findViewById<View>(R.id.menuPresensi)?.visibility = View.GONE
             }
         }

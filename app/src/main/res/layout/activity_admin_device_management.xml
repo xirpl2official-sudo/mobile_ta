@@ -70,7 +70,7 @@
                     android:id="@+id/tvPageTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Manajemen Perangkat"
+                    android:text="Perangkat Siswa"
                     android:textColor="#FFFFFF"
                     android:textSize="18sp"
                     android:textStyle="bold" />

@@ -9,10 +9,12 @@ import com.xirpl2.SASMobile.R
 import com.xirpl2.SASMobile.model.AbsensiStaffItem
 
 class LaporanAbsensiAdapter(
-    private var items: List<AbsensiStaffItem> = emptyList()
+    private var items: List<AbsensiStaffItem> = emptyList(),
+    private var pageOffset: Int = 0
 ) : RecyclerView.Adapter<LaporanAbsensiAdapter.LaporanViewHolder>() {
 
     class LaporanViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val tvNo: TextView = itemView.findViewById(R.id.tvNo)
         val tvTanggal: TextView = itemView.findViewById(R.id.tvTanggal)
         val tvNis: TextView = itemView.findViewById(R.id.tvNis)
         val tvNama: TextView = itemView.findViewById(R.id.tvNama)
@@ -29,13 +31,12 @@ class LaporanAbsensiAdapter(
 
     override fun onBindViewHolder(holder: LaporanViewHolder, position: Int) {
         val item = items[position]
-        
-        
+
+        holder.tvNo.text = (pageOffset + position + 1).toString()
         holder.tvTanggal.text = formatTanggal(item.tanggal)
         holder.tvNis.text = item.nis
         holder.tvNama.text = item.nama_siswa
-        
-        
+
         val kelasDisplay = buildString {
             append(item.kelas ?: "")
             if (!item.jurusan.isNullOrEmpty()) {
@@ -44,14 +45,11 @@ class LaporanAbsensiAdapter(
             }
         }
         holder.tvKelas.text = kelasDisplay
-        
-        
         holder.tvSholat.text = item.jenis_sholat?.replaceFirstChar { it.uppercase() } ?: "-"
-        
-        
+
         val status = item.status.lowercase()
         holder.tvStatus.text = status.replaceFirstChar { it.uppercase() }
-        
+
         val backgroundRes = when (status) {
             "hadir" -> R.drawable.bg_status_hadir
             "izin" -> R.drawable.bg_status_izin
@@ -77,13 +75,15 @@ class LaporanAbsensiAdapter(
         }
     }
 
-    fun updateData(newItems: List<AbsensiStaffItem>) {
+    fun updateData(newItems: List<AbsensiStaffItem>, offset: Int = 0) {
         items = newItems
+        pageOffset = offset
         notifyDataSetChanged()
     }
 
     fun clearData() {
         items = emptyList()
+        pageOffset = 0
         notifyDataSetChanged()
     }
 }
