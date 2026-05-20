@@ -58,7 +58,7 @@ class MasukActivity : BaseActivity() {
             // UI Styling
             window.statusBarColor = 0xFF2886D6.toInt()
             WindowInsetsControllerCompat(window, window.decorView).apply {
-                isAppearanceLightStatusBars = true
+                isAppearanceLightStatusBars = false
             }
 
             findViewById<android.view.View>(R.id.main)?.let { mainView ->
