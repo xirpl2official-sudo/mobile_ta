@@ -172,7 +172,7 @@ interface ApiService {
     suspend fun verifyAttendanceCode(
         @Header("Authorization") token: String,
         @Body request: VerifyCodeRequest
-    ): Response<MessageResponse>
+    ): Response<QRCodeVerifyResponse>
 
     @GET("v2/attendance/barcode/current")
     suspend fun getCurrentBarcode(
@@ -680,6 +680,9 @@ interface ApiService {
 
     @GET("v2/pengajuan-izin/{id}/bukti")
     suspend fun getBuktiFoto(@Header("Authorization") token: String, @Path("id") id: Int): Response<ApiResponse<com.google.gson.JsonObject>>
+
+    @GET("v2/pengajuan-izin/kuota")
+    suspend fun getKuotaIzin(@Header("Authorization") token: String): Response<KuotaIzinResponse>
 
     // --- Prayer Schedules (FASE 3.15) ---
 

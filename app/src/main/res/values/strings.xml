@@ -60,7 +60,7 @@
     
     <string name="TotalSiswa">Total Siswa</string>
     <string name="TotalHadirHariIni">Total Hadir Hari Ini</string>
-    <string name="IzinSakit">Izin/Sakit</string>
+    <string name="IzinSakit">Total Izin / Sakit</string>
     <string name="Kehadiran">Kehadiran</string>
     <string name="Alpha">Alpha</string>
     <string name="JadwalSholatTerdekat">Jadwal Sholat Terdekat</string>
@@ -82,6 +82,7 @@
 
     
     <string name="Verifikasi">Verifikasi</string>
+    <string name="VerifikasiAkun">VERIFIKASI AKUN</string>
 
     
     <string name="QrCodeSaya">QR CODE SAYA</string>
@@ -188,6 +189,7 @@
     <string name="WaktuDhuhaJadwal">Waktu : 07.00 - 08.00</string>
 
     
+    <string name="SemuaSiswaTerdaftar">Semua siswa terdaftar</string>
     <string name="PlaceholderNol">0</string>
 
     
@@ -232,13 +234,10 @@
     <string name="kuota_izin_value">2 / 5 Hari</string>
     <string name="sakit_terpakai">3 Hari Terpakai</string>
     <string name="riwayat_terakhir">Riwayat Terakhir</string>
-    <string name="disetujui">DISETUJUI</string>
-    <string name="izin_keluarga">Izin Keluarga</string>
-    <string name="sakit_flu">Sakit (Flu)</string>
+    <string name="belum_ada_pengajuan">Belum ada pengajuan izin</string>
+    <string name="gagal_memuat_riwayat">Gagal memuat riwayat</string>
     <string name="lihat_semua_riwayat">Lihat Semua Riwayat</string>
     <string name="user_class_placeholder">Siswa - Kelas XII IPA 1</string>
-    <string name="date_range_1">12 Mar - 14 Mar 2024</string>
-    <string name="date_range_2">02 Feb - 03 Feb 2024</string>
     <string name="lampiran_surat">Lampiran (Surat Dokter/Pendukung)</string>
     <string name="KelolaKelas">Kelola Kelas</string>
     <string name="KelolaSiswa">Kelola Siswa</string>

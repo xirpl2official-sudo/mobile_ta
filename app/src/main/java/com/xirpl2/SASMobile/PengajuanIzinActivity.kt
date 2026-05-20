@@ -7,12 +7,15 @@ import android.os.Bundle
 import android.view.View
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textfield.TextInputLayout
+import com.xirpl2.SASMobile.adapter.RiwayatIzinAdapter
 import com.xirpl2.SASMobile.network.RetrofitClient
+import com.xirpl2.SASMobile.repository.PengajuanIzinRepository
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -48,6 +51,19 @@ class PengajuanIzinActivity : BaseActivity() {
     private lateinit var tvPhotoLabel: TextView
     private var selectedPhotoUri: Uri? = null
 
+    // Kuota
+    private lateinit var progressIzin: ProgressBar
+    private lateinit var progressSakit: ProgressBar
+    private lateinit var tvKuotaIzin: TextView
+    private lateinit var tvKuotaSakit: TextView
+
+    // Riwayat
+    private lateinit var rvRiwayatIzin: RecyclerView
+    private lateinit var progressRiwayat: ProgressBar
+    private lateinit var tvEmptyRiwayat: TextView
+    private lateinit var riwayatAdapter: RiwayatIzinAdapter
+    private val repository = PengajuanIzinRepository()
+
     private val calendar = Calendar.getInstance()
 
     // Photo picker launcher
@@ -72,6 +88,8 @@ class PengajuanIzinActivity : BaseActivity() {
         setupBackButton()
         setupCancelButton()
         setupPhotoUpload()
+        loadKuotaIzin()
+        loadRiwayatIzin()
     }
 
     private fun initializeViews() {
@@ -96,6 +114,20 @@ class PengajuanIzinActivity : BaseActivity() {
         ivPhotoPreview = findViewById(R.id.ivPhotoPreview)
         btnRemovePhoto = findViewById(R.id.btnRemovePhoto)
         tvPhotoLabel = findViewById(R.id.tvPhotoLabel)
+
+        // Kuota views
+        progressIzin = findViewById(R.id.progressIzin)
+        progressSakit = findViewById(R.id.progressSakit)
+        tvKuotaIzin = findViewById(R.id.tvKuotaIzin)
+        tvKuotaSakit = findViewById(R.id.tvKuotaSakit)
+
+        // Riwayat views
+        rvRiwayatIzin = findViewById(R.id.rvRiwayatIzin)
+        progressRiwayat = findViewById(R.id.progressRiwayat)
+        tvEmptyRiwayat = findViewById(R.id.tvEmptyRiwayat)
+        riwayatAdapter = RiwayatIzinAdapter()
+        rvRiwayatIzin.layoutManager = LinearLayoutManager(this)
+        rvRiwayatIzin.adapter = riwayatAdapter
     }
 
     private fun setupPhotoUpload() {
@@ -325,7 +357,9 @@ class PengajuanIzinActivity : BaseActivity() {
                         response.body()?.message ?: "Pengajuan izin berhasil dikirim",
                         Toast.LENGTH_LONG
                     ).show()
-                    finish()
+                    resetForm()
+                    loadKuotaIzin()
+                    loadRiwayatIzin()
                 } else {
                     val errorMsg = when (response.code()) {
                         400 -> "Semua field wajib diisi atau jenis izin tidak valid"
@@ -361,6 +395,72 @@ class PengajuanIzinActivity : BaseActivity() {
         } catch (e: Exception) {
             android.util.Log.w("PengajuanIzin", "Failed to prepare photo: ${e.message}")
             null
+        }
+    }
+
+    private fun resetForm() {
+        rgPermitType.clearCheck()
+        etStartDate.text.clear()
+        etEndDate.text.clear()
+        etReason.text.clear()
+        tilStartDate.error = null
+        tilEndDate.error = null
+        tilReason.error = null
+        selectedPhotoUri = null
+        layoutUploadPlaceholder.visibility = View.VISIBLE
+        layoutPhotoPreview.visibility = View.GONE
+        tvPhotoLabel.text = "BUKTI FOTO (OPSIONAL)"
+        tvPhotoLabel.setTextColor(getColor(R.color.slate_500))
+    }
+
+    private fun loadKuotaIzin() {
+        val token = getSharedPreferences("UserData", MODE_PRIVATE)
+            .getString("auth_token", "") ?: ""
+
+        lifecycleScope.launch {
+            val result = repository.getKuotaIzin(token)
+            result.onSuccess { kuota ->
+                val izinPercent = if (kuota.izin.total > 0) (kuota.izin.terpakai * 100 / kuota.izin.total) else 0
+                val sakitPercent = if (kuota.sakit.total > 0) (kuota.sakit.terpakai * 100 / kuota.sakit.total) else 0
+                progressIzin.progress = izinPercent
+                progressSakit.progress = sakitPercent
+                tvKuotaIzin.text = "${kuota.izin.terpakai} / ${kuota.izin.total} Hari"
+                tvKuotaSakit.text = "${kuota.sakit.terpakai} / ${kuota.sakit.total} Hari"
+            }
+            result.onFailure {
+                // Keep default values on failure
+            }
+        }
+    }
+
+    private fun loadRiwayatIzin() {
+        progressRiwayat.visibility = View.VISIBLE
+        rvRiwayatIzin.visibility = View.GONE
+        tvEmptyRiwayat.visibility = View.GONE
+
+        val token = getSharedPreferences("UserData", MODE_PRIVATE)
+            .getString("auth_token", "") ?: ""
+
+        lifecycleScope.launch {
+            val result = repository.getPengajuanIzinList(token)
+            progressRiwayat.visibility = View.GONE
+
+            result.onSuccess { response ->
+                val data = response.data
+                if (data.isEmpty()) {
+                    tvEmptyRiwayat.visibility = View.VISIBLE
+                    rvRiwayatIzin.visibility = View.GONE
+                } else {
+                    tvEmptyRiwayat.visibility = View.GONE
+                    rvRiwayatIzin.visibility = View.VISIBLE
+                    riwayatAdapter.submitList(data)
+                }
+            }
+            result.onFailure {
+                tvEmptyRiwayat.visibility = View.VISIBLE
+                tvEmptyRiwayat.text = getString(R.string.gagal_memuat_riwayat)
+                rvRiwayatIzin.visibility = View.GONE
+            }
         }
     }
 

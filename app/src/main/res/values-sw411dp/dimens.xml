@@ -37,6 +37,7 @@
     <dimen name="text_nama_sholat">16sp</dimen>
     <dimen name="text_jam_sholat">15sp</dimen>
     <dimen name="text_status_badge">14sp</dimen>
+    <dimen name="text_riwayat">14sp</dimen>
     <dimen name="text_riwayat_tanggal">12sp</dimen>
     <dimen name="text_riwayat_waktu">12sp</dimen>
     <dimen name="text_riwayat_sholat">14sp</dimen>

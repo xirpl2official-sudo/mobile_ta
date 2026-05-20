@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -13,72 +13,66 @@
         android:paddingVertical="@dimen/spacing_text"
         android:gravity="center_vertical">
 
-        
-        <LinearLayout
+
+        <TextView
+            android:id="@+id/tvTanggal"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical"
+            android:text="14 NOV 2024"
+            android:textSize="@dimen/text_riwayat_tanggal"
+            android:textStyle="bold"
+            android:textColor="#000000"
             android:gravity="center"
-            android:paddingStart="@dimen/spacing_medium">
+            android:paddingStart="@dimen/spacing_medium" />
 
-            <TextView
-                android:id="@+id/tvWaktu"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="07:30"
-                android:textSize="@dimen/text_riwayat_waktu"
-                android:textColor="#666666"
-                android:gravity="center" />
 
-            <TextView
-                android:id="@+id/tvTanggal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="14 NOV 2024"
-                android:textSize="@dimen/text_riwayat_tanggal"
-                android:textStyle="bold"
-                android:textColor="#000000"
-                android:gravity="center"
-                android:layout_marginTop="@dimen/spacing_tiny" />
-
-        </LinearLayout>
-
-        
         <TextView
             android:id="@+id/tvSholat"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Dhuha"
-            android:textSize="@dimen/text_riwayat_sholat"
+            android:text="Subuh"
+            android:textSize="@dimen/text_riwayat"
             android:textColor="#000000"
             android:gravity="center" />
 
-        
+
+        <TextView
+            android:id="@+id/tvWaktu"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="07:30"
+            android:textSize="@dimen/text_riwayat"
+            android:textColor="#666666"
+            android:gravity="center" />
+
+
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="center">
+            android:gravity="center"
+            android:paddingEnd="@dimen/spacing_small">
 
             <TextView
                 android:id="@+id/tvStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Hadir"
-                android:textSize="@dimen/text_riwayat_status"
-                android:textColor="#FFFFFF"
+                android:textSize="@dimen/text_riwayat"
+                android:textColor="@color/white"
                 android:background="@drawable/bg_status_hadir"
-                android:paddingHorizontal="@dimen/riwayat_padding_horizontal"
-                android:paddingVertical="@dimen/riwayat_padding_vertical"
+                android:paddingHorizontal="@dimen/spacing_medium"
+                android:paddingVertical="@dimen/spacing_tiny"
                 android:gravity="center" />
 
         </LinearLayout>
 
     </LinearLayout>
 
-    
+
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"

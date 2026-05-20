@@ -191,7 +191,6 @@
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
-                            
                             <TextView
                                 android:id="@+id/tvTotalSiswaValue"
                                 android:layout_width="wrap_content"
@@ -201,11 +200,22 @@
                                 android:textSize="@dimen/text_value_card"
                                 android:textStyle="bold"
                                 app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintBottom_toBottomOf="parent" />
+                                app:layout_constraintTop_toBottomOf="@id/tvTotalSiswaLabel"
+                                android:layout_marginTop="4dp"
+                                app:layout_constraintVertical_bias="0"
+                                app:layout_constraintVertical_chainStyle="packed" />
 
-                            
+                            <TextView
+                                android:id="@+id/tvTotalSiswaSub"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/SemuaSiswaTerdaftar"
+                                android:textColor="@color/slate_500"
+                                android:textSize="10sp"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/tvTotalSiswaValue"
+                                android:layout_marginTop="2dp" />
+
                             <ImageView
                                 android:id="@+id/iconTotalSiswa"
                                 android:layout_width="0dp"
@@ -213,7 +223,7 @@
                                 android:src="@drawable/users"
                                 android:contentDescription="@string/TotalSiswa"
                                 app:layout_constraintDimensionRatio="1:1"
-                                app:layout_constraintWidth_percent="0.20"
+                                app:layout_constraintWidth_percent="0.25"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -263,7 +273,6 @@
                                 app:layout_constraintTop_toTopOf="parent"
                                 />
 
-                            
                             <TextView
                                 android:id="@+id/tvHadirHariIniValue"
                                 android:layout_width="wrap_content"
@@ -273,11 +282,21 @@
                                 android:textSize="@dimen/text_value_card"
                                 android:textStyle="bold"
                                 app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintBottom_toBottomOf="parent" />
+                                app:layout_constraintTop_toBottomOf="@id/tvHadirHariIniLabel"
+                                android:layout_marginTop="4dp"
+                                app:layout_constraintVertical_bias="0"
+                                app:layout_constraintVertical_chainStyle="packed" />
 
-                            
+                            <TextView
+                                android:id="@+id/tvHadirHariIniSub"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/slate_500"
+                                android:textSize="10sp"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/tvHadirHariIniValue"
+                                android:layout_marginTop="2dp" />
+
                             <ImageView
                                 android:id="@+id/iconHadirHariIni"
                                 android:layout_width="0dp"
@@ -285,7 +304,7 @@
                                 android:src="@drawable/centang"
                                 android:contentDescription="@string/TotalHadirHariIni"
                                 app:layout_constraintDimensionRatio="1:1"
-                                app:layout_constraintWidth_percent="0.20"
+                                app:layout_constraintWidth_percent="0.25"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -332,7 +351,6 @@
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
-                            
                             <TextView
                                 android:id="@+id/tvIzinSakitValue"
                                 android:layout_width="wrap_content"
@@ -342,11 +360,21 @@
                                 android:textSize="@dimen/text_value_card"
                                 android:textStyle="bold"
                                 app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintBottom_toBottomOf="parent" />
+                                app:layout_constraintTop_toBottomOf="@id/tvIzinSakitLabel"
+                                android:layout_marginTop="4dp"
+                                app:layout_constraintVertical_bias="0"
+                                app:layout_constraintVertical_chainStyle="packed" />
 
-                            
+                            <TextView
+                                android:id="@+id/tvIzinSakitSub"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/slate_500"
+                                android:textSize="10sp"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/tvIzinSakitValue"
+                                android:layout_marginTop="2dp" />
+
                             <ImageView
                                 android:id="@+id/iconIzinSakit"
                                 android:layout_width="0dp"
@@ -354,7 +382,7 @@
                                 android:src="@drawable/jam"
                                 android:contentDescription="@string/IzinSakit"
                                 app:layout_constraintDimensionRatio="1:1"
-                                app:layout_constraintWidth_percent="0.20"
+                                app:layout_constraintWidth_percent="0.25"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -401,7 +429,6 @@
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
-                            
                             <TextView
                                 android:id="@+id/tvKehadiranValue"
                                 android:layout_width="wrap_content"
@@ -411,11 +438,21 @@
                                 android:textSize="@dimen/text_value_card"
                                 android:textStyle="bold"
                                 app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintBottom_toBottomOf="parent" />
+                                app:layout_constraintTop_toBottomOf="@id/tvKehadiranLabel"
+                                android:layout_marginTop="4dp"
+                                app:layout_constraintVertical_bias="0"
+                                app:layout_constraintVertical_chainStyle="packed" />
 
-                            
+                            <TextView
+                                android:id="@+id/tvKehadiranSub"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/slate_500"
+                                android:textSize="10sp"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/tvKehadiranValue"
+                                android:layout_marginTop="2dp" />
+
                             <ImageView
                                 android:id="@+id/iconKehadiran"
                                 android:layout_width="0dp"
@@ -423,7 +460,7 @@
                                 android:src="@drawable/bar"
                                 android:contentDescription="@string/Kehadiran"
                                 app:layout_constraintDimensionRatio="1:1"
-                                app:layout_constraintWidth_percent="0.20"
+                                app:layout_constraintWidth_percent="0.25"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -503,7 +540,6 @@
                             android:layout_height="wrap_content"
                             android:padding="@dimen/card_padding">
 
-                            
                             <ImageView
                                 android:id="@+id/iconPrayer"
                                 android:layout_width="0dp"
@@ -519,7 +555,6 @@
                                 app:layout_constraintHorizontal_chainStyle="packed"
                                 android:layout_marginStart="@dimen/spacing_text" />
 
-                            
                             <TextView
                                 android:id="@+id/tvNamaSholat"
                                 android:layout_width="wrap_content"
@@ -530,9 +565,37 @@
                                 android:textStyle="bold"
                                 app:layout_constraintStart_toEndOf="@id/iconPrayer"
                                 app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintEnd_toStartOf="@id/tvStatusBadge"
                                 android:layout_marginStart="@dimen/spacing_text" />
 
-                            
+                            <TextView
+                                android:id="@+id/tvStatusBadge"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/bg_badge_berlangsung"
+                                android:text="Berlangsung"
+                                android:textColor="#FFFFFF"
+                                android:textSize="10sp"
+                                android:textStyle="bold"
+                                android:visibility="gone"
+                                app:layout_constraintStart_toEndOf="@id/tvNamaSholat"
+                                app:layout_constraintTop_toTopOf="@id/tvNamaSholat"
+                                app:layout_constraintBottom_toBottomOf="@id/tvNamaSholat"
+                                android:layout_marginStart="@dimen/spacing_small" />
+
+                            <ImageView
+                                android:id="@+id/btnQRCode"
+                                android:layout_width="32dp"
+                                android:layout_height="32dp"
+                                android:src="@drawable/ic_qr_code"
+                                android:contentDescription="QR Code"
+                                android:background="?attr/selectableItemBackgroundBorderless"
+                                android:padding="4dp"
+                                app:tint="@color/blue_theme"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent" />
+
                             <TextView
                                 android:id="@+id/tvWaktuSholat"
                                 android:layout_width="wrap_content"
@@ -542,6 +605,7 @@
                                 android:textSize="@dimen/text_prayer_time"
                                 app:layout_constraintStart_toStartOf="@id/tvNamaSholat"
                                 app:layout_constraintTop_toBottomOf="@id/tvNamaSholat"
+                                app:layout_constraintEnd_toStartOf="@id/btnQRCode"
                                 android:layout_marginTop="@dimen/spacing_tiny" />
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -552,7 +616,54 @@
 
             </androidx.cardview.widget.CardView>
 
-            
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardJadwalDhuha"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardUseCompatPadding="true"
+                app:layout_constraintTop_toBottomOf="@id/cardJadwalTerdekat"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="@dimen/spacing_small"
+                android:visibility="gone">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/spacing_medium">
+
+                    <TextView
+                        android:id="@+id/tvDhuhaTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="Jadwal Dhuha per Jurusan"
+                        android:textColor="#000000"
+                        android:textSize="@dimen/text_prayer_title"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvDhuhaSchedule"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="false"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvDhuhaTitle"
+                        android:layout_marginTop="@dimen/spacing_small"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        tools:listitem="@layout/item_dhuha_schedule"
+                        tools:itemCount="4" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvJurusan"
                 android:layout_width="0dp"
@@ -560,7 +671,7 @@
                 android:nestedScrollingEnabled="false"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/cardJadwalTerdekat"
+                app:layout_constraintTop_toBottomOf="@id/cardJadwalDhuha"
                 android:layout_marginTop="@dimen/spacing_small"
                 android:layout_marginBottom="@dimen/spacing_large"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"

@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -54,6 +55,15 @@ class GantiKataSandi : BaseActivity() {
         etEmail = findViewById(R.id.et_email)
         btnKirim = findViewById(R.id.buttonKirim)
         progressBar = findViewById(R.id.progressBar)
+
+        findViewById<TextView>(R.id.tvKembaliMasuk).setOnClickListener {
+            startActivity(Intent(this, MasukActivity::class.java))
+            finish()
+        }
+
+        findViewById<TextView>(R.id.tvVerifikasiOtp).setOnClickListener {
+            startActivity(Intent(this, VerifikasiOtpActivity::class.java))
+        }
 
         setHintTextColors()
         

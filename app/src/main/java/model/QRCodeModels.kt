@@ -6,15 +6,15 @@ data class QRCodeGenerateResponse(
 )
 
 data class QRCodeData(
-    val qr_code: String,           
-    val token: String,             
-    val expires_at: String,        
-    val jenis_sholat: String,      
-    val id_jadwal: Int             
+    val qr_code: String,
+    val token: String,
+    val expires_at: String,
+    val jenis_sholat: String,
+    val id_jenis: Int
 )
 
 data class QRCodeVerifyRequest(
-    val token: String              
+    val token: String
 )
 
 data class QRCodeVerifyResponse(
@@ -23,24 +23,12 @@ data class QRCodeVerifyResponse(
 )
 
 data class QRCodeVerifyData(
-    val siswa: SiswaVerifyInfo,    
-    val absensi: AbsensiVerifyInfo 
-)
-
-data class SiswaVerifyInfo(
-    val id: Int,
+    val valid: Boolean,
     val nis: String,
-    val nama: String,
+    val nama_siswa: String,
     val kelas: String,
-    val jurusan: String? = null
-)
-
-data class AbsensiVerifyInfo(
-    val id: Int,
-    val id_jadwal: Int,
+    val jurusan: String? = null,
     val jenis_sholat: String,
     val tanggal: String,
-    val waktu_absen: String,
     val status: String
 )
-

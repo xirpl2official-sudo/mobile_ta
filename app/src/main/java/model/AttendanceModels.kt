@@ -14,7 +14,9 @@ data class AttendanceCodeData(
     @SerializedName("id_template")
     val idTemplate: Int?,
     @SerializedName("jenis_sholat")
-    val jenisSholat: String?
+    val jenisSholat: String?,
+    @SerializedName("id_jenis")
+    val idJenis: Int?
 )
 
 data class VerifyCodeRequest(

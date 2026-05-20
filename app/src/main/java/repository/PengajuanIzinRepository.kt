@@ -101,6 +101,31 @@ class PengajuanIzinRepository {
         }
     }
 
+    suspend fun getKuotaIzin(
+        token: String
+    ): Result<KuotaIzinData> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.getKuotaIzin("Bearer $token")
+
+                if (!response.isSuccessful) {
+                    return@withContext Result.failure(
+                        Exception("HTTP Error: ${response.code()} - ${response.message()}")
+                    )
+                }
+
+                val body = response.body()
+                if (body == null) {
+                    return@withContext Result.failure(Exception("Response body kosong"))
+                }
+
+                return@withContext Result.success(body.data)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
     suspend fun getBuktiFoto(
         token: String,
         id: Int

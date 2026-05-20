@@ -323,12 +323,20 @@ data class DhuhaJadwalData(
 }
 
 data class GetNotificationsResponse(
-    val total: Int,
-    val page: Int,
-    val limit: Int,
-    @SerializedName("has_more")
-    val hasMore: Boolean,
-    val notifications: List<NotificationItem> = emptyList()
+    val message: String? = null,
+    val data: List<NotificationItem> = emptyList(),
+    val pagination: NotificationPagination? = null
+)
+
+data class NotificationPagination(
+    @SerializedName("current_page")
+    val currentPage: Int = 1,
+    @SerializedName("page_size")
+    val pageSize: Int = 20,
+    @SerializedName("total_records")
+    val totalRecords: Int = 0,
+    @SerializedName("total_pages")
+    val totalPages: Int = 1
 )
 
 data class NotificationItem(

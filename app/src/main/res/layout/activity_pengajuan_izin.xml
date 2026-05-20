@@ -519,6 +519,7 @@
                             android:textSize="13sp" />
 
                         <TextView
+                            android:id="@+id/tvKuotaIzin"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/kuota_izin_value"
@@ -535,7 +536,7 @@
                         android:layout_height="6dp"
                         android:layout_marginBottom="16dp"
                         android:max="100"
-                        android:progress="40"
+                        android:progress="0"
                         android:progressDrawable="@drawable/bg_progress_bar_blue" />
 
                     
@@ -554,6 +555,7 @@
                             android:textSize="13sp" />
 
                         <TextView
+                            android:id="@+id/tvKuotaSakit"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/sakit_terpakai"
@@ -569,7 +571,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="6dp"
                         android:max="100"
-                        android:progress="15"
+                        android:progress="0"
                         android:progressDrawable="@drawable/bg_progress_bar_orange" />
 
                 </LinearLayout>
@@ -609,137 +611,30 @@
                         android:layout_height="1dp"
                         android:background="@color/slate_100" />
 
-                    
-                    <LinearLayout
+                    <ProgressBar
+                        android:id="@+id/progressRiwayat"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:padding="24dp"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/tvEmptyRiwayat"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="16dp">
+                        android:gravity="center"
+                        android:padding="24dp"
+                        android:text="@string/belum_ada_pengajuan"
+                        android:textColor="@color/slate_400"
+                        android:textSize="13sp"
+                        android:visibility="gone" />
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="4dp"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="@string/izin_keluarga"
-                                android:textColor="@color/slate_900"
-                                android:textSize="13sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:background="@drawable/bg_status_badge_approved"
-                                android:paddingHorizontal="8dp"
-                                android:paddingVertical="2dp"
-                                android:text="@string/disetujui"
-                                android:textColor="@color/green_700"
-                                android:textSize="10sp"
-                                android:textStyle="bold" />
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
-
-                            <ImageView
-                                android:layout_width="14dp"
-                                android:layout_height="14dp"
-                                android:layout_marginEnd="4dp"
-                                android:src="@drawable/ic_calendar"
-                                android:contentDescription="@string/icon"
-                                app:tint="@color/slate_500" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/date_range_1"
-                                android:textColor="@color/slate_500"
-                                android:textSize="11sp" />
-
-                        </LinearLayout>
-
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/slate_100" />
-
-                    
-                    <LinearLayout
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvRiwayatIzin"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="16dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="4dp"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="@string/sakit_flu"
-                                android:textColor="@color/slate_900"
-                                android:textSize="13sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:background="@drawable/bg_status_badge_approved"
-                                android:paddingHorizontal="8dp"
-                                android:paddingVertical="2dp"
-                                android:text="@string/disetujui"
-                                android:textColor="@color/green_700"
-                                android:textSize="10sp"
-                                android:textStyle="bold" />
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
-
-                            <ImageView
-                                android:layout_width="14dp"
-                                android:layout_height="14dp"
-                                android:layout_marginEnd="4dp"
-                                android:src="@drawable/ic_calendar"
-                                android:contentDescription="@string/icon"
-                                app:tint="@color/slate_500" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/date_range_2"
-                                android:textColor="@color/slate_500"
-                                android:textSize="11sp" />
-
-                        </LinearLayout>
-
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/slate_100" />
+                        android:nestedScrollingEnabled="false" />
 
                     
                     <TextView

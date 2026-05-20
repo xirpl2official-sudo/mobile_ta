@@ -28,10 +28,10 @@ class VerifyAccountActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_verify_account)
 
-        // Set status bar color
-        window.statusBarColor = getColor(R.color.white)
+        // Set status bar color to match blue header
+        window.statusBarColor = android.graphics.Color.parseColor("#1A77C6")
         @Suppress("DEPRECATION")
-        window.decorView.systemUiVisibility = android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        window.decorView.systemUiVisibility = 0
 
         etNewPassword = findViewById(R.id.etNewPassword)
         etConfirmPassword = findViewById(R.id.etConfirmPassword)

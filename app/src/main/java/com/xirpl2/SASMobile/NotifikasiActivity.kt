@@ -203,7 +203,7 @@ class NotifikasiActivity : BaseActivity() {
                 isLoading = false
 
                 if (response.isSuccessful && response.body() != null) {
-                    val apiNotifications = response.body()!!.notifications
+                    val apiNotifications = response.body()!!.data
                     notificationList.clear()
                     
                     for (notif in apiNotifications) {

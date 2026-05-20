@@ -41,13 +41,21 @@ data class StudentTransition(
 )
 
 data class BulkProgressionRequest(
+    @SerializedName("nis_list")
     val student_ids: List<String>,
-    val target_kelas: String
+    @SerializedName("target_class")
+    val target_kelas: String,
+    val action: String,
+    val note: String? = null
 )
 
 data class BulkFieldsRequest(
+    @SerializedName("nis_list")
     val student_ids: List<String>,
-    val fields: Map<String, Any>
+    @SerializedName("status_akademik")
+    val statusAkademik: String? = null,
+    @SerializedName("id_tahun_masuk")
+    val idTahunMasuk: Int? = null
 )
 
 data class AnnualRolloverRequest(
@@ -65,7 +73,8 @@ data class SequentialProgressionRequest(
 
 data class AcademicYearListResponse(
     val message: String? = null,
-    val data: List<AcademicYear> = emptyList()
+    val data: List<AcademicYear> = emptyList(),
+    val meta: PaginationMeta? = null
 )
 
 data class AcademicYearResponse(
@@ -74,18 +83,16 @@ data class AcademicYearResponse(
 )
 
 data class AcademicYear(
-    @SerializedName("id_tahun_ajaran")
+    @SerializedName("id_tahun_masuk")
     val id: Int,
-    val tahun_mulai: String,
-    val tahun_selesai: String,
+    val tahun: String,
     val is_active: Boolean,
     val created_at: String? = null,
     val updated_at: String? = null
 )
 
 data class AcademicYearRequest(
-    val tahun_mulai: String,
-    val tahun_selesai: String,
+    val tahun: String,
     val is_active: Boolean = false
 )
 
@@ -110,14 +117,19 @@ data class DeviceManagementItem(
 
 data class DeviceChangeRequestListResponse(
     val message: String? = null,
-    val data: List<DeviceChangeRequestItem> = emptyList()
+    val data: List<DeviceChangeRequestItem> = emptyList(),
+    val count: Int = 0
 )
 
 data class DeviceChangeRequestItem(
     val id: Int,
+    @SerializedName("account_id")
     val user_id: Int,
+    @SerializedName("old_hardware_id")
     val hardware_id_lama: String,
+    @SerializedName("new_hardware_id")
     val hardware_id_baru: String,
+    @SerializedName("alasan")
     val reason: String?,
     val status: String, // pending, approved, rejected
     val created_at: String
@@ -239,41 +251,67 @@ data class DhuhaGroupResponse(
 )
 
 data class DhuhaGroup(
-    @SerializedName("id_group")
+    @SerializedName("id_giliran")
     val id: Int,
-    val nama_group: String,
-    val jadwal: List<DhuhaJadwalItem>
-)
-
-data class DhuhaJadwalItem(
     val hari: String,
-    val jurusan: List<String>
+    val jurusan: String,
+    @SerializedName("id_jurusan")
+    val idJurusan: Int,
+    val students: List<String> = emptyList()
 )
 
 data class DhuhaGroupRequest(
-    val nama_group: String,
-    val jadwal: List<DhuhaJadwalItem>
+    val hari: String,
+    val jurusan: String,
+    @SerializedName("id_jurusan")
+    val idJurusan: Int,
+    val students: List<String> = emptyList()
 )
 
 data class WeeklyDhuhaGroupRequest(
-    val groups: List<Map<String, Any>>
+    val groups: List<DhuhaGroupRequest>
 )
 
 // --- FASE 3.16: Data Retention Models ---
 
 data class BackupStatusResponse(
     val message: String? = null,
-    val data: BackupStatus
+    @SerializedName("has_pending")
+    val hasPending: Boolean = false,
+    @SerializedName("pending_ranges")
+    val pendingRanges: List<BackupPendingRange> = emptyList(),
+    @SerializedName("recent_backups")
+    val recentBackups: List<BackupItem> = emptyList()
 )
 
-data class BackupStatus(
-    val last_backup_at: String?,
-    val next_backup_at: String?,
-    val backup_size_mb: Double?,
-    val status: String // pending, completed, failed
+data class BackupPendingRange(
+    @SerializedName("start_date")
+    val startDate: String,
+    @SerializedName("end_date")
+    val endDate: String,
+    val count: Int = 0
+)
+
+data class BackupItem(
+    val id: Int,
+    @SerializedName("start_date")
+    val startDate: String,
+    @SerializedName("end_date")
+    val endDate: String,
+    @SerializedName("file_format")
+    val fileFormat: String,
+    @SerializedName("exported_at")
+    val exportedAt: String,
+    @SerializedName("auto_delete_after")
+    val autoDeleteAfter: String,
+    @SerializedName("deleted_at")
+    val deletedAt: String? = null,
+    @SerializedName("created_by")
+    val createdBy: Int? = null
 )
 
 data class BackupConfirmRequest(
-    val backup_id: String,
+    @SerializedName("backup_id")
+    val backupId: Int,
     val confirmed: Boolean
 )

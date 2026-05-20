@@ -235,7 +235,7 @@
 
                 
                 <androidx.cardview.widget.CardView
-                    android:id="@+id/cardTotal"
+                    android:id="@+id/cardTotalAbsensi"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     app:cardCornerRadius="@dimen/spacing_small"
@@ -244,7 +244,7 @@
                     app:cardUseCompatPadding="true"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/cardHadir"
+                    app:layout_constraintEnd_toStartOf="@id/cardTotalAlpha"
                     app:layout_constraintWidth_percent="0.34">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -253,26 +253,29 @@
                         android:padding="@dimen/spacing_medium">
 
                         <ImageView
-                            android:id="@+id/iconTotal"
+                            android:id="@+id/iconTotalAbsensi"
                             android:layout_width="0dp"
                             android:layout_height="0dp"
                             android:src="@drawable/ic_total"
-                            android:contentDescription="@string/Total"
+                            android:background="@drawable/bg_icon_blue"
+                            android:padding="6dp"
+                            android:contentDescription="Total Absensi"
                             app:layout_constraintDimensionRatio="1:1"
                             app:layout_constraintHeight_percent="0.35"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:tint="#1565C0" />
 
                         <TextView
-                            android:id="@+id/tvTotalLabel"
+                            android:id="@+id/tvTotalAbsensiLabel"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="@string/Total"
-                            android:textColor="#000000"
+                            android:text="Total Absensi"
+                            android:textColor="#1565C0"
                             android:textSize="@dimen/text_button"
                             android:textStyle="bold"
-                            app:layout_constraintStart_toEndOf="@id/iconTotal"
-                            app:layout_constraintTop_toTopOf="@id/iconTotal"
+                            app:layout_constraintStart_toEndOf="@id/iconTotalAbsensi"
+                            app:layout_constraintTop_toTopOf="@id/iconTotalAbsensi"
                             app:layout_constraintEnd_toEndOf="parent"
                             android:layout_marginStart="@dimen/spacing_text" />
 
@@ -281,12 +284,12 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:text="@string/PlaceholderDash"
-                            android:textColor="#000000"
+                            android:textColor="#1565C0"
                             android:textSize="@dimen/text_title"
                             android:textStyle="bold"
                             android:gravity="center"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@id/iconTotal"
+                            app:layout_constraintTop_toBottomOf="@id/iconTotalAbsensi"
                             app:layout_constraintEnd_toEndOf="parent"
                             android:layout_marginTop="@dimen/spacing_small" />
 
@@ -296,7 +299,7 @@
 
                 
                 <androidx.cardview.widget.CardView
-                    android:id="@+id/cardHadir"
+                    android:id="@+id/cardTotalAlpha"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     app:cardCornerRadius="@dimen/spacing_small"
@@ -304,8 +307,8 @@
                     app:cardBackgroundColor="#FFFFFF"
                     app:cardUseCompatPadding="true"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/cardTotal"
-                    app:layout_constraintEnd_toStartOf="@id/cardStatistik"
+                    app:layout_constraintStart_toEndOf="@id/cardTotalAbsensi"
+                    app:layout_constraintEnd_toStartOf="@id/cardIzinSakit"
                     app:layout_constraintWidth_percent="0.34">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -314,40 +317,43 @@
                         android:padding="@dimen/spacing_medium">
 
                         <ImageView
-                            android:id="@+id/iconHadir"
+                            android:id="@+id/iconTotalAlpha"
                             android:layout_width="0dp"
                             android:layout_height="0dp"
-                            android:src="@drawable/ic_hadir"
-                            android:contentDescription="@string/Hadir"
+                            android:src="@drawable/ic_statistik"
+                            android:background="@drawable/bg_icon_red"
+                            android:padding="6dp"
+                            android:contentDescription="Total Alpha"
                             app:layout_constraintDimensionRatio="1:1"
                             app:layout_constraintHeight_percent="0.35"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:tint="#C62828" />
 
                         <TextView
-                            android:id="@+id/tvHadirLabel"
+                            android:id="@+id/tvTotalAlphaLabel"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="@string/Hadir"
-                            android:textColor="#000000"
+                            android:text="Total Alpha"
+                            android:textColor="#C62828"
                             android:textSize="@dimen/text_button"
                             android:textStyle="bold"
-                            app:layout_constraintStart_toEndOf="@id/iconHadir"
-                            app:layout_constraintTop_toTopOf="@id/iconHadir"
+                            app:layout_constraintStart_toEndOf="@id/iconTotalAlpha"
+                            app:layout_constraintTop_toTopOf="@id/iconTotalAlpha"
                             app:layout_constraintEnd_toEndOf="parent"
                             android:layout_marginStart="@dimen/spacing_text" />
 
                         <TextView
-                            android:id="@+id/tvHadirValue"
+                            android:id="@+id/tvAlphaValue"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:text="@string/PlaceholderDash"
-                            android:textColor="#000000"
+                            android:textColor="#C62828"
                             android:textSize="@dimen/text_title"
                             android:textStyle="bold"
                             android:gravity="center"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@id/iconHadir"
+                            app:layout_constraintTop_toBottomOf="@id/iconTotalAlpha"
                             app:layout_constraintEnd_toEndOf="parent"
                             android:layout_marginTop="@dimen/spacing_small" />
 
@@ -357,7 +363,7 @@
 
                 
                 <androidx.cardview.widget.CardView
-                    android:id="@+id/cardStatistik"
+                    android:id="@+id/cardIzinSakit"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     app:cardCornerRadius="@dimen/spacing_small"
@@ -365,7 +371,7 @@
                     app:cardBackgroundColor="#FFFFFF"
                     app:cardUseCompatPadding="true"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/cardHadir"
+                    app:layout_constraintStart_toEndOf="@id/cardTotalAlpha"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintWidth_percent="0.34">
 
@@ -375,40 +381,43 @@
                         android:padding="@dimen/spacing_medium">
 
                         <ImageView
-                            android:id="@+id/iconStatistik"
+                            android:id="@+id/iconIzinSakit"
                             android:layout_width="0dp"
                             android:layout_height="0dp"
-                            android:src="@drawable/ic_statistik"
-                            android:contentDescription="@string/Statistik"
+                            android:src="@drawable/ic_riwayat"
+                            android:background="@drawable/bg_icon_amber"
+                            android:padding="6dp"
+                            android:contentDescription="Total Izin/Sakit"
                             app:layout_constraintDimensionRatio="1:1"
                             app:layout_constraintHeight_percent="0.35"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:tint="#E65100" />
 
                         <TextView
-                            android:id="@+id/tvStatistikLabel"
+                            android:id="@+id/tvIzinSakitLabel"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="@string/Statistik"
-                            android:textColor="#000000"
+                            android:text="Izin/Sakit"
+                            android:textColor="#E65100"
                             android:textSize="@dimen/text_button"
                             android:textStyle="bold"
-                            app:layout_constraintStart_toEndOf="@id/iconStatistik"
-                            app:layout_constraintTop_toTopOf="@id/iconStatistik"
+                            app:layout_constraintStart_toEndOf="@id/iconIzinSakit"
+                            app:layout_constraintTop_toTopOf="@id/iconIzinSakit"
                             app:layout_constraintEnd_toEndOf="parent"
                             android:layout_marginStart="@dimen/spacing_text" />
 
                         <TextView
-                            android:id="@+id/tvStatistikValue"
+                            android:id="@+id/tvIzinSakitValue"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:text="@string/PlaceholderDash"
-                            android:textColor="#000000"
+                            android:textColor="#E65100"
                             android:textSize="@dimen/text_title"
                             android:textStyle="bold"
                             android:gravity="center"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@id/iconStatistik"
+                            app:layout_constraintTop_toBottomOf="@id/iconIzinSakit"
                             app:layout_constraintEnd_toEndOf="parent"
                             android:layout_marginTop="@dimen/spacing_small" />
 
@@ -520,8 +529,25 @@
                         android:textStyle="bold"
                         app:layout_constraintStart_toEndOf="@id/iconRiwayat"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/btnUnduhRiwayat"
                         android:layout_marginStart="@dimen/spacing_small" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnUnduhRiwayat"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="Unduh"
+                        android:textSize="11sp"
+                        android:textColor="#1565C0"
+                        app:icon="@drawable/ic_download"
+                        app:iconSize="16dp"
+                        app:iconTint="#1565C0"
+                        app:strokeColor="#1565C0"
+                        app:cornerRadius="8dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="@id/tvRiwayatLabel" />
 
                     
                     <LinearLayout
@@ -550,6 +576,16 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="@string/Sholat"
+                            android:textStyle="bold"
+                            android:textSize="@dimen/text_small"
+                            android:textColor="#000000"
+                            android:gravity="center" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/Waktu"
                             android:textStyle="bold"
                             android:textSize="@dimen/text_small"
                             android:textColor="#000000"

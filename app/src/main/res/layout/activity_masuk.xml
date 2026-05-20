@@ -5,38 +5,8 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@drawable/bg_auth_gradient_blue"
     tools:context=".MasukActivity">
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guidelineInorasi"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.36" />
-
-    <ImageView
-        android:id="@+id/BagroundInorasi1"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:contentDescription="@string/LatarBelakangIno"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/guidelineInorasi"
-        app:srcCompat="@drawable/inorasi_baground" />
-
-    <ImageView
-        android:id="@+id/VectorAtasB"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:contentDescription="@string/DekorasiBiru"
-        android:scaleType="fitXY"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.38"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/gelombangbiru" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardLogo"
@@ -70,18 +40,14 @@
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-medium"
         android:text="@string/SMK"
-        android:textColor="@color/white"
+        android:textColor="@color/primary_dark"
         android:textSize="@dimen/text_title"
         android:layout_marginTop="@dimen/spacing_medium"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@id/textMasuk1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cardLogo"
-        android:shadowColor="#80000000"
-        android:shadowDx="0"
-        android:shadowDy="6"
-        android:shadowRadius="4"/>
+        app:layout_constraintTop_toBottomOf="@id/cardLogo" />
 
     <TextView
         android:id="@+id/textMasuk1"
@@ -89,49 +55,50 @@
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-medium"
         android:text="@string/MasukTitle"
-        android:textColor="@color/white"
+        android:textColor="@color/gray"
         android:textSize="@dimen/text_bawah_title"
-        app:layout_constraintBottom_toTopOf="@id/nisLayout"
+        app:layout_constraintBottom_toTopOf="@id/nisLabel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textHalaman1"
-        android:shadowColor="#40000000"
-        android:shadowDx="0"
-        android:shadowDy="4"
-        android:shadowRadius="4"/>
+        app:layout_constraintTop_toBottomOf="@id/textHalaman1" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guidelineInput"
-        android:layout_width="wrap_content"
+    <TextView
+        android:id="@+id/nisLabel"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.41" />
+        android:layout_marginTop="@dimen/spacing_xlarge"
+        android:text="@string/NIS"
+        android:textColor="@color/on_background"
+        android:textSize="@dimen/text_small"
+        android:fontFamily="sans-serif-medium"
+        app:layout_constraintBottom_toTopOf="@id/nisLayout"
+        app:layout_constraintEnd_toEndOf="@id/nisLayout"
+        app:layout_constraintStart_toStartOf="@id/nisLayout"
+        app:layout_constraintTop_toBottomOf="@id/textMasuk1"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:id="@+id/nisLayout"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="@dimen/spacing_text"
         android:hint="@string/NIS"
-        android:maxWidth="320dp"
-        android:minWidth="240dp"
         app:boxBackgroundColor="#FFFFFF"
         app:hintTextColor="@color/hint_and_floating"
         app:boxStrokeColor="@color/stroke_blue_always"
         app:boxStrokeWidth="1dp"
         app:boxStrokeWidthFocused="1dp"
-        app:boxCornerRadiusTopStart="20dp"
-        app:boxCornerRadiusTopEnd="20dp"
-        app:boxCornerRadiusBottomStart="20dp"
-        app:boxCornerRadiusBottomEnd="20dp"
-        app:layout_constraintBottom_toTopOf="@id/passwordLayout"
+        app:boxCornerRadiusTopStart="12dp"
+        app:boxCornerRadiusTopEnd="12dp"
+        app:boxCornerRadiusBottomStart="12dp"
+        app:boxCornerRadiusBottomEnd="12dp"
+        app:layout_constraintBottom_toTopOf="@id/passwordLabel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/guidelineInput"
-        app:layout_constraintWidth_percent="0.70"
-        app:layout_constraintHeight_percent="0.075"
-        app:layout_constraintVertical_chainStyle="packed"
-        app:layout_constraintVertical_bias="0.1">
+        app:layout_constraintTop_toBottomOf="@id/nisLabel"
+        app:layout_constraintWidth_percent="0.85"
+        app:layout_constraintHeight_percent="0.075">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_nis"
@@ -144,31 +111,43 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+    <TextView
+        android:id="@+id/passwordLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_medium"
+        android:text="@string/Sandi"
+        android:textColor="@color/on_background"
+        android:textSize="@dimen/text_small"
+        android:fontFamily="sans-serif-medium"
+        app:layout_constraintBottom_toTopOf="@id/passwordLayout"
+        app:layout_constraintEnd_toEndOf="@id/passwordLayout"
+        app:layout_constraintStart_toStartOf="@id/passwordLayout"
+        app:layout_constraintTop_toBottomOf="@id/nisLayout" />
+
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:id="@+id/passwordLayout"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="@dimen/spacing_medium"
+        android:layout_marginTop="@dimen/spacing_text"
         android:hint="@string/Sandi"
-        android:maxWidth="320dp"
-        android:minWidth="240dp"
         app:boxBackgroundColor="#FFFFFF"
         app:hintTextColor="@color/hint_and_floating"
         app:boxStrokeColor="@color/stroke_blue_always"
         app:boxStrokeWidth="1dp"
         app:boxStrokeWidthFocused="1dp"
-        app:boxCornerRadiusTopStart="20dp"
-        app:boxCornerRadiusTopEnd="20dp"
-        app:boxCornerRadiusBottomStart="20dp"
-        app:boxCornerRadiusBottomEnd="20dp"
+        app:boxCornerRadiusTopStart="12dp"
+        app:boxCornerRadiusTopEnd="12dp"
+        app:boxCornerRadiusBottomStart="12dp"
+        app:boxCornerRadiusBottomEnd="12dp"
         app:endIconMode="password_toggle"
         app:endIconTint="#B3B3B3"
-        app:layout_constraintBottom_toTopOf="@id/btn_masuk"
+        app:layout_constraintBottom_toTopOf="@id/textLupaPassword"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/nisLayout"
-        app:layout_constraintWidth_percent="0.70"
+        app:layout_constraintTop_toBottomOf="@id/passwordLabel"
+        app:layout_constraintWidth_percent="0.85"
         app:layout_constraintHeight_percent="0.075">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -181,7 +160,6 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-
     <TextView
         android:id="@+id/textLupaPassword"
         android:layout_width="wrap_content"
@@ -193,25 +171,23 @@
         app:layout_constraintEnd_toEndOf="@id/passwordLayout"
         app:layout_constraintTop_toBottomOf="@id/passwordLayout" />
 
-
     <Button
         android:id="@+id/btn_masuk"
-        android:layout_width="321dp"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="68dp"
+        android:layout_marginTop="32dp"
         android:backgroundTint="#2D8FE3"
-        android:maxWidth="310dp"
-        android:minWidth="240dp"
         android:text="@string/Masuk"
         android:textColor="#FFFFFF"
         android:textSize="@dimen/text_button"
         app:layout_constraintBottom_toTopOf="@id/textBelumPunyaAkun"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.075"
-        app:layout_constraintHorizontal_bias="0.511"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/passwordLayout"
-        app:layout_constraintVertical_bias="0.4" />
+        app:layout_constraintTop_toBottomOf="@id/textLupaPassword"
+        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintWidth_percent="0.85"
+        app:cornerRadius="12dp" />
 
     <TextView
         android:id="@+id/textBelumPunyaAkun"
@@ -240,7 +216,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/textBelumPunyaAkun" />
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

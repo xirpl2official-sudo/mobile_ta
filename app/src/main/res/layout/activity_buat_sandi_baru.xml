@@ -95,28 +95,33 @@
         android:text="@string/BuatSandi"
         android:textColor="@color/white"
         android:textSize="@dimen/text_bawah_title"
-        app:layout_constraintBottom_toTopOf="@id/guidelineInput"
+        app:layout_constraintBottom_toTopOf="@id/passwordBaruLabel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textHalaman2" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guidelineInput"
-        android:layout_width="wrap_content"
+    <TextView
+        android:id="@+id/passwordBaruLabel"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.41" />
+        android:layout_marginTop="@dimen/spacing_xlarge"
+        android:text="@string/SandiBaru"
+        android:textColor="@color/on_background"
+        android:textSize="@dimen/text_small"
+        android:fontFamily="sans-serif-medium"
+        app:layout_constraintBottom_toTopOf="@id/passwordLayoutBaru"
+        app:layout_constraintEnd_toEndOf="@id/passwordLayoutBaru"
+        app:layout_constraintStart_toStartOf="@id/passwordLayoutBaru"
+        app:layout_constraintTop_toBottomOf="@id/textBuatKataSandi"
+        app:layout_constraintVertical_chainStyle="packed" />
 
-    
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:id="@+id/passwordLayoutBaru"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:hint="@string/SandiBaru"
-        android:maxWidth="320dp"
-        android:minWidth="240dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="@dimen/spacing_text"
         app:boxBackgroundColor="#FFFFFF"
         app:boxStrokeColor="@color/stroke_blue_always"
         app:boxStrokeWidth="1dp"
@@ -127,14 +132,12 @@
         app:boxCornerRadiusBottomEnd="20dp"
         app:endIconMode="password_toggle"
         app:endIconTint="#B3B3B3"
-        app:layout_constraintBottom_toTopOf="@id/passwordLayoutKonfirm"
+        app:layout_constraintBottom_toTopOf="@id/passwordKonfirmLabel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/guidelineInput"
-        app:layout_constraintWidth_percent="0.70"
-        app:layout_constraintHeight_percent="0.075"
-        app:layout_constraintVertical_chainStyle="packed"
-        app:layout_constraintVertical_bias="0.1">
+        app:layout_constraintTop_toBottomOf="@id/passwordBaruLabel"
+        app:layout_constraintWidth_percent="0.85"
+        app:layout_constraintHeight_percent="0.075">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_passwordbaru"
@@ -146,16 +149,27 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    
+    <TextView
+        android:id="@+id/passwordKonfirmLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_medium"
+        android:text="@string/konfirSandi"
+        android:textColor="@color/on_background"
+        android:textSize="@dimen/text_small"
+        android:fontFamily="sans-serif-medium"
+        app:layout_constraintBottom_toTopOf="@id/passwordLayoutKonfirm"
+        app:layout_constraintEnd_toEndOf="@id/passwordLayoutKonfirm"
+        app:layout_constraintStart_toStartOf="@id/passwordLayoutKonfirm"
+        app:layout_constraintTop_toBottomOf="@id/passwordLayoutBaru" />
+
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:id="@+id/passwordLayoutKonfirm"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="@dimen/spacing_text"
         android:hint="@string/konfirSandi"
-        android:maxWidth="320dp"
-        android:minWidth="240dp"
         app:boxBackgroundColor="#FFFFFF"
         app:boxStrokeColor="@color/stroke_blue_always"
         app:boxStrokeWidth="1dp"
@@ -169,8 +183,8 @@
         app:layout_constraintBottom_toTopOf="@id/buttonBuatSandi"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/passwordLayoutBaru"
-        app:layout_constraintWidth_percent="0.70"
+        app:layout_constraintTop_toBottomOf="@id/passwordKonfirmLabel"
+        app:layout_constraintWidth_percent="0.85"
         app:layout_constraintHeight_percent="0.075">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -187,10 +201,8 @@
         android:id="@+id/buttonBuatSandi"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="68dp"
+        android:layout_marginTop="32dp"
         android:backgroundTint="#2D8FE3"
-        android:maxWidth="320dp"
-        android:minWidth="240dp"
         android:text="@string/ButtonBuatSandi"
         android:textColor="#FFFFFF"
         android:textSize="@dimen/text_button"
@@ -198,7 +210,7 @@
         app:layout_constraintHeight_percent="0.075"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/passwordLayoutKonfirm"
-        app:layout_constraintWidth_percent="0.75" />
+        app:layout_constraintWidth_percent="0.85" />
 
     
     <ProgressBar
@@ -210,5 +222,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/buttonBuatSandi" />
+
+    <TextView
+        android:id="@+id/tvKembaliMasuk"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="Kembali ke Masuk"
+        android:textColor="@color/blue_theme"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/progressBar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

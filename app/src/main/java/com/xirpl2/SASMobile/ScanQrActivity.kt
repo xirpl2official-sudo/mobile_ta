@@ -170,23 +170,23 @@ class ScanQrActivity : BaseActivity() {
     }
 
     private fun showVerificationResult(data: QRCodeVerifyData) {
-        
-        tvStudentName.text = data.siswa.nama
-        
-        val classInfo = if (data.siswa.jurusan != null) {
-            "${data.siswa.kelas} - ${data.siswa.jurusan}"
+
+        tvStudentName.text = data.nama_siswa
+
+        val classInfo = if (data.jurusan != null) {
+            "${data.kelas} - ${data.jurusan}"
         } else {
-            data.siswa.kelas
+            data.kelas
         }
         tvStudentClass.text = classInfo
+
+
+        tvPrayerType.text = "Sholat ${data.jenis_sholat}"
+        tvAttendanceStatus.text = data.status
+        tvAttendanceTime.text = formatTime(data.tanggal)
         
         
-        tvPrayerType.text = "Sholat ${data.absensi.jenis_sholat}"
-        tvAttendanceStatus.text = data.absensi.status
-        tvAttendanceTime.text = formatTime(data.absensi.waktu_absen)
-        
-        
-        val statusColor = when (data.absensi.status.uppercase()) {
+        val statusColor = when (data.status.uppercase()) {
             "HADIR" -> getColor(android.R.color.holo_green_dark)
             "ALPHA" -> getColor(android.R.color.holo_red_dark)
             else -> getColor(android.R.color.holo_orange_dark)

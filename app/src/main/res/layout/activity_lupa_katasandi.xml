@@ -95,28 +95,33 @@
         android:text="@string/LupaSandi"
         android:textColor="@color/white"
         android:textSize="@dimen/text_bawah_title"
-        app:layout_constraintBottom_toTopOf="@id/nisLayout"
+        app:layout_constraintBottom_toTopOf="@id/nisLabel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textHalaman2" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guidelineInput"
-        android:layout_width="wrap_content"
+    <TextView
+        android:id="@+id/nisLabel"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.41" />
+        android:layout_marginTop="@dimen/spacing_xlarge"
+        android:text="NIS"
+        android:textColor="@color/on_background"
+        android:textSize="@dimen/text_small"
+        android:fontFamily="sans-serif-medium"
+        app:layout_constraintBottom_toTopOf="@id/nisLayout"
+        app:layout_constraintEnd_toEndOf="@id/nisLayout"
+        app:layout_constraintStart_toStartOf="@id/nisLayout"
+        app:layout_constraintTop_toBottomOf="@id/textDaftar2"
+        app:layout_constraintVertical_chainStyle="packed" />
 
-    
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:id="@+id/nisLayout"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:hint="@string/N.N"
-        android:maxWidth="320dp"
-        android:minWidth="240dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="@dimen/spacing_text"
         app:boxBackgroundColor="#FFFFFF"
         app:boxStrokeColor="@color/stroke_blue_always"
         app:boxStrokeWidth="1dp"
@@ -125,14 +130,12 @@
         app:boxCornerRadiusTopEnd="20dp"
         app:boxCornerRadiusBottomStart="20dp"
         app:boxCornerRadiusBottomEnd="20dp"
-        app:layout_constraintBottom_toTopOf="@id/emailLayout"
+        app:layout_constraintBottom_toTopOf="@id/emailLabel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/guidelineInput"
-        app:layout_constraintWidth_percent="0.70"
-        app:layout_constraintHeight_percent="0.075"
-        app:layout_constraintVertical_chainStyle="packed"
-        app:layout_constraintVertical_bias="0.1">
+        app:layout_constraintTop_toBottomOf="@id/nisLabel"
+        app:layout_constraintWidth_percent="0.85"
+        app:layout_constraintHeight_percent="0.075">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_nis"
@@ -145,16 +148,27 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    
+    <TextView
+        android:id="@+id/emailLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_medium"
+        android:text="Email"
+        android:textColor="@color/on_background"
+        android:textSize="@dimen/text_small"
+        android:fontFamily="sans-serif-medium"
+        app:layout_constraintBottom_toTopOf="@id/emailLayout"
+        app:layout_constraintEnd_toEndOf="@id/emailLayout"
+        app:layout_constraintStart_toStartOf="@id/emailLayout"
+        app:layout_constraintTop_toBottomOf="@id/nisLayout" />
+
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:id="@+id/emailLayout"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="@dimen/spacing_text"
         android:hint="@string/Email"
-        android:maxWidth="320dp"
-        android:minWidth="240dp"
         app:boxBackgroundColor="#FFFFFF"
         app:boxStrokeColor="@color/stroke_blue_always"
         app:boxStrokeWidth="1dp"
@@ -166,8 +180,8 @@
         app:layout_constraintBottom_toTopOf="@id/buttonKirim"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/nisLayout"
-        app:layout_constraintWidth_percent="0.70"
+        app:layout_constraintTop_toBottomOf="@id/emailLabel"
+        app:layout_constraintWidth_percent="0.85"
         app:layout_constraintHeight_percent="0.075">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -185,10 +199,8 @@
         android:id="@+id/buttonKirim"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="68dp"
+        android:layout_marginTop="32dp"
         android:backgroundTint="#2D8FE3"
-        android:maxWidth="320dp"
-        android:minWidth="240dp"
         android:text="@string/KirimOTP"
         android:textColor="#FFFFFF"
         android:textSize="@dimen/text_button"
@@ -196,7 +208,7 @@
         app:layout_constraintHeight_percent="0.075"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/emailLayout"
-        app:layout_constraintWidth_percent="0.75" />
+        app:layout_constraintWidth_percent="0.85" />
 
     
     <ProgressBar
@@ -208,5 +220,33 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/buttonKirim" />
+
+    <TextView
+        android:id="@+id/tvKembaliMasuk"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="Kembali ke Masuk"
+        android:textColor="@color/blue_theme"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/progressBar" />
+
+    <TextView
+        android:id="@+id/tvVerifikasiOtp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="Sudah punya OTP? Verifikasi"
+        android:textColor="@color/blue_theme"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvKembaliMasuk" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

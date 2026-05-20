@@ -33,8 +33,8 @@ class BerandaActivity : BaseActivity() {
     private lateinit var rvJadwalSholat: RecyclerView
     private lateinit var rvRiwayatAbsensi: RecyclerView
     private lateinit var tvTotalValue: TextView
-    private lateinit var tvHadirValue: TextView
-    private lateinit var tvStatistikValue: TextView
+    private lateinit var tvAlphaValue: TextView
+    private lateinit var tvIzinSakitValue: TextView
 
     private lateinit var jadwalAdapter: JadwalSholatAdapter
     private lateinit var riwayatAdapter: RiwayatAbsensiAdapter
@@ -84,8 +84,8 @@ class BerandaActivity : BaseActivity() {
         rvJadwalSholat = findViewById(R.id.rvJadwalSholat)
         rvRiwayatAbsensi = findViewById(R.id.rvRiwayatAbsensi)
         tvTotalValue = findViewById(R.id.tvTotalValue)
-        tvHadirValue = findViewById(R.id.tvHadirValue)
-        tvStatistikValue = findViewById(R.id.tvStatistikValue)
+        tvAlphaValue = findViewById(R.id.tvAlphaValue)
+        tvIzinSakitValue = findViewById(R.id.tvIzinSakitValue)
         notificationCounter = findViewById(R.id.notificationCounter)
     }
 
@@ -119,7 +119,7 @@ class BerandaActivity : BaseActivity() {
             startActivity(Intent(this@BerandaActivity, ScanQrActivity::class.java))
         }
 
-        findViewById<androidx.cardview.widget.CardView>(R.id.cardHadir).setOnClickListener {
+        findViewById<androidx.cardview.widget.CardView>(R.id.cardTotalAlpha).setOnClickListener {
             val dialog = PresenceDetailDialogFragment()
             dialog.show(supportFragmentManager, "PresenceDetail")
         }
@@ -138,14 +138,42 @@ class BerandaActivity : BaseActivity() {
     }
 
     private fun setupRiwayatAbsensi() {
-        
+
         riwayatAdapter = RiwayatAbsensiAdapter()
 
-        
         rvRiwayatAbsensi.apply {
             layoutManager = LinearLayoutManager(this@BerandaActivity)
             adapter = riwayatAdapter
             isNestedScrollingEnabled = false
+        }
+
+        findViewById<com.google.android.material.button.MaterialButton>(R.id.btnUnduhRiwayat).setOnClickListener {
+            exportRiwayatToCsv()
+        }
+    }
+
+    private fun exportRiwayatToCsv() {
+        val items = riwayatAdapter.currentList
+        if (items.isEmpty()) {
+            Toast.makeText(this, "Tidak ada data riwayat untuk diunduh", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val header = "Tanggal,Sholat,Waktu,Status"
+        val rows = items.map { item ->
+            "${item.tanggal},${item.namaSholat},${item.waktuAbsen ?: "-"},${item.status.name}"
+        }
+        val csv = (listOf(header) + rows).joinToString("\n")
+
+        try {
+            val downloadsDir = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS)
+            val fileName = "riwayat_absensi_${java.text.SimpleDateFormat("yyyyMMdd_HHmmss", java.util.Locale.getDefault()).format(java.util.Date())}.csv"
+            val file = java.io.File(downloadsDir, fileName)
+            file.writeText(csv)
+            Toast.makeText(this, "Tersimpan di Downloads/$fileName", Toast.LENGTH_LONG).show()
+        } catch (e: Exception) {
+            Log.e(TAG, "Gagal mengunduh riwayat: ${e.message}")
+            Toast.makeText(this, "Gagal mengunduh: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
     
@@ -323,13 +351,9 @@ class BerandaActivity : BaseActivity() {
             repository.getStatistics(token, today).fold(
                 onSuccess = { statistics ->
                     runOnUiThread {
-                        
-                        tvTotalValue.text = statistics.total_siswa.toString()
-                        
-                        
-                        
-                        
-                        tvStatistikValue.text = "${(statistics.persentase_kehadiran * 100).toInt()}%"
+                        tvTotalValue.text = statistics.total_absen_hari_ini.toString()
+                        tvAlphaValue.text = statistics.total_alpha_hari_ini.toString()
+                        tvIzinSakitValue.text = (statistics.total_izin_hari_ini + statistics.total_sakit_hari_ini).toString()
                     }
                 },
                 onFailure = { error ->
@@ -417,13 +441,7 @@ class BerandaActivity : BaseActivity() {
                 onSuccess = { historyData ->
                     
                     val absensiList = historyData.absensi ?: emptyList()
-                    
-                    
-                    val hadirCount = absensiList.count { 
-                        it.status.uppercase() == "HADIR" 
-                    }
-                    
-                    
+
                     val riwayatList = absensiList.map { data ->
                         val status = when (data.status.uppercase()) {
                             "HADIR" -> StatusAbsensi.HADIR
@@ -432,7 +450,7 @@ class BerandaActivity : BaseActivity() {
                             "IZIN" -> StatusAbsensi.IZIN
                             else -> StatusAbsensi.ALPHA
                         }
-                        
+
                         RiwayatAbsensi(
                             tanggal = formatTanggal(data.tanggal),
                             namaSholat = data.getPrayerName(),
@@ -440,12 +458,8 @@ class BerandaActivity : BaseActivity() {
                             waktuAbsen = formatWaktu(data.waktu_absen)
                         )
                     }
-                    
-                    
+
                     runOnUiThread {
-                        
-                        tvHadirValue.text = hadirCount.toString()
-                        
                         if (riwayatList.isNotEmpty()) {
                             if (!::riwayatAdapter.isInitialized) {
                                 riwayatAdapter = RiwayatAbsensiAdapter()
