@@ -182,11 +182,11 @@ class ScanQrActivity : BaseActivity() {
 
 
         tvPrayerType.text = "Sholat ${data.jenis_sholat}"
-        tvAttendanceStatus.text = data.status
-        tvAttendanceTime.text = formatTime(data.tanggal)
-        
-        
-        val statusColor = when (data.status.uppercase()) {
+        tvAttendanceStatus.text = data.status.replaceFirstChar { it.uppercase() }
+        tvAttendanceTime.text = formatDate(data.tanggal)
+
+
+        val statusColor = when (data.status.trim().uppercase()) {
             "HADIR" -> getColor(android.R.color.holo_green_dark)
             "ALPHA" -> getColor(android.R.color.holo_red_dark)
             else -> getColor(android.R.color.holo_orange_dark)
@@ -203,24 +203,25 @@ class ScanQrActivity : BaseActivity() {
         Toast.makeText(this, "Kehadiran berhasil dicatat!", Toast.LENGTH_SHORT).show()
     }
 
-    private fun formatTime(waktuAbsen: String?): String {
-        if (waktuAbsen.isNullOrBlank()) return "--:--"
+    private fun formatDate(tanggal: String?): String {
+        if (tanggal.isNullOrBlank()) return "--"
         return try {
-            if (waktuAbsen.contains("T")) {
-                val timePart = waktuAbsen.substringAfter("T").substringBefore("Z")
-                val parts = timePart.split(":")
-                if (parts.size >= 2) {
-                    "${parts[0]}:${parts[1]}"
-                } else {
-                    waktuAbsen.take(5)
-                }
-            } else if (waktuAbsen.contains(" ")) {
-                waktuAbsen.substringAfter(" ").take(5)
+            val parts = tanggal.split("-")
+            if (parts.size == 3) {
+                val day = parts[2].toInt()
+                val month = parts[1].toInt()
+                val year = parts[0]
+                val monthNames = arrayOf(
+                    "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+                    "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+                )
+                val monthName = if (month in 1..12) monthNames[month - 1] else parts[1]
+                "$day $monthName $year"
             } else {
-                waktuAbsen.take(5)
+                tanggal
             }
         } catch (e: Exception) {
-            waktuAbsen.take(5)
+            tanggal
         }
     }
 

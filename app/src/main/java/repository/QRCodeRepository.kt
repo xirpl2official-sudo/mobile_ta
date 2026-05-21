@@ -1,5 +1,6 @@
 package com.xirpl2.SASMobile.repository
 
+import com.google.gson.Gson
 import com.xirpl2.SASMobile.model.*
 import com.xirpl2.SASMobile.network.RetrofitClient
 import kotlinx.coroutines.Dispatchers
@@ -9,6 +10,7 @@ import retrofit2.Response
 class QRCodeRepository {
 
     private val apiService = RetrofitClient.apiService
+    private val gson = Gson()
 
     suspend fun generateQRCode(token: String): Result<QRCodeData> {
         return withContext(Dispatchers.IO) {
@@ -46,11 +48,20 @@ class QRCodeRepository {
                     apiService.verifyQRCode("Bearer $authToken", request)
 
                 if (!response.isSuccessful) {
+                    if (response.code() == 409) {
+                        val parsed = parseErrorBodyAsVerifyResponse(response)
+                        if (parsed?.data != null) {
+                            return@withContext Result.success(parsed.data)
+                        }
+                        return@withContext Result.failure(
+                            Exception(parsed?.message ?: "Siswa sudah tercatat hadir untuk jadwal ini")
+                        )
+                    }
+
                     val errorMessage = when (response.code()) {
                         400 -> parseErrorMessage(response) ?: "Token QR code tidak valid atau sudah kadaluarsa"
                         401 -> "Sesi telah berakhir, silakan login kembali"
                         403 -> "Anda tidak memiliki akses untuk verifikasi absensi"
-                        409 -> "Siswa sudah tercatat hadir untuk jadwal ini"
                         else -> "Gagal verifikasi: ${response.code()}"
                     }
                     return@withContext Result.failure(Exception(errorMessage))
@@ -66,6 +77,19 @@ class QRCodeRepository {
             } catch (e: Exception) {
                 Result.failure(Exception("Gagal terhubung ke server: ${e.message}"))
             }
+        }
+    }
+
+    private fun parseErrorBodyAsVerifyResponse(response: Response<*>): QRCodeVerifyResponse? {
+        return try {
+            val errorBody = response.errorBody()?.string()
+            if (errorBody != null) {
+                gson.fromJson(errorBody, QRCodeVerifyResponse::class.java)
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            null
         }
     }
 

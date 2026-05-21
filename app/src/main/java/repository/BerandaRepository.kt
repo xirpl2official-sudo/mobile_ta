@@ -45,7 +45,7 @@ class BerandaRepository {
                 val jurusans = response.body()?.data ?: emptyList()
                 val days = listOf("Senin", "Selasa", "Rabu", "Kamis")
                 val grouped = jurusans.filter { it.hari_dhuha != null && it.hari_dhuha.isNotEmpty() }.groupBy { it.hari_dhuha!! }
-                
+
                 val resultList = days.map { day ->
                     val jurusansOnDay = grouped[day] ?: emptyList()
                     val j1 = if (jurusansOnDay.isNotEmpty()) jurusansOnDay[0] else null
@@ -168,18 +168,18 @@ class BerandaRepository {
         return withContext(Dispatchers.IO) {
             try {
                 val response = apiService.getPrayerSchedule("Bearer $token", id)
-                
+
                 if (!response.isSuccessful) {
                     return@withContext Result.failure(
                         Exception("HTTP Error: ${response.code()} - ${response.message()}")
                     )
                 }
-                
+
                 val body = response.body()
                 if (body?.data == null) {
                     return@withContext Result.failure(Exception("Data tidak ditemukan"))
                 }
-                
+
                 return@withContext Result.success(body.data)
             } catch (e: Exception) {
                 Result.failure(e)
@@ -194,18 +194,18 @@ class BerandaRepository {
         return withContext(Dispatchers.IO) {
             try {
                 val response = apiService.createPrayerSchedule("Bearer $token", request)
-                
+
                 if (!response.isSuccessful) {
                     return@withContext Result.failure(
                         Exception("HTTP Error: ${response.code()} - ${response.message()}")
                     )
                 }
-                
+
                 val body = response.body()
                 if (body?.data == null) {
                     return@withContext Result.failure(Exception("Data tidak tersedia"))
                 }
-                
+
                 return@withContext Result.success(body.data)
             } catch (e: Exception) {
                 Result.failure(e)
@@ -221,18 +221,18 @@ class BerandaRepository {
         return withContext(Dispatchers.IO) {
             try {
                 val response = apiService.updatePrayerSchedule("Bearer $token", id, request)
-                
+
                 if (!response.isSuccessful) {
                     return@withContext Result.failure(
                         Exception("HTTP Error: ${response.code()} - ${response.message()}")
                     )
                 }
-                
+
                 val body = response.body()
                 if (body?.data == null) {
                     return@withContext Result.failure(Exception("Data tidak tersedia"))
                 }
-                
+
                 return@withContext Result.success(body.data)
             } catch (e: Exception) {
                 Result.failure(e)
@@ -244,18 +244,18 @@ class BerandaRepository {
         return withContext(Dispatchers.IO) {
             try {
                 val response = apiService.deletePrayerSchedule("Bearer $token", id)
-                
+
                 if (!response.isSuccessful) {
                     return@withContext Result.failure(
                         Exception("HTTP Error: ${response.code()} - ${response.message()}")
                     )
                 }
-                
+
                 val body = response.body()
                 if (body == null) {
                     return@withContext Result.failure(Exception("Gagal menghapus"))
                 }
-                
+
                 return@withContext Result.success(body.message)
             } catch (e: Exception) {
                 Result.failure(e)
@@ -450,7 +450,7 @@ class BerandaRepository {
             try {
                 // If filters map is provided with nis, use it as search parameter
                 val nisFilter = filters?.get("nis")
-                
+
                 val response: Response<HistoryStaffResponse> =
                     apiService.getAttendanceHistory(
                         "Bearer $token",
@@ -491,18 +491,18 @@ class BerandaRepository {
     ): Result<String> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.submitAttendance("Bearer $token", nis, request)                
+                val response = apiService.submitAttendance("Bearer $token", nis, request)
                 if (!response.isSuccessful) {
                     return@withContext Result.failure(
                         Exception("HTTP Error: ${response.code()} - ${response.message()}")
                     )
                 }
-                
+
                 val body = response.body()
                 if (body == null) {
                     return@withContext Result.failure(Exception("Response body kosong"))
                 }
-                
+
                 return@withContext Result.success(body.message)
             } catch (e: Exception) {
                 Result.failure(e)
@@ -516,34 +516,6 @@ class BerandaRepository {
         nis: String,
         request: CreateAbsensiRequest
     ): Result<String> = submitAbsensi(token, nis, request)
-
-    suspend fun verifyQRCode(
-        token: String,
-        qrToken: String
-    ): Result<QRCodeVerifyData> {
-        return withContext(Dispatchers.IO) {
-            try {
-                val request = QRCodeVerifyRequest(token = qrToken)
-                val response = apiService.verifyQRCode("Bearer $token", request)
-                
-                if (!response.isSuccessful) {
-                    return@withContext Result.failure(
-                        Exception("HTTP Error: ${response.code()} - ${response.message()}")
-                    )
-                }
-                
-                val body = response.body()
-                if (body == null) {
-                    return@withContext Result.failure(Exception("Response body kosong"))
-                }
-                
-                val data = body.data ?: return@withContext Result.failure(Exception("Data verifikasi kosong"))
-                return@withContext Result.success(data)
-            } catch (e: Exception) {
-                Result.failure(e)
-            }
-        }
-    }
 
     suspend fun getDhuhaToday(token: String): Result<List<DhuhaJurusanData>> {
         return withContext(Dispatchers.IO) {
@@ -814,4 +786,3 @@ class BerandaRepository {
         }
     }
 }
-
