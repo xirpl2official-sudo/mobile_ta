@@ -263,7 +263,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
     }
 
     private fun canUserEdit(): Boolean {
-        val role = getSharedPreferences("UserData", MODE_PRIVATE).getString("user_role", "")?.lowercase() ?: ""
+        val role = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this).getString("user_role", "")?.lowercase() ?: ""
         val isReadOnly = role.contains("wali") || role == "guru"
         return !isReadOnly && role.contains("admin")
     }
@@ -299,24 +299,39 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
     private fun handleSwap(row1: Int, col1: Int, row2: Int, col2: Int) {
         val list = dhuhaKeahlianList.toMutableList()
+
+        // Bounds check to prevent IndexOutOfBoundsException
+        if (list.isEmpty()) {
+            android.util.Log.w(TAG, "handleSwap called on empty dhuhaKeahlianList")
+            return
+        }
+        if (row1 < 0 || row1 >= list.size || row2 < 0 || row2 >= list.size) {
+            android.util.Log.e(TAG, "handleSwap: row index out of bounds (row1=$row1, row2=$row2, size=${list.size})")
+            return
+        }
+        if (col1 !in 1..2 || col2 !in 1..2) {
+            android.util.Log.e(TAG, "handleSwap: col index out of bounds (col1=$col1, col2=$col2, expected 1 or 2)")
+            return
+        }
+
         val item1 = list[row1]
         val item2 = list[row2]
-        
+
         val j1 = if (col1 == 1) item1.jurusan1 else item1.jurusan2
         val j2 = if (col2 == 1) item2.jurusan1 else item2.jurusan2
-        
+
         val newItem1 = if (col1 == 1) item1.copy(jurusan1 = j2) else item1.copy(jurusan2 = j2)
         val newItem2 = if (row1 == row2) {
             if (col2 == 1) newItem1.copy(jurusan1 = j1) else newItem1.copy(jurusan2 = j1)
         } else {
             if (col2 == 1) item2.copy(jurusan1 = j1) else item2.copy(jurusan2 = j1)
         }
-        
+
         list[row1] = newItem1
         if (row1 != row2) {
             list[row2] = newItem2
         }
-        
+
         dhuhaKeahlianList = list
     }
 
@@ -1056,37 +1071,32 @@ override fun onCreate(savedInstanceState: Bundle?) {
             }
             val updatedKelas = selectedKelas.joinToString(", ")
 
-            val body = com.google.gson.JsonObject().apply {
-                addProperty("hari", updatedHari)
-                addProperty("waktu_mulai", updatedMulai)
-                addProperty("waktu_selesai", updatedSelesai)
-                addProperty("kelas", updatedKelas)
-                if (jurusan != null) {
-                    addProperty("jurusan", actvJurusan.text.toString())
-                }
-            }
+            val request = JadwalSholatUpdateRequest(
+                jenis_sholat = jenis,
+                jam_mulai = updatedMulai,
+                jam_selesai = updatedSelesai,
+                hari = updatedHari.ifEmpty { null },
+                jurusan = if (jurusan != null) actvJurusan.text.toString().ifEmpty { null } else null,
+                kelas = updatedKelas.ifEmpty { null }
+            )
 
-            // COMMENTED OUT: Phantom API methods updateSholatDhuha/updateSholatDzuhur (not in backend)
-            /*
             lifecycleScope.launch {
                 val token = getAuthToken()
-                val result = if (jenis == "Dhuha") {
-                    repository.updateSholatDhuha(token, id, body)
-                } else {
-                    repository.updateSholatDzuhur(token, id, body)
-                }
-
-                safeRunOnUiThread {
-                    if (result.isSuccess) {
-                        Toast.makeText(this@JadwalSholatAdminActivity, "Berhasil diperbarui", Toast.LENGTH_SHORT).show()
-                        dialog.dismiss()
-                        loadSynchronizedData()
-                    } else {
-                        Toast.makeText(this@JadwalSholatAdminActivity, "Gagal: ${result.exceptionOrNull()?.message}", Toast.LENGTH_SHORT).show()
+                repository.updateJadwalSholat(token, id, request).fold(
+                    onSuccess = {
+                        safeRunOnUiThread {
+                            Toast.makeText(this@JadwalSholatAdminActivity, "Berhasil diperbarui", Toast.LENGTH_SHORT).show()
+                            dialog.dismiss()
+                            loadJadwalList()
+                        }
+                    },
+                    onFailure = { error ->
+                        safeRunOnUiThread {
+                            Toast.makeText(this@JadwalSholatAdminActivity, "Gagal: ${error.message}", Toast.LENGTH_SHORT).show()
+                        }
                     }
-                }
+                )
             }
-            */
         }
 
         btnCancel.setOnClickListener { dialog.dismiss() }

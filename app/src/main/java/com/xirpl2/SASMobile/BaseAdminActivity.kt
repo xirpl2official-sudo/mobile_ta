@@ -93,7 +93,7 @@ abstract class BaseAdminActivity : BaseActivity() {
     }
 
     private fun applyRoleBasedFiltering() {
-        val role = getSharedPreferences("user_session", Context.MODE_PRIVATE)
+        val role = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this)
             .getString("user_role", "")?.lowercase() ?: ""
 
         val isWali = role.contains("wali")
@@ -163,9 +163,9 @@ abstract class BaseAdminActivity : BaseActivity() {
 
         
         setupMenuItem(R.id.menuBeranda, AdminMenuItem.BERANDA, currentItem) {
-            val role = getSharedPreferences("user_session", Context.MODE_PRIVATE)
+            val role = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this)
                 .getString("user_role", "")?.lowercase() ?: ""
-                
+
             val targetClass = if (role.contains("wali") || role == "guru") {
                 BerandaGuruActivity::class.java
             } else {
@@ -370,9 +370,9 @@ abstract class BaseAdminActivity : BaseActivity() {
                     
                     launch(Dispatchers.Main) {
                         // Clear ALL SharedPreferences stores
-                        getSharedPreferences("UserData", Context.MODE_PRIVATE)
+                        com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this@BaseAdminActivity)
                             .edit().clear().apply()
-                        getSharedPreferences("user_session", Context.MODE_PRIVATE)
+                        com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this@BaseAdminActivity)
                             .edit().clear().apply()
                         getSharedPreferences("NotificationData", Context.MODE_PRIVATE)
                             .edit().clear().apply()
@@ -391,7 +391,7 @@ abstract class BaseAdminActivity : BaseActivity() {
     }
 
     protected fun getAuthToken(): String {
-        return getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        return com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this)
             .getString("auth_token", "") ?: ""
     }
 

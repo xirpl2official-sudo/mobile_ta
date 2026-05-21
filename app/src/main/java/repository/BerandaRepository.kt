@@ -280,7 +280,8 @@ class BerandaRepository {
                     return@withContext Result.failure(Exception("Respons body kosong"))
                 }
 
-                return@withContext Result.success(body.data)
+                val data = body.data ?: return@withContext Result.failure(Exception("Data statistik tidak tersedia"))
+                return@withContext Result.success(data)
             } catch (e: Exception) {
                 Result.failure(e)
             }
@@ -305,7 +306,8 @@ class BerandaRepository {
                         pageSize,
                         search,
                         kelas,
-                        jurusan
+                        jurusan,
+                        jk
                     )
 
                 if (!response.isSuccessful) {
@@ -572,6 +574,24 @@ class BerandaRepository {
                 val response = apiService.getAdminManagementKelas("Bearer $token")
                 if (!response.isSuccessful) return@withContext Result.failure(Exception("HTTP Error: ${response.code()}"))
                 return@withContext Result.success(response.body()?.data ?: emptyList())
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun createKelas(token: String, request: CreateKelasRequest): Result<String> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.createKelas("Bearer $token", request)
+                if (!response.isSuccessful) {
+                    val errorBody = response.errorBody()?.string()
+                    val msg = if (!errorBody.isNullOrEmpty()) {
+                        try { org.json.JSONObject(errorBody).getString("message") } catch (_: Exception) { errorBody }
+                    } else response.message()
+                    return@withContext Result.failure(Exception(msg))
+                }
+                return@withContext Result.success(response.body()?.message ?: "Kelas berhasil ditambahkan")
             } catch (e: Exception) {
                 Result.failure(e)
             }

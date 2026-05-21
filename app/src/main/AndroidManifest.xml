@@ -125,6 +125,10 @@
             android:exported="false" />
         <activity
             android:launchMode="singleTop"
+            android:name=".EditGuruActivity"
+            android:exported="false" />
+        <activity
+            android:launchMode="singleTop"
             android:name=".QRCodeAdminActivity"
             android:exported="false" />
         <activity

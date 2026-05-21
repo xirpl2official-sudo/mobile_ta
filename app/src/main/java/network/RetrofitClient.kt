@@ -1,5 +1,6 @@
 package com.xirpl2.SASMobile.network
 
+import android.content.Context
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -13,16 +14,29 @@ object RetrofitClient {
     // - Production: https://absensholat-api.vercel.app/api/
     private const val BASE_URL = "https://absensholat-api.vercel.app/api/"
 
-    private val loggingInterceptor = HttpLoggingInterceptor().apply {
-        level = HttpLoggingInterceptor.Level.BODY
+    private lateinit var appContext: Context
+
+    /**
+     * Must be called from SASMobileApp.onCreate() before any API calls are made.
+     * Provides application context for TokenAuthenticator to access SharedPreferences.
+     */
+    fun init(context: Context) {
+        appContext = context.applicationContext
     }
 
-    private val okHttpClient = OkHttpClient.Builder()
-        .addInterceptor(loggingInterceptor)
-        .connectTimeout(30, TimeUnit.SECONDS)
-        .readTimeout(30, TimeUnit.SECONDS)
-        .writeTimeout(30, TimeUnit.SECONDS)
-        .build()
+    private val loggingInterceptor = HttpLoggingInterceptor().apply {
+        level = HttpLoggingInterceptor.Level.NONE
+    }
+
+    private val okHttpClient by lazy {
+        OkHttpClient.Builder()
+            .addInterceptor(loggingInterceptor)
+            .authenticator(TokenAuthenticator(appContext))
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .build()
+    }
 
     val apiService: ApiService by lazy {
         Retrofit.Builder()

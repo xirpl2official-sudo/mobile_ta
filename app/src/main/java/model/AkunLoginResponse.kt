@@ -1,7 +1,7 @@
 package com.xirpl2.SASMobile.model
 
 data class AuthResponse(
-    val message: String,
+    val message: String? = null,
     val data: AkunLoginResponse? = null
 )
 
@@ -20,7 +20,9 @@ data class AkunLoginResponse(
     val kelas: String? = null,
     val role: String? = null,
     val is_verified: Boolean? = null,
-    val token: String? = null
+    val token: String? = null,
+    @com.google.gson.annotations.SerializedName("refresh_token")
+    val refresh_token: String? = null
 ) {
     fun getDisplayName(): String {
         return nama_siswa ?: nama ?: name ?: "User"

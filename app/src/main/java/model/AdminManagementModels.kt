@@ -36,6 +36,13 @@ data class UpdateWaliKelasRequest(
     val id_staff: Int
 )
 
+data class CreateKelasRequest(
+    val id_jurusan: Int,
+    val tingkatan: Int,
+    val label: String,
+    val part: String? = null
+)
+
 data class MessageResponse(
     val status: Boolean? = null,
     val message: String

@@ -178,7 +178,7 @@ class BerandaActivity : BaseActivity() {
     }
     
     private fun getJenisKelaminFromStorage(): JadwalSholatHelper.JenisKelamin {
-        val sharedPref = getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        val sharedPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this)
         val jenisKelaminStr = sharedPref.getString("jenis_kelamin", "L") ?: "L"
         
         return if (jenisKelaminStr == "P") {
@@ -262,7 +262,7 @@ class BerandaActivity : BaseActivity() {
     }
     
     private fun getUserDataFromStorage(): Pair<String, String> {
-        val sharedPref = getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        val sharedPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this)
         val nama = sharedPref.getString("nama_siswa", "Nama Siswa") ?: "Nama Siswa"
         val nis = sharedPref.getString("nis", "0000000000") ?: "0000000000"
         return Pair(nama, nis)
@@ -287,9 +287,9 @@ class BerandaActivity : BaseActivity() {
                     
                     launch(Dispatchers.Main) {
                         // Clear ALL SharedPreferences stores
-                        getSharedPreferences("user_session", Context.MODE_PRIVATE)
+                        com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this@BerandaActivity)
                             .edit().clear().apply()
-                        getSharedPreferences("UserData", Context.MODE_PRIVATE)
+                        com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this@BerandaActivity)
                             .edit().clear().apply()
                         getSharedPreferences("NotificationData", Context.MODE_PRIVATE)
                             .edit().clear().apply()
@@ -364,7 +364,7 @@ class BerandaActivity : BaseActivity() {
     }
     
     private fun getAuthToken(): String {
-        val sharedPref = getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        val sharedPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this)
         return sharedPref.getString("auth_token", "") ?: ""
     }
     

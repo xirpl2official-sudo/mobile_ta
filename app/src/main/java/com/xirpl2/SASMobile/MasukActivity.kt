@@ -45,9 +45,14 @@ class MasukActivity : BaseActivity() {
     private val inputHandler = Handler(Looper.getMainLooper())
     private var autoLoginJob: kotlinx.coroutines.Job? = null
 
-    companion object {
+    // Brute-force protection
+    private var failedLoginAttempts = 0
+    private var loginCooldownJob: kotlinx.coroutines.Job? = null
+    private companion object {
         private const val CAMERA_PERMISSION_CODE = 100
         private const val TAG = "MasukActivity"
+        private const val MAX_LOGIN_ATTEMPTS = 5
+        private const val COOLDOWN_SECONDS = 30
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -152,6 +157,9 @@ class MasukActivity : BaseActivity() {
     }
 
     private fun loginUser() {
+        // Block login if cooldown is active
+        if (loginCooldownJob?.isActive == true) return
+
         val nisOrUsername = etNis.text.toString().trim()
         val password = etPassword.text.toString()
 
@@ -172,21 +180,23 @@ class MasukActivity : BaseActivity() {
 
                 withContext(Dispatchers.Main) {
                     if (isFinishing || isDestroyed) return@withContext
-                    
-                    btnMasuk.isEnabled = true
-                    btnMasuk.text = "Masuk"
 
                     if (response.isSuccessful) {
                         val body = response.body()
                         if (body?.data != null) {
+                            // Reset failed attempts on success
+                            failedLoginAttempts = 0
+                            btnMasuk.isEnabled = true
+                            btnMasuk.text = "Masuk"
+
                             val userData = body.data
                             showToast("Berhasil", "Selamat datang, ${userData.getDisplayName()}!", MotionToastStyle.SUCCESS)
                             saveUserSession(userData)
-    
+
                             // Reset lock sebelum navigasi apapun (toast bisa trigger onPause)
-                            isTransitioning.set(false)      // ← TAMBAHKAN
-                            anrWatchdogActive.set(false)    // ← TAMBAHKAN
-                            
+                            isTransitioning.set(false)
+                            anrWatchdogActive.set(false)
+
                             val token = userData.token
                             if (userData.is_verified == false) {
                                 safeNavigateTo(VerifyAccountActivity::class.java)
@@ -195,26 +205,51 @@ class MasukActivity : BaseActivity() {
                             } else {
                                 navigateToHome()
                             }
+                        } else {
+                            onLoginFailed()
                         }
                     } else {
-                        showToast("Gagal", "NIS atau password salah", MotionToastStyle.ERROR)
+                        onLoginFailed()
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     if (isFinishing || isDestroyed) return@withContext
-                    btnMasuk.isEnabled = true
-                    btnMasuk.text = "Masuk"
+                    onLoginFailed()
                     showToast("Error", "Error: ${e.message}", MotionToastStyle.ERROR)
                 }
             }
         }
     }
 
+    private fun onLoginFailed() {
+        failedLoginAttempts++
+        if (failedLoginAttempts >= MAX_LOGIN_ATTEMPTS) {
+            startLoginCooldown()
+        } else {
+            btnMasuk.isEnabled = true
+            btnMasuk.text = "Masuk"
+        }
+    }
+
+    private fun startLoginCooldown() {
+        btnMasuk.isEnabled = false
+        loginCooldownJob = lifecycleScope.launch {
+            for (secondsRemaining in COOLDOWN_SECONDS downTo 1) {
+                if (isFinishing || isDestroyed) return@launch
+                btnMasuk.text = "Tunggu ${secondsRemaining}s..."
+                delay(1000)
+            }
+            failedLoginAttempts = 0
+            btnMasuk.isEnabled = true
+            btnMasuk.text = "Masuk"
+        }
+    }
+
     private fun saveUserSession(user: com.xirpl2.SASMobile.model.AkunLoginResponse?) {
         if (user == null) return
 
-        val sharedPref = getSharedPreferences("user_session", MODE_PRIVATE)
+        val sharedPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this)
         with(sharedPref.edit()) {
             putString("user_id", user.id?.toString())
             putString("user_nis", user.nis ?: "")
@@ -226,10 +261,11 @@ class MasukActivity : BaseActivity() {
             putString("user_role", user.role)
             putBoolean("is_verified", user.is_verified ?: true)
             putString("auth_token", user.token)
+            putString("refresh_token", user.refresh_token)
             apply()
         }
-        
-        val userDataPref = getSharedPreferences("UserData", MODE_PRIVATE)
+
+        val userDataPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this)
         with(userDataPref.edit()) {
             putString("auth_token", user.token)
             putString("nama_siswa", user.getDisplayName())
@@ -241,7 +277,7 @@ class MasukActivity : BaseActivity() {
     }
 
     private fun checkAndValidateExistingToken() {
-        val sharedPref = getSharedPreferences("user_session", MODE_PRIVATE)
+        val sharedPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this)
         val token = sharedPref.getString("auth_token", null)
         val role = sharedPref.getString("user_role", "siswa")
 
@@ -344,7 +380,7 @@ class MasukActivity : BaseActivity() {
         isTransitioning.set(false)
         anrWatchdogActive.set(false)  // ← TAMBAHKAN INI (line baru setelah 168)
 
-        val sharedPref = getSharedPreferences("user_session", MODE_PRIVATE)
+        val sharedPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this)
         val role = sharedPref.getString("user_role", "siswa")
         
         val roleLower = role?.lowercase()?.trim()
@@ -362,11 +398,24 @@ class MasukActivity : BaseActivity() {
 
     private fun showToast(title: String, message: String, style: MotionToastStyle) {
         if (isFinishing || isDestroyed) return
-        android.widget.Toast.makeText(this, message, android.widget.Toast.LENGTH_SHORT).show()
+        try {
+            MotionToast.createColorToast(
+                this,
+                title,
+                message,
+                style,
+                Gravity.CENTER,
+                MotionToast.LONG_DURATION,
+                null
+            )
+        } catch (e: Exception) {
+            Log.w(TAG, "MotionToast failed, falling back to Toast: ${e.message}")
+            android.widget.Toast.makeText(this, message, android.widget.Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun clearUserSession() {
-        val sharedPref = getSharedPreferences("user_session", MODE_PRIVATE)
+        val sharedPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this)
         sharedPref.edit().clear().apply()
     }
 }

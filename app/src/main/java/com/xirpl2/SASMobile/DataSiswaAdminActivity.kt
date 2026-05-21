@@ -1,10 +1,13 @@
 package com.xirpl2.SASMobile
 
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -24,6 +27,11 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
+import java.io.OutputStream
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class DataSiswaAdminActivity : BaseAdminActivity() {
 
@@ -134,7 +142,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
     
     private fun setupRecyclerView() {
         
-        val role = getSharedPreferences("UserData", Context.MODE_PRIVATE).getString("user_role", "")?.lowercase() ?: ""
+        val role = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this).getString("user_role", "")?.lowercase() ?: ""
         val isReadOnly = role.contains("wali") || role == "guru"
 
         siswaAdapter = SiswaAdapter(
@@ -378,7 +386,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
             // ignore
         }
 
-        val role = getSharedPreferences("UserData", Context.MODE_PRIVATE).getString("user_role", "")
+        val role = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this).getString("user_role", "")
         val isReadOnly = role == "wali_kelas" || role == "guru"
 
         popup.setOnMenuItemClickListener { item ->
@@ -410,49 +418,102 @@ override fun onCreate(savedInstanceState: Bundle?) {
     }
 
     private fun showExportSiswaDialog() {
-        val options = arrayOf("Export ke Excel (.xlsx)", "Export ke PDF")
-        
         MaterialAlertDialogBuilder(this)
             .setTitle("Export Data Siswa")
             .setMessage("Filter aktif saat ini:\n" +
                     "• Kelas: $selectedKelas\n" +
                     "• Jurusan: $selectedJurusan\n" +
                     "• Jenis Kelamin: $selectedGender\n\n" +
-                    "Pilih format berkas untuk mengekspor:")
-            .setItems(options) { dialog, which ->
-                val format = if (which == 0) "Excel (.xlsx)" else "PDF"
+                    "Data akan diekspor ke format CSV (.csv)")
+            .setPositiveButton("Export") { dialog, _ ->
                 dialog.dismiss()
-                simulateExportProcess(format)
+                exportToCsv()
             }
             .setNegativeButton("Batal", null)
             .show()
     }
 
-    private fun simulateExportProcess(format: String) {
+    private fun exportToCsv() {
+        if (allStudentList.isEmpty()) {
+            Toast.makeText(this, "Tidak ada data untuk diekspor", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         val progressDialog = AlertDialog.Builder(this)
             .setTitle("Mengekspor Data")
-            .setMessage("Sedang menyiapkan data siswa...")
+            .setMessage("Sedang menyiapkan ${allStudentList.size} data siswa...")
             .setCancelable(false)
             .create()
         progressDialog.show()
 
         lifecycleScope.launch {
-            kotlinx.coroutines.delay(1500)
-            runOnUiThread {
-                progressDialog.dismiss()
-                MaterialAlertDialogBuilder(this@DataSiswaAdminActivity)
-                    .setTitle("Export Berhasil")
-                    .setMessage("Berkas data siswa berhasil diekspor ke format $format!\n\n" +
-                            "Filter terapan:\n" +
-                            "• Kelas: $selectedKelas\n" +
-                            "• Jurusan: $selectedJurusan\n" +
-                            "• Jenis Kelamin: $selectedGender")
-                    .setPositiveButton("Buka File") { _, _ ->
-                        Toast.makeText(this@DataSiswaAdminActivity, "Membuka berkas...", Toast.LENGTH_SHORT).show()
+            try {
+                val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+                val fileName = "data_siswa_$timestamp.csv"
+
+                val csvContent = buildString {
+                    appendLine("No,NIS,Nama Siswa,Jenis Kelamin,Kelas,Jurusan")
+                    allStudentList.forEachIndexed { index, siswa ->
+                        val jkDisplay = if (siswa.jenis_kelamin == "L") "Laki-laki" else "Perempuan"
+                        appendLine("${index + 1},${escapeCsv(siswa.nis)},${escapeCsv(siswa.nama_siswa)},$jkDisplay,${escapeCsv(siswa.kelas)},${escapeCsv(siswa.jurusan)}")
                     }
-                    .setNegativeButton("Tutup", null)
-                    .show()
+                }
+
+                val savedUri = saveCsvFile(fileName, csvContent)
+
+                runOnUiThread {
+                    progressDialog.dismiss()
+                    if (savedUri != null) {
+                        Toast.makeText(
+                            this@DataSiswaAdminActivity,
+                            "Berhasil export ${allStudentList.size} data siswa ke $fileName",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    } else {
+                        Toast.makeText(this@DataSiswaAdminActivity, "Gagal menyimpan file", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } catch (e: Exception) {
+                runOnUiThread {
+                    progressDialog.dismiss()
+                    Toast.makeText(this@DataSiswaAdminActivity, "Gagal export: ${e.message}", Toast.LENGTH_LONG).show()
+                }
             }
+        }
+    }
+
+    private fun escapeCsv(value: String): String {
+        return if (value.contains(",") || value.contains("\"") || value.contains("\n")) {
+            "\"${value.replace("\"", "\"\"")}\""
+        } else {
+            value
+        }
+    }
+
+    private fun saveCsvFile(fileName: String, csvContent: String): String? {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val values = ContentValues().apply {
+                put(MediaStore.Downloads.DISPLAY_NAME, fileName)
+                put(MediaStore.Downloads.MIME_TYPE, "text/csv")
+                put(MediaStore.Downloads.RELATIVE_PATH, "Download/SASMobile")
+            }
+            val uri = contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
+            uri?.let {
+                contentResolver.openOutputStream(it)?.use { outputStream ->
+                    outputStream.write(csvContent.toByteArray(Charsets.UTF_8))
+                    outputStream.flush()
+                }
+                it.toString()
+            }
+        } else {
+            val dir = File(getExternalFilesDir(null), "Export")
+            if (!dir.exists()) dir.mkdirs()
+            val file = File(dir, fileName)
+            file.outputStream().use { outputStream ->
+                outputStream.write(csvContent.toByteArray(Charsets.UTF_8))
+                outputStream.flush()
+            }
+            file.absolutePath
         }
     }
 

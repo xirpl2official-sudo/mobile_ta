@@ -1,5 +1,6 @@
 package com.xirpl2.SASMobile
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -74,8 +75,13 @@ class KelolaGuruAdminActivity : BaseAdminActivity() {
         adapter = KelolaGuruAdminAdapter(
             guruList = guruList,
             onEditClick = { guru ->
-                // TODO: Implement Edit
-                Toast.makeText(this, "Edit: ${guru.nama}", Toast.LENGTH_SHORT).show()
+                val intent = Intent(this, EditGuruActivity::class.java).apply {
+                    putExtra("guru_id", guru.id_staff)
+                    putExtra("guru_nama", guru.nama)
+                    putExtra("guru_nip", guru.nip)
+                    putExtra("guru_email", guru.email)
+                }
+                startActivity(intent)
             },
             onLepasWaliKelasClick = { guru ->
                 showConfirmLepasWaliKelas(guru)

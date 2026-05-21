@@ -329,7 +329,7 @@ class PengajuanIzinActivity : BaseActivity() {
 
         lifecycleScope.launch {
             try {
-                val token = getSharedPreferences("UserData", MODE_PRIVATE)
+                val token = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this@PengajuanIzinActivity)
                     .getString("auth_token", "") ?: ""
                 
                 val jenisIzinBody = okhttp3.RequestBody.create(okhttp3.MultipartBody.FORM, jenisIzin)
@@ -414,7 +414,7 @@ class PengajuanIzinActivity : BaseActivity() {
     }
 
     private fun loadKuotaIzin() {
-        val token = getSharedPreferences("UserData", MODE_PRIVATE)
+        val token = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this)
             .getString("auth_token", "") ?: ""
 
         lifecycleScope.launch {
@@ -438,7 +438,7 @@ class PengajuanIzinActivity : BaseActivity() {
         rvRiwayatIzin.visibility = View.GONE
         tvEmptyRiwayat.visibility = View.GONE
 
-        val token = getSharedPreferences("UserData", MODE_PRIVATE)
+        val token = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this)
             .getString("auth_token", "") ?: ""
 
         lifecycleScope.launch {
@@ -478,22 +478,22 @@ class PengajuanIzinActivity : BaseActivity() {
     }
 
     private fun logout() {
-        val token = getSharedPreferences("UserData", MODE_PRIVATE)
+        val token = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this)
             .getString("auth_token", "") ?: ""
-        
+
         lifecycleScope.launch {
             try {
                 if (token.isNotEmpty()) {
                     RetrofitClient.apiService.logout("Bearer $token")
                 }
             } catch (_: Exception) { }
-            
+
             // Clear ALL SharedPreferences stores
-            with(getSharedPreferences("UserData", MODE_PRIVATE).edit()) {
+            with(com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this@PengajuanIzinActivity).edit()) {
                 clear()
                 apply()
             }
-            with(getSharedPreferences("user_session", MODE_PRIVATE).edit()) {
+            with(com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this@PengajuanIzinActivity).edit()) {
                 clear()
                 apply()
             }

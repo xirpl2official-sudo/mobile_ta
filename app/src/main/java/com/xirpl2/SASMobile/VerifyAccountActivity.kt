@@ -87,9 +87,9 @@ class VerifyAccountActivity : AppCompatActivity() {
 
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val sharedPref = getSharedPreferences("user_session", Context.MODE_PRIVATE)
+                val sharedPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this@VerifyAccountActivity)
                 val token = sharedPref.getString("auth_token", null)
-                    ?: getSharedPreferences("UserData", Context.MODE_PRIVATE)
+                    ?: com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this@VerifyAccountActivity)
                         .getString("auth_token", null)
 
                 if (token == null) {
@@ -110,17 +110,17 @@ class VerifyAccountActivity : AppCompatActivity() {
                         Toast.makeText(this@VerifyAccountActivity, "Akun berhasil diverifikasi", Toast.LENGTH_SHORT).show()
                         
                         // Update the local storage to mark as verified
-                        with(getSharedPreferences("user_session", Context.MODE_PRIVATE).edit()) {
+                        with(com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this@VerifyAccountActivity).edit()) {
                             putBoolean("is_verified", true)
                             apply()
                         }
                         
                         // Check role and navigate to appropriate home
                         val role = sharedPref.getString("user_role", "siswa")
-                        if (role == "siswa") {
-                            startActivity(Intent(this@VerifyAccountActivity, BerandaActivity::class.java))
-                        } else {
-                            startActivity(Intent(this@VerifyAccountActivity, BerandaAdminActivity::class.java))
+                        when (role) {
+                            "siswa" -> startActivity(Intent(this@VerifyAccountActivity, BerandaActivity::class.java))
+                            "guru", "admin" -> startActivity(Intent(this@VerifyAccountActivity, BerandaAdminActivity::class.java))
+                            else -> startActivity(Intent(this@VerifyAccountActivity, BerandaAdminActivity::class.java))
                         }
                         finish()
                     } else {
@@ -153,21 +153,21 @@ class VerifyAccountActivity : AppCompatActivity() {
     }
 
     private fun logout() {
-        val token = getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        val token = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this)
             .getString("auth_token", "") ?: ""
-        
+
         lifecycleScope.launch {
             try {
                 if (token.isNotEmpty()) {
                     RetrofitClient.apiService.logout("Bearer $token")
                 }
             } catch (_: Exception) { }
-            
-            with(getSharedPreferences("UserData", Context.MODE_PRIVATE).edit()) {
+
+            with(com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this@VerifyAccountActivity).edit()) {
                 clear()
                 apply()
             }
-            with(getSharedPreferences("user_session", Context.MODE_PRIVATE).edit()) {
+            with(com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this@VerifyAccountActivity).edit()) {
                 clear()
                 apply()
             }

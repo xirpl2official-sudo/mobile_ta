@@ -368,6 +368,12 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Response<KelasManagementListResponse>
 
+    @POST("v2/admin/management/kelas")
+    suspend fun createKelas(
+        @Header("Authorization") token: String,
+        @Body request: CreateKelasRequest
+    ): Response<MessageResponse>
+
     @GET("v2/admin/management/kelas/{id}")
     suspend fun getAdminManagementKelasDetail(
         @Header("Authorization") token: String,
@@ -690,7 +696,7 @@ interface ApiService {
     suspend fun updateJadwalDhuhaTime(@Header("Authorization") token: String, @Path("id") idJurusan: Int, @Body request: com.xirpl2.SASMobile.model.JadwalDhuhaTimeUpdateRequest): Response<MessageResponse>
 
     @GET("v2/prayer-schedules/dhuha/turns")
-    suspend fun getDhuhaTurnsToday(@Header("Authorization") token: String): Response<ApiResponse<com.google.gson.JsonObject>>
+    suspend fun getDhuhaTurnsToday(@Header("Authorization") token: String): Response<DhuhaTurnsResponse>
 
     // --- Data Retention (FASE 3.16) ---
 

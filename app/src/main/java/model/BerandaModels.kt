@@ -137,7 +137,7 @@ data class UserData(
 
 data class StatisticsResponse(
     val message: String? = null,
-    val data: StatisticsData
+    val data: StatisticsData? = null
 )
 
 data class StatisticsData(
@@ -382,6 +382,33 @@ data class BarcodeVerifyRequest(
     val hardwareId: String
 )
 
+
+// Dhuha Turns - flat response {hari, jurusans[]}
+data class DhuhaTurnsResponse(
+    val hari: String? = null,
+    val jurusans: List<DhuhaTurnJurusan> = emptyList()
+)
+
+data class DhuhaTurnJurusan(
+    @SerializedName("id_jurusan")
+    val idJurusan: Int = 0,
+    @SerializedName("nama_jurusan")
+    val namaJurusan: String = "",
+    @SerializedName("id_dhuha_group")
+    val idDhuhaGroup: Int? = null,
+    @SerializedName("hari_dhuha")
+    val hariDhuha: String? = null,
+    val schedules: List<DhuhaTurnSchedule> = emptyList()
+)
+
+data class DhuhaTurnSchedule(
+    @SerializedName("id_jadwal")
+    val idJadwal: Int = 0,
+    @SerializedName("waktu_mulai")
+    val waktuMulai: String = "",
+    @SerializedName("waktu_selesai")
+    val waktuSelesai: String = ""
+)
 
 // Synchronized SMKN 2 Singosari Spec Models
 data class JadwalDhuhaKeahlianResponse(

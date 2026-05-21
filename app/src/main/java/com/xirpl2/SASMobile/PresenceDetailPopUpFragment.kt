@@ -160,7 +160,7 @@ class PresenceDetailPopUpFragment : DialogFragment() {
     }
 
     private fun getAuthToken(): String {
-        return requireContext().getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        return com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(requireContext())
             .getString("auth_token", "") ?: ""
     }
 

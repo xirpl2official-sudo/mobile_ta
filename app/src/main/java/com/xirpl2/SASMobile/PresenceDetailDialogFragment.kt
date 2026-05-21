@@ -131,7 +131,7 @@ class PresenceDetailDialogFragment : BottomSheetDialogFragment() {
 
     private fun checkDhuhaVisibility(itemDhuha: View?) {
         val major = if (studentMajor != null) studentMajor!! else {
-            val sharedPref = requireContext().getSharedPreferences("UserData", Context.MODE_PRIVATE)
+            val sharedPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(requireContext())
             sharedPref.getString("jurusan", "") ?: ""
         }
         
@@ -233,7 +233,7 @@ class PresenceDetailDialogFragment : BottomSheetDialogFragment() {
     }
 
     private fun getAuthToken(): String {
-        val sharedPref = requireContext().getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        val sharedPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(requireContext())
         return sharedPref.getString("auth_token", "") ?: ""
     }
 

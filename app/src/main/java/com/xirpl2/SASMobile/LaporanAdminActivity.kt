@@ -427,8 +427,8 @@ class LaporanAdminActivity : BaseAdminActivity() {
                     "excel" -> RetrofitClient.apiService.exportAttendanceReport(
                         token = "Bearer $token", startDate = startDate, endDate = endDate, jurusan = jurusanApi ?: ""
                     )
-                    "pdf" -> RetrofitClient.apiService.exportAttendancePdf(
-                        token = "Bearer $token", tanggal = startDate, kelas = kelasApi, jurusan = jurusanApi
+                    "pdf" -> RetrofitClient.apiService.exportAttendanceReportPdf(
+                        token = "Bearer $token", startDate = startDate, endDate = endDate, jurusan = jurusanApi
                     )
                     "csv" -> RetrofitClient.apiService.exportAttendanceCSV(
                         token = "Bearer $token", startDate = startDate, endDate = endDate, jurusan = jurusanApi

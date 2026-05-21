@@ -258,7 +258,7 @@ class ScanQrActivity : BaseActivity() {
     }
 
     private fun getAuthToken(): String {
-        val sharedPref = getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        val sharedPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this)
         return sharedPref.getString("auth_token", "") ?: ""
     }
 

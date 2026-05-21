@@ -9,6 +9,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.xirpl2.SASMobile.databinding.ActivityNotifikasiBinding
 import com.xirpl2.SASMobile.model.*
 import com.xirpl2.SASMobile.network.RetrofitClient
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -70,18 +72,22 @@ class NotifikasiActivity : BaseActivity() {
             // Hapus semua via API
             lifecycleScope.launch {
                 try {
-                    val token = getSharedPreferences("UserData", MODE_PRIVATE)
+                    val token = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this@NotifikasiActivity)
                         .getString("auth_token", "") ?: ""
-                    
+
                     val idsToDelete = notificationList.map { it.id }
-                    var successCount = 0
-                    
-                    for (id in idsToDelete) {
-                        try {
-                            RetrofitClient.apiService.deleteNotification("Bearer $token", id)
-                            successCount++
-                        } catch (_: Exception) { }
-                    }
+
+                    // Delete all notifications in parallel
+                    val results = idsToDelete.map { id ->
+                        async {
+                            try {
+                                RetrofitClient.apiService.deleteNotification("Bearer $token", id)
+                                1
+                            } catch (_: Exception) { 0 }
+                        }
+                    }.awaitAll()
+
+                    val successCount = results.sum()
                     
                     if (successCount > 0) {
                         notificationList.removeAll { it.id in idsToDelete }
@@ -100,9 +106,9 @@ class NotifikasiActivity : BaseActivity() {
             
             lifecycleScope.launch {
                 try {
-                    val token = getSharedPreferences("UserData", MODE_PRIVATE)
+                    val token = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this@NotifikasiActivity)
                         .getString("auth_token", "") ?: ""
-                    
+
                     val unreadIds = notificationList.filter { !it.isRead }.map { it.id }
                     
                     if (unreadIds.isNotEmpty()) {
@@ -154,7 +160,7 @@ class NotifikasiActivity : BaseActivity() {
     }
     
     private fun markNotificationRead(notif: Notifikasi, position: Int) {
-        val token = getSharedPreferences("UserData", MODE_PRIVATE)
+        val token = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this)
             .getString("auth_token", "") ?: ""
         
         lifecycleScope.launch {
@@ -169,7 +175,7 @@ class NotifikasiActivity : BaseActivity() {
     }
     
     private fun deleteNotification(notif: Notifikasi, position: Int) {
-        val token = getSharedPreferences("UserData", MODE_PRIVATE)
+        val token = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this)
             .getString("auth_token", "") ?: ""
         
         lifecycleScope.launch {
@@ -191,9 +197,9 @@ class NotifikasiActivity : BaseActivity() {
 
         lifecycleScope.launch {
             try {
-                val token = getSharedPreferences("UserData", MODE_PRIVATE)
+                val token = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this@NotifikasiActivity)
                     .getString("auth_token", "") ?: ""
-                
+
                 val response = RetrofitClient.apiService.getNotifications(
                     "Bearer $token",
                     currentPage,

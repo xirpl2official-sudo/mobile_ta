@@ -132,7 +132,7 @@ class TambahSiswaActivity : BaseActivity() {
             id_tahun_masuk = tahunMasuk.toIntOrNull()
         )
 
-        val token = getSharedPreferences("UserData", Context.MODE_PRIVATE).getString("auth_token", "") ?: ""
+        val token = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this).getString("auth_token", "") ?: ""
         
         btnKirim.isEnabled = false
         btnKirim.text = "MENGIRIM..."

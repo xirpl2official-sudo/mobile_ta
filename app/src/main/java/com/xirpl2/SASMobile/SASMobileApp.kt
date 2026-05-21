@@ -45,6 +45,9 @@ class SASMobileApp : Application() {
         // Universal UI consistency: Force Light Mode
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
+        // Initialize RetrofitClient with application context for TokenAuthenticator
+        com.xirpl2.SASMobile.network.RetrofitClient.init(this)
+
         setupGlobalExceptionHandler()
         setupTransitionTimeouts()
     }

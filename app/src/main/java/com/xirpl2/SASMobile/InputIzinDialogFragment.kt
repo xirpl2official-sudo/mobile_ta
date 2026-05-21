@@ -166,7 +166,7 @@ class InputIzinDialogFragment : DialogFragment() {
     private fun performSearch(query: String) {
         searchJob?.cancel()
         searchJob = lifecycleScope.launch {
-            val token = requireContext().getSharedPreferences("UserData", Context.MODE_PRIVATE)
+            val token = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(requireContext())
                 .getString("auth_token", "") ?: ""
                 
             if (token.isEmpty()) return@launch
@@ -202,7 +202,7 @@ class InputIzinDialogFragment : DialogFragment() {
     }
 
     private fun loadJadwalSholat() {
-        val token = requireContext().getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        val token = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(requireContext())
             .getString("auth_token", "") ?: ""
             
         if (token.isEmpty()) return
@@ -269,7 +269,7 @@ class InputIzinDialogFragment : DialogFragment() {
         btnSimpan.isEnabled = false
         btnSimpan.text = "Menyimpan..."
         
-        val token = requireContext().getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        val token = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(requireContext())
             .getString("auth_token", "") ?: ""
         
         lifecycleScope.launch {

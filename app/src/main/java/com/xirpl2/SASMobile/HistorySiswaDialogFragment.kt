@@ -70,7 +70,7 @@ class HistorySiswaDialogFragment : DialogFragment() {
     }
 
     private fun loadHistory() {
-        val token = context?.getSharedPreferences("UserData", 0)?.getString("auth_token", "") ?: ""
+        val token = context?.let { com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(it) }?.getString("auth_token", "") ?: ""
         if (token.isEmpty()) return
 
         progressLoading.visibility = View.VISIBLE

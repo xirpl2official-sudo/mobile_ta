@@ -9,7 +9,10 @@ data class RegisterRequest(
 )
 
 data class RegisterResponse(
-    val message: String,
+    val message: String? = null,
+    @SerializedName("account_id")
+    val accountId: Int? = null,
+    val role: String? = null,
     val nis: String? = null,
     val email: String? = null,
     @SerializedName("is_google_acct")

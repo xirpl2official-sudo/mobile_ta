@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingHorizontal="24dp"
+    android:paddingTop="16dp"
+    android:paddingBottom="8dp">
+
+    <!-- Label Kelas -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Label Kelas"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="#334155"
+        android:layout_marginBottom="8dp" />
+
+    <EditText
+        android:id="@+id/etLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_input_rounded"
+        android:hint="Contoh: X RPL 1"
+        android:textColorHint="#6B7280"
+        android:textSize="14sp"
+        android:padding="16dp"
+        android:inputType="text"
+        android:maxLines="1"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Jurusan -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Jurusan"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="#334155"
+        android:layout_marginBottom="8dp" />
+
+    <AutoCompleteTextView
+        android:id="@+id/spinnerJurusanDialog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_input_rounded"
+        android:hint="Pilih Jurusan"
+        android:textColorHint="#6B7280"
+        android:textSize="14sp"
+        android:padding="16dp"
+        android:inputType="none"
+        android:focusable="false"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Tingkatan -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tingkatan"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="#334155"
+        android:layout_marginBottom="8dp" />
+
+    <AutoCompleteTextView
+        android:id="@+id/spinnerTingkatan"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_input_rounded"
+        android:hint="Pilih Tingkatan"
+        android:textColorHint="#6B7280"
+        android:textSize="14sp"
+        android:padding="16dp"
+        android:inputType="none"
+        android:focusable="false"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Part (Opsional) -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Part (Opsional)"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="#334155"
+        android:layout_marginBottom="8dp" />
+
+    <EditText
+        android:id="@+id/etPart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_input_rounded"
+        android:hint="Contoh: A, B"
+        android:textColorHint="#6B7280"
+        android:textSize="14sp"
+        android:padding="16dp"
+        android:inputType="text"
+        android:maxLines="1" />
+
+</LinearLayout>

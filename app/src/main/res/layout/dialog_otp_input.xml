@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <EditText
+        android:id="@+id/etOtp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_input_rounded"
+        android:hint="Masukkan Kode OTP"
+        android:textColorHint="#6B7280"
+        android:textSize="16sp"
+        android:padding="16dp"
+        android:inputType="number"
+        android:maxLength="6"
+        android:gravity="center"
+        android:letterSpacing="0.3" />
+
+</LinearLayout>

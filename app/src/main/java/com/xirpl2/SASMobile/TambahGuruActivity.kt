@@ -73,7 +73,7 @@ class TambahGuruActivity : BaseActivity() {
     }
 
     private fun submitData(nama: String, nip: String?, email: String, password: String) {
-        val token = getSharedPreferences("UserData", Context.MODE_PRIVATE).getString("auth_token", "") ?: ""
+        val token = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this).getString("auth_token", "") ?: ""
         if (token.isEmpty()) return
 
         setLoadingState(true)

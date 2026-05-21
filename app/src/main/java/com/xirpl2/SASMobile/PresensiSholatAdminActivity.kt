@@ -121,7 +121,7 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
         
         if (btnInputIzin == null || btnTambah == null) return
         
-        val role = getSharedPreferences("UserData", MODE_PRIVATE).getString("user_role", "")?.lowercase() ?: ""
+        val role = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this).getString("user_role", "")?.lowercase() ?: ""
         
         when {
             role == "wali_kelas" || role == "wali kelas" -> {

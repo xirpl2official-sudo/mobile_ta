@@ -57,14 +57,22 @@ class TambahGuruDialogFragment : BottomSheetDialogFragment() {
             lifecycleScope.launch {
                 try {
                     val response = withContext(Dispatchers.IO) {
-                        // Assuming you have a way to get the token, usually from SharedPreferences.
-                        // For now, using a placeholder. You should replace "YOUR_TOKEN" with actual auth token retrieval.
-                        val token = "Bearer YOUR_TOKEN" 
+                        val sharedPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(requireContext())
+                        val token = sharedPref.getString("auth_token", null)
+                            ?: com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(requireContext())
+                                .getString("auth_token", null)
+                        if (token == null) {
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(context, "Sesi tidak valid, silakan login ulang", Toast.LENGTH_SHORT).show()
+                                btnSimpan.isEnabled = true
+                            }
+                            return@withContext null
+                        }
                         RetrofitClient.apiService.createGuru(
-                            token,
+                            "Bearer $token",
                             CreateGuruRequest(email, password, nama, nip)
                         )
-                    }
+                    } ?: return@launch
 
                     if (response.isSuccessful) {
                         Toast.makeText(context, "Guru berhasil ditambahkan", Toast.LENGTH_SHORT).show()

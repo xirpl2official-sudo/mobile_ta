@@ -125,7 +125,7 @@ class PengaturanAkunActivity : BaseActivity() {
     private fun loadUserDataFromAPI() {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val sharedPref = getSharedPreferences("user_session", Context.MODE_PRIVATE)
+                val sharedPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this@PengaturanAkunActivity)
                 val token = sharedPref.getString("auth_token", null)
 
                 if (token == null) {
@@ -188,7 +188,7 @@ class PengaturanAkunActivity : BaseActivity() {
     }
 
     private fun loadUserDataFromPreferences() {
-        val sharedPref = getSharedPreferences("user_session", Context.MODE_PRIVATE)
+        val sharedPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this)
         
         currentUserData = UserData(
             nis = sharedPref.getString("user_nis", "") ?: "",
@@ -208,7 +208,7 @@ class PengaturanAkunActivity : BaseActivity() {
     }
 
     private fun saveUserDataLocally(userData: UserData) {
-        val sharedPref = getSharedPreferences("user_session", Context.MODE_PRIVATE)
+        val sharedPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this)
         with(sharedPref.edit()) {
             putString("user_nis", userData.nis)
             putString("user_name", userData.namaLengkap)
@@ -307,9 +307,9 @@ class PengaturanAkunActivity : BaseActivity() {
         
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val sharedPref = getSharedPreferences("user_session", Context.MODE_PRIVATE)
+                val sharedPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this@PengaturanAkunActivity)
                 val token = sharedPref.getString("auth_token", null)
-                
+
                 if (token == null) {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
@@ -320,34 +320,36 @@ class PengaturanAkunActivity : BaseActivity() {
                     }
                     return@launch
                 }
-                
-                
+
+
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
                         this@PengaturanAkunActivity,
                         "Memperbarui email...",
                         Toast.LENGTH_SHORT
                     ).show()
-                }                
+                }
                 val request = com.xirpl2.SASMobile.model.ChangeEmailRequest(newEmail = newEmail)
-                
+
                 val response = RetrofitClient.apiService.changeEmail("Bearer $token", request)
                 
                 
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful && response.body() != null) {
                         val apiResponse = response.body()!!
-                        
-                        
+
                         Toast.makeText(
                             this@PengaturanAkunActivity,
                             apiResponse.message ?: "Kode OTP telah dikirim ke email baru Anda",
                             Toast.LENGTH_LONG
                         ).show()
-                        
+
+                        // Show OTP verification dialog
+                        showEmailOtpDialog(token, newEmail)
+
                     } else {
                         val errorBody = response.errorBody()?.string()
-                        
+
                         val errorMessage = try {
                             if (!errorBody.isNullOrEmpty()) {
                                 val jsonObject = org.json.JSONObject(errorBody)
@@ -364,7 +366,7 @@ class PengaturanAkunActivity : BaseActivity() {
                         } catch (e: Exception) {
                             "Gagal mengubah email (${response.code()})"
                         }
-                        
+
                         Toast.makeText(
                             this@PengaturanAkunActivity,
                             errorMessage,
@@ -388,6 +390,61 @@ class PengaturanAkunActivity : BaseActivity() {
                 }
             }
         }
+    }
+
+    private fun showEmailOtpDialog(token: String, newEmail: String) {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_otp_input, null)
+        val etOtp = dialogView.findViewById<EditText>(R.id.etOtp)
+
+        AlertDialog.Builder(this)
+            .setTitle("Verifikasi OTP")
+            .setMessage("Masukkan kode OTP yang telah dikirim ke $newEmail")
+            .setView(dialogView)
+            .setPositiveButton("Verifikasi") { _, _ ->
+                val otp = etOtp.text.toString().trim()
+                if (otp.isEmpty()) {
+                    Toast.makeText(this, "Kode OTP tidak boleh kosong", Toast.LENGTH_SHORT).show()
+                    return@setPositiveButton
+                }
+
+                lifecycleScope.launch(Dispatchers.IO) {
+                    try {
+                        val verifyRequest = com.xirpl2.SASMobile.model.VerifyEmailOTPRequest(
+                            newEmail = newEmail,
+                            otp = otp
+                        )
+                        val verifyResponse = RetrofitClient.apiService.verifyChangeEmail("Bearer $token", verifyRequest)
+
+                        withContext(Dispatchers.Main) {
+                            if (verifyResponse.isSuccessful) {
+                                Toast.makeText(
+                                    this@PengaturanAkunActivity,
+                                    verifyResponse.body()?.message ?: "Email berhasil diubah",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                // Update local email display
+                                etEmail.text = newEmail
+                                // Update shared preferences
+                                val sharedPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this@PengaturanAkunActivity)
+                                sharedPref.edit().putString("email", newEmail).apply()
+                            } else {
+                                val errorBody = verifyResponse.errorBody()?.string()
+                                val msg = try {
+                                    if (!errorBody.isNullOrEmpty()) org.json.JSONObject(errorBody).optString("message", "Verifikasi gagal")
+                                    else "Verifikasi gagal (${verifyResponse.code()})"
+                                } catch (_: Exception) { "Verifikasi gagal (${verifyResponse.code()})" }
+                                Toast.makeText(this@PengaturanAkunActivity, msg, Toast.LENGTH_LONG).show()
+                            }
+                        }
+                    } catch (e: Exception) {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(this@PengaturanAkunActivity, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+                        }
+                    }
+                }
+            }
+            .setNegativeButton("Batal", null)
+            .show()
     }
 
     data class UserData(
@@ -481,9 +538,9 @@ class PengaturanAkunActivity : BaseActivity() {
     private fun changePassword(currentPassword: String, newPassword: String, callback: (Boolean, String) -> Unit) {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val sharedPref = getSharedPreferences("user_session", Context.MODE_PRIVATE)
+                val sharedPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this@PengaturanAkunActivity)
                 val token = sharedPref.getString("auth_token", null)
-                    ?: getSharedPreferences("UserData", Context.MODE_PRIVATE)
+                    ?: com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this@PengaturanAkunActivity)
                         .getString("auth_token", null)
                 
                 if (token == null) {
@@ -590,9 +647,9 @@ class PengaturanAkunActivity : BaseActivity() {
     private fun submitDeviceChangeRequest(alasan: String, callback: (Boolean, String) -> Unit) {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val sharedPref = getSharedPreferences("user_session", Context.MODE_PRIVATE)
+                val sharedPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this@PengaturanAkunActivity)
                 val token = sharedPref.getString("auth_token", null)
-                    ?: getSharedPreferences("UserData", Context.MODE_PRIVATE)
+                    ?: com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this@PengaturanAkunActivity)
                         .getString("auth_token", null)
                 
                 if (token == null) {
