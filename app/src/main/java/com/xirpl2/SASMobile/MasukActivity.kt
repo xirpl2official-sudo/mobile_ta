@@ -59,19 +59,9 @@ class MasukActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         try {
             setContentView(R.layout.activity_masuk)
-            
-            // UI Styling
             window.statusBarColor = 0xFF2886D6.toInt()
             WindowInsetsControllerCompat(window, window.decorView).apply {
                 isAppearanceLightStatusBars = false
-            }
-
-            findViewById<android.view.View>(R.id.main)?.let { mainView ->
-                ViewCompat.setOnApplyWindowInsetsListener(mainView) { v, insets ->
-                    val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-                    v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-                    insets
-                }
             }
 
             initializeViews()
@@ -200,10 +190,8 @@ class MasukActivity : BaseActivity() {
                             val token = userData.token
                             if (userData.is_verified == false) {
                                 safeNavigateTo(VerifyAccountActivity::class.java)
-                            } else if (token != null) {
-                                checkDeviceAuth(token)
                             } else {
-                                navigateToHome()
+                                navigateToHome() // device auth dinonaktifkan sementara (development)
                             }
                         } else {
                             onLoginFailed()

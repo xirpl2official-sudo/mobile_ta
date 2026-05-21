@@ -8,11 +8,9 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.textfield.TextInputLayout
 import com.xirpl2.SASMobile.model.ResetPasswordRequest
@@ -34,21 +32,12 @@ class BuatSandiBaruActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_buat_sandi_baru)
         window.statusBarColor = 0xFF2886D6.toInt()
-        
-        
-        @Suppress("DEPRECATION")
-        window.decorView.systemUiVisibility = 0
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+        WindowInsetsControllerCompat(window, window.decorView).apply {
+            isAppearanceLightStatusBars = false
         }
 
-        
         userNis = intent.getStringExtra("USER_NIS") ?: ""
         userOtp = intent.getStringExtra("USER_OTP") ?: ""
 

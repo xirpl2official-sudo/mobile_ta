@@ -32,7 +32,7 @@ class TambahSiswaActivity : BaseActivity() {
     private lateinit var btnBatal: MaterialButton
 
     private val fixedJurusanList = listOf("RPL", "TKJ", "TEI", "TAV", "BC", "TMT", "DKV", "ANM")
-    private val kelasOptions = listOf("X", "XI", "XII")
+    private val kelasOptions = listOf("10", "11", "12")
     private val partOptions = listOf("1", "2", "3", "4")
     private val tahunMasukOptions = (2020..2026).map { it.toString() }.reversed()
 

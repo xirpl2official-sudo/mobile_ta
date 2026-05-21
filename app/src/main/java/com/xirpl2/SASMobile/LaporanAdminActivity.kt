@@ -97,7 +97,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
 
     private val fixedJurusanList = listOf("RPL", "TKJ", "TEI", "TAV", "BC", "TMT", "DKV", "ANM")
     private val jurusanOptions = listOf("Semua Jurusan") + fixedJurusanList
-    private val kelasOptions = listOf("Semua Kelas", "X", "XI", "XII")
+    private val kelasOptions = listOf("Semua Kelas", "10", "11", "12")
     private val sholatOptions = listOf("Semua Sholat", "Dhuha", "Dzuhur", "Jumat")
 
     private val displayDateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())

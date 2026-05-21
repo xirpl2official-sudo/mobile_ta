@@ -82,7 +82,7 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
     
     private val fixedJurusanList = listOf("RPL", "TKJ", "TEI", "TAV", "BC", "TMT", "DKV", "ANM")
     private val jurusanOptions: List<String> = listOf("Semua Jurusan") + fixedJurusanList
-    private val kelasOptions: List<String> = listOf("Semua Kelas", "X", "XI", "XII")
+    private val kelasOptions: List<String> = listOf("Semua Kelas", "10", "11", "12")
     private val genderOptions: List<String> = listOf("Semua JK", "Laki-laki", "Perempuan")
     
     
@@ -669,8 +669,8 @@ override fun onCreate(savedInstanceState: Bundle?) {
                 etNama.error = "Nama tidak boleh kosong"
                 return@setOnClickListener
             }
-            if (kelas.isEmpty() || kelas !in listOf("X", "XI", "XII")) {
-                etKelas.error = "Kelas harus X, XI, atau XII"
+            if (kelas.isEmpty() || kelas !in listOf("10", "11", "12")) {
+                etKelas.error = "Kelas harus 10, 11, atau 12"
                 return@setOnClickListener
             }
             if (jurusan.isEmpty()) {

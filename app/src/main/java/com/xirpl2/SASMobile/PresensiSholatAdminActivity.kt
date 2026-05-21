@@ -63,7 +63,7 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
     
     private val fixedJurusanList = listOf("RPL", "TKJ", "TEI", "TAV", "BC", "TMT", "DKV", "ANM")
     private val jurusanOptions: List<String> = listOf("Semua Jurusan") + fixedJurusanList
-    private val kelasOptions: List<String> = listOf("Semua Kelas", "X", "XI", "XII")
+    private val kelasOptions: List<String> = listOf("Semua Kelas", "10", "11", "12")
     private val jenisSholatOptions: List<String> = listOf("Semua Sholat", "Dhuha", "Dzuhur", "Jumat")
 
     

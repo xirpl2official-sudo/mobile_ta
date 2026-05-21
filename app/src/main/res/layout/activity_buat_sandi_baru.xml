@@ -45,14 +45,13 @@
         app:cardBackgroundColor="@android:color/transparent"
         app:cardCornerRadius="200dp"
         app:cardElevation="10dp"
-        app:layout_constraintBottom_toTopOf="@id/textHalaman2"
+        app:layout_constraintBottom_toBottomOf="@id/VectorAtasO"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.13"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.18"
-        app:layout_constraintVertical_chainStyle="packed">
+        app:layout_constraintVertical_bias="0.22">
 
         <ImageView
             android:id="@+id/LogoInorasi2"
@@ -78,7 +77,6 @@
         android:textColor="@color/white"
         android:textSize="@dimen/text_title"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@id/textBuatKataSandi"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cardLogo" />
@@ -95,7 +93,6 @@
         android:text="@string/BuatSandi"
         android:textColor="@color/white"
         android:textSize="@dimen/text_bawah_title"
-        app:layout_constraintBottom_toTopOf="@id/passwordBaruLabel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textHalaman2" />
@@ -109,11 +106,9 @@
         android:textColor="@color/on_background"
         android:textSize="@dimen/text_small"
         android:fontFamily="sans-serif-medium"
-        app:layout_constraintBottom_toTopOf="@id/passwordLayoutBaru"
         app:layout_constraintEnd_toEndOf="@id/passwordLayoutBaru"
         app:layout_constraintStart_toStartOf="@id/passwordLayoutBaru"
-        app:layout_constraintTop_toBottomOf="@id/textBuatKataSandi"
-        app:layout_constraintVertical_chainStyle="packed" />
+        app:layout_constraintTop_toBottomOf="@id/VectorAtasO" />
 
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"

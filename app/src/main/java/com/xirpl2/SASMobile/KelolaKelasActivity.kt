@@ -268,7 +268,7 @@ class KelolaKelasActivity : BaseAdminActivity() {
                 return@launch
             }
 
-            val tingkatanOptions = listOf(10 to "X", 11 to "XI", 12 to "XII")
+            val tingkatanOptions = listOf(10 to "10", 11 to "11", 12 to "12")
 
             val dialogView = layoutInflater.inflate(R.layout.dialog_tambah_kelas, null)
             val etLabel = dialogView.findViewById<EditText>(R.id.etLabel)

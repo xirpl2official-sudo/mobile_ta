@@ -49,14 +49,13 @@
             app:cardBackgroundColor="@android:color/transparent"
             app:cardCornerRadius="200dp"
             app:cardElevation="10dp"
-            app:layout_constraintBottom_toTopOf="@id/textHalaman2"
+            app:layout_constraintBottom_toBottomOf="@id/VectorAtasO"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHeight_percent="0.13"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.18"
-            app:layout_constraintVertical_chainStyle="packed">
+            app:layout_constraintVertical_bias="0.22">
 
             <ImageView
                 android:id="@+id/LogoInorasi2"
@@ -83,7 +82,6 @@
             android:textColor="@color/white"
             android:textSize="@dimen/text_title"
             android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@id/textDaftar2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/cardLogo" />
@@ -101,7 +99,6 @@
             android:text="@string/VerivikasiOTP"
             android:textColor="@color/white"
             android:textSize="@dimen/text_bawah_title"
-            app:layout_constraintBottom_toTopOf="@id/guideline"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/textHalaman2" />
@@ -131,7 +128,7 @@
             app:cardBackgroundColor="#FFFFFF"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/guidelineInputOTP"
+            app:layout_constraintTop_toBottomOf="@id/VectorAtasO"
             app:layout_constraintWidth_percent="0.85">
 
             <androidx.constraintlayout.widget.ConstraintLayout

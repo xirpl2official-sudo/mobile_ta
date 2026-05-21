@@ -18,6 +18,7 @@ import kotlinx.coroutines.withContext
 import androidx.lifecycle.lifecycleScope
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.google.android.material.textfield.TextInputLayout
 
 class DaftarActivity : BaseActivity() {
@@ -35,15 +36,8 @@ class DaftarActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_daftar)
         window.statusBarColor = 0xFFE48134.toInt()
-        
-        
-        @Suppress("DEPRECATION")
-        window.decorView.systemUiVisibility = 0
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+        WindowInsetsControllerCompat(window, window.decorView).apply {
+            isAppearanceLightStatusBars = false
         }
 
         etNis = findViewById(R.id.et_nis)
