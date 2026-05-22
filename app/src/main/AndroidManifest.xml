@@ -149,6 +149,10 @@
             android:exported="false" />
         <activity
             android:launchMode="singleTop"
+            android:name=".PengaturanActivity"
+            android:exported="false" />
+        <activity
+            android:launchMode="singleTop"
             android:name=".StudentPromotionActivity"
             android:exported="false" />
     </application>

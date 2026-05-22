@@ -267,8 +267,8 @@ class BerandaActivity : BaseActivity() {
 
         btnSettings.setOnClickListener {
             dismissPopupMenu()
-            
-            val intent = Intent(this, PengaturanAkunActivity::class.java)
+
+            val intent = Intent(this, PengaturanActivity::class.java)
             startActivity(intent)
         }
 

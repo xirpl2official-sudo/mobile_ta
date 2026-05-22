@@ -229,7 +229,7 @@ abstract class BaseAdminActivity : BaseActivity() {
 
         sidebarView.findViewById<LinearLayout>(R.id.menuPengaturan)?.setOnClickListener {
             closeSidebar()
-            startActivity(Intent(this, PengaturanAkunActivity::class.java))
+            startActivity(Intent(this, PengaturanActivity::class.java))
             overridePendingTransition(0, 0)
         }
 

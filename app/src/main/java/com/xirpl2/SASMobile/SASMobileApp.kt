@@ -41,9 +41,16 @@ class SASMobileApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        
-        // Universal UI consistency: Force Light Mode
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+
+        // Apply saved theme preference (defaults to system)
+        val prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE)
+        val theme = prefs.getString("theme_mode", "system") ?: "system"
+        val mode = when (theme) {
+            "light" -> AppCompatDelegate.MODE_NIGHT_NO
+            "dark" -> AppCompatDelegate.MODE_NIGHT_YES
+            else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+        }
+        AppCompatDelegate.setDefaultNightMode(mode)
 
         // Initialize RetrofitClient with application context for TokenAuthenticator
         com.xirpl2.SASMobile.network.RetrofitClient.init(this)

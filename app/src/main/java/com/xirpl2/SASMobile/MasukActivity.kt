@@ -245,7 +245,7 @@ class MasukActivity : BaseActivity() {
                             if (userData.is_verified == false) {
                                 safeNavigateTo(VerifyAccountActivity::class.java)
                             } else {
-                                navigateToHome() // device auth dinonaktifkan sementara (development)
+                                navigateToHome()
                             }
                         } else {
                             onLoginFailed()
@@ -396,63 +396,6 @@ class MasukActivity : BaseActivity() {
                 withContext(Dispatchers.Main) {
                     if (!isFinishing && !isDestroyed) clearUserSession()
                 }
-            }
-        }
-    }
-
-    private fun checkDeviceAuth(token: String) {
-        val deviceRepo = com.xirpl2.SASMobile.repository.DeviceRepository()
-        val hardwareId = com.xirpl2.SASMobile.utils.DeviceHelper.getHardwareId(this)
-        val imei = com.xirpl2.SASMobile.utils.DeviceHelper.getImei(this)
-        val deviceName = com.xirpl2.SASMobile.utils.DeviceHelper.getDeviceName()
-        val deviceModel = com.xirpl2.SASMobile.utils.DeviceHelper.getDeviceModel()
-        val osVersion = com.xirpl2.SASMobile.utils.DeviceHelper.getOsVersion()
-
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "checkDeviceAuth: hardware_id=$hardwareId, imei=$imei, device=$deviceName ($deviceModel), os=$osVersion")
-        }
-
-        val authRequest = com.xirpl2.SASMobile.model.HardwareAuthRequest(
-            hardwareId = hardwareId,
-            imei = imei,
-            deviceName = deviceName,
-            deviceModel = deviceModel,
-            osVersion = osVersion
-        )
-
-        lifecycleScope.launch(Dispatchers.IO) {
-            val verifyResult = deviceRepo.verifyDevice(token, authRequest)
-            withContext(Dispatchers.Main) {
-                if (isFinishing || isDestroyed) return@withContext
-                verifyResult.fold(
-                    onSuccess = { navigateToHome() },
-                    onFailure = { e ->
-                        Log.d(TAG, "checkDeviceAuth: verify failed (${e.message}), trying register")
-                        registerNewDevice(token, authRequest)
-                    }
-                )
-            }
-        }
-    }
-
-    private fun registerNewDevice(token: String, request: com.xirpl2.SASMobile.model.HardwareAuthRequest) {
-        val deviceRepo = com.xirpl2.SASMobile.repository.DeviceRepository()
-        lifecycleScope.launch(Dispatchers.IO) {
-            val registerResult = deviceRepo.registerDevice(token, request)
-            withContext(Dispatchers.Main) {
-                if (isFinishing || isDestroyed) return@withContext
-                registerResult.fold(
-                    onSuccess = {
-                        Log.d(TAG, "registerNewDevice: success")
-                        showToast("Perangkat Terikat", "Akun Anda telah berhasil dikunci ke perangkat ini.", MotionToastStyle.INFO)
-                        navigateToHome()
-                    },
-                    onFailure = { e ->
-                        Log.e(TAG, "registerNewDevice: failed: ${e.message}")
-                        showToast("Keamanan Perangkat", "Gagal mendaftarkan perangkat: ${e.message}", MotionToastStyle.ERROR)
-                        clearUserSession()
-                    }
-                )
             }
         }
     }

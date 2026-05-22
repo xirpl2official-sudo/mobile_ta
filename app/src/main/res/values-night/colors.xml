@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark theme color overrides -->
+    <color name="background">#0F172A</color>
+    <color name="surface">#1E293B</color>
+    <color name="surface_container">#1E293B</color>
+    <color name="on_background">#F1F5F9</color>
+    <color name="on_surface">#F1F5F9</color>
+    <color name="outline">#334155</color>
+    <color name="outline_variant">#475569</color>
+    <color name="white">#FFFFFF</color>
+    <color name="blue_theme_light">#1E3A5F</color>
+    <color name="bg_profile_card">#1E3A5F</color>
+    <color name="bg_sidebar">#1E293B</color>
+</resources>
