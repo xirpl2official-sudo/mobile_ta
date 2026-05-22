@@ -124,7 +124,7 @@ interface ApiService {
     @GET("v2/prayer-schedules/closest")
     suspend fun getClosestPrayerSchedule(
         @Header("Authorization") token: String
-    ): Response<ApiResponse<com.google.gson.JsonObject>>
+    ): Response<ClosestPrayerResponse>
 
     // --- Attendance ---
 
@@ -367,12 +367,6 @@ interface ApiService {
     suspend fun getAdminManagementKelas(
         @Header("Authorization") token: String
     ): Response<KelasManagementListResponse>
-
-    @POST("v2/admin/management/kelas")
-    suspend fun createKelas(
-        @Header("Authorization") token: String,
-        @Body request: CreateKelasRequest
-    ): Response<MessageResponse>
 
     @GET("v2/admin/management/kelas/{id}")
     suspend fun getAdminManagementKelasDetail(
@@ -686,9 +680,6 @@ interface ApiService {
 
     @GET("v2/pengajuan-izin/{id}/bukti")
     suspend fun getBuktiFoto(@Header("Authorization") token: String, @Path("id") id: Int): Response<ApiResponse<com.google.gson.JsonObject>>
-
-    @GET("v2/pengajuan-izin/kuota")
-    suspend fun getKuotaIzin(@Header("Authorization") token: String): Response<KuotaIzinResponse>
 
     // --- Prayer Schedules (FASE 3.15) ---
 

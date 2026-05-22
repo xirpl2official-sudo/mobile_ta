@@ -55,17 +55,3 @@ data class UpdateStatusPengajuanIzinRequest(
     val catatanVerifikasi: String? = null
 )
 
-data class KuotaIzinResponse(
-    val message: String,
-    val data: KuotaIzinData
-)
-
-data class KuotaIzinData(
-    val izin: KuotaItem,
-    val sakit: KuotaItem
-)
-
-data class KuotaItem(
-    val terpakai: Int,
-    val total: Int
-)

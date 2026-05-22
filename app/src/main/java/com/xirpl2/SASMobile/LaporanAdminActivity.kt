@@ -95,6 +95,10 @@ class LaporanAdminActivity : BaseAdminActivity() {
     private var tanggalAwal: Calendar = Calendar.getInstance().apply { add(Calendar.DAY_OF_MONTH, -6) }
     private var tanggalAkhir: Calendar = Calendar.getInstance()
 
+    // ForcedClass: for wali_kelas, auto-filter to their assigned class
+    private var forcedClass: String? = null
+    private var isWaliKelas: Boolean = false
+
     private val fixedJurusanList = listOf("RPL", "TKJ", "TEI", "TAV", "BC", "TMT", "DKV", "ANM")
     private val jurusanOptions = listOf("Semua Jurusan") + fixedJurusanList
     private val kelasOptions = listOf("Semua Kelas", "10", "11", "12")
@@ -117,6 +121,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
         setupDrawerAndSidebar()
         setupMenuIcon()
         setupRecyclerView()
+        initForcedClass()
         setupFilters()
         setupButtons()
         setupPagination()
@@ -186,7 +191,26 @@ class LaporanAdminActivity : BaseAdminActivity() {
         updatePaginationUI()
     }
 
+    private fun initForcedClass() {
+        val session = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this)
+        val role = session.getString("user_role", "")?.lowercase() ?: ""
+        isWaliKelas = role.contains("wali")
+        if (isWaliKelas) {
+            forcedClass = session.getString("user_kelas", "")?.takeIf { it.isNotBlank() }
+            if (forcedClass != null) {
+                selectedKelas = forcedClass!!
+                tvFilterKelas.text = forcedClass!!
+            }
+        }
+    }
+
     private fun setupFilters() {
+        // For wali_kelas: hide Jurusan and Kelas filter dropdowns (forcedClass filtering)
+        if (isWaliKelas) {
+            tvFilterJurusan.visibility = View.GONE
+            tvFilterKelas.visibility = View.GONE
+        }
+
         etSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}

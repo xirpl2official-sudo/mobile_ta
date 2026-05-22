@@ -20,7 +20,11 @@ data class SiswaItem(
     @SerializedName("device_status")
     val deviceStatus: String? = null,
     @SerializedName("hardware_id")
-    val hardwareId: String? = null
+    val hardwareId: String? = null,
+    @SerializedName("wali_kelas_name")
+    val waliKelasName: String? = null,
+    @SerializedName("status_akademik")
+    val statusAkademik: String? = null
 ) : Serializable
 
 data class SiswaPaginationInfo(

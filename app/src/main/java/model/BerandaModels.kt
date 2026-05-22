@@ -81,6 +81,17 @@ data class JenisSholatData(
     val namaJenis: String
 )
 
+// Closest Prayer Schedule — matches GET /v2/prayer-schedules/closest response
+data class ClosestPrayerResponse(
+    val message: String? = null,
+    val data: ClosestPrayerData? = null
+)
+
+data class ClosestPrayerData(
+    val current: JadwalSholatDetail? = null,
+    val next: JadwalSholatDetail? = null
+)
+
 data class JadwalSholatUpdateRequest(
     val jenis_sholat: String? = null,
     @SerializedName("waktu_mulai")

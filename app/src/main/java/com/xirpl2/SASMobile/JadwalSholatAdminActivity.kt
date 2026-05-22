@@ -250,6 +250,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
                 items = items,
                 canEdit = canUserEdit(),
                 onEditPrayer = { jenisSholat -> showEditDialogByJenis(jenisSholat) },
+                onDeletePrayer = { jadwal -> showDeleteConfirmation(jadwal) },
                 onDhuhaKeahlianSwap = { row1, col1, row2, col2 ->
                     handleSwap(row1, col1, row2, col2)
                     prayerAdapter?.getDhuhaAdapter()?.updateData(dhuhaKeahlianList)
@@ -346,6 +347,49 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
         btnTambah.setOnClickListener {
             showTambahJadwalDialog()
+        }
+    }
+
+    private fun showDeleteConfirmation(jadwal: JadwalSholatData) {
+        val nama = "Sholat ${jadwal.jenis_sholat}"
+        val detail = buildString {
+            if (!jadwal.hari.isNullOrEmpty()) append("Hari: ${jadwal.hari}\n")
+            if (!jadwal.jurusan.isNullOrEmpty()) append("Jurusan: ${jadwal.jurusan}\n")
+            append("Waktu: ${jadwal.jam_mulai} - ${jadwal.jam_selesai}")
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle("Hapus Jadwal")
+            .setMessage("Hapus jadwal $nama?\n\n$detail")
+            .setPositiveButton("Hapus") { _, _ -> deleteJadwal(jadwal) }
+            .setNegativeButton("Batal", null)
+            .show()
+    }
+
+    private fun deleteJadwal(jadwal: JadwalSholatData) {
+        val token = getAuthToken()
+        if (token.isEmpty()) return
+
+        Toast.makeText(this, "Menghapus jadwal...", Toast.LENGTH_SHORT).show()
+
+        lifecycleScope.launch {
+            repository.deleteJadwalSholat(token, jadwal.id).fold(
+                onSuccess = {
+                    if (!isFinishing && !isDestroyed) {
+                        safeRunOnUiThread {
+                            Toast.makeText(this@JadwalSholatAdminActivity, "Jadwal Sholat ${jadwal.jenis_sholat} berhasil dihapus", Toast.LENGTH_SHORT).show()
+                            loadJadwalList()
+                        }
+                    }
+                },
+                onFailure = { error ->
+                    if (!isFinishing && !isDestroyed) {
+                        safeRunOnUiThread {
+                            Toast.makeText(this@JadwalSholatAdminActivity, "Gagal menghapus: ${error.message}", Toast.LENGTH_LONG).show()
+                        }
+                    }
+                }
+            )
         }
     }
 

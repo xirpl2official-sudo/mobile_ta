@@ -47,6 +47,10 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
     private var selectedJurusan: String = "Semua Jurusan"
     private var selectedJenisSholat: String = "Semua Sholat"
     private var searchQuery: String = ""
+
+    // ForcedClass: for wali_kelas, auto-filter to their assigned class
+    private var forcedClass: String? = null
+    private var isWaliKelas: Boolean = false
     
     
     private val searchHandler = Handler(Looper.getMainLooper())
@@ -94,6 +98,7 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
             setupMenuIcon()
             setupRecyclerView()
             setupSearch()
+            initForcedClass()
             setupFilters()
             setupInputIzinButton()
 
@@ -230,7 +235,27 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
         loadData()
     }
 
+    private fun initForcedClass() {
+        val session = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this)
+        val role = session.getString("user_role", "")?.lowercase() ?: ""
+        isWaliKelas = role.contains("wali")
+        if (isWaliKelas) {
+            forcedClass = session.getString("user_kelas", "")?.takeIf { it.isNotBlank() }
+            if (forcedClass != null) {
+                // Auto-set the kelas filter to the wali_kelas's assigned class
+                selectedKelas = forcedClass!!
+                filterKelas.text = forcedClass!!
+            }
+        }
+    }
+
     private fun setupFilters() {
+        // For wali_kelas: hide Jurusan and Kelas filter dropdowns (forcedClass filtering)
+        if (isWaliKelas) {
+            filterKelas.visibility = View.GONE
+            filterJurusan.visibility = View.GONE
+        }
+
         filterKelas.setOnClickListener {
             showFilterDialog("Pilih Kelas", kelasOptions, selectedKelas) { selected ->
                 selectedKelas = selected
@@ -238,7 +263,7 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
                 refreshData()
             }
         }
-        
+
         filterJurusan.setOnClickListener {
             showFilterDialog("Pilih Jurusan", jurusanOptions, selectedJurusan) { selected ->
                 selectedJurusan = selected
@@ -246,7 +271,7 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
                 refreshData()
             }
         }
-        
+
         filterJenisSholat.setOnClickListener {
             showFilterDialog("Pilih Jenis Sholat", jenisSholatOptions, selectedJenisSholat) { selected ->
                 selectedJenisSholat = selected

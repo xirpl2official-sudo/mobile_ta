@@ -10,18 +10,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xirpl2.SASMobile.adapter.KelasManageAdapter
-import com.xirpl2.SASMobile.model.CreateKelasRequest
-import com.xirpl2.SASMobile.model.JurusanItem
 import com.xirpl2.SASMobile.model.KelasManagementItem
 import com.xirpl2.SASMobile.model.SiswaItem
 import com.xirpl2.SASMobile.model.StaffInfo
-import com.xirpl2.SASMobile.network.RetrofitClient
 import com.xirpl2.SASMobile.repository.BerandaRepository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class KelolaKelasActivity : BaseAdminActivity() {
 
@@ -61,8 +56,7 @@ class KelolaKelasActivity : BaseAdminActivity() {
         setupMenuIcon()
         setupRecyclerView()
         setupListeners()
-        setupFAB()
-        
+
         loadData()
         loadStaffList()
     }
@@ -116,12 +110,6 @@ class KelolaKelasActivity : BaseAdminActivity() {
 
         iconNotification.setOnClickListener {
             Toast.makeText(this, "Belum ada notifikasi baru", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private fun setupFAB() {
-        findViewById<View>(R.id.fabAddKelas).setOnClickListener {
-            showTambahKelasDialog()
         }
     }
 
@@ -251,88 +239,4 @@ class KelolaKelasActivity : BaseAdminActivity() {
         dialog.show(supportFragmentManager, "SiswaDetailDialog")
     }
 
-    private fun showTambahKelasDialog() {
-        val token = getAuthToken()
-        if (token.isEmpty()) return
-
-        lifecycleScope.launch {
-            val jurusanResult = withContext(kotlinx.coroutines.Dispatchers.IO) {
-                try {
-                    val response = RetrofitClient.apiService.getJurusanLookup("Bearer $token")
-                    if (response.isSuccessful) response.body()?.data ?: emptyList() else emptyList()
-                } catch (_: Exception) { emptyList() }
-            }
-
-            if (jurusanResult.isEmpty()) {
-                Toast.makeText(this@KelolaKelasActivity, "Gagal memuat data jurusan", Toast.LENGTH_SHORT).show()
-                return@launch
-            }
-
-            val tingkatanOptions = listOf(10 to "10", 11 to "11", 12 to "12")
-
-            val dialogView = layoutInflater.inflate(R.layout.dialog_tambah_kelas, null)
-            val etLabel = dialogView.findViewById<EditText>(R.id.etLabel)
-            val spinnerJurusanDialog = dialogView.findViewById<AutoCompleteTextView>(R.id.spinnerJurusanDialog)
-            val spinnerTingkatan = dialogView.findViewById<AutoCompleteTextView>(R.id.spinnerTingkatan)
-            val etPart = dialogView.findViewById<EditText>(R.id.etPart)
-
-            val jurusanNames = jurusanResult.map { it.nama }
-            var selectedJurusan: JurusanItem? = null
-            val jurusanAdapter = ArrayAdapter(this@KelolaKelasActivity, android.R.layout.simple_dropdown_item_1line, jurusanNames)
-            spinnerJurusanDialog.setAdapter(jurusanAdapter)
-            spinnerJurusanDialog.setOnItemClickListener { _, _, position, _ ->
-                selectedJurusan = jurusanResult[position]
-            }
-
-            val tingkatanNames = tingkatanOptions.map { it.second }
-            var selectedTingkatan: Int? = null
-            val tingkatanAdapter = ArrayAdapter(this@KelolaKelasActivity, android.R.layout.simple_dropdown_item_1line, tingkatanNames)
-            spinnerTingkatan.setAdapter(tingkatanAdapter)
-            spinnerTingkatan.setOnItemClickListener { _, _, position, _ ->
-                selectedTingkatan = tingkatanOptions[position].first
-            }
-
-            MaterialAlertDialogBuilder(this@KelolaKelasActivity)
-                .setTitle("Tambah Kelas Baru")
-                .setView(dialogView)
-                .setPositiveButton("Simpan") { _, _ ->
-                    val label = etLabel.text.toString().trim()
-                    val part = etPart.text.toString().trim().ifEmpty { null }
-
-                    if (label.isEmpty()) {
-                        Toast.makeText(this@KelolaKelasActivity, "Label kelas wajib diisi", Toast.LENGTH_SHORT).show()
-                        return@setPositiveButton
-                    }
-                    if (selectedJurusan == null) {
-                        Toast.makeText(this@KelolaKelasActivity, "Pilih jurusan", Toast.LENGTH_SHORT).show()
-                        return@setPositiveButton
-                    }
-                    if (selectedTingkatan == null) {
-                        Toast.makeText(this@KelolaKelasActivity, "Pilih tingkatan", Toast.LENGTH_SHORT).show()
-                        return@setPositiveButton
-                    }
-
-                    val request = CreateKelasRequest(
-                        id_jurusan = selectedJurusan!!.id,
-                        tingkatan = selectedTingkatan!!,
-                        label = label,
-                        part = part
-                    )
-
-                    lifecycleScope.launch {
-                        repository.createKelas(token, request).fold(
-                            onSuccess = { message ->
-                                Toast.makeText(this@KelolaKelasActivity, message, Toast.LENGTH_SHORT).show()
-                                loadData()
-                            },
-                            onFailure = { error ->
-                                Toast.makeText(this@KelolaKelasActivity, "Gagal: ${error.message}", Toast.LENGTH_SHORT).show()
-                            }
-                        )
-                    }
-                }
-                .setNegativeButton("Batal", null)
-                .show()
-        }
-    }
 }

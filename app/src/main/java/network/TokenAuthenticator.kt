@@ -2,6 +2,8 @@ package com.xirpl2.SASMobile.network
 
 import android.content.Context
 import android.content.Intent
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import com.xirpl2.SASMobile.MasukActivity
 import com.xirpl2.SASMobile.model.RefreshRequest
@@ -111,10 +113,12 @@ class TokenAuthenticator(private val context: Context) : Authenticator {
         com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(context)
             .edit().clear().apply()
 
-        // Redirect to login screen
+        // Redirect to login screen on the main thread
         val intent = Intent(context, MasukActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
-        context.startActivity(intent)
+        Handler(Looper.getMainLooper()).post {
+            context.startActivity(intent)
+        }
     }
 }

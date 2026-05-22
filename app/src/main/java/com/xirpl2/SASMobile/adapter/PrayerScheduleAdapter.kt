@@ -22,6 +22,7 @@ class PrayerScheduleAdapter(
     private var items: List<PrayerScheduleItem>,
     var canEdit: Boolean = true,
     private val onEditPrayer: (jenisSholat: String) -> Unit,
+    private val onDeletePrayer: (jadwal: JadwalSholatData) -> Unit = {},
     private val onDhuhaKeahlianSwap: (row1: Int, col1: Int, row2: Int, col2: Int) -> Unit,
     private val onSaveDhuhaKeahlian: () -> Unit = {}
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -130,6 +131,7 @@ class PrayerScheduleAdapter(
         private val tvPrayerJurusan: TextView = itemView.findViewById(R.id.tvPrayerJurusan)
         private val tvPrayerClass: TextView = itemView.findViewById(R.id.tvPrayerClass)
         private val btnEdit: ImageView = itemView.findViewById(R.id.btnEditPrayer)
+        private val btnDelete: ImageView = itemView.findViewById(R.id.btnDeletePrayer)
 
         fun bind(item: PrayerScheduleItem.PrayerCard) {
             val jadwal = item.jadwal
@@ -170,8 +172,13 @@ class PrayerScheduleAdapter(
                 btnEdit.setOnClickListener {
                     onEditPrayer(jadwal.jenis_sholat)
                 }
+                btnDelete.visibility = View.VISIBLE
+                btnDelete.setOnClickListener {
+                    onDeletePrayer(jadwal)
+                }
             } else {
                 btnEdit.visibility = View.GONE
+                btnDelete.visibility = View.GONE
             }
         }
     }

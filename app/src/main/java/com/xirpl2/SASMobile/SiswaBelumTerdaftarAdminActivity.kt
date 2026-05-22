@@ -32,6 +32,10 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
     private var searchQuery: String = ""
     private var selectedJurusanId: Int? = null
     private var selectedWaliStaffId: Int? = null
+
+    // ForcedClass: for wali_kelas, auto-filter to their assigned class
+    private var forcedClass: String? = null
+    private var isWaliKelas: Boolean = false
     
     private val searchHandler = android.os.Handler(android.os.Looper.getMainLooper())
     private var searchRunnable: Runnable? = null
@@ -50,6 +54,7 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
 
         initializeViews()
         setupRecyclerView()
+        initForcedClass()
         setupFilters()
         setupDrawerAndSidebar()
         setupMenuIcon()
@@ -95,9 +100,24 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
         rvSiswaBaru.adapter = adapter
     }
 
+    private fun initForcedClass() {
+        val session = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this)
+        val role = session.getString("user_role", "")?.lowercase() ?: ""
+        isWaliKelas = role.contains("wali")
+        if (isWaliKelas) {
+            forcedClass = session.getString("user_kelas", "")?.takeIf { it.isNotBlank() }
+        }
+    }
+
     private fun setupFilters() {
         val token = getAuthToken()
         if (token.isEmpty()) return
+
+        // For wali_kelas: hide Jurusan and Wali Kelas filter dropdowns (forcedClass filtering)
+        if (isWaliKelas) {
+            acJurusan.visibility = View.GONE
+            acWaliKelas.visibility = View.GONE
+        }
 
         // 1. Setup Search with Debounce
         etSearch.addTextChangedListener(object : TextWatcher {
@@ -116,43 +136,47 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
             }
         })
 
-        // 2. Fetch & Populate Jurusan
-        lifecycleScope.launch {
-            try {
-                val response = RetrofitClient.apiService.getJurusanLookup("Bearer $token")
-                if (response.isSuccessful) {
-                    val list = response.body()?.data ?: emptyList()
-                    val options = listOf("Semua Jurusan") + list.map { it.nama }
-                    val spinnerAdapter = ArrayAdapter(this@SiswaBelumTerdaftarAdminActivity, android.R.layout.simple_dropdown_item_1line, options)
-                    acJurusan.setAdapter(spinnerAdapter)
-                    acJurusan.setText(options[0], false)
-                    acJurusan.setOnItemClickListener { _, _, position, _ ->
-                        selectedJurusanId = if (position == 0) null else list[position - 1].id
-                        loadUnregisteredStudents()
+        // 2. Fetch & Populate Jurusan (only for admin)
+        if (!isWaliKelas) {
+            lifecycleScope.launch {
+                try {
+                    val response = RetrofitClient.apiService.getJurusanLookup("Bearer $token")
+                    if (response.isSuccessful) {
+                        val list = response.body()?.data ?: emptyList()
+                        val options = listOf("Semua Jurusan") + list.map { it.nama }
+                        val spinnerAdapter = ArrayAdapter(this@SiswaBelumTerdaftarAdminActivity, android.R.layout.simple_dropdown_item_1line, options)
+                        acJurusan.setAdapter(spinnerAdapter)
+                        acJurusan.setText(options[0], false)
+                        acJurusan.setOnItemClickListener { _, _, position, _ ->
+                            selectedJurusanId = if (position == 0) null else list[position - 1].id
+                            loadUnregisteredStudents()
+                        }
                     }
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
             }
         }
 
-        // 3. Fetch & Populate Wali Kelas (Staff Guru)
-        lifecycleScope.launch {
-            try {
-                val response = RetrofitClient.apiService.getStaffGuruLookup("Bearer $token")
-                if (response.isSuccessful) {
-                    val list = response.body()?.data ?: emptyList()
-                    val options = listOf("Semua Wali") + list.map { it.nama }
-                    val spinnerAdapter = ArrayAdapter(this@SiswaBelumTerdaftarAdminActivity, android.R.layout.simple_dropdown_item_1line, options)
-                    acWaliKelas.setAdapter(spinnerAdapter)
-                    acWaliKelas.setText(options[0], false)
-                    acWaliKelas.setOnItemClickListener { _, _, position, _ ->
-                        selectedWaliStaffId = if (position == 0) null else list[position - 1].id_staff
-                        loadUnregisteredStudents()
+        // 3. Fetch & Populate Wali Kelas (Staff Guru) (only for admin)
+        if (!isWaliKelas) {
+            lifecycleScope.launch {
+                try {
+                    val response = RetrofitClient.apiService.getStaffGuruLookup("Bearer $token")
+                    if (response.isSuccessful) {
+                        val list = response.body()?.data ?: emptyList()
+                        val options = listOf("Semua Wali") + list.map { it.nama }
+                        val spinnerAdapter = ArrayAdapter(this@SiswaBelumTerdaftarAdminActivity, android.R.layout.simple_dropdown_item_1line, options)
+                        acWaliKelas.setAdapter(spinnerAdapter)
+                        acWaliKelas.setText(options[0], false)
+                        acWaliKelas.setOnItemClickListener { _, _, position, _ ->
+                            selectedWaliStaffId = if (position == 0) null else list[position - 1].id_staff
+                            loadUnregisteredStudents()
+                        }
                     }
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
             }
         }
     }
@@ -179,10 +203,17 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
                     showLoading(false)
                     if (response.isSuccessful) {
                         val body = response.body()
-                        val students = body?.data ?: emptyList()
+                        val allStudents = body?.data ?: emptyList()
+
+                        // ForcedClass: filter to only the wali_kelas's assigned class (client-side)
+                        val students = if (forcedClass != null) {
+                            allStudents.filter { it.kelas == forcedClass }
+                        } else {
+                            allStudents
+                        }
                         adapter.submitList(students)
 
-                        val total = body?.pagination?.total_items ?: students.size
+                        val total = body?.pagination?.total_items ?: allStudents.size
                         tvCountInfo.text = "Menampilkan ${students.size} dari $total data"
 
                         layoutEmpty.visibility = if (students.isEmpty()) View.VISIBLE else View.GONE

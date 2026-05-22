@@ -71,10 +71,12 @@ class BerandaActivity : BaseActivity() {
             Toast.makeText(this, "Sesi berakhir, silakan login kembali", Toast.LENGTH_SHORT).show()
             return
         }
-        
-        loadStatistics()
+
+        // Statistics are derived from the student's own history response (statistik field),
+        // matching the desktop which uses historyWrapper.statistik from getStudentAttendanceHistory.
+        // No separate /statistics call needed — that endpoint returns global school-wide data.
         loadRiwayatFromAPI()
-        
+
         lifecycleScope.launch {
             loadJadwalSholatFromAPI(token)
         }
@@ -308,12 +310,18 @@ class BerandaActivity : BaseActivity() {
     }
     
     private suspend fun loadJadwalSholatFromAPI(token: String) {
+        // Server /today returns ALL prayers for the day (Subuh, Dzuhur, Ashar, Maghrib, Isya, Dhuha, Jumat).
+        // Client-side gender filter: on Friday, male sees Jumat (not Dzuhur), female sees Dzuhur (not Jumat).
+        // Status (AKAN_DATANG/SEDANG_BERLANGSUNG/SELESAI) is computed client-side — server doesn't provide it.
+        val jenisKelamin = getJenisKelaminFromStorage()
+        val allowedByGender = JadwalSholatHelper.getJadwalSholatByGender(jenisKelamin)
+
         repository.getJadwalSholatToday(token).fold(
             onSuccess = { jadwalDataList ->
-                
+
                 val jadwalList = jadwalDataList
                     .filter { data ->
-                        JadwalSholatHelper.ALLOWED_PRAYERS.any { it.equals(data.jenis_sholat, ignoreCase = true) }
+                        allowedByGender.any { it.equals(data.jenis_sholat, ignoreCase = true) }
                     }
                     .map { data ->
                     val status = JadwalSholatHelper.getStatusSholat(data.jam_mulai, data.jam_selesai)
@@ -339,28 +347,6 @@ class BerandaActivity : BaseActivity() {
                 Log.w(TAG, "Failed to load jadwal sholat: ${error.message}")
             }
         )
-    }
-    
-    private fun loadStatistics() {
-        val token = getAuthToken()
-        if (token.isEmpty()) return
-        
-        val today = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(java.util.Date())
-
-        lifecycleScope.launch {
-            repository.getStatistics(token, today).fold(
-                onSuccess = { statistics ->
-                    runOnUiThread {
-                        tvTotalValue.text = statistics.total_absen_hari_ini.toString()
-                        tvAlphaValue.text = statistics.total_alpha_hari_ini.toString()
-                        tvIzinSakitValue.text = (statistics.total_izin_hari_ini + statistics.total_sakit_hari_ini).toString()
-                    }
-                },
-                onFailure = { error ->
-                    Log.w(TAG, "Failed to load statistics: ${error.message}")
-                }
-            )
-        }
     }
     
     private fun getAuthToken(): String {
@@ -431,19 +417,30 @@ class BerandaActivity : BaseActivity() {
     
     private fun loadRiwayatFromAPI() {
         val token = getAuthToken()
-        
+
         if (token.isEmpty()) {
             return
         }
-        
+
         lifecycleScope.launch {
             repository.getHistorySiswa(token, 0).fold(
                 onSuccess = { historyData ->
-                    
+
+                    // Update stat cards from the student's own statistik (matching desktop:
+                    // statsData = historyWrapper.statistik from getStudentAttendanceHistory)
+                    val stats = historyData.statistik
+                    if (stats != null) {
+                        runOnUiThread {
+                            tvTotalValue.text = (if (stats.total_hadir > 0) stats.total_hadir else stats.total_absensi).toString()
+                            tvAlphaValue.text = stats.total_alpha.toString()
+                            tvIzinSakitValue.text = (stats.total_izin + stats.total_sakit).toString()
+                        }
+                    }
+
                     val absensiList = historyData.absensi ?: emptyList()
 
                     val riwayatList = absensiList.map { data ->
-                        val status = when (data.status.uppercase()) {
+                        val status = when ((data.status ?: "").uppercase()) {
                             "HADIR" -> StatusAbsensi.HADIR
                             "ALPHA" -> StatusAbsensi.ALPHA
                             "SAKIT" -> StatusAbsensi.SAKIT
@@ -453,7 +450,7 @@ class BerandaActivity : BaseActivity() {
 
                         RiwayatAbsensi(
                             tanggal = formatTanggal(data.tanggal),
-                            namaSholat = data.getPrayerName(),
+                            namaSholat = data.getPrayerName() ?: "-",
                             status = status,
                             waktuAbsen = formatWaktu(data.waktu_absen)
                         )
@@ -510,6 +507,7 @@ class BerandaActivity : BaseActivity() {
     
     override fun onPause() {
         super.onPause()
+        isDataLoaded = false
         notificationCounterBroadcast?.let {
             try {
                 unregisterReceiver(it)

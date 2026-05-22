@@ -217,18 +217,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- FAB Tambah Kelas -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabAddKelas"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="24dp"
-        android:src="@drawable/ic_add"
-        android:contentDescription="Tambah Kelas"
-        app:backgroundTint="@color/blue_theme"
-        app:tint="@android:color/white" />
-
     <include
         android:id="@+id/navigationView"
         layout="@layout/sidebar_admin"

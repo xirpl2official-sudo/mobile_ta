@@ -36,15 +36,6 @@
         android:textSize="12sp" />
 
     <TextView
-        android:id="@+id/tvJenisKelamin"
-        android:layout_width="40dp"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:paddingHorizontal="4dp"
-        android:textColor="#333333"
-        android:textSize="12sp" />
-
-    <TextView
         android:id="@+id/tvKelas"
         android:layout_width="60dp"
         android:layout_height="wrap_content"
@@ -67,7 +58,6 @@
         android:id="@+id/tvWaliKelas"
         android:layout_width="120dp"
         android:layout_height="wrap_content"
-        android:text="-"
         android:gravity="center"
         android:paddingHorizontal="8dp"
         android:textColor="#333333"

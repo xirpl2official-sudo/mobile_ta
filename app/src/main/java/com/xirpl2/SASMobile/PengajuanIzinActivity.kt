@@ -51,12 +51,6 @@ class PengajuanIzinActivity : BaseActivity() {
     private lateinit var tvPhotoLabel: TextView
     private var selectedPhotoUri: Uri? = null
 
-    // Kuota
-    private lateinit var progressIzin: ProgressBar
-    private lateinit var progressSakit: ProgressBar
-    private lateinit var tvKuotaIzin: TextView
-    private lateinit var tvKuotaSakit: TextView
-
     // Riwayat
     private lateinit var rvRiwayatIzin: RecyclerView
     private lateinit var progressRiwayat: ProgressBar
@@ -88,7 +82,6 @@ class PengajuanIzinActivity : BaseActivity() {
         setupBackButton()
         setupCancelButton()
         setupPhotoUpload()
-        loadKuotaIzin()
         loadRiwayatIzin()
     }
 
@@ -114,12 +107,6 @@ class PengajuanIzinActivity : BaseActivity() {
         ivPhotoPreview = findViewById(R.id.ivPhotoPreview)
         btnRemovePhoto = findViewById(R.id.btnRemovePhoto)
         tvPhotoLabel = findViewById(R.id.tvPhotoLabel)
-
-        // Kuota views
-        progressIzin = findViewById(R.id.progressIzin)
-        progressSakit = findViewById(R.id.progressSakit)
-        tvKuotaIzin = findViewById(R.id.tvKuotaIzin)
-        tvKuotaSakit = findViewById(R.id.tvKuotaSakit)
 
         // Riwayat views
         rvRiwayatIzin = findViewById(R.id.rvRiwayatIzin)
@@ -358,7 +345,6 @@ class PengajuanIzinActivity : BaseActivity() {
                         Toast.LENGTH_LONG
                     ).show()
                     resetForm()
-                    loadKuotaIzin()
                     loadRiwayatIzin()
                 } else {
                     val errorMsg = when (response.code()) {
@@ -411,26 +397,6 @@ class PengajuanIzinActivity : BaseActivity() {
         layoutPhotoPreview.visibility = View.GONE
         tvPhotoLabel.text = "BUKTI FOTO (OPSIONAL)"
         tvPhotoLabel.setTextColor(getColor(R.color.slate_500))
-    }
-
-    private fun loadKuotaIzin() {
-        val token = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this)
-            .getString("auth_token", "") ?: ""
-
-        lifecycleScope.launch {
-            val result = repository.getKuotaIzin(token)
-            result.onSuccess { kuota ->
-                val izinPercent = if (kuota.izin.total > 0) (kuota.izin.terpakai * 100 / kuota.izin.total) else 0
-                val sakitPercent = if (kuota.sakit.total > 0) (kuota.sakit.terpakai * 100 / kuota.sakit.total) else 0
-                progressIzin.progress = izinPercent
-                progressSakit.progress = sakitPercent
-                tvKuotaIzin.text = "${kuota.izin.terpakai} / ${kuota.izin.total} Hari"
-                tvKuotaSakit.text = "${kuota.sakit.terpakai} / ${kuota.sakit.total} Hari"
-            }
-            result.onFailure {
-                // Keep default values on failure
-            }
-        }
     }
 
     private fun loadRiwayatIzin() {

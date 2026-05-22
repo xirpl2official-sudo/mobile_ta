@@ -228,11 +228,7 @@
     <string name="formulir_pengajuan">Formulir Pengajuan</string>
     <string name="formulir_subtitle">Mohon isi data perizinan dengan lengkap dan benar.</string>
     <string name="izin_personal">Izin</string>
-    <string name="sisa_kuota_izin">Sisa Kuota Izin</string>
-    <string name="izin_personal_label">Izin (Personal)</string>
     <string name="sakit_label">Sakit</string>
-    <string name="kuota_izin_value">2 / 5 Hari</string>
-    <string name="sakit_terpakai">3 Hari Terpakai</string>
     <string name="riwayat_terakhir">Riwayat Terakhir</string>
     <string name="belum_ada_pengajuan">Belum ada pengajuan izin</string>
     <string name="gagal_memuat_riwayat">Gagal memuat riwayat</string>

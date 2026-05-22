@@ -246,7 +246,6 @@
                             android:text="@string/NIS"
                             android:textColor="@android:color/white"
                             android:textSize="12sp"
-                            android:textStyle="bold"
                             android:paddingHorizontal="8dp"
                             android:gravity="center" />
 
@@ -256,19 +255,8 @@
                             android:text="@string/Nama"
                             android:textColor="@android:color/white"
                             android:textSize="12sp"
-                            android:textStyle="bold"
                             android:paddingHorizontal="8dp"
                             android:gravity="start" />
-
-                        <TextView
-                            android:layout_width="40dp"
-                            android:layout_height="wrap_content"
-                            android:text="@string/JK"
-                            android:textColor="@android:color/white"
-                            android:textSize="12sp"
-                            android:textStyle="bold"
-                            android:paddingHorizontal="4dp"
-                            android:gravity="center" />
 
                         <TextView
                             android:layout_width="60dp"
@@ -276,7 +264,6 @@
                             android:text="@string/Kelas"
                             android:textColor="@android:color/white"
                             android:textSize="12sp"
-                            android:textStyle="bold"
                             android:paddingHorizontal="4dp"
                             android:gravity="center" />
 
@@ -286,17 +273,15 @@
                             android:text="@string/Jurusan"
                             android:textColor="@android:color/white"
                             android:textSize="12sp"
-                            android:textStyle="bold"
                             android:paddingHorizontal="8dp"
                             android:gravity="center" />
 
                         <TextView
                             android:layout_width="120dp"
                             android:layout_height="wrap_content"
-                            android:text="Keterangan"
+                            android:text="Wali Kelas"
                             android:textColor="@android:color/white"
                             android:textSize="12sp"
-                            android:textStyle="bold"
                             android:paddingHorizontal="8dp"
                             android:gravity="center" />
 
@@ -306,7 +291,6 @@
                             android:text="@string/Aksi"
                             android:textColor="@android:color/white"
                             android:textSize="12sp"
-                            android:textStyle="bold"
                             android:paddingHorizontal="8dp"
                             android:gravity="center" />
 

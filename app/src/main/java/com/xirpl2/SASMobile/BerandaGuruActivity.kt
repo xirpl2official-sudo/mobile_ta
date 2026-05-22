@@ -102,7 +102,7 @@ class BerandaGuruActivity : BaseAdminActivity() {
         lifecycleScope.launch {
             repository.getStatistics(token, today).fold(
                 onSuccess = { stats ->
-                    runOnUiThread {
+                    if (!isFinishing && !isDestroyed) {
                         tvTotalSiswaValue.text = stats.total_siswa.toString()
                         tvHadirHariIniValue.text = stats.total_kehadiran_hari_ini.toString()
                         val izinSakit = stats.total_izin_hari_ini + stats.total_sakit_hari_ini
@@ -125,32 +125,31 @@ class BerandaGuruActivity : BaseAdminActivity() {
         if (token.isEmpty()) return
 
         lifecycleScope.launch {
-            repository.getJadwalSholat(token).fold(
-                onSuccess = { list ->
-                    val upcomingPrayer = JadwalSholatHelper.getUpcomingPrayerFromList(list)
-                    runOnUiThread {
-                        if (upcomingPrayer != null) {
-                            tvNamaSholat.text = upcomingPrayer.namaSholat
-                            tvWaktuSholat.text = "Waktu : ${upcomingPrayer.jamMulai} - ${upcomingPrayer.jamSelesai}"
+            repository.getClosestPrayerSchedule(token).fold(
+                onSuccess = { closestData ->
+                    if (!isFinishing && !isDestroyed) {
+                        val activePrayer = closestData.current ?: closestData.next
+                        val isCurrentlyActive = closestData.current != null
 
-                            when (upcomingPrayer.status) {
-                                com.xirpl2.SASMobile.model.StatusSholat.SEDANG_BERLANGSUNG -> {
-                                    tvStatusBadge.visibility = View.VISIBLE
-                                    tvStatusBadge.text = "Berlangsung"
-                                    tvStatusBadge.setBackgroundResource(R.drawable.bg_badge_berlangsung)
-                                }
-                                com.xirpl2.SASMobile.model.StatusSholat.AKAN_DATANG -> {
-                                    tvStatusBadge.visibility = View.VISIBLE
-                                    tvStatusBadge.text = "Akan Datang"
-                                    tvStatusBadge.setBackgroundResource(R.drawable.bg_badge_akandatang)
-                                }
-                                else -> {
-                                    tvStatusBadge.visibility = View.GONE
-                                }
+                        if (activePrayer != null && activePrayer.waktuSholat != null) {
+                            val namaSholat = activePrayer.waktuSholat.jenisSholat?.namaJenis ?: "Sholat"
+                            val jamMulai = activePrayer.waktuSholat.waktuMulai
+                            val jamSelesai = activePrayer.waktuSholat.waktuSelesai
+
+                            tvNamaSholat.text = namaSholat
+                            tvWaktuSholat.text = "Waktu : $jamMulai - $jamSelesai"
+
+                            if (isCurrentlyActive) {
+                                tvStatusBadge.visibility = View.VISIBLE
+                                tvStatusBadge.text = "Berlangsung"
+                                tvStatusBadge.setBackgroundResource(R.drawable.bg_badge_berlangsung)
+                            } else {
+                                tvStatusBadge.visibility = View.VISIBLE
+                                tvStatusBadge.text = "Akan Datang"
+                                tvStatusBadge.setBackgroundResource(R.drawable.bg_badge_akandatang)
                             }
 
-                            val isDhuhaActive = upcomingPrayer.namaSholat.equals("Dhuha", ignoreCase = true) &&
-                                    upcomingPrayer.status == com.xirpl2.SASMobile.model.StatusSholat.SEDANG_BERLANGSUNG
+                            val isDhuhaActive = namaSholat.equals("Dhuha", ignoreCase = true) && isCurrentlyActive
                             cardJadwalDhuha.visibility = if (isDhuhaActive) View.VISIBLE else View.GONE
                             if (isDhuhaActive) {
                                 loadDhuhaSchedule()
@@ -164,6 +163,12 @@ class BerandaGuruActivity : BaseAdminActivity() {
                     }
                 },
                 onFailure = { error ->
+                    Log.w(TAG, "Failed to load jadwal sholat: ${error.message}")
+                    if (!isFinishing && !isDestroyed) {
+                        tvNamaSholat.text = "-"
+                        tvWaktuSholat.text = "Gagal memuat jadwal"
+                        tvStatusBadge.visibility = View.GONE
+                    }
                 }
             )
         }
@@ -176,7 +181,7 @@ class BerandaGuruActivity : BaseAdminActivity() {
         lifecycleScope.launch {
             repository.getJadwalDhuhaKeahlian(token).fold(
                 onSuccess = { data ->
-                    runOnUiThread {
+                    if (!isFinishing && !isDestroyed) {
                         dhuhaScheduleAdapter = DhuhaScheduleAdapter(data)
                         rvDhuhaSchedule.apply {
                             layoutManager = LinearLayoutManager(this@BerandaGuruActivity)
@@ -216,13 +221,15 @@ class BerandaGuruActivity : BaseAdminActivity() {
                 if (response.isSuccessful) {
                     val count = response.body()?.pagination?.totalRecords ?: 0
                     runOnUiThread {
-                        val tvNotifBadge = findViewById<TextView>(R.id.tvNotifBadge)
-                        if (tvNotifBadge != null) {
-                            if (count > 0) {
-                                tvNotifBadge.visibility = android.view.View.VISIBLE
-                                tvNotifBadge.text = if (count > 99) "99+" else count.toString()
-                            } else {
-                                tvNotifBadge.visibility = android.view.View.GONE
+                        if (!isFinishing && !isDestroyed) {
+                            val tvNotifBadge = findViewById<TextView>(R.id.tvNotifBadge)
+                            if (tvNotifBadge != null) {
+                                if (count > 0) {
+                                    tvNotifBadge.visibility = android.view.View.VISIBLE
+                                    tvNotifBadge.text = if (count > 99) "99+" else count.toString()
+                                } else {
+                                    tvNotifBadge.visibility = android.view.View.GONE
+                                }
                             }
                         }
                     }
@@ -240,10 +247,10 @@ class BerandaGuruActivity : BaseAdminActivity() {
         lifecycleScope.launch {
             repository.getDhuhaToday(token).fold(
                 onSuccess = { dhuhaData ->
-                    runOnUiThread {
+                    if (!isFinishing && !isDestroyed) {
                         val safeData = dhuhaData ?: emptyList()
                         jurusanAdapter = JurusanAdapter(safeData)
-                        
+
                         rvJurusan.apply {
                             layoutManager = LinearLayoutManager(this@BerandaGuruActivity)
                             adapter = jurusanAdapter
@@ -252,10 +259,10 @@ class BerandaGuruActivity : BaseAdminActivity() {
                     }
                 },
                 onFailure = { error ->
-                    
-                    runOnUiThread {
+
+                    if (!isFinishing && !isDestroyed) {
                         jurusanAdapter = JurusanAdapter(emptyList<DhuhaJurusanData>())
-                        
+
                         rvJurusan.apply {
                             layoutManager = LinearLayoutManager(this@BerandaGuruActivity)
                             adapter = jurusanAdapter

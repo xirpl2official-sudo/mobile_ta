@@ -49,6 +49,8 @@ class SiswaDetailDialogFragment : DialogFragment() {
         }
         view.findViewById<TextView>(R.id.tvKelas).text = student.kelas.ifEmpty { "-" }
         view.findViewById<TextView>(R.id.tvJurusan).text = student.jurusan.ifEmpty { "-" }
+        view.findViewById<TextView>(R.id.tvWaliKelas).text = student.waliKelasName?.ifEmpty { "-" } ?: "-"
+        view.findViewById<TextView>(R.id.tvStatusAkademik).text = student.statusAkademik?.ifEmpty { "-" } ?: "-"
 
         val tvDeviceStatus = view.findViewById<TextView>(R.id.tvDeviceStatus)
         val status = student.deviceStatus?.lowercase()

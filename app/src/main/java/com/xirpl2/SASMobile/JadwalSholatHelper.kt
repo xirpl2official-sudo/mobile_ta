@@ -50,7 +50,7 @@ object JadwalSholatHelper {
         }
     }
     
-    fun getIndonesianDay(calendar: Calendar = Calendar.getInstance()): String {
+    fun getIndonesianDay(calendar: Calendar = Calendar.getInstance(java.util.TimeZone.getTimeZone("Asia/Jakarta"))): String {
         return when (calendar.get(Calendar.DAY_OF_WEEK)) {
             Calendar.MONDAY -> "Senin"
             Calendar.TUESDAY -> "Selasa"
@@ -91,7 +91,7 @@ object JadwalSholatHelper {
     
     fun getStatusSholat(jamMulai: String?, jamSelesai: String?): StatusSholat {
         if (jamMulai.isNullOrBlank() || jamSelesai.isNullOrBlank()) return StatusSholat.SELESAI
-        
+
         return try {
             val now = Calendar.getInstance()
             val currentHour = now.get(Calendar.HOUR_OF_DAY)
@@ -100,16 +100,19 @@ object JadwalSholatHelper {
 
             val startParts = jamMulai.split(":")
             if (startParts.size < 2) return StatusSholat.SELESAI
-            
+
             val endParts = jamSelesai.split(":")
             if (endParts.size < 2) return StatusSholat.SELESAI
-            
+
             val startMinutes = startParts[0].toIntOrNull()?.let { it * 60 + (startParts[1].toIntOrNull() ?: 0) } ?: 0
             val endMinutes = endParts[0].toIntOrNull()?.let { it * 60 + (endParts[1].toIntOrNull() ?: 0) } ?: 0
 
+            // Tampilkan jadwal 30 menit sebelum waktu_mulai
+            val adjustedStart = (startMinutes - 30).coerceAtLeast(0)
+
             when {
-                currentTimeInMinutes < startMinutes -> StatusSholat.AKAN_DATANG
-                currentTimeInMinutes in startMinutes..endMinutes -> StatusSholat.SEDANG_BERLANGSUNG
+                currentTimeInMinutes < adjustedStart -> StatusSholat.AKAN_DATANG
+                currentTimeInMinutes in adjustedStart..endMinutes -> StatusSholat.SEDANG_BERLANGSUNG
                 else -> StatusSholat.SELESAI
             }
         } catch (e: Exception) {
@@ -175,22 +178,23 @@ object JadwalSholatHelper {
             } else 0
         }
 
-        // 3. Find first upcoming
+        // 3. Find first upcoming (30 menit sebelum waktu_mulai)
         val upcoming = sortedList.find {
             val parts = it.jam_mulai.split(":")
             if (parts.size >= 2) {
                 val startMinutes = (parts[0].toIntOrNull() ?: 0) * 60 + (parts[1].toIntOrNull() ?: 0)
-                startMinutes > currentTimeInMinutes
+                val adjustedStart = (startMinutes - 30).coerceAtLeast(0)
+                adjustedStart > currentTimeInMinutes
             } else false
         }
 
-        // 4. Fallback to first schedule (tomorrow or later) if all passed
-        val nextSchedule = upcoming ?: sortedList.first()
+        // 4. No upcoming prayer found — all have passed
+        if (upcoming == null) return null
 
         return JadwalSholat(
-            namaSholat = nextSchedule.jenis_sholat,
-            jamMulai = nextSchedule.jam_mulai,
-            jamSelesai = nextSchedule.jam_selesai,
+            namaSholat = upcoming.jenis_sholat,
+            jamMulai = upcoming.jam_mulai,
+            jamSelesai = upcoming.jam_selesai,
             status = StatusSholat.AKAN_DATANG
         )
     }

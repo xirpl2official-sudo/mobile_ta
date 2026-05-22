@@ -79,7 +79,6 @@ class SiswaAdapter(
     class SiswaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val tvNis: TextView = itemView.findViewById(R.id.tvNis)
         private val tvNama: TextView = itemView.findViewById(R.id.tvNama)
-        private val tvJenisKelamin: TextView? = itemView.findViewById(R.id.tvJenisKelamin)
         private val tvKelas: TextView = itemView.findViewById(R.id.tvKelas)
         private val tvJurusan: TextView? = itemView.findViewById(R.id.tvJurusan)
         private val tvWaliKelas: TextView? = itemView.findViewById(R.id.tvWaliKelas)
@@ -125,14 +124,9 @@ class SiswaAdapter(
                 }
             }
 
-            tvJenisKelamin?.text = if (siswa.jenis_kelamin.isNotEmpty()) {
-                siswa.jenis_kelamin.take(1).uppercase()
-            } else {
-                "-"
-            }
             tvKelas.text = siswa.kelas
             tvJurusan?.text = siswa.jurusan
-            tvWaliKelas?.text = "-" // Placeholder for Wali Kelas from spec
+            tvWaliKelas?.text = siswa.waliKelasName?.ifEmpty { "-" } ?: "-"
 
             val detailButton = btnDetailRow ?: btnDetailSiswa
             detailButton?.setOnClickListener { onDetailClick(siswa) }

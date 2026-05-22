@@ -17,36 +17,6 @@
         android:padding="@dimen/card_padding"
         android:gravity="center_vertical">
 
-        
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            
-            <TextView
-                android:id="@+id/tvNamaSholat"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Dhuha"
-                android:textColor="#000000"
-                android:textSize="@dimen/text_nama_sholat"
-                android:textStyle="bold" />
-
-            
-            <TextView
-                android:id="@+id/tvJamSholat"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="07:00 - 08:00"
-                android:textColor="#666666"
-                android:textSize="@dimen/text_jam_sholat"
-                android:layout_marginTop="@dimen/spacing_tiny" />
-
-        </LinearLayout>
-
-        
         <TextView
             android:id="@+id/textStatusSholat"
             android:layout_width="wrap_content"
@@ -57,7 +27,34 @@
             android:background="@drawable/bg_status_gray"
             android:paddingHorizontal="@dimen/status_padding_horizontal"
             android:paddingVertical="@dimen/status_padding_vertical"
-            android:gravity="center" />
+            android:gravity="center"
+            android:layout_marginEnd="@dimen/spacing_small" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvNamaSholat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dhuha"
+                android:textColor="#000000"
+                android:textSize="@dimen/text_nama_sholat"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvJamSholat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="07:00 - 08:00"
+                android:textColor="#666666"
+                android:textSize="@dimen/text_jam_sholat"
+                android:layout_marginTop="@dimen/spacing_tiny" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

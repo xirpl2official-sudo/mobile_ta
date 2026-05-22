@@ -162,6 +162,46 @@
                         android:textSize="15sp" />
                 </LinearLayout>
 
+                <!-- Wali Kelas -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Wali Kelas"
+                        android:textColor="#9CA3AF"
+                        android:textSize="12sp" />
+                    <TextView
+                        android:id="@+id/tvWaliKelas"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#1F2937"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <!-- Status Akademik -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Status Akademik"
+                        android:textColor="#9CA3AF"
+                        android:textSize="12sp" />
+                    <TextView
+                        android:id="@+id/tvStatusAkademik"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#1F2937"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
                 <!-- Status Device -->
                 <LinearLayout
                     android:layout_width="match_parent"
