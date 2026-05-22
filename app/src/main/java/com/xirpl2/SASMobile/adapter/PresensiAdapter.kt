@@ -6,14 +6,27 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.xirpl2.SASMobile.R
 import com.xirpl2.SASMobile.model.AbsensiStaffItem
 import java.util.Locale
 
-class PresensiAdapter(
-    private var items: List<AbsensiStaffItem> = emptyList()
-) : RecyclerView.Adapter<PresensiAdapter.PresensiViewHolder>() {
+class PresensiAdapter :
+    ListAdapter<AbsensiStaffItem, PresensiAdapter.PresensiViewHolder>(DIFF_CALLBACK) {
+
+    companion object {
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<AbsensiStaffItem>() {
+            override fun areItemsTheSame(oldItem: AbsensiStaffItem, newItem: AbsensiStaffItem): Boolean {
+                return oldItem.id_absen == newItem.id_absen
+            }
+
+            override fun areContentsTheSame(oldItem: AbsensiStaffItem, newItem: AbsensiStaffItem): Boolean {
+                return oldItem == newItem
+            }
+        }
+    }
 
     class PresensiViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvNo: TextView = itemView.findViewById(R.id.tvNo)
@@ -32,7 +45,7 @@ class PresensiAdapter(
     }
 
     override fun onBindViewHolder(holder: PresensiViewHolder, position: Int) {
-        val item = items[position]
+        val item = getItem(position)
 
         holder.tvNo.text = (position + 1).toString()
         holder.tvNis.text = item.nis ?: ""
@@ -73,7 +86,7 @@ class PresensiAdapter(
 
     private fun showDetailDialog(context: android.content.Context, item: AbsensiStaffItem) {
         val status = item.status?.lowercase() ?: "alpha"
-        
+
         val (title, detailText) = when (status) {
             "izin", "sakit" -> {
                 val text = if (item.deskripsi.isNullOrBlank()) {
@@ -94,15 +107,12 @@ class PresensiAdapter(
             .setPositiveButton("Tutup", null)
             .show()
     }
-    override fun getItemCount(): Int = items.size
 
     fun updateData(newItems: List<AbsensiStaffItem>) {
-        items = newItems
-        notifyDataSetChanged()
+        submitList(newItems)
     }
 
     fun clearData() {
-        items = emptyList()
-        notifyDataSetChanged()
+        submitList(emptyList())
     }
 }

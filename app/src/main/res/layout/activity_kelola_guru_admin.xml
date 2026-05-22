@@ -84,14 +84,15 @@
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:text="SMK Negeri 2 Singosari"
-                    android:textColor="#DBEAFE"
+                    android:textColor="#FFFFFF"
                     android:textSize="12sp" />
             </LinearLayout>
 
             <ImageView
                 android:id="@+id/btnMore"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:padding="12dp"
                 android:contentDescription="Menu lainnya"
                 android:src="@drawable/ic_more_vert"
                 app:layout_constraintBottom_toBottomOf="parent"

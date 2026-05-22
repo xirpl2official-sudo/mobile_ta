@@ -1,6 +1,7 @@
 package com.xirpl2.SASMobile
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -12,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.tabs.TabLayout
 import com.xirpl2.SASMobile.adapter.DeviceAdapter
-import com.xirpl2.SASMobile.model.DeviceChangeRequestItem
+import com.xirpl2.SASMobile.adapter.DeviceListItem
 import com.xirpl2.SASMobile.repository.DeviceRepository
 import kotlinx.coroutines.launch
 
@@ -25,6 +26,7 @@ class AdminDeviceManagementActivity : BaseAdminActivity() {
     private lateinit var rvDevices: RecyclerView
     private lateinit var progressBar: ProgressBar
     private lateinit var tvEmpty: TextView
+    private lateinit var emptyStateContainer: View
     private lateinit var adapter: DeviceAdapter
 
     private val repository = DeviceRepository()
@@ -53,15 +55,14 @@ class AdminDeviceManagementActivity : BaseAdminActivity() {
         rvDevices = findViewById(R.id.rvDevices)
         progressBar = findViewById(R.id.progressBar)
         tvEmpty = findViewById(R.id.tvEmpty)
+        emptyStateContainer = findViewById(R.id.emptyState)
 
         toolbar.setNavigationOnClickListener { openSidebar() }
     }
 
     private fun setupRecyclerView() {
-        adapter = DeviceAdapter(emptyList()) { item, action ->
-            if (item is DeviceChangeRequestItem) {
-                processRequest(item.id, action)
-            }
+        adapter = DeviceAdapter { item, action ->
+            processRequest(item.item.id, action)
         }
         rvDevices.layoutManager = LinearLayoutManager(this)
         rvDevices.adapter = adapter
@@ -89,14 +90,16 @@ class AdminDeviceManagementActivity : BaseAdminActivity() {
                     onSuccess = { devices ->
                         runOnUiThread {
                             showLoading(false)
-                            adapter.updateData(devices)
-                            tvEmpty.visibility = if (devices.isEmpty()) View.VISIBLE else View.GONE
+                            val items = devices.map { DeviceListItem.Device(it) }
+                            adapter.updateData(items)
+                            emptyStateContainer.visibility = if (items.isEmpty()) View.VISIBLE else View.GONE
                         }
                     },
                     onFailure = { error ->
                         runOnUiThread {
                             showLoading(false)
-                            Toast.makeText(this@AdminDeviceManagementActivity, error.message, Toast.LENGTH_SHORT).show()
+                            Log.e("AdminDeviceManagement", "Request failed", error)
+                            Toast.makeText(this@AdminDeviceManagementActivity, "Terjadi kesalahan, silakan coba lagi", Toast.LENGTH_SHORT).show()
                         }
                     }
                 )
@@ -105,14 +108,16 @@ class AdminDeviceManagementActivity : BaseAdminActivity() {
                     onSuccess = { requests ->
                         runOnUiThread {
                             showLoading(false)
-                            adapter.updateData(requests)
-                            tvEmpty.visibility = if (requests.isEmpty()) View.VISIBLE else View.GONE
+                            val items = requests.map { DeviceListItem.ChangeRequest(it) }
+                            adapter.updateData(items)
+                            emptyStateContainer.visibility = if (items.isEmpty()) View.VISIBLE else View.GONE
                         }
                     },
                     onFailure = { error ->
                         runOnUiThread {
                             showLoading(false)
-                            Toast.makeText(this@AdminDeviceManagementActivity, error.message, Toast.LENGTH_SHORT).show()
+                            Log.e("AdminDeviceManagement", "Request failed", error)
+                            Toast.makeText(this@AdminDeviceManagementActivity, "Terjadi kesalahan, silakan coba lagi", Toast.LENGTH_SHORT).show()
                         }
                     }
                 )
@@ -134,7 +139,8 @@ class AdminDeviceManagementActivity : BaseAdminActivity() {
                 onFailure = { error ->
                     runOnUiThread {
                         showLoading(false)
-                        Toast.makeText(this@AdminDeviceManagementActivity, error.message, Toast.LENGTH_SHORT).show()
+                        Log.e("AdminDeviceManagement", "Process request failed", error)
+                        Toast.makeText(this@AdminDeviceManagementActivity, "Terjadi kesalahan, silakan coba lagi", Toast.LENGTH_SHORT).show()
                     }
                 }
             )
@@ -144,6 +150,6 @@ class AdminDeviceManagementActivity : BaseAdminActivity() {
     private fun showLoading(isLoading: Boolean) {
         progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
         rvDevices.visibility = if (isLoading) View.GONE else View.VISIBLE
-        if (isLoading) tvEmpty.visibility = View.GONE
+        if (isLoading) emptyStateContainer.visibility = View.GONE
     }
 }

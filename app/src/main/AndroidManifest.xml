@@ -6,13 +6,14 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
 
     <application
         android:name=".SASMobileApp"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
@@ -21,7 +22,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SAS_Mobile"
-        android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
             android:launchMode="singleTop"
@@ -146,6 +146,10 @@
         <activity
             android:launchMode="singleTop"
             android:name=".StudentQRActivity"
+            android:exported="false" />
+        <activity
+            android:launchMode="singleTop"
+            android:name=".StudentPromotionActivity"
             android:exported="false" />
     </application>
 

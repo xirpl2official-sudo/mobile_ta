@@ -1,7 +1,6 @@
 package com.xirpl2.SASMobile
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -9,27 +8,21 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
-import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.ImageView
-import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import com.xirpl2.SASMobile.model.ChangePasswordRequest
 import com.xirpl2.SASMobile.model.DeviceChangeRequestBody
-import com.xirpl2.SASMobile.model.UserProfile
 import com.xirpl2.SASMobile.network.RetrofitClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
-import java.io.FileOutputStream
 
 class PengaturanAkunActivity : BaseActivity() {
 
@@ -54,8 +47,7 @@ class PengaturanAkunActivity : BaseActivity() {
             val imageUri = result.data?.data
             if (imageUri != null) {
                 selectedImageUri = imageUri
-                
-                Toast.makeText(this, "Foto dipilih (preview segera menyusul)", Toast.LENGTH_SHORT).show()
+                showPhotoPreview(imageUri)
             }
         }
     }
@@ -66,11 +58,8 @@ class PengaturanAkunActivity : BaseActivity() {
 
         
         initializeViews()
-        
-        
-        setupJenisKelaminSpinner()
-        
-        
+
+
         loadUserDataFromAPI()
         
         
@@ -86,10 +75,6 @@ class PengaturanAkunActivity : BaseActivity() {
         tvJenisKelamin = findViewById(R.id.tvJenisKelamin)
         etEmail = findViewById(R.id.etEmail)
         tvChangeEmail = findViewById(R.id.tvChangeEmail)
-    }
-
-    private fun setupJenisKelaminSpinner() {
-        
     }
 
     private fun setupListeners() {
@@ -148,7 +133,7 @@ class PengaturanAkunActivity : BaseActivity() {
                                 nis = profileData.nis ?: "",
                                 namaLengkap = profileData.nama ?: profileData.nama_siswa ?: "",
                                 jenisKelamin = profileData.jk ?: "L",
-                                email = "",  // Email tidak ada di response, kosongkan dulu
+                                email = profileData.email ?: "",
                                 fotoProfil = null,
                                 jurusan = profileData.jurusan ?: "",
                                 kelas = profileData.kelas ?: "",
@@ -253,6 +238,62 @@ class PengaturanAkunActivity : BaseActivity() {
         imagePickerLauncher.launch(intent)
     }
 
+    private fun showPhotoPreview(imageUri: Uri) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val bitmap = contentResolver.openInputStream(imageUri)?.use { inputStream ->
+                    // First pass: decode bounds only
+                    val boundsOptions = BitmapFactory.Options().apply {
+                        inJustDecodeBounds = true
+                    }
+                    BitmapFactory.decodeStream(inputStream, null, boundsOptions)
+
+                    // Calculate down-sample size to avoid OOM on large images
+                    val targetSize = 512
+                    val scale = maxOf(1, maxOf(boundsOptions.outWidth, boundsOptions.outHeight) / targetSize)
+
+                    // Second pass: decode with down-sampling
+                    val decodeOptions = BitmapFactory.Options().apply {
+                        inSampleSize = scale
+                    }
+                    contentResolver.openInputStream(imageUri)?.use { stream ->
+                        BitmapFactory.decodeStream(stream, null, decodeOptions)
+                    }
+                }
+
+                withContext(Dispatchers.Main) {
+                    if (bitmap != null) {
+                        // Remove any previously added photo preview
+                        val existingPhoto = cardProfilePhoto.findViewWithTag<ImageView>("photo_preview")
+                        existingPhoto?.let { cardProfilePhoto.removeView(it) }
+
+                        // Create an ImageView to display the photo inside the circular CardView
+                        val photoView = ImageView(this@PengaturanAkunActivity).apply {
+                            tag = "photo_preview"
+                            layoutParams = android.widget.FrameLayout.LayoutParams(
+                                android.widget.FrameLayout.LayoutParams.MATCH_PARENT,
+                                android.widget.FrameLayout.LayoutParams.MATCH_PARENT
+                            )
+                            scaleType = ImageView.ScaleType.CENTER_CROP
+                            setImageBitmap(bitmap)
+                        }
+                        cardProfilePhoto.addView(photoView, 0)
+                        tvInitial.visibility = View.GONE
+
+                        // Photo is shown locally but upload is not yet implemented on the server
+                        Toast.makeText(this@PengaturanAkunActivity, "Foto ditampilkan sebagai pratinjau. Upload foto profil belum tersedia.", Toast.LENGTH_LONG).show()
+                    } else {
+                        Toast.makeText(this@PengaturanAkunActivity, "Gagal memuat foto", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@PengaturanAkunActivity, "Gagal memuat foto: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
     private fun showChangeEmailDialog() {
         val dialogBuilder = AlertDialog.Builder(this)
         val inflater = layoutInflater
@@ -285,8 +326,8 @@ class PengaturanAkunActivity : BaseActivity() {
                 return@setOnClickListener
             }
             
-            if (!newEmail.contains("@")) {
-                etEmailDialog.error = "Email tidak valid"
+            if (!android.util.Patterns.EMAIL_ADDRESS.matcher(newEmail).matches()) {
+                etEmailDialog.error = "Format email tidak valid"
                 return@setOnClickListener
             }
             
@@ -299,12 +340,7 @@ class PengaturanAkunActivity : BaseActivity() {
 
     private fun updateEmail(newEmail: String) {
         val currentData = currentUserData ?: return
-        
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(newEmail).matches()) {
-            Toast.makeText(this, "Format email tidak valid", Toast.LENGTH_SHORT).show()
-            return
-        }
-        
+
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val sharedPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this@PengaturanAkunActivity)
@@ -396,55 +432,109 @@ class PengaturanAkunActivity : BaseActivity() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_otp_input, null)
         val etOtp = dialogView.findViewById<EditText>(R.id.etOtp)
 
-        AlertDialog.Builder(this)
+        val alertDialog = AlertDialog.Builder(this)
             .setTitle("Verifikasi OTP")
             .setMessage("Masukkan kode OTP yang telah dikirim ke $newEmail")
             .setView(dialogView)
-            .setPositiveButton("Verifikasi") { _, _ ->
-                val otp = etOtp.text.toString().trim()
-                if (otp.isEmpty()) {
-                    Toast.makeText(this, "Kode OTP tidak boleh kosong", Toast.LENGTH_SHORT).show()
-                    return@setPositiveButton
-                }
+            .setPositiveButton("Verifikasi", null)
+            .setNeutralButton("Kirim Ulang", null)
+            .setNegativeButton("Batal", null)
+            .setCancelable(false)
+            .create()
+        alertDialog.show()
 
-                lifecycleScope.launch(Dispatchers.IO) {
-                    try {
-                        val verifyRequest = com.xirpl2.SASMobile.model.VerifyEmailOTPRequest(
-                            newEmail = newEmail,
-                            otp = otp
-                        )
-                        val verifyResponse = RetrofitClient.apiService.verifyChangeEmail("Bearer $token", verifyRequest)
+        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+            val otp = etOtp.text.toString().trim()
+            if (otp.isEmpty()) {
+                etOtp.error = "Kode OTP tidak boleh kosong"
+                return@setOnClickListener
+            }
 
-                        withContext(Dispatchers.Main) {
-                            if (verifyResponse.isSuccessful) {
-                                Toast.makeText(
-                                    this@PengaturanAkunActivity,
-                                    verifyResponse.body()?.message ?: "Email berhasil diubah",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                // Update local email display
-                                etEmail.text = newEmail
-                                // Update shared preferences
-                                val sharedPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this@PengaturanAkunActivity)
-                                sharedPref.edit().putString("email", newEmail).apply()
-                            } else {
-                                val errorBody = verifyResponse.errorBody()?.string()
-                                val msg = try {
-                                    if (!errorBody.isNullOrEmpty()) org.json.JSONObject(errorBody).optString("message", "Verifikasi gagal")
-                                    else "Verifikasi gagal (${verifyResponse.code()})"
-                                } catch (_: Exception) { "Verifikasi gagal (${verifyResponse.code()})" }
-                                Toast.makeText(this@PengaturanAkunActivity, msg, Toast.LENGTH_LONG).show()
-                            }
+            it.isEnabled = false
+
+            lifecycleScope.launch(Dispatchers.IO) {
+                try {
+                    val verifyRequest = com.xirpl2.SASMobile.model.VerifyEmailOTPRequest(
+                        newEmail = newEmail,
+                        otp = otp
+                    )
+                    val verifyResponse = RetrofitClient.apiService.verifyChangeEmail("Bearer $token", verifyRequest)
+
+                    withContext(Dispatchers.Main) {
+                        if (verifyResponse.isSuccessful) {
+                            Toast.makeText(
+                                this@PengaturanAkunActivity,
+                                verifyResponse.body()?.message ?: "Email berhasil diubah",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            etEmail.text = newEmail
+                            currentUserData = currentUserData?.copy(email = newEmail)
+                            val sessionPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this@PengaturanAkunActivity)
+                            sessionPref.edit().putString("user_email", newEmail).apply()
+                            val dataPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this@PengaturanAkunActivity)
+                            dataPref.edit().putString("email", newEmail).apply()
+                            alertDialog.dismiss()
+                        } else {
+                            it.isEnabled = true
+                            val errorBody = verifyResponse.errorBody()?.string()
+                            val msg = try {
+                                if (!errorBody.isNullOrEmpty()) org.json.JSONObject(errorBody).optString("message", "Verifikasi gagal")
+                                else "Verifikasi gagal (${verifyResponse.code()})"
+                            } catch (_: Exception) { "Verifikasi gagal (${verifyResponse.code()})" }
+                            Toast.makeText(this@PengaturanAkunActivity, msg, Toast.LENGTH_LONG).show()
                         }
-                    } catch (e: Exception) {
-                        withContext(Dispatchers.Main) {
-                            Toast.makeText(this@PengaturanAkunActivity, "Error: ${e.message}", Toast.LENGTH_LONG).show()
-                        }
+                    }
+                } catch (e: Exception) {
+                    withContext(Dispatchers.Main) {
+                        it.isEnabled = true
+                        Toast.makeText(this@PengaturanAkunActivity, "Error: ${e.message}", Toast.LENGTH_LONG).show()
                     }
                 }
             }
-            .setNegativeButton("Batal", null)
-            .show()
+        }
+
+        alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener {
+            etOtp.text.clear()
+            resendEmailOtp(token, newEmail)
+        }
+
+        alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener {
+            Toast.makeText(
+                this,
+                "OTP masih aktif. Klik 'Ganti Email' lagi untuk memasukkan kode OTP",
+                Toast.LENGTH_LONG
+            ).show()
+            alertDialog.dismiss()
+        }
+    }
+
+    private fun resendEmailOtp(token: String, newEmail: String) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val request = com.xirpl2.SASMobile.model.ChangeEmailRequest(newEmail = newEmail)
+                val response = RetrofitClient.apiService.changeEmail("Bearer $token", request)
+
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful) {
+                        Toast.makeText(
+                            this@PengaturanAkunActivity,
+                            "Kode OTP baru telah dikirim ke $newEmail",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        Toast.makeText(
+                            this@PengaturanAkunActivity,
+                            "Gagal mengirim ulang OTP",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@PengaturanAkunActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
     data class UserData(

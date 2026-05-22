@@ -85,17 +85,18 @@ class PrayerScheduleAdapter(
 
         fun bind(item: PrayerScheduleItem.DhuhaKeahlian) {
             if (dhuhaAdapter == null) {
-                dhuhaAdapter = DhuhaScheduleAdapter(item.data) { row1, col1, row2, col2 ->
+                dhuhaAdapter = DhuhaScheduleAdapter { row1, col1, row2, col2 ->
                     onDhuhaKeahlianSwap(row1, col1, row2, col2)
-                    dhuhaAdapter?.let { it.updateData(getCurrentDhuhaData()) }
+                    dhuhaAdapter?.submitList(getCurrentDhuhaData())
                 }
+                dhuhaAdapter?.submitList(item.data)
                 rvDhuhaSchedule.apply {
                     layoutManager = LinearLayoutManager(itemView.context)
                     adapter = dhuhaAdapter
                     isNestedScrollingEnabled = false
                 }
             } else {
-                dhuhaAdapter?.updateData(item.data)
+                dhuhaAdapter?.submitList(item.data)
             }
 
             if (canEdit) {

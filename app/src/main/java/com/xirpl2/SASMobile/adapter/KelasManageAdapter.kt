@@ -7,7 +7,9 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.xirpl2.SASMobile.R
@@ -15,20 +17,19 @@ import com.xirpl2.SASMobile.model.KelasManagementItem
 import com.xirpl2.SASMobile.model.SiswaItem
 
 class KelasManageAdapter(
-    private var kelasList: List<KelasManagementItem>,
     private val onUbahWaliClick: (KelasManagementItem) -> Unit,
     private val onExpandClick: (KelasManagementItem, (List<SiswaItem>) -> Unit) -> Unit,
     private val onStudentDetailClick: (SiswaItem) -> Unit
-) : RecyclerView.Adapter<KelasManageAdapter.KelasViewHolder>() {
+) : ListAdapter<KelasManagementItem, KelasManageAdapter.KelasViewHolder>(KelasDiffCallback) {
 
-    private val expandedPositions = mutableSetOf<Int>()
+    private val expandedIds = mutableSetOf<Int>()
     private val classStudentsMap = mutableMapOf<Int, List<SiswaItem>>()
 
     inner class KelasViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val layoutJurusanHeader: View = view.findViewById(R.id.layoutJurusanHeader)
         val tvJurusanTitle: TextView = view.findViewById(R.id.tvJurusanTitle)
         val tvJurusanCount: TextView = view.findViewById(R.id.tvJurusanCount)
-        
+
         val cardContainer: com.google.android.material.card.MaterialCardView = view.findViewById(R.id.cardContainer)
         val tvNamaKelas: TextView = view.findViewById(R.id.tvNamaKelas)
         val badgeSiswaCount: TextView = view.findViewById(R.id.badgeSiswaCount)
@@ -46,21 +47,31 @@ class KelasManageAdapter(
         val pbLoading: ProgressBar = view.findViewById(R.id.pbLoadingSiswa)
         val cardHeader: View = view.findViewById(R.id.cardHeader)
 
+        // Cache LayoutManager and adapter to avoid recreating on every bind
+        private val siswaLayoutManager = LinearLayoutManager(recyclerSiswa.context)
+        private val siswaAdapter = SiswaInClassAdapter(onStudentDetailClick)
+
+        init {
+            recyclerSiswa.layoutManager = siswaLayoutManager
+            recyclerSiswa.adapter = siswaAdapter
+        }
+
         fun bind(kelas: KelasManagementItem, position: Int) {
             val context = itemView.context
-            
-            val showHeader = position == 0 || kelasList[position - 1].jurusan != kelas.jurusan
+            val list = currentList
+
+            val showHeader = position == 0 || list[position - 1].jurusan != kelas.jurusan
             if (showHeader) {
                 layoutJurusanHeader.visibility = View.VISIBLE
                 tvJurusanTitle.text = kelas.jurusan ?: "Umum"
-                val countInJurusan = kelasList.count { it.jurusan == kelas.jurusan }
+                val countInJurusan = list.count { it.jurusan == kelas.jurusan }
                 tvJurusanCount.text = "$countInJurusan Kelas"
             } else {
                 layoutJurusanHeader.visibility = View.GONE
             }
 
             tvNamaKelas.text = kelas.label
-            
+
             // ISS-004: Semantic Student Badge Colors
             badgeSiswaCount.text = "${kelas.siswa_count} Siswa"
             when {
@@ -74,7 +85,7 @@ class KelasManageAdapter(
                     badgeSiswaCount.backgroundTintList = ContextCompat.getColorStateList(context, R.color.status_success)
                 }
             }
-            
+
             // ISS-002: Warning State for Missing Wali Kelas
             if (kelas.wali_kelas.isNullOrBlank()) {
                 tvWaliKelas.text = "Wali belum ditentukan"
@@ -97,10 +108,10 @@ class KelasManageAdapter(
                 tvSectionWaliSubtitle.text = "Wali Kelas saat ini"
                 btnUbahWali.text = "Ganti Wali"
             }
-            
+
             tvDaftarSiswaTitle.text = "Daftar Siswa (${kelas.siswa_count})"
 
-            val isExpanded = expandedPositions.contains(position)
+            val isExpanded = expandedIds.contains(kelas.id_kelas)
             layoutExpandable.visibility = if (isExpanded) View.VISIBLE else View.GONE
             ivExpand.rotation = if (isExpanded) 90f else 0f
 
@@ -109,10 +120,9 @@ class KelasManageAdapter(
                 emptyStateSiswa.visibility = View.VISIBLE
                 recyclerSiswa.visibility = View.GONE
                 tvDaftarSiswaTitle.visibility = View.GONE
-                
+
                 btnEmptyTambahSiswa.setOnClickListener {
-                    // This should probably navigate to Add Student or trigger a callback
-                    onStudentDetailClick(SiswaItem(id_siswa = 0, nis = "", nama_siswa = "NEW")) 
+                    onStudentDetailClick(SiswaItem(id_siswa = 0, nis = "", nama_siswa = "NEW"))
                 }
             } else {
                 emptyStateSiswa.visibility = View.GONE
@@ -124,12 +134,12 @@ class KelasManageAdapter(
 
             cardHeader.setOnClickListener {
                 if (isExpanded) {
-                    expandedPositions.remove(position)
+                    expandedIds.remove(kelas.id_kelas)
                     notifyItemChanged(position)
                 } else {
-                    expandedPositions.add(position)
+                    expandedIds.add(kelas.id_kelas)
                     notifyItemChanged(position)
-                    
+
                     if (kelas.siswa_count > 0 && !classStudentsMap.containsKey(kelas.id_kelas)) {
                         pbLoading.visibility = View.VISIBLE
                         onExpandClick(kelas) { students ->
@@ -149,8 +159,7 @@ class KelasManageAdapter(
         }
 
         private fun setupStudentList(recyclerView: RecyclerView, students: List<SiswaItem>) {
-            recyclerView.layoutManager = LinearLayoutManager(recyclerView.context)
-            recyclerView.adapter = SiswaInClassAdapter(students, onStudentDetailClick)
+            siswaAdapter.updateStudents(students)
         }
     }
 
@@ -160,23 +169,39 @@ class KelasManageAdapter(
     }
 
     override fun onBindViewHolder(holder: KelasViewHolder, position: Int) {
-        holder.bind(kelasList[position], position)
+        holder.bind(getItem(position), position)
     }
 
-    override fun getItemCount(): Int = kelasList.size
-
     fun updateData(newList: List<KelasManagementItem>) {
-        kelasList = newList
-        expandedPositions.clear()
-        classStudentsMap.clear()
-        notifyDataSetChanged()
+        val removedIds = currentList.map { it.id_kelas }.toSet() - newList.map { it.id_kelas }.toSet()
+        removedIds.forEach { id_kelas ->
+            expandedIds.remove(id_kelas)
+            classStudentsMap.remove(id_kelas)
+        }
+        submitList(newList)
+    }
+}
+
+private object KelasDiffCallback : DiffUtil.ItemCallback<KelasManagementItem>() {
+    override fun areItemsTheSame(oldItem: KelasManagementItem, newItem: KelasManagementItem): Boolean {
+        return oldItem.id_kelas == newItem.id_kelas
+    }
+
+    override fun areContentsTheSame(oldItem: KelasManagementItem, newItem: KelasManagementItem): Boolean {
+        return oldItem == newItem
     }
 }
 
 class SiswaInClassAdapter(
-    private val students: List<SiswaItem>,
     private val onDetailClick: (SiswaItem) -> Unit
 ) : RecyclerView.Adapter<SiswaInClassAdapter.SiswaViewHolder>() {
+
+    private var students: List<SiswaItem> = emptyList()
+
+    fun updateStudents(newStudents: List<SiswaItem>) {
+        students = newStudents
+        notifyDataSetChanged()
+    }
 
     inner class SiswaViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvNo: TextView = view.findViewById(R.id.tvNo)

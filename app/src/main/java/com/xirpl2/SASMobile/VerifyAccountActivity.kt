@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.EditText
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputLayout
@@ -15,7 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class VerifyAccountActivity : AppCompatActivity() {
+class VerifyAccountActivity : BaseActivity() {
 
     private lateinit var etNewPassword: EditText
     private lateinit var etConfirmPassword: EditText
@@ -29,9 +29,10 @@ class VerifyAccountActivity : AppCompatActivity() {
         setContentView(R.layout.activity_verify_account)
 
         // Set status bar color to match blue header
-        window.statusBarColor = android.graphics.Color.parseColor("#1A77C6")
-        @Suppress("DEPRECATION")
-        window.decorView.systemUiVisibility = 0
+        window.statusBarColor = 0xFF1A77C6.toInt()
+        WindowInsetsControllerCompat(window, window.decorView).apply {
+            isAppearanceLightStatusBars = false
+        }
 
         etNewPassword = findViewById(R.id.etNewPassword)
         etConfirmPassword = findViewById(R.id.etConfirmPassword)
@@ -118,9 +119,9 @@ class VerifyAccountActivity : AppCompatActivity() {
                         // Check role and navigate to appropriate home
                         val role = sharedPref.getString("user_role", "siswa")
                         when (role) {
-                            "siswa" -> startActivity(Intent(this@VerifyAccountActivity, BerandaActivity::class.java))
-                            "guru", "admin" -> startActivity(Intent(this@VerifyAccountActivity, BerandaAdminActivity::class.java))
-                            else -> startActivity(Intent(this@VerifyAccountActivity, BerandaAdminActivity::class.java))
+                            "guru", "wali_kelas" -> startActivity(Intent(this@VerifyAccountActivity, BerandaGuruActivity::class.java))
+                            "admin" -> startActivity(Intent(this@VerifyAccountActivity, BerandaAdminActivity::class.java))
+                            else -> startActivity(Intent(this@VerifyAccountActivity, BerandaActivity::class.java))
                         }
                         finish()
                     } else {

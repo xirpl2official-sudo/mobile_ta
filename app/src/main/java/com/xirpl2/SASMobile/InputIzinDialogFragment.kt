@@ -55,6 +55,9 @@ class InputIzinDialogFragment : DialogFragment() {
     private var searchJob: Job? = null
     private var lastSearchResults: List<SiswaItem> = emptyList()
 
+    // ForcedClass: for wali_kelas, restrict student search to their assigned class
+    private var forcedClass: String? = null
+
     
     var onDismissCallback: (() -> Unit)? = null
 
@@ -71,15 +74,24 @@ class InputIzinDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews(view)
+        initForcedClass()
         setupListeners()
         setupSearchSiswa()
-        
-        
+
+
         val calendar = Calendar.getInstance()
         updateDate(calendar)
-        
-        
+
+
         loadJadwalSholat()
+    }
+
+    private fun initForcedClass() {
+        val session = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(requireContext())
+        val role = session.getString("user_role", "")?.lowercase() ?: ""
+        if (role.contains("wali")) {
+            forcedClass = session.getString("user_kelas", "")?.takeIf { it.isNotBlank() }
+        }
     }
 
     private fun initViews(view: View) {
@@ -171,7 +183,7 @@ class InputIzinDialogFragment : DialogFragment() {
                 
             if (token.isEmpty()) return@launch
 
-            repository.getSiswaList(token, page = 1, pageSize = 20, search = query).fold(
+            repository.getSiswaList(token, page = 1, pageSize = 20, search = query, kelas = forcedClass).fold(
                 onSuccess = { response ->
                     lastSearchResults = response.data
                     val suggestions = response.data.map { "${it.nama_siswa} (${it.nis})" }

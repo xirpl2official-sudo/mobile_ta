@@ -50,9 +50,11 @@ object SecurePreferences {
                         is Float -> editor.putFloat(key, value)
                     }
                 }
-                editor.apply()
-                // Clear plaintext after migration
-                plainPrefs.edit().clear().apply()
+                val migrated = editor.commit()
+                // Only clear plaintext after successful migration
+                if (migrated) {
+                    plainPrefs.edit().clear().commit()
+                }
             }
         }
 

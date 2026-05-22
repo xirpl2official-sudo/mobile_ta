@@ -37,9 +37,13 @@
 
                 <ImageView
                     android:id="@+id/btnClose"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@android:drawable/ic_menu_close_clear_cancel"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_close"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     app:tint="#64748B"/>
@@ -269,7 +273,20 @@
                 android:textColor="@android:color/white"
                 android:textStyle="bold"
                 app:backgroundTint="#F48C25"
-                app:cornerRadius="12dp" />
+                app:cornerRadius="12dp"
+                android:layout_marginBottom="8dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBatal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="BATAL"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="#64748B"
+                app:backgroundTint="@android:color/transparent"
+                app:rippleColor="#F1F5F9"
+                style="@style/Widget.MaterialComponents.Button.TextButton" />
 
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>

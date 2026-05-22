@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- NAMING MISMATCH: This file is named activity_lupa_katasandi.xml but the owning class is
+     GantiKataSandi. Conventional name would be activity_ganti_kata_sandi.xml.
+     Not renamed to avoid breaking R.layout references. -->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -31,7 +34,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:contentDescription="@string/DekorasiBiru"
-        android:scaleType="fitXY"
+        android:scaleType="centerCrop"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.38"
         app:layout_constraintStart_toStartOf="parent"

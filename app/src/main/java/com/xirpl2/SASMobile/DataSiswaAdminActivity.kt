@@ -52,6 +52,7 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
     private lateinit var siswaAdapter: SiswaAdapter
     private lateinit var progressLoading: ProgressBar
     private lateinit var tvEmptyState: TextView
+    private lateinit var emptyStateContainer: View
     private lateinit var tvCountInfo: TextView
     
     
@@ -70,6 +71,10 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
     private var selectedKelas: String = "Semua Kelas"
     private var selectedGender: String = "Semua JK"
     private var searchQuery: String = ""
+
+    // ForcedClass: for wali_kelas, auto-filter to their assigned class
+    private var forcedClass: String? = null
+    private var isWaliKelas: Boolean = false
     
     
     private val searchHandler = Handler(Looper.getMainLooper())
@@ -109,13 +114,14 @@ override fun onCreate(savedInstanceState: Bundle?) {
         
         setupMenuIcon()
         
-        
+
         setupButtons()
-        
-        
+
+
         setupSearch()
-        
-        
+
+        initForcedClass()
+
         setupFilters()
         
         
@@ -137,12 +143,27 @@ override fun onCreate(savedInstanceState: Bundle?) {
         recyclerSiswa = findViewById(R.id.recyclerSiswa)
         progressLoading = findViewById(R.id.progressLoading)
         tvEmptyState = findViewById(R.id.tvEmptyState)
+        emptyStateContainer = findViewById(R.id.emptyState)
         tvCountInfo = findViewById(R.id.tvCountInfo)
+    }
+
+    private fun initForcedClass() {
+        val session = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this)
+        val role = session.getString("user_role", "")?.lowercase() ?: ""
+        isWaliKelas = role.contains("wali")
+        if (isWaliKelas) {
+            forcedClass = session.getString("user_kelas", "")?.takeIf { it.isNotBlank() }
+            if (forcedClass != null) {
+                // Auto-set the kelas filter to the wali_kelas's assigned class
+                selectedKelas = forcedClass!!
+            }
+        }
     }
     
     private fun setupRecyclerView() {
         
-        val role = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this).getString("user_role", "")?.lowercase() ?: ""
+        val session = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this)
+        val role = session.getString("user_role", "")?.lowercase() ?: ""
         val isReadOnly = role.contains("wali") || role == "guru"
 
         siswaAdapter = SiswaAdapter(
@@ -208,6 +229,14 @@ override fun onCreate(savedInstanceState: Bundle?) {
     
     private fun setupFilters() {
         val filterJurusan = findViewById<TextView>(R.id.filterJurusan)
+        val filterKelas = findViewById<TextView>(R.id.filterKelas)
+
+        // For wali_kelas: hide Jurusan and Kelas filter dropdowns (forcedClass filtering)
+        if (isWaliKelas) {
+            filterKelas.visibility = View.GONE
+            filterJurusan.visibility = View.GONE
+        }
+
         filterJurusan.setOnClickListener {
             showFilterDialog("Pilih Jurusan", jurusanOptions, selectedJurusan) { selected ->
                 selectedJurusan = selected
@@ -215,8 +244,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
                 loadStudentData(reset = true)
             }
         }
-        
-        val filterKelas = findViewById<TextView>(R.id.filterKelas)
+
         filterKelas.setOnClickListener {
             showFilterDialog("Pilih Kelas", kelasOptions, selectedKelas) { selected ->
                 selectedKelas = selected
@@ -224,7 +252,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
                 loadStudentData(reset = true)
             }
         }
-        
+
         val filterGender = findViewById<TextView>(R.id.filterGender)
         filterGender.setOnClickListener {
             showFilterDialog("Pilih Jenis Kelamin", genderOptions, selectedGender) { selected ->
@@ -265,7 +293,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
             siswaAdapter.submitList(emptyList())
             isLastPage = false
             progressLoading.visibility = View.VISIBLE
-            tvEmptyState.visibility = View.GONE
+            emptyStateContainer.visibility = View.GONE
             recyclerSiswa.visibility = View.GONE
             findViewById<View>(R.id.tableHorizontalScrollView).visibility = View.GONE
         } else {
@@ -307,11 +335,11 @@ override fun onCreate(savedInstanceState: Bundle?) {
                         
                         if (allStudentList.isEmpty()) {
                             tvEmptyState.text = "Tidak ada data siswa"
-                            tvEmptyState.visibility = View.VISIBLE
+                            emptyStateContainer.visibility = View.VISIBLE
                             recyclerSiswa.visibility = View.GONE
                             findViewById<View>(R.id.tableHorizontalScrollView).visibility = View.GONE
                         } else {
-                            tvEmptyState.visibility = View.GONE
+                            emptyStateContainer.visibility = View.GONE
                             recyclerSiswa.visibility = View.VISIBLE
                             findViewById<View>(R.id.tableHorizontalScrollView).visibility = View.VISIBLE
                         }
@@ -330,7 +358,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
                         
                         if (allStudentList.isEmpty()) {
                             tvEmptyState.text = "Gagal memuat data siswa"
-                            tvEmptyState.visibility = View.VISIBLE
+                            emptyStateContainer.visibility = View.VISIBLE
                             recyclerSiswa.visibility = View.GONE
                             findViewById<View>(R.id.tableHorizontalScrollView).visibility = View.GONE
                         } else {
@@ -386,7 +414,8 @@ override fun onCreate(savedInstanceState: Bundle?) {
             // ignore
         }
 
-        val role = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this).getString("user_role", "")
+        val session2 = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this)
+        val role = session2.getString("user_role", "")
         val isReadOnly = role == "wali_kelas" || role == "guru"
 
         popup.setOnMenuItemClickListener { item ->
@@ -500,6 +529,8 @@ override fun onCreate(savedInstanceState: Bundle?) {
             val uri = contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
             uri?.let {
                 contentResolver.openOutputStream(it)?.use { outputStream ->
+                    val bom = byteArrayOf(0xEF.toByte(), 0xBB.toByte(), 0xBF.toByte())
+                    outputStream.write(bom)
                     outputStream.write(csvContent.toByteArray(Charsets.UTF_8))
                     outputStream.flush()
                 }
@@ -510,6 +541,8 @@ override fun onCreate(savedInstanceState: Bundle?) {
             if (!dir.exists()) dir.mkdirs()
             val file = File(dir, fileName)
             file.outputStream().use { outputStream ->
+                val bom = byteArrayOf(0xEF.toByte(), 0xBB.toByte(), 0xBF.toByte())
+                outputStream.write(bom)
                 outputStream.write(csvContent.toByteArray(Charsets.UTF_8))
                 outputStream.flush()
             }

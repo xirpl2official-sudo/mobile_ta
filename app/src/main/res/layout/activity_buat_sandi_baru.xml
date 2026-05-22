@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
-    tools:context=".GantiKataSandi">
+    tools:context=".BuatSandiBaruActivity">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guidelineInorasi"
@@ -31,7 +31,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:contentDescription="@string/DekorasiBiru"
-        android:scaleType="fitXY"
+        android:scaleType="centerCrop"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.38"
         app:layout_constraintStart_toStartOf="parent"

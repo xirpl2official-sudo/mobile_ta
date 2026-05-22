@@ -64,14 +64,20 @@ class RiwayatAbsensiAdapter : ListAdapter<RiwayatAbsensi, RiwayatAbsensiAdapter.
                     ContextCompat.getColor(holder.itemView.context, R.color.white)
                 )
             }
+            StatusAbsensi.UNKNOWN -> {
+                holder.tvStatus.text = "-"
+                holder.tvStatus.setBackgroundResource(R.drawable.bg_status_alpha)
+                holder.tvStatus.setTextColor(
+                    ContextCompat.getColor(holder.itemView.context, R.color.white)
+                )
+            }
         }
     }
 }
 
 class RiwayatDiffCallback : DiffUtil.ItemCallback<RiwayatAbsensi>() {
     override fun areItemsTheSame(oldItem: RiwayatAbsensi, newItem: RiwayatAbsensi): Boolean {
-        // You might want to use a unique identifier if available, otherwise just fall back to content matching
-        return oldItem.tanggal == newItem.tanggal && oldItem.namaSholat == newItem.namaSholat
+        return oldItem.id == newItem.id
     }
 
     override fun areContentsTheSame(oldItem: RiwayatAbsensi, newItem: RiwayatAbsensi): Boolean {

@@ -39,7 +39,7 @@ class BuatSandiBaruActivity : BaseActivity() {
         }
 
         userNis = intent.getStringExtra("USER_NIS") ?: ""
-        userOtp = intent.getStringExtra("USER_OTP") ?: ""
+        userOtp = VerifikasiOtpActivity.consumePendingOtp() ?: ""
 
         passwordLayoutBaru = findViewById(R.id.passwordLayoutBaru)
         passwordlayoutKonfirm = findViewById(R.id.passwordLayoutKonfirm)
@@ -75,11 +75,11 @@ class BuatSandiBaruActivity : BaseActivity() {
             }
 
             
-            if (passwordBaru.length < 6) {
+            if (passwordBaru.length < 8) {
                 MotionToast.createColorToast(
                     this,
                     "Gagal",
-                    "Password minimal 6 karakter",
+                    "Password minimal 8 karakter",
                     MotionToastStyle.ERROR,
                     Gravity.CENTER,
                     MotionToast.LONG_DURATION,

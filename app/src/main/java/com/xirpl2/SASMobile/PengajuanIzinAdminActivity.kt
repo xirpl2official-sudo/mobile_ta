@@ -36,7 +36,7 @@ class PengajuanIzinAdminActivity : BaseAdminActivity() {
     private val repository = PengajuanIzinRepository()
     
     // State Management
-    private var currentStatusFilter: String? = "pending"
+    private var currentStatusFilter: String? = null
     private var currentSort: String = "terbaru"
     private var searchQuery: String = ""
     private var currentPage = 1
@@ -100,9 +100,11 @@ class PengajuanIzinAdminActivity : BaseAdminActivity() {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 val selected = parent?.getItemAtPosition(position).toString().lowercase()
                 val mappedStatus = when (selected) {
+                    "semua" -> null
+                    "pending" -> "pending"
                     "approved" -> "disetujui"
                     "rejected" -> "ditolak"
-                    else -> "pending"
+                    else -> null
                 }
                 if (currentStatusFilter != mappedStatus) {
                     currentStatusFilter = mappedStatus
@@ -171,7 +173,7 @@ class PengajuanIzinAdminActivity : BaseAdminActivity() {
         searchView.setQuery("", false)
         spinnerFilterStatus.setSelection(0)
         spinnerSort.setSelection(0)
-        currentStatusFilter = "pending"
+        currentStatusFilter = null
         currentSort = "terbaru"
         searchQuery = ""
         loadData(reset = true)
@@ -179,7 +181,7 @@ class PengajuanIzinAdminActivity : BaseAdminActivity() {
 
     private fun updateResetButtonVisibility() {
         val btnResetFilter = findViewById<Button>(R.id.btnResetFilter)
-        val isFilterChanged = currentStatusFilter != "pending" || currentSort != "terbaru" || searchQuery.isNotEmpty()
+        val isFilterChanged = currentStatusFilter != null || currentSort != "terbaru" || searchQuery.isNotEmpty()
         btnResetFilter?.visibility = if (isFilterChanged) View.VISIBLE else View.GONE
     }
 
@@ -200,24 +202,40 @@ class PengajuanIzinAdminActivity : BaseAdminActivity() {
         dataJob?.cancel()
         dataJob = lifecycleScope.launch {
             repository.getPengajuanIzinList(
-                token, 
-                currentStatusFilter, 
-                currentPage, 
+                token,
+                currentStatusFilter,
+                currentPage,
                 limit
             ).fold(
                 onSuccess = { response ->
                     val newData = response.data
                     allData.addAll(newData)
-                    totalItems = response.pagination?.total_items ?: allData.size
-                    
-                    adapter.submitList(allData.toList())
-                    updateInfoBanner()
-                    
-                    emptyState.visibility = if (allData.isEmpty()) View.VISIBLE else View.GONE
-                    btnLoadMore.visibility = if (allData.size < totalItems) View.VISIBLE else View.GONE
+                    totalItems = response.pagination?.totalItems ?: allData.size
+
+                    val filteredData = if (searchQuery.isNotEmpty()) {
+                        val query = searchQuery.lowercase()
+                        allData.filter { item ->
+                            val nama = item.siswa?.nama_siswa?.lowercase() ?: ""
+                            val nis = item.siswa?.nis?.lowercase() ?: ""
+                            val kelas = item.siswa?.kelas?.lowercase() ?: ""
+                            val keterangan = item.keterangan?.lowercase() ?: ""
+                            val jenis = item.jenisIzin?.lowercase() ?: ""
+                            nama.contains(query) || nis.contains(query) ||
+                                kelas.contains(query) || keterangan.contains(query) ||
+                                jenis.contains(query)
+                        }
+                    } else {
+                        allData
+                    }
+
+                    adapter.submitList(filteredData.toList())
+                    updateInfoBanner(filteredData.size)
+
+                    emptyState.visibility = if (filteredData.isEmpty()) View.VISIBLE else View.GONE
+                    btnLoadMore.visibility = if (allData.size < totalItems && searchQuery.isEmpty()) View.VISIBLE else View.GONE
                     btnLoadMore.isEnabled = true
                     btnLoadMore.text = "Muat Lebih Banyak"
-                    
+
                     setLoading(false)
                 },
                 onFailure = { error ->
@@ -228,14 +246,21 @@ class PengajuanIzinAdminActivity : BaseAdminActivity() {
         }
     }
 
-    private fun updateInfoBanner() {
-        val count = allData.size
-        if (searchQuery.isNotEmpty() || currentStatusFilter != "pending") {
+    private fun updateInfoBanner(filteredCount: Int = allData.size) {
+        val totalCount = allData.size
+        if (searchQuery.isNotEmpty() || currentStatusFilter != null) {
             infoBanner.visibility = View.VISIBLE
-            tvInfoBanner.text = "Menampilkan $count dari $totalItems pengajuan (Filter: ${currentStatusFilter?.uppercase()})"
+            val parts = mutableListOf<String>()
+            if (currentStatusFilter != null) {
+                parts.add("Status: ${currentStatusFilter?.uppercase()}")
+            }
+            if (searchQuery.isNotEmpty()) {
+                parts.add("Pencarian: \"$searchQuery\"")
+            }
+            tvInfoBanner.text = "Menampilkan $filteredCount dari $totalItems pengajuan (${parts.joinToString(", ")})"
         } else {
-            infoBanner.visibility = if (count > 0) View.VISIBLE else View.GONE
-            tvInfoBanner.text = "Menampilkan $count pengajuan"
+            infoBanner.visibility = if (totalCount > 0) View.VISIBLE else View.GONE
+            tvInfoBanner.text = "Menampilkan $totalCount pengajuan"
         }
     }
 
@@ -269,20 +294,27 @@ class PengajuanIzinAdminActivity : BaseAdminActivity() {
         input.layoutParams = params
         container.addView(input)
 
-        MaterialAlertDialogBuilder(this)
+        val dialog = MaterialAlertDialogBuilder(this)
             .setTitle("Konfirmasi Tolak")
             .setMessage("Yakin ingin menolak pengajuan ini? Alasan penolakan wajib diisi.")
             .setView(container)
-            .setPositiveButton("Ya, Lanjutkan") { _, _ ->
+            .setPositiveButton("Ya, Lanjutkan", null)
+            .setNegativeButton("Batal", null)
+            .create()
+
+        dialog.setOnShowListener {
+            dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE).setOnClickListener {
                 val reason = input.text.toString().trim()
                 if (reason.isEmpty()) {
                     Toast.makeText(this, "Alasan penolakan wajib diisi!", Toast.LENGTH_SHORT).show()
                 } else {
                     updateStatus(item.id_pengajuan, "ditolak", reason)
+                    dialog.dismiss()
                 }
             }
-            .setNegativeButton("Batal", null)
-            .show()
+        }
+
+        dialog.show()
     }
 
     private fun updateStatus(id: Int, status: String, catatan: String?) {

@@ -13,7 +13,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:contentDescription="@string/DekorasiOrange"
-        android:scaleType="fitXY"
+        android:scaleType="centerCrop"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.38"
         app:layout_constraintStart_toStartOf="parent"
@@ -203,7 +203,7 @@
         app:boxCornerRadiusBottomEnd="12dp"
         app:endIconMode="password_toggle"
         app:endIconTint="#B3B3B3"
-        app:layout_constraintBottom_toTopOf="@id/btn_daftar"
+        app:layout_constraintBottom_toTopOf="@id/confirmPasswordLabel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/passwordLabel"
@@ -212,6 +212,54 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_password"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="textPassword"
+            android:textColor="#000000"
+            android:textSize="@dimen/text_input_hint" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/confirmPasswordLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_medium"
+        android:text="@string/konfirSandi"
+        android:textColor="@color/on_background"
+        android:textSize="@dimen/text_small"
+        android:fontFamily="sans-serif-medium"
+        app:layout_constraintBottom_toTopOf="@id/confirmPasswordLayout"
+        app:layout_constraintEnd_toEndOf="@id/confirmPasswordLayout"
+        app:layout_constraintStart_toStartOf="@id/confirmPasswordLayout"
+        app:layout_constraintTop_toBottomOf="@id/passwordLayout2" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        android:id="@+id/confirmPasswordLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/spacing_text"
+        android:hint="@string/konfirSandi"
+        app:boxBackgroundColor="#FFFFFF"
+        app:boxStrokeColor="@color/stroke_orange_always"
+        app:boxStrokeWidth="1dp"
+        app:boxStrokeWidthFocused="1dp"
+        app:boxCornerRadiusTopStart="12dp"
+        app:boxCornerRadiusTopEnd="12dp"
+        app:boxCornerRadiusBottomStart="12dp"
+        app:boxCornerRadiusBottomEnd="12dp"
+        app:endIconMode="password_toggle"
+        app:endIconTint="#B3B3B3"
+        app:layout_constraintBottom_toTopOf="@id/btn_daftar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/confirmPasswordLabel"
+        app:layout_constraintWidth_percent="0.85"
+        app:layout_constraintHeight_percent="0.075">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_confirm_password"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:inputType="textPassword"
@@ -233,7 +281,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.075"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/passwordLayout2"
+        app:layout_constraintTop_toBottomOf="@id/confirmPasswordLayout"
         app:layout_constraintVertical_bias="0.0"
         app:layout_constraintWidth_percent="0.85"
         app:cornerRadius="12dp" />

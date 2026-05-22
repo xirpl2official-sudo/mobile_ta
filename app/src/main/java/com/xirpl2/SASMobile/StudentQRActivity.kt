@@ -1,8 +1,7 @@
 package com.xirpl2.SASMobile
 
 import android.os.Bundle
-import android.view.View
-import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowInsetsControllerCompat
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 
@@ -14,8 +13,9 @@ class StudentQRActivity : BaseActivity() {
         
         // Set status bar color
         window.statusBarColor = getColor(R.color.qr_primary)
-        @Suppress("DEPRECATION")
-        window.decorView.systemUiVisibility = 0
+        WindowInsetsControllerCompat(window, window.decorView).apply {
+            isAppearanceLightStatusBars = false
+        }
 
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         toolbar.setNavigationOnClickListener {

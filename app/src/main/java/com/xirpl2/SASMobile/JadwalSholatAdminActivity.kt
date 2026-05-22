@@ -34,7 +34,7 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
     private var dhuhaKeahlianList: List<com.xirpl2.SASMobile.model.JadwalDhuhaKeahlian> = emptyList()
 
     private val daysOptions = listOf("Semua Hari", "Senin", "Selasa", "Rabu", "Kamis", "Jumat")
-    private val allKeahlian = arrayOf("RPL", "TKJ", "TAV", "AM", "TMT", "BC", "TEI", "DKV")
+    private val allKeahlian = arrayOf("RPL", "TKJ", "TAV", "ANM", "TMT", "BC", "TEI", "DKV")
     private val jurusanOptions = listOf("Semua Jurusan", "TKJ", "RPL", "DKV", "ANM", "BC", "TAV", "TEI", "TMT")
 
     override fun getCurrentMenuItem(): AdminMenuItem = AdminMenuItem.JADWAL_SHOLAT
@@ -142,6 +142,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
                     updateJadwalUI()
                 },
                 onFailure = { error ->
+                    android.util.Log.w(TAG, "Failed to load jadwal list: ${error.message}")
                     if (isFinishing || isDestroyed) return@fold
                 }
             )
@@ -253,7 +254,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
                 onDeletePrayer = { jadwal -> showDeleteConfirmation(jadwal) },
                 onDhuhaKeahlianSwap = { row1, col1, row2, col2 ->
                     handleSwap(row1, col1, row2, col2)
-                    prayerAdapter?.getDhuhaAdapter()?.updateData(dhuhaKeahlianList)
+                    prayerAdapter?.getDhuhaAdapter()?.submitList(dhuhaKeahlianList)
                 },
                 onSaveDhuhaKeahlian = { saveDhuhaKeahlianToApi() }
             )
@@ -264,7 +265,8 @@ override fun onCreate(savedInstanceState: Bundle?) {
     }
 
     private fun canUserEdit(): Boolean {
-        val role = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this).getString("user_role", "")?.lowercase() ?: ""
+        val session = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this)
+        val role = session.getString("user_role", "")?.lowercase() ?: ""
         val isReadOnly = role.contains("wali") || role == "guru"
         return !isReadOnly && role.contains("admin")
     }
@@ -489,7 +491,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
         actvHari.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, days))
 
         
-        val jurusans = listOf("RPL", "BC", "TKJ", "Semua Jurusan")
+        val jurusans = listOf("Semua Jurusan") + JurusanHelper.getAllJurusan(this).map { it.nama }
         actvJurusan.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, jurusans))
 
         
@@ -1106,9 +1108,9 @@ override fun onCreate(savedInstanceState: Bundle?) {
             val updatedHari = actvHari.text.toString()
             
             val selectedKelas = mutableListOf<String>()
-            if (cbKelas10.isChecked) selectedKelas.add("Kelas X")
-            if (cbKelas11.isChecked) selectedKelas.add("Kelas XI")
-            if (cbKelas12.isChecked) selectedKelas.add("Kelas XII")
+            if (cbKelas10.isChecked) selectedKelas.add("10")
+            if (cbKelas11.isChecked) selectedKelas.add("11")
+            if (cbKelas12.isChecked) selectedKelas.add("12")
             if (selectedKelas.size == 3) {
                 selectedKelas.clear()
                 selectedKelas.add("Semua Kelas")

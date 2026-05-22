@@ -107,7 +107,8 @@ class BerandaAdminActivity : BaseAdminActivity() {
                         tvHadirHariIniValue.text = globalStats.total_kehadiran_hari_ini.toString()
                         val izinSakit = globalStats.total_izin_hari_ini + globalStats.total_sakit_hari_ini
                         tvIzinSakitValue.text = izinSakit.toString()
-                        tvKehadiranValue.text = globalStats.total_alpha_hari_ini.toString()
+                        val kehadiranPct = String.format(java.util.Locale.US, "%.0f%%", globalStats.persentase_kehadiran)
+                        tvKehadiranValue.text = kehadiranPct
                         val todayLabel = java.text.SimpleDateFormat("dd MMM yyyy", java.util.Locale("id")).format(java.util.Date())
                         tvHadirHariIniSub.text = todayLabel
                         tvIzinSakitSub.text = todayLabel
@@ -150,8 +151,8 @@ class BerandaAdminActivity : BaseAdminActivity() {
 
                         if (activePrayer != null && activePrayer.waktuSholat != null) {
                             val namaSholat = activePrayer.waktuSholat.jenisSholat?.namaJenis ?: "Sholat"
-                            val jamMulai = activePrayer.waktuSholat.waktuMulai
-                            val jamSelesai = activePrayer.waktuSholat.waktuSelesai
+                            val jamMulai = activePrayer.waktuSholat.waktuMulai ?: ""
+                            val jamSelesai = activePrayer.waktuSholat.waktuSelesai ?: ""
 
                             tvNamaSholat.text = namaSholat
                             tvWaktuSholat.text = "Waktu : $jamMulai - $jamSelesai"
@@ -199,7 +200,8 @@ class BerandaAdminActivity : BaseAdminActivity() {
             repository.getJadwalDhuhaKeahlian(token).fold(
                 onSuccess = { data ->
                     if (!isFinishing && !isDestroyed) {
-                        dhuhaScheduleAdapter = DhuhaScheduleAdapter(data)
+                        dhuhaScheduleAdapter = DhuhaScheduleAdapter()
+                        dhuhaScheduleAdapter.submitList(data)
                         rvDhuhaSchedule.apply {
                             layoutManager = LinearLayoutManager(this@BerandaAdminActivity)
                             adapter = dhuhaScheduleAdapter

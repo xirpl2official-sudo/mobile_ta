@@ -4,5 +4,19 @@ enum class StatusAbsensi {
     HADIR,
     ALPHA,
     SAKIT,
-    IZIN
+    IZIN,
+    UNKNOWN;
+
+    companion object {
+        fun fromString(value: String?): StatusAbsensi {
+            if (value.isNullOrBlank()) return UNKNOWN
+            return when (value.trim().uppercase()) {
+                "HADIR" -> HADIR
+                "ALPHA" -> ALPHA
+                "SAKIT" -> SAKIT
+                "IZIN" -> IZIN
+                else -> UNKNOWN
+            }
+        }
+    }
 }

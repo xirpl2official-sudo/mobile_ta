@@ -11,11 +11,13 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textfield.TextInputLayout
 import com.xirpl2.SASMobile.adapter.RiwayatIzinAdapter
 import com.xirpl2.SASMobile.network.RetrofitClient
 import com.xirpl2.SASMobile.repository.PengajuanIzinRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -50,6 +52,7 @@ class PengajuanIzinActivity : BaseActivity() {
     private lateinit var btnRemovePhoto: com.google.android.material.button.MaterialButton
     private lateinit var tvPhotoLabel: TextView
     private var selectedPhotoUri: Uri? = null
+    private var tempPhotoFile: File? = null
 
     // Riwayat
     private lateinit var rvRiwayatIzin: RecyclerView
@@ -59,6 +62,7 @@ class PengajuanIzinActivity : BaseActivity() {
     private val repository = PengajuanIzinRepository()
 
     private val calendar = Calendar.getInstance()
+    private var startDateMillis: Long = 0L
 
     // Photo picker launcher
     private val photoPickerLauncher = registerForActivityResult(
@@ -154,6 +158,27 @@ class PengajuanIzinActivity : BaseActivity() {
             val selectedDate = String.format("%04d-%02d-%02d", year, month + 1, day)
             etStartDate.setText(selectedDate)
             tilStartDate.error = null
+
+            // Store start date millis for end date picker minimum
+            val cal = Calendar.getInstance()
+            cal.set(year, month, day, 0, 0, 0)
+            cal.set(Calendar.MILLISECOND, 0)
+            startDateMillis = cal.timeInMillis
+
+            // Clear end date if it is now before the new start date
+            val endText = etEndDate.text.toString().trim()
+            if (endText.isNotEmpty()) {
+                try {
+                    val endCal = parseDate(endText)
+                    if (endCal.timeInMillis < startDateMillis) {
+                        etEndDate.text.clear()
+                        tilEndDate.error = null
+                    }
+                } catch (_: Exception) {
+                    etEndDate.text.clear()
+                    tilEndDate.error = null
+                }
+            }
         }
 
         val endDateListener = DatePickerDialog.OnDateSetListener { _, year, month, day ->
@@ -170,7 +195,11 @@ class PengajuanIzinActivity : BaseActivity() {
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)
             )
-            startDatePicker.datePicker.minDate = calendar.timeInMillis - 1000
+            calendar.set(Calendar.HOUR_OF_DAY, 0)
+            calendar.set(Calendar.MINUTE, 0)
+            calendar.set(Calendar.SECOND, 0)
+            calendar.set(Calendar.MILLISECOND, 0)
+            startDatePicker.datePicker.minDate = calendar.timeInMillis
             startDatePicker.show()
         }
 
@@ -182,7 +211,12 @@ class PengajuanIzinActivity : BaseActivity() {
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)
             )
-            endDatePicker.datePicker.minDate = calendar.timeInMillis - 1000
+            calendar.set(Calendar.HOUR_OF_DAY, 0)
+            calendar.set(Calendar.MINUTE, 0)
+            calendar.set(Calendar.SECOND, 0)
+            calendar.set(Calendar.MILLISECOND, 0)
+            // Use selected start date as minimum, fall back to today
+            endDatePicker.datePicker.minDate = if (startDateMillis > 0L) startDateMillis else calendar.timeInMillis
             endDatePicker.show()
         }
     }
@@ -336,6 +370,7 @@ class PengajuanIzinActivity : BaseActivity() {
                     buktiFoto = photoPart
                 )
 
+                deleteTempPhotoFile()
                 setLoading(false)
 
                 if (response.isSuccessful && response.body() != null) {
@@ -355,6 +390,7 @@ class PengajuanIzinActivity : BaseActivity() {
                     Toast.makeText(this@PengajuanIzinActivity, errorMsg, Toast.LENGTH_LONG).show()
                 }
             } catch (e: Exception) {
+                deleteTempPhotoFile()
                 setLoading(false)
                 Toast.makeText(
                     this@PengajuanIzinActivity,
@@ -367,15 +403,19 @@ class PengajuanIzinActivity : BaseActivity() {
 
     private fun preparePhotoPart(): MultipartBody.Part? {
         val uri = selectedPhotoUri ?: return null
-        
+
         return try {
+            // Clean up any previous temp file
+            deleteTempPhotoFile()
+
             val inputStream = contentResolver.openInputStream(uri) ?: return null
             val tempFile = File.createTempFile("bukti_foto_", ".jpg", cacheDir)
             FileOutputStream(tempFile).use { outputStream ->
                 inputStream.copyTo(outputStream)
             }
             inputStream.close()
-            
+
+            tempPhotoFile = tempFile
             val requestBody = tempFile.asRequestBody("image/*".toMediaTypeOrNull())
             MultipartBody.Part.createFormData("bukti_foto", tempFile.name, requestBody)
         } catch (e: Exception) {
@@ -384,10 +424,20 @@ class PengajuanIzinActivity : BaseActivity() {
         }
     }
 
+    private fun deleteTempPhotoFile() {
+        tempPhotoFile?.let {
+            try {
+                if (it.exists()) it.delete()
+            } catch (_: Exception) { }
+            tempPhotoFile = null
+        }
+    }
+
     private fun resetForm() {
         rgPermitType.clearCheck()
         etStartDate.text.clear()
         etEndDate.text.clear()
+        startDateMillis = 0L
         etReason.text.clear()
         tilStartDate.error = null
         tilEndDate.error = null
@@ -430,6 +480,11 @@ class PengajuanIzinActivity : BaseActivity() {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        deleteTempPhotoFile()
+    }
+
     private fun setLoading(isLoading: Boolean) {
         btnSubmit.isEnabled = !isLoading
         btnSubmit.text = if (isLoading) "Mengirim..." else getString(R.string.kirim_pengajuan)
@@ -444,34 +499,45 @@ class PengajuanIzinActivity : BaseActivity() {
     }
 
     private fun logout() {
-        val token = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this)
-            .getString("auth_token", "") ?: ""
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Keluar")
+            .setMessage("Apakah Anda yakin ingin keluar?")
+            .setPositiveButton("Ya") { _, _ ->
+                val token = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this)
+                    .getString("auth_token", "") ?: ""
 
-        lifecycleScope.launch {
-            try {
-                if (token.isNotEmpty()) {
-                    RetrofitClient.apiService.logout("Bearer $token")
+                lifecycleScope.launch(Dispatchers.IO) {
+                    try {
+                        if (token.isNotEmpty()) {
+                            RetrofitClient.apiService.logout("Bearer $token")
+                        }
+                    } catch (_: Exception) { }
+
+                    launch(Dispatchers.Main) {
+                        // Clear ALL SharedPreferences stores
+                        with(com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this@PengajuanIzinActivity).edit()) {
+                            clear()
+                            apply()
+                        }
+                        with(com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this@PengajuanIzinActivity).edit()) {
+                            clear()
+                            apply()
+                        }
+                        with(getSharedPreferences("NotificationData", MODE_PRIVATE).edit()) {
+                            clear()
+                            apply()
+                        }
+
+                        Toast.makeText(this@PengajuanIzinActivity, "Logout berhasil", Toast.LENGTH_SHORT).show()
+
+                        val intent = Intent(this@PengajuanIzinActivity, MasukActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        startActivity(intent)
+                        finish()
+                    }
                 }
-            } catch (_: Exception) { }
-
-            // Clear ALL SharedPreferences stores
-            with(com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this@PengajuanIzinActivity).edit()) {
-                clear()
-                apply()
             }
-            with(com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this@PengajuanIzinActivity).edit()) {
-                clear()
-                apply()
-            }
-            with(getSharedPreferences("NotificationData", MODE_PRIVATE).edit()) {
-                clear()
-                apply()
-            }
-
-            val intent = Intent(this@PengajuanIzinActivity, MasukActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
-            finish()
-        }
+            .setNegativeButton("Batal", null)
+            .show()
     }
 }

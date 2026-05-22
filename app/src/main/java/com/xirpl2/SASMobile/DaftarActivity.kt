@@ -1,6 +1,7 @@
 package com.xirpl2.SASMobile
 
 import android.os.Bundle
+import android.util.Patterns
 import android.view.Gravity
 import android.widget.Button
 import android.widget.EditText
@@ -25,12 +26,14 @@ class DaftarActivity : BaseActivity() {
 
     private lateinit var etNis: EditText
     private lateinit var etPassword: EditText
+    private lateinit var etConfirmPassword: EditText
     private lateinit var etEmail: EditText
     private lateinit var btnDaftar: Button
     private lateinit var textMasuk: TextView
     private lateinit var nisLayout: TextInputLayout
     private lateinit var emailLayout: TextInputLayout
     private lateinit var passwordLayout2: TextInputLayout
+    private lateinit var confirmPasswordLayout: TextInputLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +51,8 @@ class DaftarActivity : BaseActivity() {
         nisLayout = findViewById(R.id.nisLayout)
         emailLayout = findViewById(R.id.emailLayout)
         passwordLayout2 = findViewById(R.id.passwordLayout2)
+        etConfirmPassword = findViewById(R.id.et_confirm_password)
+        confirmPasswordLayout = findViewById(R.id.confirmPasswordLayout)
 
         setHintTextColors()
 
@@ -65,15 +70,17 @@ class DaftarActivity : BaseActivity() {
         nisLayout.defaultHintTextColor = hintColor
         emailLayout.defaultHintTextColor = hintColor
         passwordLayout2.defaultHintTextColor = hintColor
+        confirmPasswordLayout.defaultHintTextColor = hintColor
     }
 
     private fun registerUser() {
         val nis = etNis.text.toString().trim()
         val password = etPassword.text.toString()
+        val confirmPassword = etConfirmPassword.text.toString()
         val email = etEmail.text.toString().trim()
 
-        
-        if (nis.isEmpty() || password.isEmpty() || email.isEmpty()) {
+
+        if (nis.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() || email.isEmpty()) {
             MotionToast.createColorToast(
                 this,
                 "Peringatan",
@@ -86,11 +93,37 @@ class DaftarActivity : BaseActivity() {
             return
         }
 
-        if (password.length < 6) {
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             MotionToast.createColorToast(
                 this,
                 "Peringatan",
-                "Password minimal 6 karakter",
+                "Format email tidak valid!",
+                MotionToastStyle.WARNING,
+                Gravity.CENTER,
+                MotionToast.LONG_DURATION,
+                null
+            )
+            return
+        }
+
+        if (password != confirmPassword) {
+            MotionToast.createColorToast(
+                this,
+                "Peringatan",
+                "Konfirmasi kata sandi tidak cocok!",
+                MotionToastStyle.WARNING,
+                Gravity.CENTER,
+                MotionToast.LONG_DURATION,
+                null
+            )
+            return
+        }
+
+        if (password.length < 8) {
+            MotionToast.createColorToast(
+                this,
+                "Peringatan",
+                "Password minimal 8 karakter",
                 MotionToastStyle.WARNING,
                 Gravity.CENTER,
                 MotionToast.LONG_DURATION,
@@ -127,10 +160,19 @@ class DaftarActivity : BaseActivity() {
                         finish() 
                     } else {
                         val errorBody = response.errorBody()?.string()
+                        val errorMessage = try {
+                            if (!errorBody.isNullOrEmpty()) {
+                                org.json.JSONObject(errorBody).optString("message", "Pendaftaran gagal")
+                            } else {
+                                "Pendaftaran gagal (${response.code()})"
+                            }
+                        } catch (_: Exception) {
+                            "Pendaftaran gagal"
+                        }
                         MotionToast.createColorToast(
                             this@DaftarActivity,
                             "Gagal",
-                            "Daftar gagal: ${response.message()}",
+                            errorMessage,
                             MotionToastStyle.ERROR,
                             Gravity.CENTER,
                             MotionToast.LONG_DURATION,
@@ -145,7 +187,9 @@ class DaftarActivity : BaseActivity() {
                     MotionToast.createColorToast(
                         this@DaftarActivity,
                         "Error",
-                        "Error: ${e.message}",
+                        if (e is java.net.UnknownHostException || e is java.net.SocketTimeoutException)
+                            "Tidak dapat terhubung ke server"
+                        else "Terjadi kesalahan, coba lagi",
                         MotionToastStyle.ERROR,
                         Gravity.CENTER,
                         MotionToast.LONG_DURATION,

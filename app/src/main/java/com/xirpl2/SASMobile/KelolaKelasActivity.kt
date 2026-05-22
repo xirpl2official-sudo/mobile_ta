@@ -27,6 +27,7 @@ class KelolaKelasActivity : BaseAdminActivity() {
     private lateinit var spinnerJurusan: AutoCompleteTextView
     private lateinit var progressLoading: ProgressBar
     private lateinit var tvEmptyState: TextView
+    private lateinit var emptyStateContainer: View
     private lateinit var recyclerKelas: RecyclerView
     private lateinit var iconNotification: ImageView
 
@@ -66,16 +67,16 @@ class KelolaKelasActivity : BaseAdminActivity() {
         spinnerJurusan = findViewById(R.id.spinnerJurusan)
         progressLoading = findViewById(R.id.progressLoading)
         tvEmptyState = findViewById(R.id.tvEmptyState)
+        emptyStateContainer = findViewById(R.id.emptyState)
         recyclerKelas = findViewById(R.id.recyclerKelas)
         iconNotification = findViewById(R.id.iconNotification)
     }
 
     private fun setupRecyclerView() {
         kelasAdapter = KelasManageAdapter(
-            kelasList = filteredKelasList,
             onUbahWaliClick = { kelas -> showUbahWaliDialog(kelas) },
             onExpandClick = { kelas, callback -> loadStudentsInClass(kelas.id_kelas, callback) },
-            onStudentDetailClick = { siswa -> 
+            onStudentDetailClick = { siswa ->
                 if (siswa.id_siswa == 0) {
                    Toast.makeText(this, "Membuka form tambah siswa...", Toast.LENGTH_SHORT).show()
                 } else {
@@ -119,7 +120,7 @@ class KelolaKelasActivity : BaseAdminActivity() {
 
         progressLoading.visibility = View.VISIBLE
         recyclerKelas.visibility = View.GONE
-        tvEmptyState.visibility = View.GONE
+        emptyStateContainer.visibility = View.GONE
 
         lifecycleScope.launch {
             repository.getAdminManagementKelas(token).fold(
@@ -134,7 +135,7 @@ class KelolaKelasActivity : BaseAdminActivity() {
                     
                     progressLoading.visibility = View.GONE
                     recyclerKelas.visibility = if (filteredKelasList.isNotEmpty()) View.VISIBLE else View.GONE
-                    tvEmptyState.visibility = if (filteredKelasList.isEmpty()) View.VISIBLE else View.GONE
+                    emptyStateContainer.visibility = if (filteredKelasList.isEmpty()) View.VISIBLE else View.GONE
                 },
                 onFailure = { error ->
                     progressLoading.visibility = View.GONE
@@ -177,7 +178,7 @@ class KelolaKelasActivity : BaseAdminActivity() {
         filteredKelasList.addAll(result)
         kelasAdapter.updateData(filteredKelasList)
         
-        tvEmptyState.visibility = if (filteredKelasList.isEmpty()) View.VISIBLE else View.GONE
+        emptyStateContainer.visibility = if (filteredKelasList.isEmpty()) View.VISIBLE else View.GONE
         recyclerKelas.visibility = if (filteredKelasList.isNotEmpty()) View.VISIBLE else View.GONE
     }
 

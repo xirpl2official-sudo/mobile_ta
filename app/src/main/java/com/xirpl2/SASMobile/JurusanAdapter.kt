@@ -10,8 +10,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.xirpl2.SASMobile.model.DhuhaJurusanData
 
 class JurusanAdapter(
-    private val listJurusan: List<DhuhaJurusanData>
+    private var listJurusan: List<DhuhaJurusanData> = emptyList()
 ) : RecyclerView.Adapter<JurusanAdapter.JurusanViewHolder>() {
+
+    fun updateData(newList: List<DhuhaJurusanData>) {
+        listJurusan = newList
+        notifyDataSetChanged()
+    }
 
     inner class JurusanViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val cardJurusan: CardView = itemView.findViewById(R.id.cardJurusan)
@@ -50,17 +55,7 @@ class JurusanAdapter(
         }
 
         
-        val warnaJurusan = when (jurusanData.jurusan.uppercase()) {
-            "BROADCASTING" -> "#E14648"
-            "RPL" -> "#F78B20"
-            "ANIMASI" -> "#DA3F93"
-            "TKJ" -> "#FFCB0B"
-            "TAV" -> "#4FA898"
-            "MEKATRONIKA" -> "#57A77C"
-            "TEI" -> "#059452"
-            "DKV" -> "#1087CC"
-            else -> "#2196F3" 
-        }
+        val warnaJurusan = JurusanHelper.getColorForJurusan(jurusanData.jurusan)
         holder.cardJurusan.setCardBackgroundColor(Color.parseColor(warnaJurusan))
     }
 

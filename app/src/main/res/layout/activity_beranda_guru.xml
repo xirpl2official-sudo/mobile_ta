@@ -75,7 +75,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="SMK Negeri 2 Singosari"
-            android:textColor="#DBEAFE"
+            android:textColor="#FFFFFF"
             android:textSize="12sp"
             android:ellipsize="end"
             android:maxLines="1"
@@ -87,8 +87,8 @@
 
         <FrameLayout
             android:id="@+id/notifContainer"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
@@ -111,7 +111,7 @@
                 android:gravity="center"
                 android:text="0"
                 android:textColor="#FFFFFF"
-                android:textSize="9sp"
+                android:textSize="10sp"
                 android:textStyle="bold"
                 android:visibility="gone" />
 
@@ -407,7 +407,7 @@
                                 android:id="@+id/tvKehadiranLabel"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/Alpha"
+                                android:text="@string/Kehadiran"
                                 android:textColor="#666666"
                                 android:textSize="@dimen/text_admin_card_label"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -565,12 +565,12 @@
 
                             <ImageView
                                 android:id="@+id/btnQRCode"
-                                android:layout_width="32dp"
-                                android:layout_height="32dp"
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:padding="8dp"
                                 android:src="@drawable/ic_qr_code"
                                 android:contentDescription="QR Code"
                                 android:background="?attr/selectableItemBackgroundBorderless"
-                                android:padding="4dp"
                                 app:tint="@color/blue_theme"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintTop_toTopOf="parent"

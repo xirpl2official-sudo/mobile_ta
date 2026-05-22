@@ -6,19 +6,27 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.xirpl2.SASMobile.R
 import com.xirpl2.SASMobile.model.PengajuanIzin
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class RiwayatIzinAdapter : RecyclerView.Adapter<RiwayatIzinAdapter.ViewHolder>() {
+class RiwayatIzinAdapter :
+    ListAdapter<PengajuanIzin, RiwayatIzinAdapter.ViewHolder>(DIFF_CALLBACK) {
 
-    private var items: List<PengajuanIzin> = emptyList()
+    companion object {
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<PengajuanIzin>() {
+            override fun areItemsTheSame(oldItem: PengajuanIzin, newItem: PengajuanIzin): Boolean {
+                return oldItem.id_pengajuan == newItem.id_pengajuan
+            }
 
-    fun submitList(newItems: List<PengajuanIzin>) {
-        items = newItems
-        notifyDataSetChanged()
+            override fun areContentsTheSame(oldItem: PengajuanIzin, newItem: PengajuanIzin): Boolean {
+                return oldItem == newItem
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -28,10 +36,8 @@ class RiwayatIzinAdapter : RecyclerView.Adapter<RiwayatIzinAdapter.ViewHolder>()
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(items[position])
+        holder.bind(getItem(position))
     }
-
-    override fun getItemCount(): Int = items.size
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val tvIzinName: TextView = view.findViewById(R.id.tvIzinName)

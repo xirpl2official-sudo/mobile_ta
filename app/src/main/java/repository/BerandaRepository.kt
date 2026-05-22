@@ -291,7 +291,7 @@ class BerandaRepository {
         return withContext(Dispatchers.IO) {
             try {
                 val response: Response<StatisticsResponse> =
-                    apiService.getAttendanceAnalytics("Bearer $token", tanggal)
+                    apiService.getAttendanceAnalytics("Bearer $token", tanggal, tanggal)
 
                 if (!response.isSuccessful) {
                     return@withContext Result.failure(
@@ -407,7 +407,7 @@ class BerandaRepository {
         }
     }
 
-    suspend fun getStudentDetail(token: String, nis: String): Result<com.google.gson.JsonObject> {
+    suspend fun getStudentDetail(token: String, nis: String): Result<StudentDetailResponse> {
         return withContext(Dispatchers.IO) {
             try {
                 val response = apiService.getStudentDetail("Bearer $token", nis)
@@ -669,7 +669,8 @@ class BerandaRepository {
                     return@withContext Result.failure(Exception(msg))
                 }
                 val body = response.body() ?: return@withContext Result.failure(Exception("Response body kosong"))
-                Result.success(body.data)
+                val guru = body.data ?: return@withContext Result.failure(Exception("Data guru kosong"))
+                Result.success(guru)
             } catch (e: Exception) {
                 Result.failure(e)
             }
@@ -682,7 +683,8 @@ class BerandaRepository {
                 val response = apiService.getGuruDetail("Bearer $token", id)
                 if (!response.isSuccessful) return@withContext Result.failure(Exception("HTTP Error: ${response.code()}"))
                 val body = response.body() ?: return@withContext Result.failure(Exception("Response body kosong"))
-                Result.success(body.data)
+                val guru = body.data ?: return@withContext Result.failure(Exception("Data guru kosong"))
+                Result.success(guru)
             } catch (e: Exception) {
                 Result.failure(e)
             }
@@ -701,7 +703,8 @@ class BerandaRepository {
                     return@withContext Result.failure(Exception(msg))
                 }
                 val body = response.body() ?: return@withContext Result.failure(Exception("Response body kosong"))
-                Result.success(body.data)
+                val guru = body.data ?: return@withContext Result.failure(Exception("Data guru kosong"))
+                Result.success(guru)
             } catch (e: Exception) {
                 Result.failure(e)
             }
@@ -712,8 +715,16 @@ class BerandaRepository {
         return withContext(Dispatchers.IO) {
             try {
                 val response = apiService.deleteGuru("Bearer $token", id)
-                if (!response.isSuccessful) return@withContext Result.failure(Exception("HTTP Error: ${response.code()}"))
-                Result.success("Guru berhasil dihapus")
+                if (!response.isSuccessful) {
+                    val errorBody = response.errorBody()?.string()
+                    val msg = if (!errorBody.isNullOrEmpty()) {
+                        try { org.json.JSONObject(errorBody).getString("message") } catch (e: Exception) { errorBody }
+                    } else {
+                        "HTTP Error: ${response.code()}"
+                    }
+                    return@withContext Result.failure(Exception(msg))
+                }
+                Result.success(response.body()?.message ?: "Guru berhasil dihapus")
             } catch (e: Exception) {
                 Result.failure(e)
             }
@@ -734,7 +745,8 @@ class BerandaRepository {
                     return@withContext Result.failure(Exception(msg))
                 }
                 val body = response.body() ?: return@withContext Result.failure(Exception("Response body kosong"))
-                Result.success(body.data)
+                val guru = body.data ?: return@withContext Result.failure(Exception("Data guru kosong"))
+                Result.success(guru)
             } catch (e: Exception) {
                 Result.failure(e)
             }
@@ -786,6 +798,31 @@ class BerandaRepository {
                 if (!response.isSuccessful) return@withContext Result.failure(Exception("HTTP Error: ${response.code()}"))
                 val body = response.body() ?: return@withContext Result.failure(Exception("Response body kosong"))
                 Result.success(body)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    // --- Annual Rollover ---
+
+    suspend fun annualRollover(token: String, tahunAjaranBaru: String): Result<String> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.annualRollover(
+                    "Bearer $token",
+                    com.xirpl2.SASMobile.model.AnnualRolloverRequest(tahun_ajaran_baru = tahunAjaranBaru)
+                )
+                if (!response.isSuccessful) {
+                    val errorBody = response.errorBody()?.string()
+                    val msg = try {
+                        org.json.JSONObject(errorBody ?: "").getString("message")
+                    } catch (e: Exception) {
+                        errorBody ?: "HTTP Error: ${response.code()}"
+                    }
+                    return@withContext Result.failure(Exception(msg))
+                }
+                Result.success(response.body()?.message ?: "Roll over berhasil")
             } catch (e: Exception) {
                 Result.failure(e)
             }

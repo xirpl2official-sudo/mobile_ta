@@ -4,14 +4,30 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.xirpl2.SASMobile.R
 import com.xirpl2.SASMobile.model.AbsensiStaffItem
 
+import java.text.SimpleDateFormat
+import java.util.Locale
+
 class LaporanAbsensiAdapter(
-    private var items: List<AbsensiStaffItem> = emptyList(),
     private var pageOffset: Int = 0
-) : RecyclerView.Adapter<LaporanAbsensiAdapter.LaporanViewHolder>() {
+) : ListAdapter<AbsensiStaffItem, LaporanAbsensiAdapter.LaporanViewHolder>(DIFF_CALLBACK) {
+
+    companion object {
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<AbsensiStaffItem>() {
+            override fun areItemsTheSame(oldItem: AbsensiStaffItem, newItem: AbsensiStaffItem): Boolean {
+                return oldItem.id_absen == newItem.id_absen
+            }
+
+            override fun areContentsTheSame(oldItem: AbsensiStaffItem, newItem: AbsensiStaffItem): Boolean {
+                return oldItem == newItem
+            }
+        }
+    }
 
     class LaporanViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvNo: TextView = itemView.findViewById(R.id.tvNo)
@@ -30,7 +46,7 @@ class LaporanAbsensiAdapter(
     }
 
     override fun onBindViewHolder(holder: LaporanViewHolder, position: Int) {
-        val item = items[position]
+        val item = getItem(position)
 
         holder.tvNo.text = (pageOffset + position + 1).toString()
         holder.tvTanggal.text = formatTanggal(item.tanggal)
@@ -60,30 +76,24 @@ class LaporanAbsensiAdapter(
         holder.tvStatus.setBackgroundResource(backgroundRes)
     }
 
-    override fun getItemCount(): Int = items.size
-
     private fun formatTanggal(tanggal: String): String {
         return try {
-            val parts = tanggal.split("-")
-            if (parts.size == 3) {
-                "${parts[2]}/${parts[1]}/${parts[0]}"
-            } else {
-                tanggal
-            }
+            val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+            val outputFormat = SimpleDateFormat("dd/MM/yyyy", Locale("id"))
+            val date = inputFormat.parse(tanggal)
+            if (date != null) outputFormat.format(date) else tanggal
         } catch (e: Exception) {
             tanggal
         }
     }
 
     fun updateData(newItems: List<AbsensiStaffItem>, offset: Int = 0) {
-        items = newItems
         pageOffset = offset
-        notifyDataSetChanged()
+        submitList(newItems)
     }
 
     fun clearData() {
-        items = emptyList()
         pageOffset = 0
-        notifyDataSetChanged()
+        submitList(emptyList())
     }
 }

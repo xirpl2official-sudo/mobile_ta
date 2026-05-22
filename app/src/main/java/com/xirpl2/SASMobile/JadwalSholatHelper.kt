@@ -199,22 +199,5 @@ object JadwalSholatHelper {
         )
     }
 
-    fun generateJadwalSholat(jenisKelamin: JenisKelamin): List<JadwalSholat> {
-        val allowedNames = getJadwalSholatByGender(jenisKelamin)
-        val result = mutableListOf<JadwalSholat>()
-        var idCounter = 1
-
-        if (allowedNames.contains("Dhuha")) {
-            result.add(JadwalSholat(idCounter++, "Dhuha", "06:30", "09:00", getStatusSholat("06:30", "09:00")))
-        }
-        if (allowedNames.contains("Dzuhur")) {
-            result.add(JadwalSholat(idCounter++, "Dzuhur", "11:30", "13:00", getStatusSholat("11:30", "13:00")))
-        }
-        if (allowedNames.contains("Jumat")) {
-            result.add(JadwalSholat(idCounter++, "Jumat", "11:30", "13:00", getStatusSholat("11:30", "13:00")))
-        }
-
-        return result
-    }
 }
 

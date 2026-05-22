@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.snackbar.Snackbar
 import com.xirpl2.SASMobile.model.UpdateGuruRequest
 import com.xirpl2.SASMobile.network.RetrofitClient
 import kotlinx.coroutines.Dispatchers
@@ -24,6 +25,7 @@ class EditGuruActivity : BaseActivity() {
     private lateinit var progressLoading: ProgressBar
 
     private var guruId: Int = -1
+    private var dataLoaded: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,9 +48,6 @@ class EditGuruActivity : BaseActivity() {
 
     private fun loadIntentData() {
         guruId = intent.getIntExtra("guru_id", -1)
-        val nama = intent.getStringExtra("guru_nama") ?: ""
-        val nip = intent.getStringExtra("guru_nip") ?: ""
-        val email = intent.getStringExtra("guru_email") ?: ""
 
         if (guruId == -1) {
             Toast.makeText(this, "Data guru tidak valid", Toast.LENGTH_SHORT).show()
@@ -56,9 +55,51 @@ class EditGuruActivity : BaseActivity() {
             return
         }
 
-        etNama.setText(nama)
-        etNip.setText(nip)
-        etEmail.setText(email)
+        // Show intent data immediately as placeholder, but block saving
+        etNama.setText(intent.getStringExtra("guru_nama") ?: "")
+        etNip.setText(intent.getStringExtra("guru_nip") ?: "")
+        etEmail.setText(intent.getStringExtra("guru_email") ?: "")
+
+        // Disable save until fresh data loads successfully
+        dataLoaded = false
+        btnSimpan.isEnabled = false
+
+        // Fetch fresh data from API
+        fetchGuruDetail()
+    }
+
+    private fun fetchGuruDetail() {
+        val token = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this).getString("auth_token", "") ?: ""
+        if (token.isEmpty()) return
+
+        setLoadingState(true)
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val response = RetrofitClient.apiService.getGuruDetail("Bearer $token", guruId)
+
+                withContext(Dispatchers.Main) {
+                    setLoadingState(false)
+                    if (response.isSuccessful) {
+                        val guru = response.body()?.data
+                        if (guru != null) {
+                            etNama.setText(guru.nama)
+                            etNip.setText(guru.nip)
+                            etEmail.setText(guru.email)
+                        }
+                        dataLoaded = true
+                        btnSimpan.isEnabled = true
+                    } else {
+                        showFetchRetry("Gagal memuat data guru")
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    setLoadingState(false)
+                    showFetchRetry("Terjadi kesalahan koneksi")
+                }
+            }
+        }
     }
 
     private fun setupListeners() {
@@ -71,7 +112,18 @@ class EditGuruActivity : BaseActivity() {
         }
     }
 
+    private fun showFetchRetry(message: String) {
+        Snackbar.make(btnSimpan, message, Snackbar.LENGTH_INDEFINITE)
+            .setAction("Coba Lagi") { fetchGuruDetail() }
+            .show()
+    }
+
     private fun validateAndSubmit() {
+        if (!dataLoaded) {
+            Toast.makeText(this, "Data belum dimuat dari server", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         val nama = etNama.text.toString().trim()
         val nip = etNip.text.toString().trim()
         val email = etEmail.text.toString().trim()
@@ -111,7 +163,13 @@ class EditGuruActivity : BaseActivity() {
                         Toast.makeText(this@EditGuruActivity, "Berhasil memperbarui data guru", Toast.LENGTH_SHORT).show()
                         finish()
                     } else {
-                        Toast.makeText(this@EditGuruActivity, "Gagal: ${response.message()}", Toast.LENGTH_SHORT).show()
+                        val errorBody = response.errorBody()?.string()
+                        val errorMsg = if (!errorBody.isNullOrEmpty()) {
+                            try { org.json.JSONObject(errorBody).getString("message") } catch (_: Exception) { errorBody }
+                        } else {
+                            "Gagal memperbarui data guru"
+                        }
+                        Toast.makeText(this@EditGuruActivity, "Gagal: $errorMsg", Toast.LENGTH_SHORT).show()
                     }
                 }
             } catch (e: Exception) {
@@ -130,7 +188,7 @@ class EditGuruActivity : BaseActivity() {
             progressLoading.visibility = View.VISIBLE
         } else {
             btnSimpan.text = "Simpan Perubahan"
-            btnSimpan.isEnabled = true
+            btnSimpan.isEnabled = dataLoaded
             progressLoading.visibility = View.GONE
         }
     }

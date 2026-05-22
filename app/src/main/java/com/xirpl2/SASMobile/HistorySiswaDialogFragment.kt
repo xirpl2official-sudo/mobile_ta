@@ -2,6 +2,7 @@ package com.xirpl2.SASMobile
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -35,7 +36,12 @@ class HistorySiswaDialogFragment : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        student = arguments?.getSerializable("student") as SiswaItem
+        student = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            arguments?.getSerializable("student", SiswaItem::class.java)!!
+        } else {
+            @Suppress("DEPRECATION")
+            arguments?.getSerializable("student") as SiswaItem
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -92,9 +98,9 @@ class HistorySiswaDialogFragment : DialogFragment() {
         lifecycleScope.launch {
             repository.getHistoryStaff(
                 token = token,
+                startDate = startDate,
+                endDate = endDate,
                 filters = mapOf(
-                    "startDate" to startDate,
-                    "endDate" to endDate,
                     "nis" to student.nis
                 )
             ).fold(
@@ -150,6 +156,7 @@ class HistorySiswaDialogFragment : DialogFragment() {
             when (item.status.lowercase()) {
                 "hadir" -> tvStatus.setBackgroundResource(R.drawable.bg_status_hadir)
                 "izin" -> tvStatus.setBackgroundResource(R.drawable.bg_status_izin)
+                "sakit" -> tvStatus.setBackgroundResource(R.drawable.bg_status_sakit)
                 "alpha" -> tvStatus.setBackgroundResource(R.drawable.bg_status_alpha)
             }
         }

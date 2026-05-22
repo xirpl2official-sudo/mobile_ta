@@ -33,7 +33,8 @@ class QRCodeRepository {
                     return@withContext Result.failure(Exception("Response body kosong"))
                 }
 
-                return@withContext Result.success(body.data)
+                val qrData = body.data ?: return@withContext Result.failure(Exception("Data QR code kosong"))
+                return@withContext Result.success(qrData)
             } catch (e: Exception) {
                 Result.failure(Exception("Gagal terhubung ke server: ${e.message}"))
             }

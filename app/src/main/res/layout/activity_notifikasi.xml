@@ -39,7 +39,7 @@
             android:clickable="true"
             android:focusable="true"
             app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintHeight_percent="0.4"
+            app:layout_constraintHeight_percent="0.54"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
@@ -68,7 +68,7 @@
             android:clickable="true"
             android:focusable="true"
             app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintHeight_percent="0.4"
+            app:layout_constraintHeight_percent="0.54"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
@@ -99,7 +99,7 @@
             android:clickable="true"
             android:focusable="true"
             android:background="?attr/selectableItemBackground"
-            android:paddingVertical="4dp" />
+            android:paddingVertical="18dp" />
 
         <View
             android:layout_width="0dp"
@@ -117,7 +117,7 @@
             android:clickable="true"
             android:focusable="true"
             android:background="?attr/selectableItemBackground"
-            android:paddingVertical="4dp" />
+            android:paddingVertical="18dp" />
     </LinearLayout>
 
 
@@ -179,7 +179,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="@string/TidakAdaNotifikasi"
-            android:textColor="#9E9E9E"
+            android:textColor="@color/slate_500"
             android:textSize="16sp"
             android:fontFamily="@font/poppins_medium" />
 
@@ -188,7 +188,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Belum ada notifikasi saat ini"
-            android:textColor="@color/slate_400"
+            android:textColor="@color/slate_500"
             android:textSize="13sp"
             android:fontFamily="@font/poppins_light" />
 

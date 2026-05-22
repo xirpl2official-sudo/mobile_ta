@@ -5,36 +5,59 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.xirpl2.SASMobile.model.JadwalDhuhaKeahlian
 
+private object DhuhaDiffCallback : DiffUtil.ItemCallback<JadwalDhuhaKeahlian>() {
+    override fun areItemsTheSame(oldItem: JadwalDhuhaKeahlian, newItem: JadwalDhuhaKeahlian): Boolean =
+        oldItem.hari == newItem.hari
+
+    override fun areContentsTheSame(oldItem: JadwalDhuhaKeahlian, newItem: JadwalDhuhaKeahlian): Boolean =
+        oldItem == newItem
+}
+
 class DhuhaScheduleAdapter(
-    private var rows: List<JadwalDhuhaKeahlian>,
     private val onSwap: ((row1: Int, col1: Int, row2: Int, col2: Int) -> Unit)? = null
-) : RecyclerView.Adapter<DhuhaScheduleAdapter.ViewHolder>() {
+) : ListAdapter<JadwalDhuhaKeahlian, DhuhaScheduleAdapter.ViewHolder>(DhuhaDiffCallback) {
 
     var isEditMode = false
         set(value) {
+            val changed = field != value
             field = value
-            selectedRow = -1
-            selectedCol = -1
-            notifyDataSetChanged()
+            if (changed) {
+                val oldSelected = selectedPosition()
+                selectedRow = -1
+                selectedCol = -1
+                if (oldSelected != RecyclerView.NO_POSITION) {
+                    notifyItemChanged(oldSelected)
+                }
+                notifyItemRangeChanged(0, itemCount)
+            }
         }
 
     private var selectedRow = -1
     private var selectedCol = -1
 
+    private fun selectedPosition(): Int = if (selectedRow in 0 until itemCount) selectedRow else RecyclerView.NO_POSITION
+
     private fun handleItemClick(row: Int, col: Int) {
         if (!isEditMode) return
+
+        val oldSelected = selectedPosition()
 
         if (selectedRow == -1 && selectedCol == -1) {
             selectedRow = row
             selectedCol = col
-            notifyDataSetChanged()
+            notifyItemChanged(row)
         } else {
             onSwap?.invoke(selectedRow, selectedCol, row, col)
             selectedRow = -1
             selectedCol = -1
+            if (oldSelected != RecyclerView.NO_POSITION) {
+                notifyItemChanged(oldSelected)
+            }
         }
     }
 
@@ -45,13 +68,13 @@ class DhuhaScheduleAdapter(
 
         init {
             tvJurusan1.setOnClickListener {
-                if (adapterPosition != RecyclerView.NO_POSITION) {
-                    handleItemClick(adapterPosition, 1)
+                if (bindingAdapterPosition != RecyclerView.NO_POSITION) {
+                    handleItemClick(bindingAdapterPosition, 1)
                 }
             }
             tvJurusan2.setOnClickListener {
-                if (adapterPosition != RecyclerView.NO_POSITION) {
-                    handleItemClick(adapterPosition, 2)
+                if (bindingAdapterPosition != RecyclerView.NO_POSITION) {
+                    handleItemClick(bindingAdapterPosition, 2)
                 }
             }
         }
@@ -63,7 +86,7 @@ class DhuhaScheduleAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val row = rows[position]
+        val row = getItem(position)
         holder.tvDay.text = row.hari
 
         holder.itemView.setBackgroundColor(if (position % 2 == 0) Color.WHITE else Color.parseColor("#FAFAFA"))
@@ -96,10 +119,4 @@ class DhuhaScheduleAdapter(
         }
     }
 
-    override fun getItemCount(): Int = rows.size
-
-    fun updateData(newRows: List<JadwalDhuhaKeahlian>) {
-        this.rows = newRows
-        notifyDataSetChanged()
-    }
 }

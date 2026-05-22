@@ -4,16 +4,19 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.xirpl2.SASMobile.model.AbsensiStaffItem
+import com.xirpl2.SASMobile.model.JadwalSholatData
 import com.xirpl2.SASMobile.repository.BerandaRepository
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -34,7 +37,9 @@ class PresenceDetailPopUpFragment : DialogFragment() {
     private var studentName: String? = null
     
     private var allAbsensiList = mutableListOf<AbsensiStaffItem>()
+    private var allJadwals = listOf<JadwalSholatData>()
     private var selectedDate: String = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+    private var jadwalTimeMap = mapOf<String, String>()
 
     companion object {
         fun newInstance(nis: String?, jurusan: String?, name: String?): PresenceDetailPopUpFragment {
@@ -118,8 +123,8 @@ class PresenceDetailPopUpFragment : DialogFragment() {
     private fun loadAttendanceData() {
         val token = getAuthToken()
         val cal = Calendar.getInstance()
-        
-        
+
+
         val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         cal.set(Calendar.DAY_OF_MONTH, 1)
         val startDate = sdf.format(cal.time)
@@ -127,7 +132,15 @@ class PresenceDetailPopUpFragment : DialogFragment() {
         val endDate = sdf.format(cal.time)
 
         lifecycleScope.launch {
-            
+            // Fetch jadwal sholat for time ranges
+            repository.getJadwalSholat(token).fold(
+                onSuccess = { jadwals ->
+                    allJadwals = jadwals
+                    buildJadwalTimeMapForDate(selectedDate)
+                },
+                onFailure = { /* keep empty map, adapter will show fallback */ }
+            )
+
             repository.getHistoryStaff(
                 token = token,
                 startDate = startDate,
@@ -138,25 +151,64 @@ class PresenceDetailPopUpFragment : DialogFragment() {
                     activity?.runOnUiThread {
                         allAbsensiList.clear()
                         allAbsensiList.addAll(data.absensi ?: emptyList())
-                        
-                        
+
+
                         data.statistik?.let { stat ->
                             tvHadirCount.text = stat.total_hadir.toString()
                             tvIzinCount.text = stat.total_izin.toString()
                             tvSakitCount.text = stat.total_sakit.toString()
                         }
-                        
+
                         filterPrayerByDate()
                     }
                 },
-                onFailure = {  }
+                onFailure = { e ->
+                    Log.w("PresenceDetailPopUp", "Failed to load attendance history", e)
+                    activity?.runOnUiThread {
+                        Toast.makeText(context, "Gagal memuat riwayat kehadiran", Toast.LENGTH_SHORT).show()
+                    }
+                }
             )
         }
     }
 
     private fun filterPrayerByDate() {
+        buildJadwalTimeMapForDate(selectedDate)
         val filteredList = allAbsensiList.filter { it.tanggal == selectedDate }
-        rvPrayerData.adapter = PrayerDataAdapter(filteredList)
+        rvPrayerData.adapter = PrayerDataAdapter(filteredList, jadwalTimeMap)
+    }
+
+    private fun buildJadwalTimeMapForDate(dateStr: String) {
+        if (allJadwals.isEmpty()) return
+        val dayName = try {
+            val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val date = sdf.parse(dateStr)
+            val cal = Calendar.getInstance()
+            if (date != null) cal.time = date
+            val dayOfWeek = cal.get(Calendar.DAY_OF_WEEK)
+            when (dayOfWeek) {
+                Calendar.MONDAY -> "Senin"
+                Calendar.TUESDAY -> "Selasa"
+                Calendar.WEDNESDAY -> "Rabu"
+                Calendar.THURSDAY -> "Kamis"
+                Calendar.FRIDAY -> "Jumat"
+                Calendar.SATURDAY -> "Sabtu"
+                Calendar.SUNDAY -> "Minggu"
+                else -> ""
+            }
+        } catch (e: Exception) {
+            ""
+        }
+        val dayJadwals = allJadwals.filter { it.hari?.equals(dayName, ignoreCase = true) == true }
+        jadwalTimeMap = if (dayJadwals.isNotEmpty()) {
+            dayJadwals.associate { jadwal ->
+                jadwal.jenis_sholat.uppercase() to "${jadwal.jam_mulai} - ${jadwal.jam_selesai}"
+            }
+        } else {
+            allJadwals.associate { jadwal ->
+                jadwal.jenis_sholat.uppercase() to "${jadwal.jam_mulai} - ${jadwal.jam_selesai}"
+            }
+        }
     }
 
     private fun getAuthToken(): String {
@@ -217,7 +269,8 @@ class PresenceDetailPopUpFragment : DialogFragment() {
     }
 
     private inner class PrayerDataAdapter(
-        private val items: List<AbsensiStaffItem>
+        private val items: List<AbsensiStaffItem>,
+        private val timeMap: Map<String, String>
     ) : RecyclerView.Adapter<PrayerDataAdapter.ViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -228,7 +281,7 @@ class PresenceDetailPopUpFragment : DialogFragment() {
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val item = items[position]
             holder.tvName.text = "Sholat ${item.jenis_sholat ?: "Unknown"}"
-            
+
             when (item.status.uppercase()) {
                 "HADIR" -> {
                     holder.tvStatus.text = "Sudah Sholat ✅"
@@ -251,14 +304,9 @@ class PresenceDetailPopUpFragment : DialogFragment() {
                     holder.tvStatus.setTextColor(Color.parseColor("#999999"))
                 }
             }
-            
-            val timeRange = when (item.jenis_sholat?.uppercase() ?: "") {
-                "DHUHA" -> "06:30:00 - 08:00:00"
-                "DZUHUR" -> "11:30:00 - 13:00:00"
-                "ASHAR" -> "15:15:00 - 16:00:00"
-                "JUMAT" -> "11:00:00 - 13:00:00"
-                else -> "--:-- - --:--"
-            }
+
+            val prayerKey = item.jenis_sholat?.uppercase() ?: ""
+            val timeRange = timeMap[prayerKey] ?: "--:-- - --:--"
             holder.tvTime.text = timeRange
         }
 

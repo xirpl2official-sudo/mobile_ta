@@ -40,6 +40,7 @@ abstract class BaseAdminActivity : BaseActivity() {
         QR_CODE,
         SISWA_BELUM_TERDAFTAR,
         MANAJEMEN_PERANGKAT,
+        KENAIKAN_KELAS,
         PENGATURAN,
         LOGOUT
     }
@@ -106,6 +107,7 @@ abstract class BaseAdminActivity : BaseActivity() {
             sidebarView.findViewById<View>(R.id.menuKelolaGuru)?.visibility = View.GONE
             sidebarView.findViewById<View>(R.id.menuQRCode)?.visibility = View.GONE
             sidebarView.findViewById<View>(R.id.menuManajemenPerangkat)?.visibility = View.GONE
+            sidebarView.findViewById<View>(R.id.menuKenaikanKelas)?.visibility = View.GONE
 
             if (isWali) {
                 // Wali Kelas: Dashboard, Jadwal, Kelola Siswa, Presensi, Pengajuan Izin, Laporan, Siswa Belum Terdaftar
@@ -221,6 +223,10 @@ abstract class BaseAdminActivity : BaseActivity() {
             navigateTo(AdminDeviceManagementActivity::class.java)
         }
 
+        setupMenuItem(R.id.menuKenaikanKelas, AdminMenuItem.KENAIKAN_KELAS, currentItem) {
+            navigateTo(StudentPromotionActivity::class.java)
+        }
+
         sidebarView.findViewById<LinearLayout>(R.id.menuPengaturan)?.setOnClickListener {
             closeSidebar()
             startActivity(Intent(this, PengaturanAkunActivity::class.java))
@@ -319,6 +325,7 @@ abstract class BaseAdminActivity : BaseActivity() {
                 sidebarView.findViewById<LinearLayout>(R.id.menuQRCode)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuSiswaBelumTerdaftar)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuManajemenPerangkat)?.setOnClickListener(null)
+                sidebarView.findViewById<LinearLayout>(R.id.menuKenaikanKelas)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuPengaturan)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuLogout)?.setOnClickListener(null)
             }

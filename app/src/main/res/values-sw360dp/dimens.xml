@@ -4,7 +4,7 @@
     <dimen name="text_bawah_title">16sp</dimen>
     <dimen name="text_beranda">18sp</dimen>
     <dimen name="text_smkn2s">12sp</dimen>
-    <dimen name="text_email">9sp</dimen>
+    <dimen name="text_email">12sp</dimen>
     <dimen name="text_masukOTP">13sp</dimen>
     <dimen name="text_input_hint">14sp</dimen>
     <dimen name="text_button">15sp</dimen>

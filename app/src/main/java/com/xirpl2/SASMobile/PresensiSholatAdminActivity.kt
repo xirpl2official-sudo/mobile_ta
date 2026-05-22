@@ -126,7 +126,8 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
         
         if (btnInputIzin == null || btnTambah == null) return
         
-        val role = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this).getString("user_role", "")?.lowercase() ?: ""
+        val session = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this)
+        val role = session.getString("user_role", "")?.lowercase() ?: ""
         
         when {
             role == "wali_kelas" || role == "wali kelas" -> {
@@ -347,10 +348,10 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
                     presensiAdapter.updateData(dataList)
 
                     isLastPage = pagination?.let {
-                        it.page >= it.total_pages
+                        it.page >= it.totalPages
                     } ?: ((items?.size ?: 0) < limit)
 
-                    val totalItems = pagination?.total_items ?: dataList.size
+                    val totalItems = pagination?.totalItems ?: dataList.size
                     tvCountInfo.text = "Total: $totalItems data"
 
                     if (dataList.isEmpty()) {

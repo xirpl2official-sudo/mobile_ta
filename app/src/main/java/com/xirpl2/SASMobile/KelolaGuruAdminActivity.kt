@@ -73,7 +73,6 @@ class KelolaGuruAdminActivity : BaseAdminActivity() {
 
     private fun setupRecyclerView() {
         adapter = KelolaGuruAdminAdapter(
-            guruList = guruList,
             onEditClick = { guru ->
                 val intent = Intent(this, EditGuruActivity::class.java).apply {
                     putExtra("guru_id", guru.id_staff)
@@ -131,7 +130,7 @@ class KelolaGuruAdminActivity : BaseAdminActivity() {
                         val list = body?.data ?: emptyList()
                         guruList.clear()
                         guruList.addAll(list)
-                        adapter.updateData(guruList)
+                        adapter.submitList(guruList)
                         tvCountInfo.text = "Menampilkan ${list.size} Guru"
 
                         if (list.isEmpty()) {
@@ -142,7 +141,13 @@ class KelolaGuruAdminActivity : BaseAdminActivity() {
                             recyclerGuru.visibility = View.VISIBLE
                         }
                     } else {
-                        Toast.makeText(this@KelolaGuruAdminActivity, "Gagal memuat data", Toast.LENGTH_SHORT).show()
+                        val errorBody = response.errorBody()?.string()
+                        val errorMsg = if (!errorBody.isNullOrEmpty()) {
+                            try { org.json.JSONObject(errorBody).getString("message") } catch (_: Exception) { errorBody }
+                        } else {
+                            "Gagal memuat data"
+                        }
+                        Toast.makeText(this@KelolaGuruAdminActivity, errorMsg, Toast.LENGTH_SHORT).show()
                     }
                 }
             } catch (e: Exception) {
@@ -180,13 +185,19 @@ class KelolaGuruAdminActivity : BaseAdminActivity() {
                         Toast.makeText(this@KelolaGuruAdminActivity, "Berhasil melepaskan wali kelas", Toast.LENGTH_SHORT).show()
                         loadDataGuru(etSearch.text.toString())
                     } else {
-                        Toast.makeText(this@KelolaGuruAdminActivity, "Gagal melepaskan wali kelas", Toast.LENGTH_SHORT).show()
+                        val errorBody = response.errorBody()?.string()
+                        val errorMsg = if (!errorBody.isNullOrEmpty()) {
+                            try { org.json.JSONObject(errorBody).getString("message") } catch (_: Exception) { errorBody }
+                        } else {
+                            "Gagal melepaskan wali kelas"
+                        }
+                        Toast.makeText(this@KelolaGuruAdminActivity, errorMsg, Toast.LENGTH_SHORT).show()
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     progressLoading.visibility = View.GONE
-                    Toast.makeText(this@KelolaGuruAdminActivity, "Terjadi kesalahan", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@KelolaGuruAdminActivity, "Terjadi kesalahan: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -215,16 +226,22 @@ class KelolaGuruAdminActivity : BaseAdminActivity() {
                 withContext(Dispatchers.Main) {
                     progressLoading.visibility = View.GONE
                     if (response.isSuccessful) {
-                        Toast.makeText(this@KelolaGuruAdminActivity, "Berhasil menghapus data guru", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@KelolaGuruAdminActivity, response.body()?.message ?: "Berhasil menghapus data guru", Toast.LENGTH_SHORT).show()
                         loadDataGuru(etSearch.text.toString())
                     } else {
-                        Toast.makeText(this@KelolaGuruAdminActivity, "Gagal menghapus data guru", Toast.LENGTH_SHORT).show()
+                        val errorBody = response.errorBody()?.string()
+                        val errorMsg = if (!errorBody.isNullOrEmpty()) {
+                            try { org.json.JSONObject(errorBody).getString("message") } catch (e: Exception) { errorBody }
+                        } else {
+                            "Gagal menghapus data guru"
+                        }
+                        Toast.makeText(this@KelolaGuruAdminActivity, errorMsg, Toast.LENGTH_SHORT).show()
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     progressLoading.visibility = View.GONE
-                    Toast.makeText(this@KelolaGuruAdminActivity, "Terjadi kesalahan", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@KelolaGuruAdminActivity, "Terjadi kesalahan: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }
         }

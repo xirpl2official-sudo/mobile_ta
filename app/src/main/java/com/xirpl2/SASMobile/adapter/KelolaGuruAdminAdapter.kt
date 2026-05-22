@@ -6,25 +6,17 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.xirpl2.SASMobile.R
 import com.xirpl2.SASMobile.model.GuruItem
 
 class KelolaGuruAdminAdapter(
-    private var guruList: List<GuruItem>,
     private val onEditClick: (GuruItem) -> Unit,
     private val onLepasWaliKelasClick: (GuruItem) -> Unit,
     private val onDeleteClick: (GuruItem) -> Unit
-) : RecyclerView.Adapter<KelolaGuruAdminAdapter.GuruViewHolder>() {
-
-    fun updateData(newList: List<GuruItem>) {
-        guruList = newList
-        notifyDataSetDataSetChanged()
-    }
-
-    private fun notifyDataSetDataSetChanged() {
-        notifyDataSetChanged()
-    }
+) : ListAdapter<GuruItem, KelolaGuruAdminAdapter.GuruViewHolder>(GuruDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GuruViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -33,11 +25,8 @@ class KelolaGuruAdminAdapter(
     }
 
     override fun onBindViewHolder(holder: GuruViewHolder, position: Int) {
-        val guru = guruList[position]
-        holder.bind(guru)
+        holder.bind(getItem(position))
     }
-
-    override fun getItemCount(): Int = guruList.size
 
     inner class GuruViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val tvNama: TextView = itemView.findViewById(R.id.tvNama)
@@ -68,6 +57,16 @@ class KelolaGuruAdminAdapter(
             btnEdit.setOnClickListener { onEditClick(guru) }
             btnLepasWaliKelas.setOnClickListener { onLepasWaliKelasClick(guru) }
             btnDelete.setOnClickListener { onDeleteClick(guru) }
+        }
+    }
+
+    class GuruDiffCallback : DiffUtil.ItemCallback<GuruItem>() {
+        override fun areItemsTheSame(oldItem: GuruItem, newItem: GuruItem): Boolean {
+            return oldItem.id_staff == newItem.id_staff
+        }
+
+        override fun areContentsTheSame(oldItem: GuruItem, newItem: GuruItem): Boolean {
+            return oldItem == newItem
         }
     }
 }

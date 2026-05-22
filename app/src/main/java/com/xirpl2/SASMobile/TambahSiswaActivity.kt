@@ -7,6 +7,7 @@ import android.widget.AutoCompleteTextView
 import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
@@ -52,8 +53,7 @@ class TambahSiswaActivity : BaseActivity() {
     }
 
     private fun setupStatusBar() {
-        window.statusBarColor = getColor(R.color.surface)
-        window.decorView.systemUiVisibility = android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        window.statusBarColor = androidx.core.content.ContextCompat.getColor(this, R.color.blue_theme)
     }
 
     private fun initViews() {
@@ -85,6 +85,10 @@ class TambahSiswaActivity : BaseActivity() {
     }
 
     private fun setupListeners() {
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        toolbar.setNavigationIcon(R.drawable.ic_back)
+        toolbar.setNavigationOnClickListener { finish() }
+
         btnBatal.setOnClickListener {
             finish()
         }
@@ -119,9 +123,6 @@ class TambahSiswaActivity : BaseActivity() {
             Toast.makeText(this, "Silakan pilih jurusan", Toast.LENGTH_SHORT).show()
             return
         }
-
-        // Combine into expected format if necessary, e.g., "XII RPL 1"
-        val fullKelas = if (part.isNotEmpty()) "$kelas $jurusan $part" else "$kelas $jurusan"
 
         val request = CreateSiswaRequest(
             nis = nis,

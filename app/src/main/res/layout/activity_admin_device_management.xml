@@ -80,7 +80,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="SMK Negeri 2 Singosari"
-                    android:textColor="#DBEAFE"
+                    android:textColor="#FFFFFF"
                     android:textSize="12sp"
                     android:ellipsize="end"
                     android:maxLines="1" />
@@ -157,19 +157,45 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
-            <!-- Empty State Text -->
-            <TextView
-                android:id="@+id/tvEmpty"
+            <!-- Empty State -->
+            <LinearLayout
+                android:id="@+id/emptyState"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tidak ada data"
-                android:textColor="#666666"
-                android:textSize="14sp"
+                android:orientation="vertical"
+                android:gravity="center"
                 android:visibility="gone"
                 app:layout_constraintTop_toTopOf="@id/rvDevices"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <ImageView
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:src="@drawable/ic_device"
+                    android:alpha="0.5"
+                    android:contentDescription="Tidak ada perangkat" />
+
+                <TextView
+                    android:id="@+id/tvEmpty"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Tidak ada data"
+                    android:textColor="#333333"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Belum ada perangkat siswa yang terdaftar"
+                    android:textColor="@color/slate_400"
+                    android:textSize="13sp" />
+
+            </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

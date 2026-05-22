@@ -7,7 +7,7 @@
     <dimen name="text_input_hint">13sp</dimen>
     <dimen name="text_button">14sp</dimen>
     <dimen name="text_small">12sp</dimen>
-    <dimen name="text_email">7sp</dimen>
+    <dimen name="text_email">12sp</dimen>
     <dimen name="text_waktu">11sp</dimen>
     <dimen name="text_bawah_waktu">8sp</dimen>
     <dimen name="text_masukOTP">11sp</dimen>

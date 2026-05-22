@@ -76,7 +76,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="SMK Negeri 2 Singosari"
-                android:textColor="#DBEAFE"
+                android:textColor="#FFFFFF"
                 android:textSize="12sp"
                 android:ellipsize="end"
                 android:maxLines="1"
@@ -183,7 +183,7 @@
                                         android:layout_height="wrap_content"
                                         android:text="Hadir"
                                         android:textColor="#666666"
-                                        android:textSize="10sp" />
+                                        android:textSize="11sp" />
 
                                 </LinearLayout>
 
@@ -510,16 +510,42 @@
                     android:visibility="gone" />
 
                 <!-- Empty State -->
-                <TextView
-                    android:id="@+id/tvEmptyState"
-                    android:layout_width="match_parent"
+                <LinearLayout
+                    android:id="@+id/emptyState"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/TidakAdaDataAbsensiAlt"
-                    android:textColor="#666666"
-                    android:textSize="14sp"
+                    android:orientation="vertical"
                     android:gravity="center"
+                    android:layout_gravity="center"
                     android:visibility="gone"
-                    android:padding="24dp" />
+                    android:padding="24dp">
+
+                    <ImageView
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:src="@drawable/ic_description"
+                        android:alpha="0.5"
+                        android:contentDescription="Tidak ada data absensi" />
+
+                    <TextView
+                        android:id="@+id/tvEmptyState"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="@string/TidakAdaDataAbsensiAlt"
+                        android:textColor="#333333"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Coba ubah filter atau rentang tanggal"
+                        android:textColor="@color/slate_400"
+                        android:textSize="13sp" />
+
+                </LinearLayout>
 
                 <!-- Data Table -->
                 <HorizontalScrollView

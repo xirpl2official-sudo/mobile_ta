@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.xirpl2.SASMobile.R
@@ -17,13 +19,18 @@ class PengajuanIzinAdminAdapter(
     private val onApprove: (PengajuanIzin) -> Unit,
     private val onReject: (PengajuanIzin) -> Unit,
     private val onDetail: (PengajuanIzin) -> Unit
-) : RecyclerView.Adapter<PengajuanIzinAdminAdapter.ViewHolder>() {
+) : ListAdapter<PengajuanIzin, PengajuanIzinAdminAdapter.ViewHolder>(DIFF_CALLBACK) {
 
-    private var items: List<PengajuanIzin> = emptyList()
+    companion object {
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<PengajuanIzin>() {
+            override fun areItemsTheSame(oldItem: PengajuanIzin, newItem: PengajuanIzin): Boolean {
+                return oldItem.id_pengajuan == newItem.id_pengajuan
+            }
 
-    fun submitList(newItems: List<PengajuanIzin>) {
-        items = newItems
-        notifyDataSetChanged()
+            override fun areContentsTheSame(oldItem: PengajuanIzin, newItem: PengajuanIzin): Boolean {
+                return oldItem == newItem
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -33,10 +40,8 @@ class PengajuanIzinAdminAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(items[position])
+        holder.bind(getItem(position))
     }
-
-    override fun getItemCount(): Int = items.size
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val tvStudentName: TextView = view.findViewById(R.id.tvStudentName)
@@ -46,10 +51,10 @@ class PengajuanIzinAdminAdapter(
         private val tvPeriod: TextView = view.findViewById(R.id.tvPeriod)
         private val tvReason: TextView = view.findViewById(R.id.tvReason)
         private val btnExpandReason: TextView = view.findViewById(R.id.btnExpandReason)
-        
+
         private val layoutActionsPending: LinearLayout = view.findViewById(R.id.layoutActionsPending)
         private val layoutActionsProcessed: LinearLayout = view.findViewById(R.id.layoutActionsProcessed)
-        
+
         private val btnApprove: MaterialButton = view.findViewById(R.id.btnApprove)
         private val btnReject: MaterialButton = view.findViewById(R.id.btnReject)
         private val btnDetail: MaterialButton = view.findViewById(R.id.btnDetail)
@@ -57,16 +62,16 @@ class PengajuanIzinAdminAdapter(
 
         fun bind(item: PengajuanIzin) {
             val context = itemView.context
-            
+
             tvStudentName.text = item.siswa?.nama_siswa ?: "Unknown"
-            tvStudentNisClass.text = "${item.siswa?.nis ?: "-"} • ${item.siswa?.kelas ?: "-"} ${item.siswa?.jurusan ?: ""}"
-            
+            tvStudentNisClass.text = "${item.siswa?.nis ?: "-"} \u2022 ${item.siswa?.kelas ?: "-"} ${item.siswa?.jurusan ?: ""}"
+
             tvLeaveType.text = item.jenisIzin.replaceFirstChar { it.uppercase() }
             setupLeaveTypeBadge(item.jenisIzin)
-            
+
             tvPeriod.text = "${item.tanggalAwal} s/d ${item.tanggalAkhir}"
             tvReason.text = item.keterangan
-            
+
             // Expand Reason Logic
             tvReason.maxLines = 2
             btnExpandReason.visibility = if (item.keterangan.length > 60) View.VISIBLE else View.GONE
@@ -118,7 +123,7 @@ class PengajuanIzinAdminAdapter(
         private fun setupStatusBadge(status: String) {
             statusBadge.text = status.uppercase()
             val context = itemView.context
-            
+
             when (status.lowercase()) {
                 "pending" -> {
                     statusBadge.text = "PENDING"

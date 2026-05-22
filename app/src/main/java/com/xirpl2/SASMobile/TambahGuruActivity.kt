@@ -95,7 +95,13 @@ class TambahGuruActivity : BaseActivity() {
                         Toast.makeText(this@TambahGuruActivity, "Berhasil menambahkan guru", Toast.LENGTH_SHORT).show()
                         finish() // Return to previous screen
                     } else {
-                        Toast.makeText(this@TambahGuruActivity, "Gagal: ${response.message()}", Toast.LENGTH_SHORT).show()
+                        val errorBody = response.errorBody()?.string()
+                        val errorMsg = if (!errorBody.isNullOrEmpty()) {
+                            try { org.json.JSONObject(errorBody).getString("message") } catch (_: Exception) { errorBody }
+                        } else {
+                            "Gagal menambahkan guru"
+                        }
+                        Toast.makeText(this@TambahGuruActivity, "Gagal: $errorMsg", Toast.LENGTH_SHORT).show()
                     }
                 }
             } catch (e: Exception) {

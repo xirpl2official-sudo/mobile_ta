@@ -34,16 +34,24 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
-            <ImageView
-                android:id="@+id/iconMenu"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/menu"
-                android:contentDescription="@string/Menu"
+            <FrameLayout
+                android:id="@+id/iconMenuContainer"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:tint="@android:color/white" />
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <ImageView
+                    android:id="@+id/iconMenu"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/menu"
+                    android:contentDescription="@string/Menu"
+                    app:tint="@android:color/white" />
+
+            </FrameLayout>
 
             <ImageView
                 android:id="@+id/logoSekolah"
@@ -51,7 +59,7 @@
                 android:layout_height="36dp"
                 android:src="@drawable/logo_smk"
                 android:contentDescription="Logo SMKN 2"
-                app:layout_constraintStart_toEndOf="@id/iconMenu"
+                app:layout_constraintStart_toEndOf="@id/iconMenuContainer"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:layout_marginStart="8dp" />
@@ -62,7 +70,7 @@
                 android:orientation="vertical"
                 android:layout_marginStart="8dp"
                 app:layout_constraintStart_toEndOf="@id/logoSekolah"
-                app:layout_constraintEnd_toStartOf="@id/iconNotification"
+                app:layout_constraintEnd_toStartOf="@id/iconNotifContainer"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent">
 
@@ -80,22 +88,30 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="SMK Negeri 2 Singosari"
-                    android:textColor="#DBEAFE"
+                    android:textColor="#FFFFFF"
                     android:textSize="12sp"
                     android:ellipsize="end"
                     android:maxLines="1" />
             </LinearLayout>
 
-            <ImageView
-                android:id="@+id/iconNotification"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_notification"
-                android:contentDescription="Notifikasi"
+            <FrameLayout
+                android:id="@+id/iconNotifContainer"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:tint="@android:color/white" />
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <ImageView
+                    android:id="@+id/iconNotification"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_notification"
+                    android:contentDescription="Notifikasi"
+                    app:tint="@android:color/white" />
+
+            </FrameLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -200,18 +216,45 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
-            <TextView
-                android:id="@+id/tvEmptyState"
+            <!-- Empty State -->
+            <LinearLayout
+                android:id="@+id/emptyState"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tidak ada kelas ditemukan."
-                android:textColor="#666666"
-                android:textSize="14sp"
+                android:orientation="vertical"
+                android:gravity="center"
                 android:visibility="gone"
                 app:layout_constraintTop_toTopOf="@id/recyclerKelas"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <ImageView
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:src="@drawable/ic_class"
+                    android:alpha="0.5"
+                    android:contentDescription="Tidak ada kelas" />
+
+                <TextView
+                    android:id="@+id/tvEmptyState"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Tidak ada kelas ditemukan."
+                    android:textColor="#333333"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Coba ubah filter jurusan atau kata kunci pencarian"
+                    android:textColor="@color/slate_400"
+                    android:textSize="13sp" />
+
+            </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

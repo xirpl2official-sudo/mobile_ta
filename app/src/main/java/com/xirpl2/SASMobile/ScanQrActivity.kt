@@ -1,14 +1,20 @@
 package com.xirpl2.SASMobile
 
-import android.content.Context
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
@@ -38,6 +44,16 @@ class ScanQrActivity : BaseActivity() {
     private val TAG = "ScanQrActivity"
     private var isProcessing = false
 
+    private val cameraPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            barcodeView.resume()
+        } else {
+            showPermissionDeniedDialog()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_scan_qr)
@@ -47,28 +63,23 @@ class ScanQrActivity : BaseActivity() {
         setupWindowInsets()
         setupClickListeners()
         setupBarcodeScanner()
+        checkCameraPermission()
     }
 
     private fun initializeViews() {
         barcodeView = findViewById(R.id.barcodeView)
         btnScan = findViewById(R.id.btnScan)
         tvStatus = findViewById(R.id.tvStatus)
-        
-        
-        cardResult = findViewById(R.id.cardResult) ?: createDummyCardView()
-        tvStudentName = findViewById(R.id.tvStudentName) ?: createDummyTextView()
-        tvStudentClass = findViewById(R.id.tvStudentClass) ?: createDummyTextView()
-        tvPrayerType = findViewById(R.id.tvPrayerType) ?: createDummyTextView()
-        tvAttendanceStatus = findViewById(R.id.tvAttendanceStatus) ?: createDummyTextView()
-        tvAttendanceTime = findViewById(R.id.tvAttendanceTime) ?: createDummyTextView()
-        btnScanAgain = findViewById(R.id.btnScanAgain) ?: createDummyButton()
-        progressBar = findViewById(R.id.progressBarScan) ?: createDummyProgressBar()
-    }
 
-    private fun createDummyCardView(): CardView = CardView(this).apply { visibility = View.GONE }
-    private fun createDummyTextView(): TextView = TextView(this)
-    private fun createDummyButton(): MaterialButton = MaterialButton(this)
-    private fun createDummyProgressBar(): ProgressBar = ProgressBar(this).apply { visibility = View.GONE }
+        cardResult = findViewById(R.id.cardResult)
+        tvStudentName = findViewById(R.id.tvStudentName)
+        tvStudentClass = findViewById(R.id.tvStudentClass)
+        tvPrayerType = findViewById(R.id.tvPrayerType)
+        tvAttendanceStatus = findViewById(R.id.tvAttendanceStatus)
+        tvAttendanceTime = findViewById(R.id.tvAttendanceTime)
+        btnScanAgain = findViewById(R.id.btnScanAgain)
+        progressBar = findViewById(R.id.progressBarScan)
+    }
 
     private fun setupWindowInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -105,7 +116,11 @@ class ScanQrActivity : BaseActivity() {
 
     private fun startScanning() {
         if (isProcessing) return
-        
+        if (!hasCameraPermission()) {
+            requestCameraPermission()
+            return
+        }
+
         tvStatus.visibility = View.GONE
         hideResult()
         barcodeView.resume()
@@ -221,14 +236,12 @@ class ScanQrActivity : BaseActivity() {
     }
 
     private fun showStatus(message: String, isSuccess: Boolean) {
-        runOnUiThread {
-            tvStatus.text = message
-            tvStatus.visibility = View.VISIBLE
-            tvStatus.setTextColor(
-                if (isSuccess) getColor(android.R.color.holo_green_dark)
-                else getColor(android.R.color.holo_red_dark)
-            )
-        }
+        tvStatus.text = message
+        tvStatus.visibility = View.VISIBLE
+        tvStatus.setTextColor(
+            if (isSuccess) getColor(android.R.color.holo_green_dark)
+            else getColor(android.R.color.holo_red_dark)
+        )
     }
 
     private fun hideResult() {
@@ -253,6 +266,42 @@ class ScanQrActivity : BaseActivity() {
         }
     }
 
+    private fun hasCameraPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this, Manifest.permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun checkCameraPermission() {
+        if (hasCameraPermission()) {
+            barcodeView.resume()
+        } else {
+            requestCameraPermission()
+        }
+    }
+
+    private fun requestCameraPermission() {
+        cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+    }
+
+    private fun showPermissionDeniedDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Izin Kamera Diperlukan")
+            .setMessage("Aplikasi memerlukan akses kamera untuk memindai QR code presensi sholat. Silakan aktifkan izin kamera di Pengaturan.")
+            .setPositiveButton("Buka Pengaturan") { _, _ ->
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = Uri.fromParts("package", packageName, null)
+                }
+                startActivity(intent)
+            }
+            .setNegativeButton("Kembali") { dialog, _ ->
+                dialog.dismiss()
+                finish()
+            }
+            .setCancelable(false)
+            .show()
+    }
+
     private fun getAuthToken(): String {
         val sharedPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this)
         return sharedPref.getString("auth_token", "") ?: ""
@@ -260,7 +309,7 @@ class ScanQrActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (cardResult.visibility != View.VISIBLE && !isProcessing) {
+        if (hasCameraPermission() && cardResult.visibility != View.VISIBLE && !isProcessing) {
             barcodeView.resume()
         }
     }
@@ -268,5 +317,10 @@ class ScanQrActivity : BaseActivity() {
     override fun onPause() {
         super.onPause()
         barcodeView.pause()
+    }
+
+    override fun onDestroy() {
+        barcodeView.pause()
+        super.onDestroy()
     }
 }

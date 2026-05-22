@@ -2,10 +2,12 @@ package com.xirpl2.SASMobile
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -106,21 +108,25 @@ class PresenceDetailDialogFragment : BottomSheetDialogFragment() {
         val currentDay = Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
         val isFriday = currentDay == Calendar.FRIDAY
 
+        // Check student gender: female students see Dzuhur (not Jumat) on Friday
+        val sharedPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(requireContext())
+        val jenisKelamin = sharedPref.getString("jenis_kelamin", "L") ?: "L"
+        val isMale = jenisKelamin.equals("L", ignoreCase = true)
+        val showJumat = isFriday && isMale
+
         val itemDhuha = view?.findViewById<View>(R.id.itemDhuha)
         val itemDzuhur = view?.findViewById<View>(R.id.itemDzuhur)
         val itemJumat = view?.findViewById<View>(R.id.itemJumat)
 
-        if (isFriday) {
+        if (showJumat) {
             itemDzuhur?.visibility = View.GONE
             itemJumat?.visibility = View.VISIBLE
-            setupPrayerItem(itemJumat!!, "Sholat Jumat", "11:00 - 13:00")
         } else {
             itemDzuhur?.visibility = View.VISIBLE
             itemJumat?.visibility = View.GONE
-            setupPrayerItem(itemDzuhur!!, "Sholat Dzuhur", "11:30 - 13:00")
         }
 
-        checkDhuhaVisibility(itemDhuha)
+        fetchJadwalAndSetupPrayers(itemDhuha, itemDzuhur, itemJumat, showJumat)
     }
 
     private fun setupPrayerItem(view: View, name: String, time: String) {
@@ -129,23 +135,28 @@ class PresenceDetailDialogFragment : BottomSheetDialogFragment() {
         view.findViewById<TextView>(R.id.tvPresenceStatus).text = "Belum Sholat"
     }
 
-    private fun checkDhuhaVisibility(itemDhuha: View?) {
+    private fun fetchJadwalAndSetupPrayers(
+        itemDhuha: View?, itemDzuhur: View?, itemJumat: View?, showJumat: Boolean
+    ) {
+        val token = getAuthToken()
         val major = if (studentMajor != null) studentMajor!! else {
             val sharedPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(requireContext())
             sharedPref.getString("jurusan", "") ?: ""
         }
-        
-        val token = getAuthToken()
-        
+
         lifecycleScope.launch {
             repository.getJadwalSholat(token).fold(
-                onSuccess = { jadwals ->
-                    val isDhuhaScheduled = jadwals.any { 
-                        it.jenis_sholat.equals("Dhuha", ignoreCase = true) && 
-                                (it.jurusan.equals("Semua Jurusan", ignoreCase = true) || it.jurusan.equals(major, ignoreCase = true))
-                    }
-                    
+                onSuccess = { allJadwals ->
                     activity?.runOnUiThread {
+                        // Filter schedules for today's day of week
+                        val todayIndo = JadwalSholatHelper.getIndonesianDay()
+                        val jadwals = allJadwals.filter { JadwalSholatHelper.isDayMatch(todayIndo, it.hari) }
+
+                        // Dhuha
+                        val isDhuhaScheduled = jadwals.any {
+                            it.jenis_sholat.equals("Dhuha", ignoreCase = true) &&
+                                    (it.jurusan.equals("Semua Jurusan", ignoreCase = true) || it.jurusan.equals(major, ignoreCase = true))
+                        }
                         if (isDhuhaScheduled) {
                             itemDhuha?.visibility = View.VISIBLE
                             val dhuhaJadwal = jadwals.find { it.jenis_sholat.equals("Dhuha", true) }
@@ -154,10 +165,28 @@ class PresenceDetailDialogFragment : BottomSheetDialogFragment() {
                         } else {
                             itemDhuha?.visibility = View.GONE
                         }
+
+                        // Dzuhur / Jumat
+                        if (showJumat) {
+                            val jumatJadwal = jadwals.find { it.jenis_sholat.equals("Jumat", ignoreCase = true) }
+                            val time = if (jumatJadwal != null) "${jumatJadwal.jam_mulai} - ${jumatJadwal.jam_selesai}" else "11:00 - 13:00"
+                            setupPrayerItem(itemJumat!!, "Sholat Jumat", time)
+                        } else {
+                            val dzuhurJadwal = jadwals.find { it.jenis_sholat.equals("Dzuhur", ignoreCase = true) }
+                            val time = if (dzuhurJadwal != null) "${dzuhurJadwal.jam_mulai} - ${dzuhurJadwal.jam_selesai}" else "11:30 - 13:00"
+                            setupPrayerItem(itemDzuhur!!, "Sholat Dzuhur", time)
+                        }
                     }
                 },
                 onFailure = {
-                    activity?.runOnUiThread { itemDhuha?.visibility = View.GONE }
+                    activity?.runOnUiThread {
+                        itemDhuha?.visibility = View.GONE
+                        if (showJumat) {
+                            setupPrayerItem(itemJumat!!, "Sholat Jumat", "11:00 - 13:00")
+                        } else {
+                            setupPrayerItem(itemDzuhur!!, "Sholat Dzuhur", "11:30 - 13:00")
+                        }
+                    }
                 }
             )
         }
@@ -180,7 +209,14 @@ class PresenceDetailDialogFragment : BottomSheetDialogFragment() {
                             updatePrayerStatusesFromHistory(absensiList)
                         }
                     },
-                    onFailure = {  }
+                    onFailure = { e ->
+                        Log.w("PresenceDetail", "Failed to load siswa history", e)
+                        activity?.runOnUiThread {
+                            tvHadirCount.text = "-"
+                            tvIzinCount.text = "-"
+                            tvSakitCount.text = "-"
+                        }
+                    }
                 )
             } else {
                 
@@ -195,7 +231,14 @@ class PresenceDetailDialogFragment : BottomSheetDialogFragment() {
                             updatePrayerStatusesFromStaff(absensiList)
                         }
                     },
-                    onFailure = {  }
+                    onFailure = { e ->
+                        Log.w("PresenceDetail", "Failed to load staff history", e)
+                        activity?.runOnUiThread {
+                            tvHadirCount.text = "-"
+                            tvIzinCount.text = "-"
+                            tvSakitCount.text = "-"
+                        }
+                    }
                 )
             }
         }
@@ -222,12 +265,27 @@ class PresenceDetailDialogFragment : BottomSheetDialogFragment() {
     private fun updateStatus(itemView: View?, type: String, status: String?) {
         itemView?.let { view ->
             val statusTv = view.findViewById<TextView>(R.id.tvPresenceStatus)
-            if (status.equals("HADIR", true)) {
-                statusTv.text = "Sudah Sholat ✅"
-                statusTv.setTextColor(resources.getColor(android.R.color.holo_green_dark))
-            } else {
-                statusTv.text = "Belum Sholat"
-                statusTv.setTextColor(resources.getColor(android.R.color.darker_gray))
+            when {
+                status.equals("HADIR", true) -> {
+                    statusTv.text = "Sudah Sholat ✅"
+                    statusTv.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_green_dark))
+                }
+                status.equals("IZIN", true) -> {
+                    statusTv.text = "Izin"
+                    statusTv.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_orange_dark))
+                }
+                status.equals("SAKIT", true) -> {
+                    statusTv.text = "Sakit"
+                    statusTv.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_orange_dark))
+                }
+                status.equals("ALPHA", true) -> {
+                    statusTv.text = "Alpha"
+                    statusTv.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_red_dark))
+                }
+                else -> {
+                    statusTv.text = "Belum Sholat"
+                    statusTv.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.darker_gray))
+                }
             }
         }
     }
@@ -256,8 +314,8 @@ class PresenceDetailDialogFragment : BottomSheetDialogFragment() {
             val isToday = SimpleDateFormat("yyyyMMdd").format(date) == SimpleDateFormat("yyyyMMdd").format(Date())
             if (isToday) {
                 holder.itemView.findViewById<View>(R.id.dateContent).setBackgroundResource(R.drawable.bg_date_selected)
-                holder.tvDayName.setTextColor(resources.getColor(android.R.color.white))
-                holder.tvDateNumber.setTextColor(resources.getColor(android.R.color.white))
+                holder.tvDayName.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.white))
+                holder.tvDateNumber.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.white))
             }
         }
 

@@ -63,6 +63,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
     private lateinit var tvDataAbsensiTitle: TextView
     private lateinit var progressLoading: ProgressBar
     private lateinit var tvEmptyState: TextView
+    private lateinit var emptyStateContainer: View
     private lateinit var recyclerAbsensi: RecyclerView
 
     // Pagination views
@@ -155,6 +156,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
         tvDataAbsensiTitle = findViewById(R.id.tvDataAbsensiTitle)
         progressLoading = findViewById(R.id.progressLoading)
         tvEmptyState = findViewById(R.id.tvEmptyState)
+        emptyStateContainer = findViewById(R.id.emptyState)
         recyclerAbsensi = findViewById(R.id.recyclerAbsensi)
 
         btnPrevPage = findViewById(R.id.btnPrevPage)
@@ -231,6 +233,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
                 updateDateDisplay()
                 currentPage = 1
                 loadData()
+                fetchChartData()
             }
         }
 
@@ -240,6 +243,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
                 updateDateDisplay()
                 currentPage = 1
                 loadData()
+                fetchChartData()
             }
         }
 
@@ -283,9 +287,12 @@ class LaporanAdminActivity : BaseAdminActivity() {
         val token = getAuthToken()
         if (token.isEmpty()) return
 
+        val startDate = apiDateFormat.format(tanggalAwal.time)
+        val endDate = apiDateFormat.format(tanggalAkhir.time)
+
         lifecycleScope.launch {
             try {
-                val statsResponse = RetrofitClient.apiService.getAttendanceAnalytics("Bearer $token")
+                val statsResponse = RetrofitClient.apiService.getAttendanceAnalytics("Bearer $token", startDate = startDate, endDate = endDate)
                 if (statsResponse.isSuccessful) {
                     val stats = statsResponse.body()?.data
                     if (stats != null) {
@@ -307,7 +314,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
             } catch (_: Exception) {}
 
             try {
-                val chartResponse = RetrofitClient.apiService.getChartData("Bearer $token")
+                val chartResponse = RetrofitClient.apiService.getChartData("Bearer $token", startDate = startDate, endDate = endDate)
                 if (chartResponse.isSuccessful) {
                     val chartData = chartResponse.body()?.data
                     if (chartData != null) {
@@ -371,8 +378,8 @@ class LaporanAdminActivity : BaseAdminActivity() {
                     runOnUiThread {
                         currentPageItems = data.absensi
                         val pagination = data.pagination
-                        totalItems = pagination?.total_items ?: currentPageItems.size
-                        totalPages = pagination?.total_pages ?: 1
+                        totalItems = pagination?.totalItems ?: currentPageItems.size
+                        totalPages = pagination?.totalPages ?: 1
                         if (totalPages < 1) totalPages = 1
 
                         val offset = (currentPage - 1) * pageSize
@@ -437,6 +444,18 @@ class LaporanAdminActivity : BaseAdminActivity() {
         val endDate = apiDateFormat.format(tanggalAkhir.time)
         val jurusanApi = if (selectedJurusan == "Semua Jurusan") null else selectedJurusan
         val kelasApi = if (selectedKelas == "Semua Kelas") null else selectedKelas
+        val sholatApi = if (selectedSholat == "Semua Sholat") null else selectedSholat.lowercase()
+        val searchApi = searchQuery.ifEmpty { null }
+
+        // Show active filters to user so they know what is being exported
+        val activeFilters = mutableListOf<String>()
+        if (jurusanApi != null) activeFilters.add("Jurusan: $selectedJurusan")
+        if (kelasApi != null) activeFilters.add("Kelas: $selectedKelas")
+        if (sholatApi != null) activeFilters.add("Sholat: $selectedSholat")
+        if (searchApi != null) activeFilters.add("Cari: $searchQuery")
+        if (activeFilters.isNotEmpty()) {
+            Toast.makeText(this, "Filter aktif: ${activeFilters.joinToString(", ")}", Toast.LENGTH_LONG).show()
+        }
 
         val btn = when (format) {
             "excel" -> btnExportExcel
@@ -449,16 +468,20 @@ class LaporanAdminActivity : BaseAdminActivity() {
             try {
                 val response: Response<ResponseBody> = when (format) {
                     "excel" -> RetrofitClient.apiService.exportAttendanceReport(
-                        token = "Bearer $token", startDate = startDate, endDate = endDate, jurusan = jurusanApi ?: ""
+                        token = "Bearer $token", startDate = startDate, endDate = endDate,
+                        jurusan = jurusanApi, kelas = kelasApi, jenisSholat = sholatApi, search = searchApi
                     )
                     "pdf" -> RetrofitClient.apiService.exportAttendanceReportPdf(
-                        token = "Bearer $token", startDate = startDate, endDate = endDate, jurusan = jurusanApi
+                        token = "Bearer $token", startDate = startDate, endDate = endDate,
+                        jurusan = jurusanApi, kelas = kelasApi, jenisSholat = sholatApi, search = searchApi
                     )
                     "csv" -> RetrofitClient.apiService.exportAttendanceCSV(
-                        token = "Bearer $token", startDate = startDate, endDate = endDate, jurusan = jurusanApi
+                        token = "Bearer $token", startDate = startDate, endDate = endDate,
+                        jurusan = jurusanApi, kelas = kelasApi, jenisSholat = sholatApi, search = searchApi
                     )
                     else -> RetrofitClient.apiService.exportAttendanceReport(
-                        token = "Bearer $token", startDate = startDate, endDate = endDate, jurusan = jurusanApi ?: ""
+                        token = "Bearer $token", startDate = startDate, endDate = endDate,
+                        jurusan = jurusanApi, kelas = kelasApi, jenisSholat = sholatApi, search = searchApi
                     )
                 }
 
@@ -542,18 +565,23 @@ class LaporanAdminActivity : BaseAdminActivity() {
         progressLoading.visibility = if (show) View.VISIBLE else View.GONE
         if (show) {
             recyclerAbsensi.visibility = View.GONE
-            tvEmptyState.visibility = View.GONE
+            emptyStateContainer.visibility = View.GONE
         }
     }
 
     private fun showEmptyState(message: String) {
         tvEmptyState.text = message
-        tvEmptyState.visibility = View.VISIBLE
+        emptyStateContainer.visibility = View.VISIBLE
         recyclerAbsensi.visibility = View.GONE
     }
 
     private fun hideEmptyState() {
-        tvEmptyState.visibility = View.GONE
+        emptyStateContainer.visibility = View.GONE
         recyclerAbsensi.visibility = View.VISIBLE
+    }
+
+    override fun onDestroy() {
+        searchJob?.cancel()
+        super.onDestroy()
     }
 }

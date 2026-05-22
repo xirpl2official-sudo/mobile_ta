@@ -5,13 +5,14 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.util.Base64
 import android.view.View
+import android.util.Base64
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import com.xirpl2.SASMobile.model.JadwalSholat
@@ -48,9 +49,9 @@ class StaffQRActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_staff_qr)
         window.statusBarColor = 0xFF2886D6.toInt()
-        
-        @Suppress("DEPRECATION")
-        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        WindowInsetsControllerCompat(window, window.decorView).apply {
+            isAppearanceLightStatusBars = true
+        }
 
         initializeViews()
         setupClickListeners()

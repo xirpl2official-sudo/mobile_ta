@@ -2,15 +2,16 @@ package com.xirpl2.SASMobile
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.xirpl2.SASMobile.databinding.ItemNotifikasiBinding
 import com.xirpl2.SASMobile.model.Notifikasi
 
 class NotifikasiAdapter(
-    private val notificationList: MutableList<Notifikasi>,
-    private val onItemClick: ((Notifikasi, Int) -> Unit)? = null,
-    private val onDeleteClick: ((Notifikasi, Int) -> Unit)? = null
-) : RecyclerView.Adapter<NotifikasiAdapter.NotifikasiViewHolder>() {
+    private val onItemClick: ((Notifikasi) -> Unit)? = null,
+    private val onDeleteClick: ((Notifikasi) -> Unit)? = null
+) : ListAdapter<Notifikasi, NotifikasiAdapter.NotifikasiViewHolder>(DIFF_CALLBACK) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotifikasiViewHolder {
         val binding =
@@ -19,30 +20,19 @@ class NotifikasiAdapter(
     }
 
     override fun onBindViewHolder(holder: NotifikasiViewHolder, position: Int) {
-        val notification = notificationList[position]
+        val notification = getItem(position)
         holder.bind(notification)
-        
-        // Mark-as-read on click
+
         holder.itemView.setOnClickListener {
-            val pos = holder.adapterPosition
-            if (pos != RecyclerView.NO_POSITION) {
-                onItemClick?.invoke(notificationList[pos], pos)
-            }
+            onItemClick?.invoke(notification)
         }
-        
+
         holder.binding.btnDelete.setOnClickListener {
-            val pos = holder.adapterPosition
-            if (pos != RecyclerView.NO_POSITION) {
-                onDeleteClick?.invoke(notificationList[pos], pos)
-            }
+            onDeleteClick?.invoke(notification)
         }
-        
+
         // Update UI based on isRead status
         holder.itemView.alpha = if (notification.isRead) 0.6f else 1.0f
-    }
-
-    override fun getItemCount(): Int {
-        return notificationList.size
     }
 
     class NotifikasiViewHolder(val binding: ItemNotifikasiBinding) :
@@ -51,6 +41,18 @@ class NotifikasiAdapter(
             binding.tvTitle.text = notifikasi.title
             binding.tvMessage.text = notifikasi.message
             binding.tvTime.text = notifikasi.time
+        }
+    }
+
+    companion object {
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Notifikasi>() {
+            override fun areItemsTheSame(oldItem: Notifikasi, newItem: Notifikasi): Boolean {
+                return oldItem.id == newItem.id
+            }
+
+            override fun areContentsTheSame(oldItem: Notifikasi, newItem: Notifikasi): Boolean {
+                return oldItem == newItem
+            }
         }
     }
 }

@@ -77,6 +77,12 @@ interface ApiService {
         @Body request: RefreshRequest
     ): Response<AuthResponse>
 
+    /** Synchronous variant for use in OkHttp Authenticator (no coroutine context). */
+    @POST("v2/auth/tokens/refresh")
+    fun refreshTokenSync(
+        @Body request: RefreshRequest
+    ): retrofit2.Call<AuthResponse>
+
     // --- Prayer Schedules ---
 
     @GET("v2/prayer-schedules")
@@ -183,7 +189,7 @@ interface ApiService {
     suspend fun verifyBarcode(
         @Header("Authorization") token: String,
         @Body request: BarcodeVerifyRequest
-    ): Response<MessageResponse>
+    ): Response<QRCodeVerifyResponse>
 
     // --- Students ---
 
@@ -208,7 +214,7 @@ interface ApiService {
     suspend fun getStudentDetail(
         @Header("Authorization") token: String,
         @Path("nis") nis: String
-    ): Response<ApiResponse<com.google.gson.JsonObject>>
+    ): Response<ApiResponse<StudentDetailResponse>>
 
     @PUT("v2/students/{nis}")
     suspend fun updateStudent(
@@ -243,7 +249,8 @@ interface ApiService {
         @Query("page_size") pageSize: Int? = null,
         @Query("search") search: String? = null,
         @Query("jurusan") jurusan: String? = null,
-        @Query("wali_kelas") waliKelas: String? = null
+        @Query("wali_kelas") waliKelas: String? = null,
+        @Query("id_kelas") idKelas: Int? = null
     ): Response<SiswaListPaginatedResponse>
 
     // --- Synchronized SMKN 2 Singosari ---
@@ -358,7 +365,8 @@ interface ApiService {
     @GET("v2/analytics/attendance")
     suspend fun getAttendanceAnalytics(
         @Header("Authorization") token: String,
-        @Query("tanggal") tanggal: String? = null
+        @Query("start_date") startDate: String? = null,
+        @Query("end_date") endDate: String? = null
     ): Response<StatisticsResponse>
 
     // --- Admin Control ---
@@ -460,7 +468,10 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Query("start_date") startDate: String,
         @Query("end_date") endDate: String,
-        @Query("jurusan") jurusan: String? = null
+        @Query("jurusan") jurusan: String? = null,
+        @Query("kelas") kelas: String? = null,
+        @Query("jenis_sholat") jenisSholat: String? = null,
+        @Query("search") search: String? = null
     ): Response<ResponseBody>
 
     @Streaming
@@ -475,7 +486,9 @@ interface ApiService {
 
     @GET("v2/analytics/charts")
     suspend fun getChartData(
-        @Header("Authorization") token: String
+        @Header("Authorization") token: String,
+        @Query("start_date") startDate: String? = null,
+        @Query("end_date") endDate: String? = null
     ): Response<ApiResponse<com.google.gson.JsonObject>>
 
     @GET("v2/analytics/pending-attendance")
@@ -491,7 +504,10 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Query("start_date") startDate: String? = null,
         @Query("end_date") endDate: String? = null,
-        @Query("jurusan") jurusan: String? = null
+        @Query("jurusan") jurusan: String? = null,
+        @Query("kelas") kelas: String? = null,
+        @Query("jenis_sholat") jenisSholat: String? = null,
+        @Query("search") search: String? = null
     ): Response<ResponseBody>
 
     @Streaming
@@ -530,14 +546,14 @@ interface ApiService {
     suspend fun updateStudentStatus(@Header("Authorization") token: String, @Path("nis") nis: String, @Body request: UpdateStatusRequest): Response<MessageResponse>
 
     @POST("v2/students/notify-wali-kelas")
-    suspend fun notifyWaliKelas(@Header("Authorization") token: String, @Body request: com.google.gson.JsonObject): Response<MessageResponse>
+    suspend fun notifyWaliKelas(@Header("Authorization") token: String, @Body request: NotifyWaliKelasRequest): Response<MessageResponse>
 
     @Multipart
     @POST("v2/students/import")
     suspend fun importStudents(@Header("Authorization") token: String, @Part file: MultipartBody.Part): Response<MessageResponse>
 
     @POST("v2/students/import/json")
-    suspend fun importStudentsJSON(@Header("Authorization") token: String, @Body request: com.google.gson.JsonArray): Response<MessageResponse>
+    suspend fun importStudentsJSON(@Header("Authorization") token: String, @Body request: ImportStudentsRequest): Response<MessageResponse>
 
     // --- Admin Student Control (FASE 3.4) ---
 
@@ -708,7 +724,9 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Query("tanggal") tanggal: String? = null,
         @Query("kelas") kelas: String? = null,
-        @Query("jurusan") jurusan: String? = null
+        @Query("jurusan") jurusan: String? = null,
+        @Query("jenis_sholat") jenisSholat: String? = null,
+        @Query("search") search: String? = null
     ): Response<ResponseBody>
 
     @GET("v2/reports/attendance/pdf")
@@ -717,7 +735,10 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Query("start_date") startDate: String? = null,
         @Query("end_date") endDate: String? = null,
-        @Query("jurusan") jurusan: String? = null
+        @Query("jurusan") jurusan: String? = null,
+        @Query("kelas") kelas: String? = null,
+        @Query("jenis_sholat") jenisSholat: String? = null,
+        @Query("search") search: String? = null
     ): Response<ResponseBody>
 
     // --- Admin Guru Management ---
@@ -756,7 +777,7 @@ interface ApiService {
     suspend fun deleteGuru(
         @Header("Authorization") token: String,
         @Path("id") id: Int
-    ): Response<Void>
+    ): Response<MessageResponse>
 
     @PUT("v2/admin/management/guru/{id}/wali-kelas")
     suspend fun assignGuruWaliKelas(

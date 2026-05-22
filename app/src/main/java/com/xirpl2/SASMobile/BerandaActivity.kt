@@ -1,11 +1,15 @@
 package com.xirpl2.SASMobile
 
 import android.content.BroadcastReceiver
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -35,6 +39,8 @@ class BerandaActivity : BaseActivity() {
     private lateinit var tvTotalValue: TextView
     private lateinit var tvAlphaValue: TextView
     private lateinit var tvIzinSakitValue: TextView
+    private lateinit var tvJadwalError: TextView
+    private lateinit var tvRiwayatError: TextView
 
     private lateinit var jadwalAdapter: JadwalSholatAdapter
     private lateinit var riwayatAdapter: RiwayatAbsensiAdapter
@@ -44,7 +50,17 @@ class BerandaActivity : BaseActivity() {
     private val repository = BerandaRepository()
     private val TAG = "BerandaActivity"
     
-    private var notificationCounterBroadcast: BroadcastReceiver? = null
+    private val notificationCounterBroadcast = object : BroadcastReceiver() {
+        override fun onReceive(context: android.content.Context, intent: android.content.Intent) {
+            val newCount = intent.getIntExtra("count", 0)
+            if (newCount > 0) {
+                notificationCounter.text = newCount.toString()
+                notificationCounter.visibility = android.view.View.VISIBLE
+            } else {
+                notificationCounter.visibility = android.view.View.GONE
+            }
+        }
+    }
     private lateinit var notificationCounter: android.widget.TextView
     
     // Guard against duplicate loadAllData calls from onCreate+onResume race condition
@@ -88,6 +104,8 @@ class BerandaActivity : BaseActivity() {
         tvTotalValue = findViewById(R.id.tvTotalValue)
         tvAlphaValue = findViewById(R.id.tvAlphaValue)
         tvIzinSakitValue = findViewById(R.id.tvIzinSakitValue)
+        tvJadwalError = findViewById(R.id.tvJadwalError)
+        tvRiwayatError = findViewById(R.id.tvRiwayatError)
         notificationCounter = findViewById(R.id.notificationCounter)
     }
 
@@ -165,14 +183,35 @@ class BerandaActivity : BaseActivity() {
         val rows = items.map { item ->
             "${item.tanggal},${item.namaSholat},${item.waktuAbsen ?: "-"},${item.status.name}"
         }
-        val csv = (listOf(header) + rows).joinToString("\n")
+        val csv = "\uFEFF" + (listOf(header) + rows).joinToString("\n")
+
+        val fileName = "riwayat_absensi_${java.text.SimpleDateFormat("yyyyMMdd_HHmmss", java.util.Locale.getDefault()).format(java.util.Date())}.csv"
 
         try {
-            val downloadsDir = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS)
-            val fileName = "riwayat_absensi_${java.text.SimpleDateFormat("yyyyMMdd_HHmmss", java.util.Locale.getDefault()).format(java.util.Date())}.csv"
-            val file = java.io.File(downloadsDir, fileName)
-            file.writeText(csv)
-            Toast.makeText(this, "Tersimpan di Downloads/$fileName", Toast.LENGTH_LONG).show()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                // Android 10+: Use MediaStore.Downloads API
+                val contentValues = ContentValues().apply {
+                    put(MediaStore.Downloads.DISPLAY_NAME, fileName)
+                    put(MediaStore.Downloads.MIME_TYPE, "text/csv")
+                    put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
+                }
+                val uri = contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
+                if (uri != null) {
+                    contentResolver.openOutputStream(uri)?.use { outputStream ->
+                        outputStream.write(csv.toByteArray())
+                    }
+                    Toast.makeText(this, "Tersimpan di Downloads/$fileName", Toast.LENGTH_LONG).show()
+                } else {
+                    Toast.makeText(this, "Gagal membuat file", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                // Android 9 and below: Use legacy file API
+                @Suppress("DEPRECATION")
+                val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                val file = java.io.File(downloadsDir, fileName)
+                file.writeText(csv)
+                Toast.makeText(this, "Tersimpan di Downloads/$fileName", Toast.LENGTH_LONG).show()
+            }
         } catch (e: Exception) {
             Log.e(TAG, "Gagal mengunduh riwayat: ${e.message}")
             Toast.makeText(this, "Gagal mengunduh: ${e.message}", Toast.LENGTH_SHORT).show()
@@ -340,15 +379,21 @@ class BerandaActivity : BaseActivity() {
                         jadwalAdapter = JadwalSholatAdapter()
                         rvJadwalSholat.adapter = jadwalAdapter
                     }
+                    tvJadwalError.visibility = android.view.View.GONE
+                    rvJadwalSholat.visibility = android.view.View.VISIBLE
                     jadwalAdapter.submitList(jadwalList)
                 }
             },
             onFailure = { error ->
                 Log.w(TAG, "Failed to load jadwal sholat: ${error.message}")
+                runOnUiThread {
+                    rvJadwalSholat.visibility = android.view.View.GONE
+                    tvJadwalError.visibility = android.view.View.VISIBLE
+                }
             }
         )
     }
-    
+
     private fun getAuthToken(): String {
         val sharedPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this)
         return sharedPref.getString("auth_token", "") ?: ""
@@ -431,7 +476,7 @@ class BerandaActivity : BaseActivity() {
                     val stats = historyData.statistik
                     if (stats != null) {
                         runOnUiThread {
-                            tvTotalValue.text = (if (stats.total_hadir > 0) stats.total_hadir else stats.total_absensi).toString()
+                            tvTotalValue.text = stats.total_absensi.toString()
                             tvAlphaValue.text = stats.total_alpha.toString()
                             tvIzinSakitValue.text = (stats.total_izin + stats.total_sakit).toString()
                         }
@@ -440,15 +485,10 @@ class BerandaActivity : BaseActivity() {
                     val absensiList = historyData.absensi ?: emptyList()
 
                     val riwayatList = absensiList.map { data ->
-                        val status = when ((data.status ?: "").uppercase()) {
-                            "HADIR" -> StatusAbsensi.HADIR
-                            "ALPHA" -> StatusAbsensi.ALPHA
-                            "SAKIT" -> StatusAbsensi.SAKIT
-                            "IZIN" -> StatusAbsensi.IZIN
-                            else -> StatusAbsensi.ALPHA
-                        }
+                        val status = StatusAbsensi.fromString(data.status)
 
                         RiwayatAbsensi(
+                            id = data.id,
                             tanggal = formatTanggal(data.tanggal),
                             namaSholat = data.getPrayerName() ?: "-",
                             status = status,
@@ -462,12 +502,28 @@ class BerandaActivity : BaseActivity() {
                                 riwayatAdapter = RiwayatAbsensiAdapter()
                                 rvRiwayatAbsensi.adapter = riwayatAdapter
                             }
+                            tvRiwayatError.visibility = android.view.View.GONE
+                            findViewById<LinearLayout>(R.id.riwayatHeader).visibility = android.view.View.VISIBLE
+                            findViewById<android.view.View>(R.id.dividerHeader).visibility = android.view.View.VISIBLE
+                            rvRiwayatAbsensi.visibility = android.view.View.VISIBLE
                             riwayatAdapter.submitList(riwayatList)
+                        } else {
+                            findViewById<LinearLayout>(R.id.riwayatHeader).visibility = android.view.View.GONE
+                            findViewById<android.view.View>(R.id.dividerHeader).visibility = android.view.View.GONE
+                            rvRiwayatAbsensi.visibility = android.view.View.GONE
+                            tvRiwayatError.text = "Belum ada riwayat absensi"
+                            tvRiwayatError.visibility = android.view.View.VISIBLE
                         }
                     }
                 },
                 onFailure = { error ->
                     Log.w(TAG, "Failed to load riwayat absensi: ${error.message}")
+                    runOnUiThread {
+                        rvRiwayatAbsensi.visibility = android.view.View.GONE
+                        findViewById<LinearLayout>(R.id.riwayatHeader).visibility = android.view.View.GONE
+                        findViewById<android.view.View>(R.id.dividerHeader).visibility = android.view.View.GONE
+                        tvRiwayatError.visibility = android.view.View.VISIBLE
+                    }
                 }
             )
         }
@@ -484,18 +540,6 @@ class BerandaActivity : BaseActivity() {
         }
         
         
-        notificationCounterBroadcast = object : BroadcastReceiver() {
-            override fun onReceive(context: android.content.Context, intent: android.content.Intent) {
-                val newCount = intent.getIntExtra("count", 0)
-                if (newCount > 0) {
-                    notificationCounter.text = newCount.toString()
-                    notificationCounter.visibility = android.view.View.VISIBLE
-                } else {
-                    notificationCounter.visibility = android.view.View.GONE
-                }
-            }
-        }
-        
         val filter = IntentFilter("com.xirpl2.SASMobile.NOTIFICATION_COUNT_CHANGED")
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(notificationCounterBroadcast, filter, android.content.Context.RECEIVER_NOT_EXPORTED)
@@ -504,16 +548,14 @@ class BerandaActivity : BaseActivity() {
             registerReceiver(notificationCounterBroadcast, filter)
         }
     }
-    
+
     override fun onPause() {
         super.onPause()
         isDataLoaded = false
-        notificationCounterBroadcast?.let {
-            try {
-                unregisterReceiver(it)
-            } catch (e: IllegalArgumentException) {
-                
-            }
+        try {
+            unregisterReceiver(notificationCounterBroadcast)
+        } catch (e: IllegalArgumentException) {
+            // Already unregistered
         }
     }
 

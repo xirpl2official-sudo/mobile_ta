@@ -13,12 +13,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.textfield.TextInputLayout
-import com.google.gson.Gson
 import com.xirpl2.SASMobile.model.ApiResponse
 import com.xirpl2.SASMobile.model.PasswordResetRequest
 import com.xirpl2.SASMobile.network.RetrofitClient
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 import www.sanju.motiontoast.MotionToast
 import www.sanju.motiontoast.MotionToastStyle
 
@@ -32,6 +30,8 @@ class GantiKataSandi : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // NAMING MISMATCH: Layout file is activity_lupa_katasandi.xml but class is GantiKataSandi.
+        // Conventional name would be activity_ganti_kata_sandi.xml. Not renamed to avoid breaking R.layout references.
         setContentView(R.layout.activity_lupa_katasandi)
         window.statusBarColor = 0xFF2886D6.toInt()
         WindowInsetsControllerCompat(window, window.decorView).apply {
@@ -52,7 +52,10 @@ class GantiKataSandi : BaseActivity() {
         }
 
         findViewById<TextView>(R.id.tvVerifikasiOtp).setOnClickListener {
-            startActivity(Intent(this, VerifikasiOtpActivity::class.java))
+            val intent = Intent(this, VerifikasiOtpActivity::class.java)
+            intent.putExtra("USER_EMAIL", etEmail.text.toString().trim())
+            intent.putExtra("USER_NIS", etNis.text.toString().trim())
+            startActivity(intent)
         }
 
         setHintTextColors()
@@ -116,20 +119,16 @@ class GantiKataSandi : BaseActivity() {
 
         lifecycleScope.launch {
             try {
-                android.util.Log.d("GantiKataSandi", "Mengirim request OTP untuk NIS: $nis, Email: $email")
-                
                 val request = PasswordResetRequest(nis = nis, email = email)
                 val response = RetrofitClient.apiService.forgotPassword(request)
 
-                android.util.Log.d("GantiKataSandi", "Response code: ${response.code()}")
-                android.util.Log.d("GantiKataSandi", "Response body: ${response.body()}")
-                android.util.Log.d("GantiKataSandi", "Response error body: ${response.errorBody()?.string()}")
-
                 setLoading(false)
+
+                val genericMessage = "Jika akun terdaftar, OTP akan dikirim ke email Anda"
 
                 if (response.isSuccessful && response.body() != null) {
                     val apiResponse = response.body()!!
-                    
+
                     // ApiResponse<MessageResponse> has message field directly
                     val isSuccessByMessage = !apiResponse.message.isNullOrEmpty() &&
                         (apiResponse.message.contains("berhasil", ignoreCase = true) ||
@@ -137,74 +136,48 @@ class GantiKataSandi : BaseActivity() {
                          apiResponse.message.contains("sukses", ignoreCase = true) ||
                          apiResponse.message.contains("success", ignoreCase = true))
                     val isHttpSuccess = response.code() == 200
-                    
-                    android.util.Log.d("GantiKataSandi", "OTP Response - http: $isHttpSuccess, msgContainsSuccess: $isSuccessByMessage")
-                    android.util.Log.d("GantiKataSandi", "OTP Message: ${apiResponse.message}")
-                    
-                    val shouldNavigate = isHttpSuccess && isSuccessByMessage
-                    
-                    if (shouldNavigate) {
-                         android.util.Log.d("GantiKataSandi", "OTP berhasil dikirim, navigasi ke VerifikasiOtpActivity")
-                         
-                         MotionToast.createColorToast(
-                             this@GantiKataSandi,
-                             "Berhasil",
-                             apiResponse.message ?: "Kode OTP telah dikirim ke email Anda",
-                             MotionToastStyle.SUCCESS,
-                             Gravity.CENTER,
-                             MotionToast.LONG_DURATION,
-                             null
-                         )
 
-                         
-                         val intent = Intent(this@GantiKataSandi, VerifikasiOtpActivity::class.java)
-                         intent.putExtra("USER_EMAIL", email)
-                         intent.putExtra("USER_NIS", nis)
-                         startActivity(intent)
-                     } else {
-                         android.util.Log.e("GantiKataSandi", "API Response status false: ${apiResponse.message}")
-                         MotionToast.createColorToast(
-                             this@GantiKataSandi,
-                             "Gagal",
-                             apiResponse.message ?: "Gagal mengirim OTP",
-                             MotionToastStyle.ERROR,
-                             Gravity.CENTER,
-                             MotionToast.LONG_DURATION,
-                             null
-                         )
-                     }
-                 } else {
-                    
-                    val errorBody = response.errorBody()?.string()
-                    android.util.Log.e("GantiKataSandi", "Error response: $errorBody")
-                    
-                    val errorMessage = try {
-                        if (!errorBody.isNullOrEmpty()) {
-                            val jsonObject = JSONObject(errorBody)
-                            jsonObject.optString("message", "Gagal mengirim OTP")
-                        } else {
-                            when (response.code()) {
-                                404 -> "NIS/Username atau email tidak ditemukan"
-                                400 -> "Data yang dikirim tidak valid"
-                                500 -> "Server sedang bermasalah. Silakan coba lagi nanti"
-                                else -> "Gagal mengirim OTP. Kode error: ${response.code()}"
-                            }
-                        }
-                    } catch (e: Exception) {
-                        android.util.Log.e("GantiKataSandi", "Error parsing error body: ${e.message}")
-                        when (response.code()) {
-                            404 -> "NIS/Username atau email tidak ditemukan"
-                            400 -> "Data yang dikirim tidak valid"
-                            500 -> "Server sedang bermasalah. Silakan coba lagi nanti"
-                            else -> "Gagal mengirim OTP. Kode error: ${response.code()}"
-                        }
+                    android.util.Log.d("GantiKataSandi", "OTP Response - http: $isHttpSuccess, msgContainsSuccess: $isSuccessByMessage")
+
+                    val shouldNavigate = isHttpSuccess && isSuccessByMessage
+
+                    if (shouldNavigate) {
+                        android.util.Log.d("GantiKataSandi", "OTP berhasil dikirim, navigasi ke VerifikasiOtpActivity")
+
+                        MotionToast.createColorToast(
+                            this@GantiKataSandi,
+                            "Berhasil",
+                            genericMessage,
+                            MotionToastStyle.SUCCESS,
+                            Gravity.CENTER,
+                            MotionToast.LONG_DURATION,
+                            null
+                        )
+
+                        val intent = Intent(this@GantiKataSandi, VerifikasiOtpActivity::class.java)
+                        intent.putExtra("USER_EMAIL", email)
+                        intent.putExtra("USER_NIS", nis)
+                        startActivity(intent)
+                    } else {
+                        // Show generic message to prevent user enumeration
+                        MotionToast.createColorToast(
+                            this@GantiKataSandi,
+                            "Informasi",
+                            genericMessage,
+                            MotionToastStyle.INFO,
+                            Gravity.CENTER,
+                            MotionToast.LONG_DURATION,
+                            null
+                        )
                     }
-                    
+                } else {
+                    // On any error (404, 400, 500, etc.), show generic message to prevent user enumeration
+                    android.util.Log.w("GantiKataSandi", "OTP request failed with code: ${response.code()}")
                     MotionToast.createColorToast(
                         this@GantiKataSandi,
-                        "Gagal",
-                        errorMessage,
-                        MotionToastStyle.ERROR,
+                        "Informasi",
+                        genericMessage,
+                        MotionToastStyle.INFO,
                         Gravity.CENTER,
                         MotionToast.LONG_DURATION,
                         null
@@ -213,8 +186,10 @@ class GantiKataSandi : BaseActivity() {
             } catch (e: Exception) {
                 setLoading(false)
                 
-                android.util.Log.e("GantiKataSandi", "Exception terjadi: ${e.message}", e)
-                android.util.Log.e("GantiKataSandi", "Stack trace: ${e.stackTraceToString()}")
+                if (com.xirpl2.SASMobile.BuildConfig.DEBUG) {
+                    android.util.Log.e("GantiKataSandi", "Exception terjadi: ${e.message}", e)
+                    android.util.Log.e("GantiKataSandi", "Stack trace: ${e.stackTraceToString()}")
+                }
                 
                 val errorMsg = when (e) {
                     is java.net.UnknownHostException -> "Tidak dapat terhubung ke server. Periksa koneksi internet Anda"
@@ -238,8 +213,11 @@ class GantiKataSandi : BaseActivity() {
 
     private fun setLoading(isLoading: Boolean) {
         btnKirim.isEnabled = !isLoading
+        btnKirim.alpha = if (isLoading) 0.6f else 1.0f
         progressBar?.visibility = if (isLoading) View.VISIBLE else View.GONE
-        
+        etNis.isEnabled = !isLoading
+        etEmail.isEnabled = !isLoading
+
         if (isLoading) {
             btnKirim.text = "Mengirim..."
         } else {

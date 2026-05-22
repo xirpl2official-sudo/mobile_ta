@@ -35,6 +35,7 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
 
     // ForcedClass: for wali_kelas, auto-filter to their assigned class
     private var forcedClass: String? = null
+    private var forcedClassId: Int? = null
     private var isWaliKelas: Boolean = false
     
     private val searchHandler = android.os.Handler(android.os.Looper.getMainLooper())
@@ -190,30 +191,37 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
 
         loadingJob = lifecycleScope.launch {
             try {
+                // Resolve forcedClass label to id_kelas via kelas lookup (once, cached)
+                if (forcedClass != null && forcedClassId == null) {
+                    try {
+                        val kelasResponse = RetrofitClient.apiService.getKelasLookup("Bearer $token")
+                        if (kelasResponse.isSuccessful) {
+                            val kelasList = kelasResponse.body()?.data ?: emptyList()
+                            // Login returns kelas as tingkatan+part (e.g. "10A")
+                            val match = kelasList.find { "${it.tingkatan}${it.part}" == forcedClass }
+                            forcedClassId = match?.id_kelas
+                        }
+                    } catch (_: Exception) { }
+                }
+
                 val response = RetrofitClient.apiService.getUnregisteredStudents(
                     token = "Bearer $token",
                     page = 1,
                     pageSize = 100,
                     search = if (searchQuery.isNotEmpty()) searchQuery else null,
                     jurusan = selectedJurusanId?.toString(),
-                    waliKelas = selectedWaliStaffId?.toString()
+                    waliKelas = selectedWaliStaffId?.toString(),
+                    idKelas = forcedClassId
                 )
 
                 runOnUiThread {
                     showLoading(false)
                     if (response.isSuccessful) {
                         val body = response.body()
-                        val allStudents = body?.data ?: emptyList()
-
-                        // ForcedClass: filter to only the wali_kelas's assigned class (client-side)
-                        val students = if (forcedClass != null) {
-                            allStudents.filter { it.kelas == forcedClass }
-                        } else {
-                            allStudents
-                        }
+                        val students = body?.data ?: emptyList()
                         adapter.submitList(students)
 
-                        val total = body?.pagination?.total_items ?: allStudents.size
+                        val total = body?.pagination?.total_items ?: students.size
                         tvCountInfo.text = "Menampilkan ${students.size} dari $total data"
 
                         layoutEmpty.visibility = if (students.isEmpty()) View.VISIBLE else View.GONE

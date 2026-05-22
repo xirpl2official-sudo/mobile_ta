@@ -38,11 +38,15 @@
 
                 <ImageView
                     android:id="@+id/btnClose"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:padding="8dp"
                     android:layout_alignParentEnd="true"
                     android:src="@drawable/ic_close"
                     android:contentDescription="Tutup"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
                     app:tint="#999999" />
             </RelativeLayout>
 
