@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="20dp"
-            android:background="@android:color/white">
+            android:background="@color/surface">
 
             
             <RelativeLayout
@@ -39,6 +39,7 @@
                     android:id="@+id/btnClose"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
+                    android:contentDescription="Tutup"
                     android:padding="8dp"
                     android:src="@drawable/ic_close"
                     android:background="?attr/selectableItemBackgroundBorderless"
@@ -283,7 +284,7 @@
                 android:text="BATAL"
                 android:textSize="15sp"
                 android:textStyle="bold"
-                android:textColor="#64748B"
+                android:textColor="@color/text_secondary"
                 app:backgroundTint="@android:color/transparent"
                 app:rippleColor="#F1F5F9"
                 style="@style/Widget.MaterialComponents.Button.TextButton" />

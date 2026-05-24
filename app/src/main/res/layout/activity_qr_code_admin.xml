@@ -10,7 +10,7 @@
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white">
+        android:background="@color/surface">
 
         <View
             android:id="@+id/VectorAtasMenu"
@@ -139,6 +139,7 @@
                         android:layout_height="match_parent"
                         android:padding="24dp"
                         android:scaleType="fitCenter"
+                        android:contentDescription="QR Code Presensi"
                         android:src="@drawable/ic_qr_code" />
 
                 </com.google.android.material.card.MaterialCardView>

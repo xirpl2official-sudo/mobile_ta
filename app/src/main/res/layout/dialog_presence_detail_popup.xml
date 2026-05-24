@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardBackgroundColor="#FFFFFF"
+    app:cardBackgroundColor="@color/surface"
     app:cardCornerRadius="32dp"
     app:cardElevation="0dp">
 
@@ -18,6 +18,7 @@
             android:id="@+id/btnClose"
             android:layout_width="32dp"
             android:layout_height="32dp"
+            android:contentDescription="Tutup"
             android:padding="8dp"
             android:src="@drawable/ic_close"
             android:background="?attr/selectableItemBackgroundBorderless"
@@ -159,7 +160,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="Ringkasan Bulan Ini"
-            android:textColor="#666666"
+            android:textColor="@color/text_secondary"
             android:textSize="14sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/summaryContainer" />

@@ -12,7 +12,7 @@
         android:layout_margin="16dp"
         app:cardCornerRadius="20dp"
         app:cardElevation="12dp"
-        app:cardBackgroundColor="@android:color/white"
+        app:cardBackgroundColor="@color/surface"
         app:cardPreventCornerOverlap="false"
         app:cardUseCompatPadding="false">
 
@@ -47,6 +47,7 @@
                     android:layout_height="32dp"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
+                    android:contentDescription="Tutup"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"
                     android:focusable="true"
@@ -323,7 +324,7 @@
                 android:text="BATAL"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="#64748B"
+                android:textColor="@color/text_secondary"
                 app:backgroundTint="@android:color/transparent"
                 app:rippleColor="#F1F5F9"
                 style="@style/Widget.MaterialComponents.Button.TextButton" />

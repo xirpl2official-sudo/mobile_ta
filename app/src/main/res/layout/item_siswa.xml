@@ -5,7 +5,7 @@
     android:orientation="horizontal"
     android:gravity="center_vertical"
     android:paddingVertical="8dp"
-    android:background="@android:color/white">
+    android:background="@color/background">
 
     
     <TextView
@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:paddingHorizontal="8dp"
-        android:textColor="#333333"
+        android:textColor="@color/on_background"
         android:textSize="12sp" />
 
     
@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textColor="#333333"
+            android:textColor="@color/on_background"
             android:textSize="12sp" />
 
         <ImageView
@@ -40,6 +40,7 @@
             android:layout_width="14dp"
             android:layout_height="14dp"
             android:layout_marginStart="4dp"
+            android:contentDescription="Status perangkat"
             android:src="@drawable/bg_circle_indicator"
             android:visibility="gone"
             app:tint="@color/gray"
@@ -54,7 +55,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:paddingHorizontal="4dp"
-        android:textColor="#333333"
+        android:textColor="@color/on_background"
         android:textSize="12sp" />
 
     
@@ -64,7 +65,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:paddingHorizontal="4dp"
-        android:textColor="#333333"
+        android:textColor="@color/on_background"
         android:textSize="12sp" />
 
     

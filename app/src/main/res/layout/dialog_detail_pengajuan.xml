@@ -31,6 +31,7 @@
                 android:layout_height="32dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
+                android:contentDescription="Tutup"
                 android:padding="8dp"
                 android:src="@drawable/ic_close"
                 android:background="?attr/selectableItemBackgroundBorderless"
@@ -120,7 +121,7 @@
                 android:text="Dokumen Pendukung"
                 android:textSize="12sp"
                 android:textStyle="bold"
-                android:textColor="#6B7280"
+                android:textColor="@color/text_secondary"
                 android:textAllCaps="true"
                 android:letterSpacing="0.05"
                 android:layout_marginBottom="8dp"
@@ -147,6 +148,7 @@
                         android:layout_height="48dp"
                         android:scaleType="centerCrop"
                         android:background="@color/slate_200"
+                        android:contentDescription="Lampiran file"
                         android:src="@drawable/ic_description"
                         app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.SmallComponent"/>
 
@@ -162,7 +164,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="dokumen.jpg"
-                            android:textColor="#1F2937"
+                            android:textColor="@color/on_background"
                             android:textSize="14sp"
                             android:textStyle="bold"
                             android:ellipsize="middle"
@@ -173,7 +175,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Klik untuk lihat/unduh"
-                            android:textColor="#6B7280"
+                            android:textColor="@color/text_secondary"
                             android:textSize="12sp"/>
 
                     </LinearLayout>
@@ -194,7 +196,7 @@
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:src="@drawable/ic_download"
                         app:tint="@color/slate_500"
-                        android:contentDescription="Unduh"/>
+                        android:contentDescription="@string/Unduh"/>
 
                 </LinearLayout>
 

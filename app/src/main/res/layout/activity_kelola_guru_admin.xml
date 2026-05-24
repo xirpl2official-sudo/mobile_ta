@@ -10,7 +10,8 @@
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
+        android:background="@color/surface"
+        android:theme="@style/Theme.SAS_Mobile.WhiteBackground"
         tools:context=".KelolaGuruAdminActivity">
 
         <!-- Header Background -->
@@ -108,7 +109,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
-            app:cardBackgroundColor="@android:color/white"
+            app:cardBackgroundColor="@color/surface"
             app:cardCornerRadius="24dp"
             app:cardElevation="6dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -125,7 +126,7 @@
                 android:hint="Cari nama atau NIP guru..."
                 android:inputType="text"
                 android:paddingHorizontal="20dp"
-                android:textColor="#1F2937"
+                android:textColor="@color/on_background"
                 android:textColorHint="#9CA3AF"
                 android:textSize="15sp" />
         </androidx.cardview.widget.CardView>
@@ -138,7 +139,7 @@
             android:layout_marginHorizontal="20dp"
             android:layout_marginTop="20dp"
             android:text="Menampilkan Guru"
-            android:textColor="#6B7280"
+            android:textColor="@color/text_secondary"
             android:textSize="14sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -187,6 +188,7 @@
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:src="@drawable/ic_search"
+                android:contentDescription="Tidak ditemukan"
                 app:tint="#D1D5DB" />
 
             <TextView
@@ -203,7 +205,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
                 android:text="Coba gunakan kata kunci pencarian yang lain."
-                android:textColor="#9CA3AF"
+                android:textColor="@color/text_hint"
                 android:textSize="14sp" />
         </LinearLayout>
 

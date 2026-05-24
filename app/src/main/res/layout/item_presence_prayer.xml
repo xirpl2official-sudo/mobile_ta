@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     app:cardCornerRadius="16dp"
     app:cardElevation="2dp"
-    app:cardBackgroundColor="#FFFFFF"
+    app:cardBackgroundColor="@color/surface"
     app:cardUseCompatPadding="true"
     app:strokeWidth="0dp">
 
@@ -19,7 +19,7 @@
             android:id="@+id/iconContainer"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            app:cardBackgroundColor="#F5F5F5"
+            app:cardBackgroundColor="@color/background"
             app:cardCornerRadius="12dp"
             app:cardElevation="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -31,6 +31,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_gravity="center"
+                android:contentDescription="Ikon sholat"
                 android:src="@drawable/ic_jadwal"
                 app:tint="#666666" />
         </com.google.android.material.card.MaterialCardView>

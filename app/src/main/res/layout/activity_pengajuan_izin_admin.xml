@@ -105,6 +105,7 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_notification"
+                    android:contentDescription="Notifikasi"
                     android:layout_marginEnd="12dp"
                     app:tint="@android:color/white" />
 
@@ -113,6 +114,7 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_close"
+                    android:contentDescription="Tutup"
                     app:tint="@android:color/white" />
             </LinearLayout>
 
@@ -248,6 +250,8 @@
                             android:layout_width="16dp"
                             android:layout_height="16dp"
                             android:src="@drawable/ic_info"
+                            android:contentDescription="@null"
+                            android:importantForAccessibility="no"
                             app:tint="#0369A1" />
                         <TextView
                             android:id="@+id/tvInfoBanner"
@@ -301,6 +305,7 @@
                         android:layout_width="80dp"
                         android:layout_height="80dp"
                         android:src="@drawable/ic_info"
+                        android:contentDescription="Tidak ada pengajuan"
                         app:tint="@color/slate_300" />
 
                     <TextView

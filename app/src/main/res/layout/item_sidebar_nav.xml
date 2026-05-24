@@ -15,6 +15,7 @@
         android:id="@+id/navIcon"
         android:layout_width="20dp"
         android:layout_height="20dp"
+        android:contentDescription="Menu navigasi"
         android:src="@drawable/ic_home"
         app:tint="@color/sidebar_text_secondary" />
 
