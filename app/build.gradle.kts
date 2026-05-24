@@ -12,6 +12,15 @@ android {
         enable = true
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("release-keystore.jks")
+            storePassword = "sasmobile2026"
+            keyAlias = "sas-mobile"
+            keyPassword = "sasmobile2026"
+        }
+    }
+
     defaultConfig {
         applicationId = "com.xirpl2.SASMobile"
         minSdk = 23
@@ -25,6 +34,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

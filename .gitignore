@@ -20,6 +20,11 @@ lib/
 .env.local
 *.env.*
 
+# Keystore (sensitive - do not commit)
+*.jks
+*.keystore
+local.properties
+
 # Editors
 .vscode/
 .idea/
