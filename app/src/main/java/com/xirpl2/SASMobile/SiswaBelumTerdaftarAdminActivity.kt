@@ -65,7 +65,7 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        searchRunnable?.let { searchHandler.removeCallbacks(it) }
+        searchHandler.removeCallbacksAndMessages(null)
         loadingJob?.cancel()
     }
 

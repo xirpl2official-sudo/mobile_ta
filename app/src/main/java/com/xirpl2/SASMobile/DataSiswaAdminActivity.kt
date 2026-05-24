@@ -133,9 +133,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
     
     override fun onDestroy() {
         super.onDestroy()
-        
-        searchRunnable?.let { searchHandler.removeCallbacks(it) }
-        
+        searchHandler.removeCallbacksAndMessages(null)
         loadingJob?.cancel()
     }
     
@@ -313,60 +311,56 @@ override fun onCreate(savedInstanceState: Bundle?) {
                 search = if (searchQuery.isNotEmpty()) searchQuery else null
             ).fold(
                 onSuccess = { response ->
-                    runOnUiThread {
-                        progressLoading.visibility = View.GONE
-                        siswaAdapter.setLoadingMore(false)
-                        
-                        val newStudents = response.data ?: emptyList()
-                        totalItems = response.pagination?.total_items ?: 0
-                        totalPages = response.pagination?.total_pages ?: 1
-                        
-                        if (reset) {
-                            allStudentList.clear()
-                        }
-                        allStudentList.addAll(newStudents)
-                        
-                        if (newStudents.size < pageSize) {
-                            isLastPage = true
-                        }
-                        
-                        siswaAdapter.submitList(allStudentList.toList())
-                        
-                        
-                        if (allStudentList.isEmpty()) {
-                            tvEmptyState.text = "Tidak ada data siswa"
-                            emptyStateContainer.visibility = View.VISIBLE
-                            recyclerSiswa.visibility = View.GONE
-                            findViewById<View>(R.id.tableHorizontalScrollView).visibility = View.GONE
-                        } else {
-                            emptyStateContainer.visibility = View.GONE
-                            recyclerSiswa.visibility = View.VISIBLE
-                            findViewById<View>(R.id.tableHorizontalScrollView).visibility = View.VISIBLE
-                        }
-                        
-                        updateCountInfo()
-                        isLoading = false
-                        
+                    if (isFinishing || isDestroyed) return@fold
+                    progressLoading.visibility = View.GONE
+                    siswaAdapter.setLoadingMore(false)
+                    
+                    val newStudents = response.data ?: emptyList()
+                    totalItems = response.pagination?.total_items ?: 0
+                    totalPages = response.pagination?.total_pages ?: 1
+                    
+                    if (reset) {
+                        allStudentList.clear()
                     }
+                    allStudentList.addAll(newStudents)
+                    
+                    if (newStudents.size < pageSize) {
+                        isLastPage = true
+                    }
+                    
+                    siswaAdapter.submitList(allStudentList.toList())
+                    
+                    if (allStudentList.isEmpty()) {
+                        tvEmptyState.text = "Tidak ada data siswa"
+                        emptyStateContainer.visibility = View.VISIBLE
+                        recyclerSiswa.visibility = View.GONE
+                        findViewById<View>(R.id.tableHorizontalScrollView).visibility = View.GONE
+                    } else {
+                        emptyStateContainer.visibility = View.GONE
+                        recyclerSiswa.visibility = View.VISIBLE
+                        findViewById<View>(R.id.tableHorizontalScrollView).visibility = View.VISIBLE
+                    }
+                    
+                    updateCountInfo()
+                    isLoading = false
                 },
                 onFailure = { error ->
-                    runOnUiThread {
-                        Toast.makeText(this@DataSiswaAdminActivity, "Gagal memuat data: ${error.message}", Toast.LENGTH_SHORT).show()
-                        
-                        progressLoading.visibility = View.GONE
-                        siswaAdapter.setLoadingMore(false)
-                        
-                        if (allStudentList.isEmpty()) {
-                            tvEmptyState.text = "Gagal memuat data siswa"
-                            emptyStateContainer.visibility = View.VISIBLE
-                            recyclerSiswa.visibility = View.GONE
-                            findViewById<View>(R.id.tableHorizontalScrollView).visibility = View.GONE
-                        } else {
-                            findViewById<View>(R.id.tableHorizontalScrollView).visibility = View.VISIBLE
-                        }
-                        
-                        isLoading = false
+                    if (isFinishing || isDestroyed) return@fold
+                    Toast.makeText(this@DataSiswaAdminActivity, "Gagal memuat data: ${error.message}", Toast.LENGTH_SHORT).show()
+                    
+                    progressLoading.visibility = View.GONE
+                    siswaAdapter.setLoadingMore(false)
+                    
+                    if (allStudentList.isEmpty()) {
+                        tvEmptyState.text = "Gagal memuat data siswa"
+                        emptyStateContainer.visibility = View.VISIBLE
+                        recyclerSiswa.visibility = View.GONE
+                        findViewById<View>(R.id.tableHorizontalScrollView).visibility = View.GONE
+                    } else {
+                        findViewById<View>(R.id.tableHorizontalScrollView).visibility = View.VISIBLE
                     }
+                    
+                    isLoading = false
                 }
             )
         }
@@ -475,7 +469,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
             .create()
         progressDialog.show()
 
-        lifecycleScope.launch {
+        lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
                 val fileName = "data_siswa_$timestamp.csv"
@@ -490,7 +484,8 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
                 val savedUri = saveCsvFile(fileName, csvContent)
 
-                runOnUiThread {
+                withContext(Dispatchers.Main) {
+                    if (isFinishing || isDestroyed) return@withContext
                     progressDialog.dismiss()
                     if (savedUri != null) {
                         Toast.makeText(
@@ -503,7 +498,8 @@ override fun onCreate(savedInstanceState: Bundle?) {
                     }
                 }
             } catch (e: Exception) {
-                runOnUiThread {
+                withContext(Dispatchers.Main) {
+                    if (isFinishing || isDestroyed) return@withContext
                     progressDialog.dismiss()
                     Toast.makeText(this@DataSiswaAdminActivity, "Gagal export: ${e.message}", Toast.LENGTH_LONG).show()
                 }
@@ -520,33 +516,38 @@ override fun onCreate(savedInstanceState: Bundle?) {
     }
 
     private fun saveCsvFile(fileName: String, csvContent: String): String? {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val values = ContentValues().apply {
-                put(MediaStore.Downloads.DISPLAY_NAME, fileName)
-                put(MediaStore.Downloads.MIME_TYPE, "text/csv")
-                put(MediaStore.Downloads.RELATIVE_PATH, "Download/SASMobile")
-            }
-            val uri = contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
-            uri?.let {
-                contentResolver.openOutputStream(it)?.use { outputStream ->
+        return try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val values = ContentValues().apply {
+                    put(MediaStore.Downloads.DISPLAY_NAME, fileName)
+                    put(MediaStore.Downloads.MIME_TYPE, "text/csv")
+                    put(MediaStore.Downloads.RELATIVE_PATH, "Download/SASMobile")
+                }
+                val uri = contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
+                uri?.let {
+                    contentResolver.openOutputStream(it)?.use { outputStream ->
+                        val bom = byteArrayOf(0xEF.toByte(), 0xBB.toByte(), 0xBF.toByte())
+                        outputStream.write(bom)
+                        outputStream.write(csvContent.toByteArray(Charsets.UTF_8))
+                        outputStream.flush()
+                    }
+                    it.toString()
+                }
+            } else {
+                val dir = File(getExternalFilesDir(null), "Export")
+                if (!dir.exists()) dir.mkdirs()
+                val file = File(dir, fileName)
+                file.outputStream().use { outputStream ->
                     val bom = byteArrayOf(0xEF.toByte(), 0xBB.toByte(), 0xBF.toByte())
                     outputStream.write(bom)
                     outputStream.write(csvContent.toByteArray(Charsets.UTF_8))
                     outputStream.flush()
                 }
-                it.toString()
+                file.absolutePath
             }
-        } else {
-            val dir = File(getExternalFilesDir(null), "Export")
-            if (!dir.exists()) dir.mkdirs()
-            val file = File(dir, fileName)
-            file.outputStream().use { outputStream ->
-                val bom = byteArrayOf(0xEF.toByte(), 0xBB.toByte(), 0xBF.toByte())
-                outputStream.write(bom)
-                outputStream.write(csvContent.toByteArray(Charsets.UTF_8))
-                outputStream.flush()
-            }
-            file.absolutePath
+        } catch (e: Exception) {
+            android.util.Log.e(TAG, "Error saving CSV: ${e.message}")
+            null
         }
     }
 
@@ -580,12 +581,13 @@ override fun onCreate(savedInstanceState: Bundle?) {
             .create()
         progressDialog.show()
 
-        lifecycleScope.launch {
+        lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val contentResolver = contentResolver
                 val inputStream = contentResolver.openInputStream(uri)
                 if (inputStream == null) {
-                    runOnUiThread {
+                    withContext(Dispatchers.Main) {
+                        if (isFinishing || isDestroyed) return@withContext
                         progressDialog.dismiss()
                         Toast.makeText(this@DataSiswaAdminActivity, "Gagal membuka file", Toast.LENGTH_SHORT).show()
                     }
@@ -610,7 +612,8 @@ override fun onCreate(savedInstanceState: Bundle?) {
                 )
 
                 val result = repository.importStudents(token, filePart)
-                runOnUiThread {
+                withContext(Dispatchers.Main) {
+                    if (isFinishing || isDestroyed) return@withContext
                     progressDialog.dismiss()
                     result.fold(
                         onSuccess = { response ->
@@ -632,7 +635,8 @@ override fun onCreate(savedInstanceState: Bundle?) {
                     )
                 }
             } catch (e: Exception) {
-                runOnUiThread {
+                withContext(Dispatchers.Main) {
+                    if (isFinishing || isDestroyed) return@withContext
                     progressDialog.dismiss()
                     Toast.makeText(this@DataSiswaAdminActivity, "Terjadi kesalahan: ${e.message}", Toast.LENGTH_LONG).show()
                 }
