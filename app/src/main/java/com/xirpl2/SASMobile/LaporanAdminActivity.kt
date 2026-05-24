@@ -311,7 +311,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
                         tvLegendAlpha.text = alpha.toString()
                     }
                 }
-            } catch (_: Exception) {}
+            } catch (e: Exception) { android.util.Log.w("LaporanAdmin", "Attendance chart error", e) }
 
             try {
                 val chartResponse = RetrofitClient.apiService.getChartData("Bearer $token", startDate = startDate, endDate = endDate)
@@ -339,7 +339,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
                         }
                     }
                 }
-            } catch (_: Exception) {}
+            } catch (e: Exception) { android.util.Log.w("LaporanAdmin", "Prayer breakdown chart error", e) }
         }
     }
 
@@ -485,29 +485,38 @@ class LaporanAdminActivity : BaseAdminActivity() {
                     )
                 }
 
-                withContext(Dispatchers.Main) {
-                    btn.isEnabled = true
-                    if (response.isSuccessful && response.body() != null) {
-                        val ext = when (format) { "excel" -> "xlsx"; "pdf" -> "pdf"; "csv" -> "csv"; else -> "xlsx" }
-                        val mime = when (format) {
-                            "excel" -> "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                            "pdf" -> "application/pdf"
-                            "csv" -> "text/csv"
-                            else -> "application/octet-stream"
-                        }
-                        val fileName = "Laporan_Absensi_${startDate}_$endDate.$ext"
-                        val success = saveFileToDownloads(response.body()!!, fileName, mime)
+                if (response.isSuccessful && response.body() != null) {
+                    val ext = when (format) { "excel" -> "xlsx"; "pdf" -> "pdf"; "csv" -> "csv"; else -> "xlsx" }
+                    val mime = when (format) {
+                        "excel" -> "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                        "pdf" -> "application/pdf"
+                        "csv" -> "text/csv"
+                        else -> "application/octet-stream"
+                    }
+                    val fileName = "Laporan_Absensi_${startDate}_$endDate.$ext"
+                    
+                    // Perform file I/O on IO thread
+                    val success = saveFileToDownloads(response.body()!!, fileName, mime)
+                    
+                    withContext(Dispatchers.Main) {
+                        if (isFinishing || isDestroyed) return@withContext
+                        btn.isEnabled = true
                         if (success) {
                             Toast.makeText(this@LaporanAdminActivity, "Laporan berhasil diunduh ke folder Download", Toast.LENGTH_LONG).show()
                         } else {
                             Toast.makeText(this@LaporanAdminActivity, "Gagal menyimpan file", Toast.LENGTH_SHORT).show()
                         }
-                    } else {
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        if (isFinishing || isDestroyed) return@withContext
+                        btn.isEnabled = true
                         Toast.makeText(this@LaporanAdminActivity, "Gagal mengunduh: ${response.message()}", Toast.LENGTH_SHORT).show()
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
+                    if (isFinishing || isDestroyed) return@withContext
                     btn.isEnabled = true
                     Toast.makeText(this@LaporanAdminActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
@@ -531,7 +540,10 @@ class LaporanAdminActivity : BaseAdminActivity() {
                 }
                 true
             } ?: false
-        } catch (_: Exception) { false }
+        } catch (e: Exception) { 
+            android.util.Log.e("LaporanAdminActivity", "Error saving file: ${e.message}")
+            false 
+        }
     }
 
     // ===== HELPERS =====

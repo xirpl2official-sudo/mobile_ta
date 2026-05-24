@@ -19,6 +19,7 @@ import com.xirpl2.SASMobile.network.RetrofitClient
 import com.xirpl2.SASMobile.repository.PengajuanIzinRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -348,7 +349,7 @@ class PengajuanIzinActivity : BaseActivity() {
         val endDate = etEndDate.text.toString().trim()
         val reason = etReason.text.toString().trim()
 
-        lifecycleScope.launch {
+        lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val token = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this@PengajuanIzinActivity)
                     .getString("auth_token", "") ?: ""
@@ -358,7 +359,7 @@ class PengajuanIzinActivity : BaseActivity() {
                 val endDateBody = okhttp3.RequestBody.create(okhttp3.MultipartBody.FORM, endDate)
                 val reasonBody = okhttp3.RequestBody.create(okhttp3.MultipartBody.FORM, reason)
 
-                // Prepare photo part if selected
+                // Prepare photo part on IO thread
                 val photoPart = preparePhotoPart()
 
                 val response = RetrofitClient.apiService.createPengajuanIzin(
@@ -371,32 +372,39 @@ class PengajuanIzinActivity : BaseActivity() {
                 )
 
                 deleteTempPhotoFile()
-                setLoading(false)
 
-                if (response.isSuccessful && response.body() != null) {
-                    Toast.makeText(
-                        this@PengajuanIzinActivity,
-                        response.body()?.message ?: "Pengajuan izin berhasil dikirim",
-                        Toast.LENGTH_LONG
-                    ).show()
-                    resetForm()
-                    loadRiwayatIzin()
-                } else {
-                    val errorMsg = when (response.code()) {
-                        400 -> "Semua field wajib diisi atau jenis izin tidak valid"
-                        409 -> "Pengajuan tumpang-tindih dengan periode yang sudah diajukan"
-                        else -> "Gagal mengirim pengajuan: ${response.message()}"
+                withContext(Dispatchers.Main) {
+                    if (isFinishing || isDestroyed) return@withContext
+                    setLoading(false)
+
+                    if (response.isSuccessful && response.body() != null) {
+                        Toast.makeText(
+                            this@PengajuanIzinActivity,
+                            response.body()?.message ?: "Pengajuan izin berhasil dikirim",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        resetForm()
+                        loadRiwayatIzin()
+                    } else {
+                        val errorMsg = when (response.code()) {
+                            400 -> "Semua field wajib diisi atau jenis izin tidak valid"
+                            409 -> "Pengajuan tumpang-tindih dengan periode yang sudah diajukan"
+                            else -> "Gagal mengirim pengajuan: ${response.message()}"
+                        }
+                        Toast.makeText(this@PengajuanIzinActivity, errorMsg, Toast.LENGTH_LONG).show()
                     }
-                    Toast.makeText(this@PengajuanIzinActivity, errorMsg, Toast.LENGTH_LONG).show()
                 }
             } catch (e: Exception) {
                 deleteTempPhotoFile()
-                setLoading(false)
-                Toast.makeText(
-                    this@PengajuanIzinActivity,
-                    "Terjadi kesalahan: ${e.message}",
-                    Toast.LENGTH_LONG
-                ).show()
+                withContext(Dispatchers.Main) {
+                    if (isFinishing || isDestroyed) return@withContext
+                    setLoading(false)
+                    Toast.makeText(
+                        this@PengajuanIzinActivity,
+                        "Terjadi kesalahan: ${e.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
             }
         }
     }
@@ -458,7 +466,9 @@ class PengajuanIzinActivity : BaseActivity() {
             .getString("auth_token", "") ?: ""
 
         lifecycleScope.launch {
-            val result = repository.getPengajuanIzinList(token)
+            val result = withContext(Dispatchers.IO) {
+                repository.getPengajuanIzinList(token)
+            }
             progressRiwayat.visibility = View.GONE
 
             result.onSuccess { response ->
@@ -511,7 +521,7 @@ class PengajuanIzinActivity : BaseActivity() {
                         if (token.isNotEmpty()) {
                             RetrofitClient.apiService.logout("Bearer $token")
                         }
-                    } catch (_: Exception) { }
+                    } catch (e: Exception) { android.util.Log.w("PengajuanIzin", "Logout API failed", e) }
 
                     launch(Dispatchers.Main) {
                         // Clear ALL SharedPreferences stores
