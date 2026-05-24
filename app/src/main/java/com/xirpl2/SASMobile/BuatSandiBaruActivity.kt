@@ -38,7 +38,8 @@ class BuatSandiBaruActivity : BaseActivity() {
             isAppearanceLightStatusBars = false
         }
 
-        userNis = intent.getStringExtra("USER_NIS") ?: ""
+        val resetPrefs = com.xirpl2.SASMobile.utils.SecurePreferences.getPasswordResetData(this)
+        userNis = resetPrefs.getString("reset_nis", "") ?: ""
         userOtp = VerifikasiOtpActivity.consumePendingOtp() ?: ""
 
         passwordLayoutBaru = findViewById(R.id.passwordLayoutBaru)
@@ -159,6 +160,7 @@ class BuatSandiBaruActivity : BaseActivity() {
                 if (response.isSuccessful && response.body() != null) {
                     val apiResponse = response.body()!!
                     // MessageResponse only has 'message' field, no 'status' - success is implied by HTTP 200
+                    com.xirpl2.SASMobile.utils.SecurePreferences.clearPasswordResetData(this@BuatSandiBaruActivity)
                     MotionToast.createColorToast(
                             this@BuatSandiBaruActivity,
                             "Berhasil",
@@ -169,7 +171,7 @@ class BuatSandiBaruActivity : BaseActivity() {
                             null
                         )
 
-                    
+
                     val intent = Intent(this@BuatSandiBaruActivity, MasukActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     startActivity(intent)

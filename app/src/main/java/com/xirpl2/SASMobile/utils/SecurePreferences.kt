@@ -21,6 +21,15 @@ object SecurePreferences {
         return getEncrypted(context, "UserData")
     }
 
+    /** Temporary storage for password-reset flow data (NIS, email, OTP). */
+    fun getPasswordResetData(context: Context): SharedPreferences {
+        return getEncrypted(context, "password_reset")
+    }
+
+    fun clearPasswordResetData(context: Context) {
+        getPasswordResetData(context).edit().clear().commit()
+    }
+
     private fun getEncrypted(context: Context, plainFileName: String): SharedPreferences {
         val encFileName = ENC_PREFIX + plainFileName
 

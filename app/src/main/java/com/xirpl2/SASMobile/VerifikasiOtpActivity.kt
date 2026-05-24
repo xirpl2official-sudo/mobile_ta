@@ -82,9 +82,9 @@ class VerifikasiOtpActivity : BaseActivity() {
             isAppearanceLightStatusBars = false
         }
 
-        
-        userEmail = intent.getStringExtra("USER_EMAIL") ?: ""
-        userNis = intent.getStringExtra("USER_NIS") ?: ""
+        val resetPrefs = com.xirpl2.SASMobile.utils.SecurePreferences.getPasswordResetData(this)
+        userEmail = resetPrefs.getString("reset_email", "") ?: ""
+        userNis = resetPrefs.getString("reset_nis", "") ?: ""
 
         val tvEmailInfo = findViewById<TextView>(R.id.tvEmailInfo)
         if (userEmail.isNotEmpty()) {
@@ -183,10 +183,8 @@ class VerifikasiOtpActivity : BaseActivity() {
                             null
                         )
 
-                        val intent = Intent(this@VerifikasiOtpActivity, BuatSandiBaruActivity::class.java)
-                        intent.putExtra("USER_NIS", userNis)
                         setPendingOtp(otp)
-                        startActivity(intent)
+                        startActivity(Intent(this@VerifikasiOtpActivity, BuatSandiBaruActivity::class.java))
                         finish()
                     } else {
                         onOtpFailed()

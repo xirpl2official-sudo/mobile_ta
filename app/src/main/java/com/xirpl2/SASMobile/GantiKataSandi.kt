@@ -52,10 +52,12 @@ class GantiKataSandi : BaseActivity() {
         }
 
         findViewById<TextView>(R.id.tvVerifikasiOtp).setOnClickListener {
-            val intent = Intent(this, VerifikasiOtpActivity::class.java)
-            intent.putExtra("USER_EMAIL", etEmail.text.toString().trim())
-            intent.putExtra("USER_NIS", etNis.text.toString().trim())
-            startActivity(intent)
+            val resetPrefs = com.xirpl2.SASMobile.utils.SecurePreferences.getPasswordResetData(this)
+            resetPrefs.edit()
+                .putString("reset_email", etEmail.text.toString().trim())
+                .putString("reset_nis", etNis.text.toString().trim())
+                .apply()
+            startActivity(Intent(this, VerifikasiOtpActivity::class.java))
         }
 
         setHintTextColors()
@@ -154,10 +156,12 @@ class GantiKataSandi : BaseActivity() {
                             null
                         )
 
-                        val intent = Intent(this@GantiKataSandi, VerifikasiOtpActivity::class.java)
-                        intent.putExtra("USER_EMAIL", email)
-                        intent.putExtra("USER_NIS", nis)
-                        startActivity(intent)
+                        val resetPrefs = com.xirpl2.SASMobile.utils.SecurePreferences.getPasswordResetData(this@GantiKataSandi)
+                        resetPrefs.edit()
+                            .putString("reset_email", email)
+                            .putString("reset_nis", nis)
+                            .apply()
+                        startActivity(Intent(this@GantiKataSandi, VerifikasiOtpActivity::class.java))
                     } else {
                         // Show generic message to prevent user enumeration
                         MotionToast.createColorToast(
