@@ -32,7 +32,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:text="Detail Siswa"
-                    android:textColor="#333333"
+                    android:textColor="@color/on_background"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
@@ -74,13 +74,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="NIS"
-                        android:textColor="#9CA3AF"
+                        android:textColor="@color/text_hint"
                         android:textSize="12sp" />
                     <TextView
                         android:id="@+id/tvNis"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="#1F2937"
+                        android:textColor="@color/on_background"
                         android:textSize="15sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -95,13 +95,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Nama Lengkap"
-                        android:textColor="#9CA3AF"
+                        android:textColor="@color/text_hint"
                         android:textSize="12sp" />
                     <TextView
                         android:id="@+id/tvNama"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="#1F2937"
+                        android:textColor="@color/on_background"
                         android:textSize="15sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -116,13 +116,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Jenis Kelamin"
-                        android:textColor="#9CA3AF"
+                        android:textColor="@color/text_hint"
                         android:textSize="12sp" />
                     <TextView
                         android:id="@+id/tvJenisKelamin"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="#1F2937"
+                        android:textColor="@color/on_background"
                         android:textSize="15sp" />
                 </LinearLayout>
 
@@ -136,13 +136,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Kelas"
-                        android:textColor="#9CA3AF"
+                        android:textColor="@color/text_hint"
                         android:textSize="12sp" />
                     <TextView
                         android:id="@+id/tvKelas"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="#1F2937"
+                        android:textColor="@color/on_background"
                         android:textSize="15sp" />
                 </LinearLayout>
 
@@ -156,13 +156,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Jurusan"
-                        android:textColor="#9CA3AF"
+                        android:textColor="@color/text_hint"
                         android:textSize="12sp" />
                     <TextView
                         android:id="@+id/tvJurusan"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="#1F2937"
+                        android:textColor="@color/on_background"
                         android:textSize="15sp" />
                 </LinearLayout>
 
@@ -176,13 +176,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Wali Kelas"
-                        android:textColor="#9CA3AF"
+                        android:textColor="@color/text_hint"
                         android:textSize="12sp" />
                     <TextView
                         android:id="@+id/tvWaliKelas"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="#1F2937"
+                        android:textColor="@color/on_background"
                         android:textSize="15sp" />
                 </LinearLayout>
 
@@ -196,13 +196,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Status Akademik"
-                        android:textColor="#9CA3AF"
+                        android:textColor="@color/text_hint"
                         android:textSize="12sp" />
                     <TextView
                         android:id="@+id/tvStatusAkademik"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="#1F2937"
+                        android:textColor="@color/on_background"
                         android:textSize="15sp" />
                 </LinearLayout>
 
@@ -215,7 +215,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Status Perangkat"
-                        android:textColor="#9CA3AF"
+                        android:textColor="@color/text_hint"
                         android:textSize="12sp" />
                     <TextView
                         android:id="@+id/tvDeviceStatus"

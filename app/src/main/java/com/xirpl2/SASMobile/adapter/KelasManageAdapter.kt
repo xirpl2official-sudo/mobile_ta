@@ -24,6 +24,12 @@ class KelasManageAdapter(
 
     private val expandedIds = mutableSetOf<Int>()
     private val classStudentsMap = mutableMapOf<Int, List<SiswaItem>>()
+    private val loadingStates = mutableSetOf<Int>()
+
+    fun setLoading(idKelas: Int, isLoading: Boolean) {
+        if (isLoading) loadingStates.add(idKelas) else loadingStates.remove(idKelas)
+        notifyDataSetChanged()
+    }
 
     inner class KelasViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val layoutJurusanHeader: View = view.findViewById(R.id.layoutJurusanHeader)
@@ -31,135 +37,114 @@ class KelasManageAdapter(
         val tvJurusanCount: TextView = view.findViewById(R.id.tvJurusanCount)
 
         val cardContainer: com.google.android.material.card.MaterialCardView = view.findViewById(R.id.cardContainer)
+        val ivJurusanLogo: ImageView = view.findViewById(R.id.ivJurusanLogo)
         val tvNamaKelas: TextView = view.findViewById(R.id.tvNamaKelas)
         val badgeSiswaCount: TextView = view.findViewById(R.id.badgeSiswaCount)
-        val badgeWarningWali: View = view.findViewById(R.id.badgeWarningWali)
+        val layoutWaliInfo: View = view.findViewById(R.id.layoutWaliInfo)
         val tvWaliKelas: TextView = view.findViewById(R.id.tvWaliKelas)
-        val tvSectionWaliTitle: TextView = view.findViewById(R.id.tvSectionWaliTitle)
-        val tvSectionWaliSubtitle: TextView = view.findViewById(R.id.tvSectionWaliSubtitle)
-        val btnUbahWali: MaterialButton = view.findViewById(R.id.btnUbahWali)
+        val btnUbahWaliQuick: MaterialButton = view.findViewById(R.id.btnUbahWaliQuick)
+        val btnUbahWaliSection: MaterialButton = view.findViewById(R.id.btnUbahWaliSection)
         val ivExpand: ImageView = view.findViewById(R.id.ivExpand)
+        val pbSavingWali: ProgressBar = view.findViewById(R.id.pbSavingWali)
+        
         val layoutExpandable: View = view.findViewById(R.id.layoutExpandable)
-        val emptyStateSiswa: View = view.findViewById(R.id.emptyStateSiswa)
-        val btnEmptyTambahSiswa: MaterialButton = view.findViewById(R.id.btnEmptyTambahSiswa)
-        val tvDaftarSiswaTitle: TextView = view.findViewById(R.id.tvDaftarSiswaTitle)
         val recyclerSiswa: RecyclerView = view.findViewById(R.id.recyclerSiswaInClass)
-        val pbLoading: ProgressBar = view.findViewById(R.id.pbLoadingSiswa)
-        val cardHeader: View = view.findViewById(R.id.cardHeader)
+        val pbLoadingSiswa: ProgressBar = view.findViewById(R.id.pbLoadingSiswa)
+        val emptyStateSiswa: View = view.findViewById(R.id.emptyStateSiswa)
+        val tvDaftarSiswaTitle: TextView = view.findViewById(R.id.tvDaftarSiswaTitle)
 
-        // Cache LayoutManager and adapter to avoid recreating on every bind
-        private val siswaLayoutManager = LinearLayoutManager(recyclerSiswa.context)
         private val siswaAdapter = SiswaInClassAdapter(onStudentDetailClick)
 
         init {
-            recyclerSiswa.layoutManager = siswaLayoutManager
+            recyclerSiswa.layoutManager = LinearLayoutManager(view.context)
             recyclerSiswa.adapter = siswaAdapter
         }
 
         fun bind(kelas: KelasManagementItem, position: Int) {
             val context = itemView.context
-            val list = currentList
-
-            val showHeader = position == 0 || list[position - 1].jurusan != kelas.jurusan
-            if (showHeader) {
-                layoutJurusanHeader.visibility = View.VISIBLE
-                tvJurusanTitle.text = kelas.jurusan ?: "Umum"
-                val countInJurusan = list.count { it.jurusan == kelas.jurusan }
-                tvJurusanCount.text = "$countInJurusan Kelas"
-            } else {
-                layoutJurusanHeader.visibility = View.GONE
+            
+            // Visual Jurusan
+            val logoRes = when(kelas.jurusan?.uppercase()) {
+                "RPL" -> R.drawable.logo_rpl
+                "TKJ" -> R.drawable.logo_tkj
+                "DKV" -> R.drawable.logo_dkv
+                "TEI" -> R.drawable.logo_tei
+                "BC" -> R.drawable.logo_bc
+                "TMT" -> R.drawable.logo_mt
+                "TAV" -> R.drawable.logo_tav
+                else -> R.drawable.ic_class
             }
+            ivJurusanLogo.setImageResource(logoRes)
 
-            tvNamaKelas.text = kelas.label
-
-            // ISS-004: Semantic Student Badge Colors
+            tvNamaKelas.text = "${kelas.tingkatan} ${kelas.part}"
             badgeSiswaCount.text = "${kelas.siswa_count} Siswa"
-            when {
-                kelas.siswa_count == 0 -> {
-                    badgeSiswaCount.backgroundTintList = ContextCompat.getColorStateList(context, R.color.status_error)
-                }
-                kelas.siswa_count < 10 -> {
-                    badgeSiswaCount.backgroundTintList = ContextCompat.getColorStateList(context, R.color.status_warning)
-                }
-                else -> {
-                    badgeSiswaCount.backgroundTintList = ContextCompat.getColorStateList(context, R.color.status_success)
-                }
-            }
-
-            // ISS-002: Warning State for Missing Wali Kelas
+            tvDaftarSiswaTitle.text = "Daftar Siswa (${kelas.siswa_count})"
+            
+            // Wali Kelas UI
             if (kelas.wali_kelas.isNullOrBlank()) {
-                tvWaliKelas.text = "Wali belum ditentukan"
+                tvWaliKelas.text = "Wali belum diatur"
                 tvWaliKelas.setTextColor(ContextCompat.getColor(context, R.color.status_warning))
-                badgeWarningWali.visibility = View.VISIBLE
-                cardContainer.setStrokeColor(ContextCompat.getColorStateList(context, R.color.status_warning))
-                cardContainer.strokeWidth = context.resources.displayMetrics.density.toInt() * 2
-
-                tvSectionWaliTitle.text = "Wali Kelas"
-                tvSectionWaliSubtitle.text = "Pilih guru yang bertanggung jawab atas kelas ini."
-                btnUbahWali.text = "Atur Wali"
+                layoutWaliInfo.setBackgroundResource(R.drawable.bg_card_warning_border)
             } else {
                 tvWaliKelas.text = kelas.wali_kelas
-                tvWaliKelas.setTextColor(android.graphics.Color.parseColor("#334155"))
-                badgeWarningWali.visibility = View.GONE
-                cardContainer.setStrokeColor(ContextCompat.getColorStateList(context, R.color.slate_200))
-                cardContainer.strokeWidth = context.resources.displayMetrics.density.toInt() * 1
-
-                tvSectionWaliTitle.text = kelas.wali_kelas
-                tvSectionWaliSubtitle.text = "Wali Kelas saat ini"
-                btnUbahWali.text = "Ganti Wali"
+                tvWaliKelas.setTextColor(ContextCompat.getColor(context, R.color.slate_700))
+                layoutWaliInfo.setBackgroundResource(R.drawable.bg_card_default_border)
             }
 
-            tvDaftarSiswaTitle.text = "Daftar Siswa (${kelas.siswa_count})"
+            val isLoading = loadingStates.contains(kelas.id_kelas)
+            pbSavingWali.visibility = if (isLoading) View.VISIBLE else View.GONE
+            btnUbahWaliQuick.isEnabled = !isLoading
+            btnUbahWaliSection.isEnabled = !isLoading
+            
+            btnUbahWaliQuick.setOnClickListener { onUbahWaliClick(kelas) }
+            btnUbahWaliSection.setOnClickListener { onUbahWaliClick(kelas) }
 
+            // Expand logic
             val isExpanded = expandedIds.contains(kelas.id_kelas)
             layoutExpandable.visibility = if (isExpanded) View.VISIBLE else View.GONE
             ivExpand.rotation = if (isExpanded) 90f else 0f
 
-            // ISS-001: Empty State for 0 Students
-            if (isExpanded && kelas.siswa_count == 0) {
-                emptyStateSiswa.visibility = View.VISIBLE
-                recyclerSiswa.visibility = View.GONE
-                tvDaftarSiswaTitle.visibility = View.GONE
-
-                btnEmptyTambahSiswa.setOnClickListener {
-                    onStudentDetailClick(SiswaItem(id_siswa = 0, nis = "", nama_siswa = "NEW"))
-                }
-            } else {
-                emptyStateSiswa.visibility = View.GONE
-                recyclerSiswa.visibility = if (isExpanded) View.VISIBLE else View.GONE
-                tvDaftarSiswaTitle.visibility = if (isExpanded) View.VISIBLE else View.GONE
-            }
-
-            btnUbahWali.setOnClickListener { onUbahWaliClick(kelas) }
-
-            cardHeader.setOnClickListener {
+            cardContainer.setOnClickListener {
                 if (isExpanded) {
                     expandedIds.remove(kelas.id_kelas)
-                    notifyItemChanged(position)
+                    layoutExpandable.visibility = View.GONE
+                    ivExpand.animate().rotation(0f).setDuration(200).start()
                 } else {
                     expandedIds.add(kelas.id_kelas)
-                    notifyItemChanged(position)
-
-                    if (kelas.siswa_count > 0 && !classStudentsMap.containsKey(kelas.id_kelas)) {
-                        pbLoading.visibility = View.VISIBLE
+                    layoutExpandable.visibility = View.VISIBLE
+                    ivExpand.animate().rotation(90f).setDuration(200).start()
+                    
+                    if (!classStudentsMap.containsKey(kelas.id_kelas)) {
+                        pbLoadingSiswa.visibility = View.VISIBLE
+                        recyclerSiswa.visibility = View.GONE
+                        emptyStateSiswa.visibility = View.GONE
+                        
                         onExpandClick(kelas) { students ->
                             classStudentsMap[kelas.id_kelas] = students
-                            pbLoading.visibility = View.GONE
-                            setupStudentList(recyclerSiswa, students)
+                            pbLoadingSiswa.visibility = View.GONE
+                            if (students.isEmpty()) {
+                                emptyStateSiswa.visibility = View.VISIBLE
+                                recyclerSiswa.visibility = View.GONE
+                            } else {
+                                emptyStateSiswa.visibility = View.GONE
+                                recyclerSiswa.visibility = View.VISIBLE
+                                siswaAdapter.updateStudents(students)
+                            }
                         }
-                    } else if (kelas.siswa_count > 0) {
-                        setupStudentList(recyclerSiswa, classStudentsMap[kelas.id_kelas]!!)
+                    } else {
+                        val students = classStudentsMap[kelas.id_kelas]!!
+                        pbLoadingSiswa.visibility = View.GONE
+                        if (students.isEmpty()) {
+                            emptyStateSiswa.visibility = View.VISIBLE
+                            recyclerSiswa.visibility = View.GONE
+                        } else {
+                            emptyStateSiswa.visibility = View.GONE
+                            recyclerSiswa.visibility = View.VISIBLE
+                            siswaAdapter.updateStudents(students)
+                        }
                     }
                 }
             }
-
-            if (isExpanded && classStudentsMap.containsKey(kelas.id_kelas)) {
-                setupStudentList(recyclerSiswa, classStudentsMap[kelas.id_kelas]!!)
-            }
-        }
-
-        private fun setupStudentList(recyclerView: RecyclerView, students: List<SiswaItem>) {
-            siswaAdapter.updateStudents(students)
         }
     }
 
@@ -173,11 +158,6 @@ class KelasManageAdapter(
     }
 
     fun updateData(newList: List<KelasManagementItem>) {
-        val removedIds = currentList.map { it.id_kelas }.toSet() - newList.map { it.id_kelas }.toSet()
-        removedIds.forEach { id_kelas ->
-            expandedIds.remove(id_kelas)
-            classStudentsMap.remove(id_kelas)
-        }
         submitList(newList)
     }
 }

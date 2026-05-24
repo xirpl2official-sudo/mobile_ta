@@ -1,15 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Dark theme color overrides -->
-    <color name="background">#0F172A</color>
-    <color name="surface">#1E293B</color>
-    <color name="surface_container">#1E293B</color>
+    <color name="background">#000000</color>
+    <color name="surface">#121212</color>
+    <color name="surface_container">#121212</color>
     <color name="on_background">#F1F5F9</color>
     <color name="on_surface">#F1F5F9</color>
     <color name="outline">#334155</color>
     <color name="outline_variant">#475569</color>
     <color name="white">#FFFFFF</color>
+    <color name="black">#FFFFFF</color>
     <color name="blue_theme_light">#1E3A5F</color>
     <color name="bg_profile_card">#1E3A5F</color>
-    <color name="bg_sidebar">#1E293B</color>
+    <color name="bg_sidebar">#121212</color>
+
+    <!-- Slate color scale inversion for dark mode -->
+    <color name="slate_50">#000000</color>
+    <color name="slate_100">#121212</color>
+    <color name="slate_200">#1E1E1E</color>
+    <color name="slate_300">#2C2C2C</color>
+    <color name="slate_400">#64748B</color>
+    <color name="slate_500">#94A3B8</color>
+    <color name="slate_600">#CBD5E1</color>
+    <color name="slate_700">#E2E8F0</color>
+    <color name="slate_800">#F1F5F9</color>
+    <color name="slate_900">#F8FAFC</color>
+
+    <!-- Additional dark overrides -->
+    <color name="text_secondary">#CBD5E1</color>
+    <color name="text_hint">#64748B</color>
+    <color name="divider">#334155</color>
+    <color name="background_gray">#121212</color>
 </resources>

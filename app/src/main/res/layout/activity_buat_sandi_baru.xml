@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/background"
     tools:context=".BuatSandiBaruActivity">
 
     <androidx.constraintlayout.widget.Guideline
@@ -114,10 +114,10 @@
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:id="@+id/passwordLayoutBaru"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="56dp"
         android:hint="@string/SandiBaru"
         android:layout_marginTop="@dimen/spacing_text"
-        app:boxBackgroundColor="#FFFFFF"
+        app:boxBackgroundColor="@color/surface"
         app:boxStrokeColor="@color/stroke_blue_always"
         app:boxStrokeWidth="1dp"
         app:boxStrokeWidthFocused="1dp"
@@ -131,15 +131,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/passwordBaruLabel"
-        app:layout_constraintWidth_percent="0.85"
-        app:layout_constraintHeight_percent="0.075">
+        app:layout_constraintWidth_percent="0.80">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_passwordbaru"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:inputType="textPassword"
-            android:textColor="#000000"
+            android:textColor="@color/on_background"
             android:textSize="@dimen/text_input_hint" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -162,10 +161,10 @@
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:id="@+id/passwordLayoutKonfirm"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="56dp"
         android:layout_marginTop="@dimen/spacing_text"
         android:hint="@string/konfirSandi"
-        app:boxBackgroundColor="#FFFFFF"
+        app:boxBackgroundColor="@color/surface"
         app:boxStrokeColor="@color/stroke_blue_always"
         app:boxStrokeWidth="1dp"
         app:boxStrokeWidthFocused="1dp"
@@ -179,15 +178,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/passwordKonfirmLabel"
-        app:layout_constraintWidth_percent="0.85"
-        app:layout_constraintHeight_percent="0.075">
+        app:layout_constraintWidth_percent="0.80">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_konfirmpassword"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:inputType="textPassword"
-            android:textColor="#000000"
+            android:textColor="@color/on_background"
             android:textSize="@dimen/text_input_hint" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -195,17 +193,16 @@
     <Button
         android:id="@+id/buttonBuatSandi"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="56dp"
         android:layout_marginTop="32dp"
         android:backgroundTint="#2D8FE3"
         android:text="@string/ButtonBuatSandi"
         android:textColor="#FFFFFF"
         android:textSize="@dimen/text_button"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.075"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/passwordLayoutKonfirm"
-        app:layout_constraintWidth_percent="0.85" />
+        app:layout_constraintWidth_percent="0.80" />
 
     
     <ProgressBar

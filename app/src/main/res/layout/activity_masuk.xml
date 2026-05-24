@@ -5,7 +5,8 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/background"
+    android:theme="@style/Theme.SAS_Mobile.WhiteBackground"
     tools:context=".MasukActivity">
 
     <ImageView
@@ -99,10 +100,10 @@
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:id="@+id/nisLayout"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="56dp"
         android:layout_marginTop="@dimen/spacing_text"
         android:hint="@string/NIS"
-        app:boxBackgroundColor="#FFFFFF"
+        app:boxBackgroundColor="@color/surface"
         app:hintTextColor="@color/hint_and_floating"
         app:boxStrokeColor="@color/stroke_blue_always"
         app:boxStrokeWidth="1dp"
@@ -115,8 +116,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/nisLabel"
-        app:layout_constraintWidth_percent="0.85"
-        app:layout_constraintHeight_percent="0.075">
+        app:layout_constraintWidth_percent="0.80">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_nis"
@@ -124,7 +124,7 @@
             android:layout_height="match_parent"
             android:autofillHints="username"
             android:inputType="text"
-            android:textColor="#000000"
+            android:textColor="@color/on_background"
             android:textSize="@dimen/text_input_hint" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -147,10 +147,10 @@
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:id="@+id/passwordLayout"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="56dp"
         android:layout_marginTop="@dimen/spacing_text"
         android:hint="@string/Sandi"
-        app:boxBackgroundColor="#FFFFFF"
+        app:boxBackgroundColor="@color/surface"
         app:hintTextColor="@color/hint_and_floating"
         app:boxStrokeColor="@color/stroke_blue_always"
         app:boxStrokeWidth="1dp"
@@ -165,15 +165,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/passwordLabel"
-        app:layout_constraintWidth_percent="0.85"
-        app:layout_constraintHeight_percent="0.075">
+        app:layout_constraintWidth_percent="0.80">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_password"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:inputType="textPassword"
-            android:textColor="#000000"
+            android:textColor="@color/on_background"
             android:textSize="@dimen/text_input_hint" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -192,7 +191,7 @@
     <Button
         android:id="@+id/btn_masuk"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="56dp"
         android:layout_marginTop="32dp"
         android:backgroundTint="#2D8FE3"
         android:text="@string/Masuk"
@@ -200,11 +199,10 @@
         android:textSize="@dimen/text_button"
         app:layout_constraintBottom_toTopOf="@id/textBelumPunyaAkun"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.075"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textLupaPassword"
         app:layout_constraintVertical_bias="0.0"
-        app:layout_constraintWidth_percent="0.85"
+        app:layout_constraintWidth_percent="0.80"
         app:cornerRadius="12dp" />
 
     <TextView
@@ -213,7 +211,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
         android:text="@string/BelumAkun"
-        android:textColor="#000000"
+        android:textColor="@color/on_background"
         android:textSize="@dimen/text_small"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/textBuatAkun"

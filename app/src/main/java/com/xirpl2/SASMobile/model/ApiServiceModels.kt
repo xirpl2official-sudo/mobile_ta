@@ -52,6 +52,8 @@ data class BulkProgressionRequest(
 data class BulkFieldsRequest(
     @SerializedName("nis_list")
     val student_ids: List<String>,
+    val kelas: String? = null,
+    val jurusan: String? = null,
     @SerializedName("status_akademik")
     val statusAkademik: String? = null,
     @SerializedName("id_tahun_masuk")

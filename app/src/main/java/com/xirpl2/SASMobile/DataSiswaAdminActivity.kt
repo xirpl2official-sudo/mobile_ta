@@ -11,6 +11,7 @@ import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -22,9 +23,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.xirpl2.SASMobile.adapter.SiswaAdapter
 import com.xirpl2.SASMobile.model.SiswaItem
+import com.xirpl2.SASMobile.network.RetrofitClient
 import com.xirpl2.SASMobile.repository.BerandaRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
@@ -70,7 +74,14 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
     private var selectedJurusan: String = "Semua Jurusan"
     private var selectedKelas: String = "Semua Kelas"
     private var selectedGender: String = "Semua JK"
+    private var selectedAgama: String = "Semua Agama"
     private var searchQuery: String = ""
+
+    // Bulk Action views
+    private lateinit var bulkActionBar: View
+    private lateinit var tvSelectedCount: TextView
+    private lateinit var cbSelectAll: CheckBox
+    private var isSelectionMode = false
 
     // ForcedClass: for wali_kelas, auto-filter to their assigned class
     private var forcedClass: String? = null
@@ -89,6 +100,7 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
     private val jurusanOptions: List<String> = listOf("Semua Jurusan") + fixedJurusanList
     private val kelasOptions: List<String> = listOf("Semua Kelas", "10", "11", "12")
     private val genderOptions: List<String> = listOf("Semua JK", "Laki-laki", "Perempuan")
+    private val agamaOptions: List<String> = listOf("Semua Agama", "Islam", "Kristen", "Katolik", "Hindu", "Budha", "Khonghucu")
     
     
     private fun getGenderApiValue(displayValue: String): String? {
@@ -126,6 +138,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
         
         
         setupRecyclerView()
+        setupBulkActionLogic()
         
         
         loadStudentData(reset = true)
@@ -143,6 +156,133 @@ override fun onCreate(savedInstanceState: Bundle?) {
         tvEmptyState = findViewById(R.id.tvEmptyState)
         emptyStateContainer = findViewById(R.id.emptyState)
         tvCountInfo = findViewById(R.id.tvCountInfo)
+
+        bulkActionBar = findViewById(R.id.bulkActionBar)
+        tvSelectedCount = findViewById(R.id.tvSelectedCount)
+        cbSelectAll = findViewById(R.id.cbSelectAll)
+    }
+
+    private fun setupBulkActionLogic() {
+        siswaAdapter.setOnSelectionChangedListener { count ->
+            if (count > 0 && !isSelectionMode) {
+                enterSelectionMode()
+            } else if (count == 0 && isSelectionMode) {
+                exitSelectionMode()
+            }
+            tvSelectedCount.text = "$count terpilih"
+            cbSelectAll.isChecked = count == allStudentList.size && allStudentList.isNotEmpty()
+        }
+
+        cbSelectAll.setOnCheckedChangeListener { _, isChecked ->
+            siswaAdapter.selectAll(isChecked)
+        }
+
+        findViewById<View>(R.id.btnCloseBulk).setOnClickListener {
+            exitSelectionMode()
+        }
+
+        findViewById<View>(R.id.btnBulkDelete).setOnClickListener {
+            showBulkDeleteConfirmation()
+        }
+
+        findViewById<View>(R.id.btnBulkMutasi).setOnClickListener {
+            showBulkMutationDialog()
+        }
+    }
+
+    private fun enterSelectionMode() {
+        isSelectionMode = true
+        bulkActionBar.visibility = View.VISIBLE
+        siswaAdapter.setSelectionMode(true)
+    }
+
+    private fun exitSelectionMode() {
+        isSelectionMode = false
+        bulkActionBar.visibility = View.GONE
+        siswaAdapter.setSelectionMode(false)
+    }
+
+    private fun showBulkDeleteConfirmation() {
+        val selectedItems = siswaAdapter.getSelectedItems()
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Hapus Masal")
+            .setMessage("Apakah Anda yakin ingin menghapus ${selectedItems.size} siswa terpilih?")
+            .setPositiveButton("Hapus") { _, _ -> executeBulkDelete(selectedItems) }
+            .setNegativeButton("Batal", null)
+            .show()
+    }
+
+    private fun showBulkMutationDialog() {
+        val selectedItems = siswaAdapter.getSelectedItems()
+        val view = layoutInflater.inflate(R.layout.dialog_bulk_mutasi, null)
+        
+        val spinnerKelas = view.findViewById<android.widget.Spinner>(R.id.spinnerTargetKelas)
+        val spinnerJurusan = view.findViewById<android.widget.Spinner>(R.id.spinnerTargetJurusan)
+        val spinnerStatus = view.findViewById<android.widget.Spinner>(R.id.spinnerTargetStatus)
+
+        spinnerKelas.adapter = android.widget.ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, listOf("10", "11", "12"))
+        spinnerJurusan.adapter = android.widget.ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, fixedJurusanList)
+        spinnerStatus.adapter = android.widget.ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, listOf("AKTIF", "PKL", "MUTASI", "KELUAR"))
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Mutasi Masal (${selectedItems.size} Siswa)")
+            .setView(view)
+            .setPositiveButton("Mutasi") { _, _ ->
+                val targetKelas = spinnerKelas.selectedItem.toString()
+                val targetJurusan = spinnerJurusan.selectedItem.toString()
+                val targetStatus = spinnerStatus.selectedItem.toString()
+                executeBulkMutation(selectedItems, targetKelas, targetJurusan, targetStatus)
+            }
+            .setNegativeButton("Batal", null)
+            .show()
+    }
+
+    private fun executeBulkMutation(items: List<SiswaItem>, kelas: String, jurusan: String, status: String) {
+        val nises = items.map { it.nis }
+        val token = getAuthToken()
+        
+        lifecycleScope.launch {
+            try {
+                val request = com.xirpl2.SASMobile.model.BulkFieldsRequest(
+                    student_ids = nises,
+                    kelas = kelas,
+                    jurusan = jurusan,
+                    statusAkademik = status
+                )
+                val response = RetrofitClient.apiService.updateBulkStudentFields("Bearer $token", request)
+                if (response.isSuccessful) {
+                    Toast.makeText(this@DataSiswaAdminActivity, "Berhasil memutasi ${items.size} siswa", Toast.LENGTH_SHORT).show()
+                    exitSelectionMode()
+                    loadStudentData(reset = true)
+                }
+            } catch (e: Exception) {
+                Toast.makeText(this@DataSiswaAdminActivity, "Gagal mutasi: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun executeBulkDelete(items: List<SiswaItem>) {
+        val token = getAuthToken()
+        lifecycleScope.launch {
+            try {
+                var successCount = 0
+                items.forEach { siswa ->
+                    repository.deleteSiswa(token, siswa.nis).fold(
+                        onSuccess = { successCount++ },
+                        onFailure = { /* ignore individual failure */ }
+                    )
+                }
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@DataSiswaAdminActivity, "Berhasil menghapus $successCount siswa", Toast.LENGTH_SHORT).show()
+                    exitSelectionMode()
+                    loadStudentData(reset = true)
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@DataSiswaAdminActivity, "Gagal menghapus: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
     private fun initForcedClass() {
@@ -256,6 +396,15 @@ override fun onCreate(savedInstanceState: Bundle?) {
             showFilterDialog("Pilih Jenis Kelamin", genderOptions, selectedGender) { selected ->
                 selectedGender = selected
                 filterGender.text = selected
+                loadStudentData(reset = true)
+            }
+        }
+
+        val filterAgama = findViewById<TextView>(R.id.filterAgama)
+        filterAgama.setOnClickListener {
+            showFilterDialog("Pilih Agama", agamaOptions, selectedAgama) { selected ->
+                selectedAgama = selected
+                filterAgama.text = selected
                 loadStudentData(reset = true)
             }
         }

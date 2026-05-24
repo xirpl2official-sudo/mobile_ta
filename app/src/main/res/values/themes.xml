@@ -13,6 +13,10 @@
 
     <style name="Theme.SAS_Mobile" parent="Base.Theme.SAS_Mobile" />
 
+    <style name="Theme.SAS_Mobile.WhiteBackground" parent="Theme.SAS_Mobile">
+        <item name="colorControlActivated">@color/black</item>
+    </style>
+
     <style name="Animation.NoAnimation" parent="@android:style/Animation.Activity">
         <item name="android:activityOpenEnterAnimation">@null</item>
         <item name="android:activityOpenExitAnimation">@null</item>

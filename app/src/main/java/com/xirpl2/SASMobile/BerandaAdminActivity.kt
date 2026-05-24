@@ -21,20 +21,31 @@ class BerandaAdminActivity : BaseAdminActivity() {
     private lateinit var tvHadirHariIniValue: TextView
     private lateinit var tvIzinSakitValue: TextView
     private lateinit var tvKehadiranValue: TextView
+    private lateinit var tvAlphaValue: TextView
     private lateinit var tvHadirHariIniSub: TextView
     private lateinit var tvIzinSakitSub: TextView
     private lateinit var tvKehadiranSub: TextView
+    private lateinit var tvAlphaSub: TextView
     private lateinit var tvNamaSholat: TextView
     private lateinit var tvWaktuSholat: TextView
+    private lateinit var layoutUnregisteredWarning: View
+    private lateinit var tvUnregisteredCount: TextView
     private lateinit var tvStatusBadge: TextView
     private lateinit var btnQRCode: View
+
+    // Quick Actions
+    private lateinit var btnQuickPresensi: View
+    private lateinit var btnQuickLaporan: View
+    private lateinit var btnQuickSiswa: View
+    private lateinit var btnQuickJadwal: View
+
     private lateinit var cardJadwalDhuha: View
     private lateinit var rvDhuhaSchedule: RecyclerView
     private lateinit var rvJurusan: RecyclerView
 
     private lateinit var jurusanAdapter: JurusanAdapter
     private lateinit var dhuhaScheduleAdapter: DhuhaScheduleAdapter
-    
+
     private val repository = BerandaRepository()
     private val TAG = "BerandaAdminActivity"
     
@@ -62,6 +73,7 @@ class BerandaAdminActivity : BaseAdminActivity() {
         initializeViews()
         setupDrawerAndSidebar()
         setupMenuIcon()
+        setupQuickActions()
 
         // Load data safely
         if (!isFinishing && !isDestroyed) {
@@ -69,6 +81,7 @@ class BerandaAdminActivity : BaseAdminActivity() {
             setupJadwalSholat()
             setupJurusanList()
             loadNotificationCount()
+            checkUnregisteredStudents()
         }
     }
     
@@ -78,9 +91,13 @@ class BerandaAdminActivity : BaseAdminActivity() {
         tvHadirHariIniValue = findViewById(R.id.tvHadirHariIniValue)
         tvIzinSakitValue = findViewById(R.id.tvIzinSakitValue)
         tvKehadiranValue = findViewById(R.id.tvKehadiranValue)
+        tvAlphaValue = findViewById(R.id.tvAlphaValue)
+        
         tvHadirHariIniSub = findViewById(R.id.tvHadirHariIniSub)
         tvIzinSakitSub = findViewById(R.id.tvIzinSakitSub)
         tvKehadiranSub = findViewById(R.id.tvKehadiranSub)
+        tvAlphaSub = findViewById(R.id.tvAlphaSub)
+
         tvNamaSholat = findViewById(R.id.tvNamaSholat)
         tvWaktuSholat = findViewById(R.id.tvWaktuSholat)
         tvStatusBadge = findViewById(R.id.tvStatusBadge)
@@ -88,8 +105,56 @@ class BerandaAdminActivity : BaseAdminActivity() {
         cardJadwalDhuha = findViewById(R.id.cardJadwalDhuha)
         rvDhuhaSchedule = findViewById(R.id.rvDhuhaSchedule)
 
+        btnQuickPresensi = findViewById(R.id.btnQuickPresensi)
+        btnQuickLaporan = findViewById(R.id.btnQuickLaporan)
+        btnQuickSiswa = findViewById(R.id.btnQuickSiswa)
+        btnQuickJadwal = findViewById(R.id.btnQuickJadwal)
+
+        layoutUnregisteredWarning = findViewById(R.id.layoutUnregisteredWarning)
+        tvUnregisteredCount = findViewById(R.id.tvUnregisteredCount)
+
         btnQRCode.setOnClickListener {
             startActivity(Intent(this, QRCodeAdminActivity::class.java))
+        }
+    }
+
+    private fun checkUnregisteredStudents() {
+        val token = getAuthToken()
+        if (token.isEmpty()) return
+        
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitClient.apiService.getUnregisteredStudents("Bearer $token", pageSize = 1)
+                if (response.isSuccessful) {
+                    val count = response.body()?.pagination?.total_items ?: 0
+                    if (count > 0) {
+                        layoutUnregisteredWarning.visibility = View.VISIBLE
+                        tvUnregisteredCount.text = "$count siswa belum mendaftarkan perangkat"
+                        layoutUnregisteredWarning.setOnClickListener {
+                            startActivity(Intent(this@BerandaAdminActivity, SiswaBelumTerdaftarAdminActivity::class.java))
+                        }
+                    } else {
+                        layoutUnregisteredWarning.visibility = View.GONE
+                    }
+                }
+            } catch (e: Exception) {
+                Log.w(TAG, "Unregistered check failed", e)
+            }
+        }
+    }
+
+    private fun setupQuickActions() {
+        btnQuickPresensi.setOnClickListener {
+            startActivity(Intent(this, PresensiSholatAdminActivity::class.java))
+        }
+        btnQuickLaporan.setOnClickListener {
+            startActivity(Intent(this, LaporanAdminActivity::class.java))
+        }
+        btnQuickSiswa.setOnClickListener {
+            startActivity(Intent(this, DataSiswaAdminActivity::class.java))
+        }
+        btnQuickJadwal.setOnClickListener {
+            startActivity(Intent(this, JadwalSholatAdminActivity::class.java))
         }
     }
     
@@ -107,12 +172,16 @@ class BerandaAdminActivity : BaseAdminActivity() {
                         tvHadirHariIniValue.text = globalStats.total_kehadiran_hari_ini.toString()
                         val izinSakit = globalStats.total_izin_hari_ini + globalStats.total_sakit_hari_ini
                         tvIzinSakitValue.text = izinSakit.toString()
+                        tvAlphaValue.text = globalStats.total_alpha_hari_ini.toString()
+                        
                         val kehadiranPct = String.format(java.util.Locale.US, "%.0f%%", globalStats.persentase_kehadiran)
                         tvKehadiranValue.text = kehadiranPct
+                        
                         val todayLabel = java.text.SimpleDateFormat("dd MMM yyyy", java.util.Locale("id")).format(java.util.Date())
                         tvHadirHariIniSub.text = todayLabel
                         tvIzinSakitSub.text = todayLabel
                         tvKehadiranSub.text = todayLabel
+                        tvAlphaSub.text = todayLabel
                     }
                 },
                 onFailure = { error ->

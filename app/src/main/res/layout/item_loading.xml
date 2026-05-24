@@ -4,7 +4,7 @@
     android:layout_height="48dp"
     android:gravity="center"
     android:orientation="vertical"
-    android:background="@android:color/white">
+    android:background="@color/background">
 
     <ProgressBar
         android:layout_width="24dp"

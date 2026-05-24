@@ -31,8 +31,9 @@ import com.xirpl2.SASMobile.network.RetrofitClient
 import com.xirpl2.SASMobile.repository.BerandaRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class BerandaActivity : BaseActivity() {
+class BerandaActivity : BaseSiswaActivity() {
 
     private lateinit var rvJadwalSholat: RecyclerView
     private lateinit var rvRiwayatAbsensi: RecyclerView
@@ -44,8 +45,6 @@ class BerandaActivity : BaseActivity() {
 
     private lateinit var jadwalAdapter: JadwalSholatAdapter
     private lateinit var riwayatAdapter: RiwayatAbsensiAdapter
-    
-    private var popupWindow: PopupWindow? = null
     
     private val repository = BerandaRepository()
     private val TAG = "BerandaActivity"
@@ -66,13 +65,21 @@ class BerandaActivity : BaseActivity() {
     // Guard against duplicate loadAllData calls from onCreate+onResume race condition
     private var isDataLoaded = false
 
+    override fun getCurrentMenuItem(): SiswaMenuItem = SiswaMenuItem.BERANDA
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_beranda)
+        setupStatusBar()
+
+        findViewById<android.view.View>(R.id.topBarContent)?.let { topBar ->
+            applyEdgeToEdge(topBar)
+        }
 
         // Basic initialization
         initializeViews()
-        setupPopupMenu()
+        setupDrawerAndSidebar()
+        setupMenuIcon()
         setupJadwalSholat()
         setupRiwayatAbsensi()
         setupAbsensiButton()
@@ -179,42 +186,60 @@ class BerandaActivity : BaseActivity() {
             return
         }
 
-        val header = "Tanggal,Sholat,Waktu,Status"
-        val rows = items.map { item ->
-            "${item.tanggal},${item.namaSholat},${item.waktuAbsen ?: "-"},${item.status.name}"
-        }
-        val csv = "\uFEFF" + (listOf(header) + rows).joinToString("\n")
-
-        val fileName = "riwayat_absensi_${java.text.SimpleDateFormat("yyyyMMdd_HHmmss", java.util.Locale.getDefault()).format(java.util.Date())}.csv"
-
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                // Android 10+: Use MediaStore.Downloads API
-                val contentValues = ContentValues().apply {
-                    put(MediaStore.Downloads.DISPLAY_NAME, fileName)
-                    put(MediaStore.Downloads.MIME_TYPE, "text/csv")
-                    put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
-                }
-                val uri = contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
-                if (uri != null) {
-                    contentResolver.openOutputStream(uri)?.use { outputStream ->
-                        outputStream.write(csv.toByteArray())
-                    }
-                    Toast.makeText(this, "Tersimpan di Downloads/$fileName", Toast.LENGTH_LONG).show()
-                } else {
-                    Toast.makeText(this, "Gagal membuat file", Toast.LENGTH_SHORT).show()
-                }
-            } else {
-                // Android 9 and below: Use legacy file API
-                @Suppress("DEPRECATION")
-                val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                val file = java.io.File(downloadsDir, fileName)
-                file.writeText(csv)
-                Toast.makeText(this, "Tersimpan di Downloads/$fileName", Toast.LENGTH_LONG).show()
+        lifecycleScope.launch(Dispatchers.IO) {
+            val header = "Tanggal,Sholat,Waktu,Status"
+            val rows = items.map { item ->
+                "${item.tanggal},${item.namaSholat},${item.waktuAbsen ?: "-"},${item.status.name}"
             }
-        } catch (e: Exception) {
-            Log.e(TAG, "Gagal mengunduh riwayat: ${e.message}")
-            Toast.makeText(this, "Gagal mengunduh: ${e.message}", Toast.LENGTH_SHORT).show()
+            val csv = "\uFEFF" + (listOf(header) + rows).joinToString("\n")
+
+            val fileName = "riwayat_absensi_${java.text.SimpleDateFormat("yyyyMMdd_HHmmss", java.util.Locale.getDefault()).format(java.util.Date())}.csv"
+
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    // Android 10+: Use MediaStore.Downloads API
+                    val contentValues = ContentValues().apply {
+                        put(MediaStore.Downloads.DISPLAY_NAME, fileName)
+                        put(MediaStore.Downloads.MIME_TYPE, "text/csv")
+                        put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
+                    }
+                    val uri = contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
+                    if (uri != null) {
+                        contentResolver.openOutputStream(uri)?.use { outputStream ->
+                            outputStream.write(csv.toByteArray())
+                        }
+                        withContext(Dispatchers.Main) {
+                            if (!isFinishing && !isDestroyed) {
+                                Toast.makeText(this@BerandaActivity, "Tersimpan di Downloads/$fileName", Toast.LENGTH_LONG).show()
+                            }
+                        }
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            if (!isFinishing && !isDestroyed) {
+                                Toast.makeText(this@BerandaActivity, "Gagal membuat file", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                } else {
+                    // Android 9 and below: Use legacy file API
+                    @Suppress("DEPRECATION")
+                    val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                    val file = java.io.File(downloadsDir, fileName)
+                    file.writeText(csv)
+                    withContext(Dispatchers.Main) {
+                        if (!isFinishing && !isDestroyed) {
+                            Toast.makeText(this@BerandaActivity, "Tersimpan di Downloads/$fileName", Toast.LENGTH_LONG).show()
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Gagal mengunduh riwayat: ${e.message}")
+                withContext(Dispatchers.Main) {
+                    if (!isFinishing && !isDestroyed) {
+                        Toast.makeText(this@BerandaActivity, "Gagal mengunduh: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
         }
     }
     
@@ -227,125 +252,6 @@ class BerandaActivity : BaseActivity() {
         } else {
             JadwalSholatHelper.JenisKelamin.LAKI_LAKI
         }
-    }
-    
-    private fun setupPopupMenu() {
-        val iconMenu = findViewById<ImageView>(R.id.iconMenu)
-        iconMenu.setOnClickListener {
-            showPopupMenu(it)
-        }
-    }
-    
-    private fun showPopupMenu(anchorView: android.view.View) {
-        
-        dismissPopupMenu()
-        
-        
-        val inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val popupView = inflater.inflate(R.layout.popup_menu, null)
-        
-        
-        val (nama, nis) = getUserDataFromStorage()
-        
-        
-        val tvStudentName = popupView.findViewById<TextView>(R.id.tvStudentName)
-        val tvStudentNIS = popupView.findViewById<TextView>(R.id.tvStudentNIS)
-        tvStudentName.text = nama
-        tvStudentNIS.text = nis
-        
-        
-        val btnPengajuanIzin = popupView.findViewById<LinearLayout>(R.id.btnPengajuanIzin)
-        val btnSettings = popupView.findViewById<LinearLayout>(R.id.btnSettings)
-        val btnLogout = popupView.findViewById<LinearLayout>(R.id.btnLogout)
-
-        btnPengajuanIzin.setOnClickListener {
-            dismissPopupMenu()
-            
-            val intent = Intent(this, PengajuanIzinActivity::class.java)
-            startActivity(intent)
-        }
-
-        btnSettings.setOnClickListener {
-            dismissPopupMenu()
-
-            val intent = Intent(this, PengaturanActivity::class.java)
-            startActivity(intent)
-        }
-
-        btnLogout.setOnClickListener {
-            dismissPopupMenu()
-            handleLogout()
-        }
-        
-        
-        popupWindow = PopupWindow(
-            popupView,
-            LinearLayout.LayoutParams.WRAP_CONTENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT,
-            true 
-        )
-        
-        
-        popupWindow?.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
-        popupWindow?.isOutsideTouchable = true
-        
-        
-        popupWindow?.showAsDropDown(anchorView, 0, 10, Gravity.START)
-    }
-    
-    private fun dismissPopupMenu() {
-        popupWindow?.let {
-            if (it.isShowing) {
-                it.dismiss()
-            }
-        }
-        popupWindow = null
-    }
-    
-    private fun getUserDataFromStorage(): Pair<String, String> {
-        val sharedPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this)
-        val nama = sharedPref.getString("nama_siswa", "Nama Siswa") ?: "Nama Siswa"
-        val nis = sharedPref.getString("nis", "0000000000") ?: "0000000000"
-        return Pair(nama, nis)
-    }
-    
-    private fun handleLogout() {
-        MaterialAlertDialogBuilder(this)
-            .setTitle("Keluar")
-            .setMessage("Apakah Anda yakin ingin keluar?")
-            .setPositiveButton("Ya") { _, _ ->
-                val token = getAuthToken()
-                
-                lifecycleScope.launch(Dispatchers.IO) {
-                    // Call logout API to invalidate token on server
-                    try {
-                        if (token.isNotEmpty()) {
-                            RetrofitClient.apiService.logout("Bearer $token")
-                        }
-                    } catch (e: Exception) {
-                        Log.w(TAG, "Logout API call failed (non-critical): ${e.message}")
-                    }
-                    
-                    launch(Dispatchers.Main) {
-                        // Clear ALL SharedPreferences stores
-                        com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this@BerandaActivity)
-                            .edit().clear().apply()
-                        com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this@BerandaActivity)
-                            .edit().clear().apply()
-                        getSharedPreferences("NotificationData", Context.MODE_PRIVATE)
-                            .edit().clear().apply()
-                        
-                        Toast.makeText(this@BerandaActivity, "Logout berhasil", Toast.LENGTH_SHORT).show()
-                        
-                        val intent = Intent(this@BerandaActivity, MasukActivity::class.java)
-                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        startActivity(intent)
-                        finish()
-                    }
-                }
-            }
-            .setNegativeButton("Tidak", null)
-            .show()
     }
     
     private suspend fun loadJadwalSholatFromAPI(token: String) {
@@ -394,10 +300,6 @@ class BerandaActivity : BaseActivity() {
         )
     }
 
-    private fun getAuthToken(): String {
-        val sharedPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this)
-        return sharedPref.getString("auth_token", "") ?: ""
-    }
     
     private fun formatTanggal(tanggal: String): String {
         return try {

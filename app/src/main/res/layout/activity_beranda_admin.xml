@@ -12,7 +12,7 @@
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
+        android:background="@color/surface"
         tools:context=".BerandaAdminActivity">
 
     
@@ -194,7 +194,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/TotalSiswa"
-                                android:textColor="#666666"
+                                android:textColor="@color/text_secondary"
                                 android:textSize="@dimen/text_admin_card_label"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
@@ -204,7 +204,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/PlaceholderDash"
-                                android:textColor="#000000"
+                                android:textColor="@color/on_background"
                                 android:textSize="@dimen/text_value_card"
                                 android:textStyle="bold"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -273,7 +273,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/TotalHadirHariIni"
-                                android:textColor="#666666"
+                                android:textColor="@color/text_secondary"
                                 android:textSize="@dimen/text_admin_card_label"
                                 android:maxLines="2"
                                 android:ellipsize="end"
@@ -286,7 +286,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/PlaceholderDash"
-                                android:textColor="#000000"
+                                android:textColor="@color/on_background"
                                 android:textSize="@dimen/text_value_card"
                                 android:textStyle="bold"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -354,7 +354,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/IzinSakit"
-                                android:textColor="#666666"
+                                android:textColor="@color/text_secondary"
                                 android:textSize="@dimen/text_admin_card_label"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
@@ -364,7 +364,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/PlaceholderDash"
-                                android:textColor="#000000"
+                                android:textColor="@color/on_background"
                                 android:textSize="@dimen/text_value_card"
                                 android:textStyle="bold"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -432,7 +432,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/Kehadiran"
-                                android:textColor="#666666"
+                                android:textColor="@color/text_secondary"
                                 android:textSize="@dimen/text_admin_card_label"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
@@ -442,7 +442,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/PlaceholderDash"
-                                android:textColor="#000000"
+                                android:textColor="@color/on_background"
                                 android:textSize="@dimen/text_value_card"
                                 android:textStyle="bold"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -478,7 +478,279 @@
 
                 </androidx.cardview.widget.CardView>
 
+                <!-- NEW: Total Alpha Card (Desktop Parity) -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardAlpha"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="4dp"
+                    app:cardBackgroundColor="@android:color/transparent"
+                    app:layout_constraintTop_toBottomOf="@id/cardIzinSakit"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/guidelineCenter"
+                    app:layout_constraintWidth_percent="0.4"
+                    app:layout_constraintDimensionRatio="W,1:1.3"
+                    android:layout_marginEnd="@dimen/spacing_text"
+                    android:layout_marginTop="@dimen/spacing_xlarge">
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/card_shadow_red">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="@dimen/card_padding">
+
+                            <TextView
+                                android:id="@+id/tvAlphaLabel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Total Alpha"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="@dimen/text_admin_card_label"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <TextView
+                                android:id="@+id/tvAlphaValue"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0"
+                                android:textColor="@color/on_background"
+                                android:textSize="@dimen/text_value_card"
+                                android:textStyle="bold"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/tvAlphaLabel"
+                                android:layout_marginTop="4dp" />
+
+                            <TextView
+                                android:id="@+id/tvAlphaSub"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/slate_500"
+                                android:textSize="10sp"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/tvAlphaValue"
+                                android:layout_marginTop="2dp" />
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_peringatan"
+                                app:tint="#EF4444"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent" />
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </FrameLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guidelineCenter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.5" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- NEW: Quick Actions Section (Desktop Parity) -->
+            <TextView
+                android:id="@+id/tvLayananCepatLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Layanan Cepat"
+                android:textColor="@color/on_background"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginTop="24dp"
+                app:layout_constraintTop_toBottomOf="@id/statsContainer"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <GridLayout
+                android:id="@+id/gridQuickActions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:columnCount="4"
+                app:layout_constraintTop_toBottomOf="@id/tvLayananCepatLabel">
+
+                <!-- Action: Presensi -->
+                <LinearLayout
+                    android:id="@+id/btnQuickPresensi"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground">
+                    <View
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:background="@drawable/bg_circle_light_blue" />
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginTop="-36dp"
+                        android:src="@drawable/ic_presensi"
+                        app:tint="@color/blue_theme" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Presensi"
+                        android:textSize="11sp"
+                        android:layout_marginTop="16dp"
+                        android:textColor="@color/slate_700" />
+                </LinearLayout>
+
+                <!-- Action: Laporan -->
+                <LinearLayout
+                    android:id="@+id/btnQuickLaporan"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground">
+                    <View
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:background="@drawable/bg_circle_light_blue" />
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginTop="-36dp"
+                        android:src="@drawable/ic_statistik"
+                        app:tint="@color/blue_theme" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Laporan"
+                        android:textSize="11sp"
+                        android:layout_marginTop="16dp"
+                        android:textColor="@color/slate_700" />
+                </LinearLayout>
+
+                <!-- Action: Siswa -->
+                <LinearLayout
+                    android:id="@+id/btnQuickSiswa"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground">
+                    <View
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:background="@drawable/bg_circle_light_blue" />
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginTop="-36dp"
+                        android:src="@drawable/users"
+                        app:tint="@color/blue_theme" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Siswa"
+                        android:textSize="11sp"
+                        android:layout_marginTop="16dp"
+                        android:textColor="@color/slate_700" />
+                </LinearLayout>
+
+                <!-- Action: Jadwal -->
+                <LinearLayout
+                    android:id="@+id/btnQuickJadwal"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground">
+                    <View
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:background="@drawable/bg_circle_light_blue" />
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginTop="-36dp"
+                        android:src="@drawable/ic_jadwal"
+                        app:tint="@color/blue_theme" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Jadwal"
+                        android:textSize="11sp"
+                        android:layout_marginTop="16dp"
+                        android:textColor="@color/slate_700" />
+                </LinearLayout>
+
+            </GridLayout>
+
+            <!-- NEW: Unregistered Students Warning Banner (Desktop Parity) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/layoutUnregisteredWarning"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:visibility="gone"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:strokeColor="#FACC15"
+                app:strokeWidth="1dp"
+                app:cardBackgroundColor="#FEFCE8"
+                app:layout_constraintTop_toBottomOf="@id/gridQuickActions">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="12dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_peringatan"
+                        app:tint="#A16207" />
+
+                    <TextView
+                        android:id="@+id/tvUnregisteredCount"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="12dp"
+                        android:text="Beberapa siswa belum mendaftarkan perangkat"
+                        android:textColor="#854D0E"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_chevron_right"
+                        app:tint="#A16207" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
 
             
             <androidx.cardview.widget.CardView
@@ -487,7 +759,7 @@
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="2dp"
-                app:cardBackgroundColor="#FFFFFF"
+                app:cardBackgroundColor="@color/surface"
                 app:cardUseCompatPadding="true"
                 app:layout_constraintTop_toBottomOf="@id/statsContainer"
                 app:layout_constraintStart_toStartOf="parent"
@@ -515,7 +787,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:text="@string/JadwalSholatTerdekat"
-                        android:textColor="#000000"
+                        android:textColor="@color/on_background"
                         android:textSize="@dimen/text_prayer_title"
                         android:textStyle="bold"
                         app:layout_constraintStart_toEndOf="@id/iconJadwal"
@@ -531,7 +803,7 @@
                         android:layout_height="wrap_content"
                         app:cardCornerRadius="8dp"
                         app:cardElevation="0dp"
-                        app:cardBackgroundColor="#FFFFFF"
+                        app:cardBackgroundColor="@color/surface"
                         app:layout_constraintTop_toBottomOf="@id/tvJadwalLabel"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -568,9 +840,10 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/Dhuha"
-                                android:textColor="#000000"
+                                android:textColor="@color/on_background"
                                 android:textSize="@dimen/text_prayer_name"
                                 android:textStyle="bold"
+                                android:layout_marginTop="4dp"
                                 app:layout_constraintStart_toEndOf="@id/iconPrayer"
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintEnd_toStartOf="@id/tvStatusBadge"
@@ -609,7 +882,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:text="@string/WaktuDhuhaJadwal"
-                                android:textColor="#666666"
+                                android:textColor="@color/text_secondary"
                                 android:textSize="@dimen/text_prayer_time"
                                 app:layout_constraintStart_toStartOf="@id/tvNamaSholat"
                                 app:layout_constraintTop_toBottomOf="@id/tvNamaSholat"
@@ -631,7 +904,7 @@
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="2dp"
-                app:cardBackgroundColor="#FFFFFF"
+                app:cardBackgroundColor="@color/surface"
                 app:cardUseCompatPadding="true"
                 app:layout_constraintTop_toBottomOf="@id/cardJadwalTerdekat"
                 app:layout_constraintStart_toStartOf="parent"
@@ -649,7 +922,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:text="Jadwal Dhuha per Jurusan"
-                        android:textColor="#000000"
+                        android:textColor="@color/on_background"
                         android:textSize="@dimen/text_prayer_title"
                         android:textStyle="bold"
                         app:layout_constraintStart_toStartOf="parent"

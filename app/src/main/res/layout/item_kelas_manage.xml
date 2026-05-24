@@ -61,6 +61,17 @@
                 android:padding="16dp"
                 android:background="?attr/selectableItemBackground">
 
+                <ImageView
+                    android:id="@+id/ivJurusanLogo"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:scaleType="fitCenter"
+                    android:layout_marginEnd="12dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:src="@drawable/ic_class" />
+
                 <TextView
                     android:id="@+id/tvNamaKelas"
                     android:layout_width="wrap_content"
@@ -69,7 +80,7 @@
                     android:textColor="#0F172A"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/ivJurusanLogo"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
@@ -90,62 +101,43 @@
 
                 <!-- Warning Badge for Missing Wali Kelas -->
                 <LinearLayout
-                    android:id="@+id/badgeWarningWali"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/layoutWaliInfo"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:background="@drawable/bg_status_badge_approved"
-                    android:backgroundTint="@color/status_warning_bg"
-                    android:paddingHorizontal="8dp"
-                    android:paddingVertical="2dp"
+                    android:padding="8dp"
                     android:layout_marginTop="8dp"
-                    android:visibility="gone"
                     app:layout_constraintTop_toBottomOf="@id/tvNamaKelas"
-                    app:layout_constraintStart_toStartOf="parent">
+                    app:layout_constraintStart_toEndOf="@id/ivJurusanLogo"
+                    app:layout_constraintEnd_toStartOf="@id/ivExpand">
                     
-                    <ImageView
-                        android:layout_width="12dp"
-                        android:layout_height="12dp"
-                        android:contentDescription="Peringatan"
-                        android:src="@drawable/ic_peringatan"
-                        app:tint="@color/status_warning"
-                        android:layout_marginEnd="4dp"/>
-                        
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:id="@+id/tvWaliKelas"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:text="Wali belum ditentukan"
-                        android:textColor="@color/status_warning"
-                        android:textSize="10sp"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp"
                         android:textStyle="bold"/>
+                        
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnUbahWaliQuick"
+                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="Atur Wali"
+                        android:textSize="11sp"
+                        android:layout_marginStart="8dp" />
+
+                    <ProgressBar
+                        android:id="@+id/pbSavingWali"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:visibility="gone"
+                        android:layout_marginStart="8dp" />
                 </LinearLayout>
-
-                <TextView
-                    android:id="@+id/labelWaliKelas"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="Wali Kelas:"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="12sp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/badgeWarningWali" />
-
-                <TextView
-                    android:id="@+id/tvWaliKelas"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:text="Budi Santoso, S.Kom"
-                    android:textColor="#334155"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="@id/labelWaliKelas"
-                    app:layout_constraintEnd_toStartOf="@id/ivExpand"
-                    app:layout_constraintStart_toEndOf="@id/labelWaliKelas"
-                    app:layout_constraintTop_toTopOf="@id/labelWaliKelas"
-                    android:layout_marginEnd="8dp" />
 
                 <ImageView
                     android:id="@+id/ivExpand"
@@ -263,7 +255,7 @@
                     </LinearLayout>
                     
                     <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnUbahWali"
+                        android:id="@+id/btnUbahWaliSection"
                         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

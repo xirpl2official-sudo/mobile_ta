@@ -21,6 +21,49 @@ class SiswaAdapter(
     private val isReadOnly: Boolean = false
 ) : ListAdapter<SiswaItem, RecyclerView.ViewHolder>(SiswaDiffCallback()) {
 
+    private val selectedNis = mutableSetOf<String>()
+    private var isSelectionMode = false
+    private var onSelectionChanged: ((Int) -> Unit)? = null
+
+    fun setOnSelectionChangedListener(listener: (Int) -> Unit) {
+        onSelectionChanged = listener
+    }
+
+    fun setSelectionMode(enabled: Boolean) {
+        if (isSelectionMode != enabled) {
+            isSelectionMode = enabled
+            if (!enabled) selectedNis.clear()
+            notifyDataSetChanged()
+            onSelectionChanged?.invoke(selectedNis.size)
+        }
+    }
+
+    fun toggleSelection(nis: String) {
+        if (selectedNis.contains(nis)) {
+            selectedNis.remove(nis)
+        } else {
+            selectedNis.add(nis)
+        }
+        notifyDataSetChanged()
+        onSelectionChanged?.invoke(selectedNis.size)
+    }
+
+    fun selectAll(select: Boolean) {
+        if (select) {
+            currentList.forEach { selectedNis.add(it.nis) }
+        } else {
+            selectedNis.clear()
+        }
+        notifyDataSetChanged()
+        onSelectionChanged?.invoke(selectedNis.size)
+    }
+
+    fun getSelectedItems(): List<SiswaItem> {
+        return currentList.filter { selectedNis.contains(it.nis) }
+    }
+
+    fun getSelectedCount(): Int = selectedNis.size
+
     companion object {
         private const val VIEW_TYPE_ITEM = 0
         private const val VIEW_TYPE_LOADING = 1
@@ -68,7 +111,9 @@ class SiswaAdapter(
         when (holder) {
             is SiswaViewHolder -> {
                 val siswa = getItem(position)
-                holder.bind(siswa, onEditClick, onDeleteClick, onDetailClick, isReadOnly)
+                holder.bind(siswa, onEditClick, onDeleteClick, onDetailClick, isReadOnly, isSelectionMode, selectedNis.contains(siswa.nis)) {
+                    toggleSelection(siswa.nis)
+                }
             }
             is LoadingViewHolder -> {
                 
@@ -82,22 +127,38 @@ class SiswaAdapter(
         private val tvKelas: TextView = itemView.findViewById(R.id.tvKelas)
         private val tvJurusan: TextView? = itemView.findViewById(R.id.tvJurusan)
         private val tvWaliKelas: TextView? = itemView.findViewById(R.id.tvWaliKelas)
+        private val tvStatusAkademik: TextView? = itemView.findViewById(R.id.tvStatusAkademik)
         private val btnDetailSiswa: MaterialButton? = itemView.findViewById(R.id.btnDetailSiswa)
         private val btnDetailRow: MaterialButton? = itemView.findViewById(R.id.btnDetail)
         private val btnEdit: ImageView? = itemView.findViewById(R.id.btnEdit)
         private val btnDelete: ImageView? = itemView.findViewById(R.id.btnDelete)
         private val ivDeviceStatus: ImageView? = itemView.findViewById(R.id.ivDeviceStatus)
-        private val cbRow: CheckBox? = itemView.findViewById<CheckBox>(R.id.cbRow)
+        private val cbRow: CheckBox? = itemView.findViewById(R.id.cbRow)
 
         fun bind(
             siswa: SiswaItem,
             onEditClick: (SiswaItem) -> Unit,
             onDeleteClick: (SiswaItem) -> Unit,
             onDetailClick: (SiswaItem) -> Unit,
-            isReadOnly: Boolean
+            isReadOnly: Boolean,
+            selectionMode: Boolean,
+            isSelected: Boolean,
+            onToggleSelection: () -> Unit
         ) {
             tvNis.text = siswa.nis
             
+            // Selection logic
+            cbRow?.visibility = if (selectionMode) View.VISIBLE else View.GONE
+            cbRow?.isChecked = isSelected
+            cbRow?.setOnClickListener { onToggleSelection() }
+            itemView.setOnClickListener {
+                if (selectionMode) onToggleSelection() else onDetailClick(siswa)
+            }
+            itemView.setOnLongClickListener {
+                if (!selectionMode) onToggleSelection()
+                true
+            }
+
             // FIX-012: Visual distinction for old NIS format
             if (siswa.nis.contains("/") || siswa.nis.contains(".")) {
                 tvNis.setTextColor(android.graphics.Color.parseColor("#9E9E9E"))
@@ -109,6 +170,21 @@ class SiswaAdapter(
             
             tvNama.text = siswa.nama_siswa
             
+            // Status Akademik Badge (Desktop Parity)
+            tvStatusAkademik?.let { tv ->
+                val status = siswa.statusAkademik ?: "AKTIF"
+                tv.text = status
+                val color = when (status.uppercase()) {
+                    "AKTIF" -> "#22C55E"
+                    "LULUS" -> "#3B82F6"
+                    "MUTASI" -> "#F59E0B"
+                    "KELUAR" -> "#EF4444"
+                    "PKL" -> "#8B5CF6"
+                    else -> "#64748B"
+                }
+                tv.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor(color))
+            }
+
             // Device Status Indicator (List Item Mode)
             ivDeviceStatus?.let { iv ->
                 if (siswa.deviceStatus != null || siswa.hardwareId != null) {
@@ -131,7 +207,7 @@ class SiswaAdapter(
             val detailButton = btnDetailRow ?: btnDetailSiswa
             detailButton?.setOnClickListener { onDetailClick(siswa) }
 
-            if (isReadOnly) {
+            if (isReadOnly || selectionMode) {
                 btnEdit?.visibility = View.GONE
                 btnDelete?.visibility = View.GONE
             } else {

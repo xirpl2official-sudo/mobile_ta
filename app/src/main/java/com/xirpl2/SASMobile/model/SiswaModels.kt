@@ -24,7 +24,9 @@ data class SiswaItem(
     @SerializedName("wali_kelas_name")
     val waliKelasName: String? = null,
     @SerializedName("status_akademik")
-    val statusAkademik: String? = null
+    val statusAkademik: String? = null,
+    val agama: String? = null,
+    var isSelected: Boolean = false
 ) : Serializable
 
 data class SiswaPaginationInfo(

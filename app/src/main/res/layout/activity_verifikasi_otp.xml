@@ -5,7 +5,7 @@
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#FFFFFF"
+        android:background="@color/background"
         tools:context=".VerifikasiOtpActivity">
 
         
@@ -125,7 +125,7 @@
             android:layout_height="wrap_content"
             app:cardCornerRadius="16dp"
             app:cardElevation="8dp"
-            app:cardBackgroundColor="#FFFFFF"
+            app:cardBackgroundColor="@color/surface"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/VectorAtasO"
@@ -146,7 +146,7 @@
                     android:fontFamily="@font/poppins_medium"
                     android:gravity="start"
                     android:text="@string/VerivikasiOTP"
-                    android:textColor="#000000"
+                    android:textColor="@color/on_background"
                     android:textSize="@dimen/text_bawah_title"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -162,7 +162,7 @@
                     android:fontFamily="@font/poppins_medium"
                     android:gravity="start"
                     android:text="@string/contohEmail"
-                    android:textColor="#666666"
+                    android:textColor="@color/text_secondary"
                     android:textSize="@dimen/text_email"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -177,7 +177,7 @@
                     android:fontFamily="@font/poppins_medium"
                     android:gravity="start"
                     android:text="@string/MasukkanOTP"
-                    android:textColor="#000000"
+                    android:textColor="@color/on_background"
                     android:textSize="@dimen/text_masukOTP"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -209,7 +209,7 @@
                         android:minWidth="@dimen/otp_box_min_width"
                         android:maxWidth="@dimen/otp_box_max_width"
                         android:textAlignment="center"
-                        android:textColor="#000000"
+                        android:textColor="@color/on_background"
                         android:textSize="@dimen/otp_text_size"
                         android:textStyle="bold" />
 
@@ -227,7 +227,7 @@
                         android:minWidth="@dimen/otp_box_min_width"
                         android:maxWidth="@dimen/otp_box_max_width"
                         android:textAlignment="center"
-                        android:textColor="#000000"
+                        android:textColor="@color/on_background"
                         android:textSize="@dimen/otp_text_size"
                         android:textStyle="bold" />
 
@@ -245,7 +245,7 @@
                         android:minWidth="@dimen/otp_box_min_width"
                         android:maxWidth="@dimen/otp_box_max_width"
                         android:textAlignment="center"
-                        android:textColor="#000000"
+                        android:textColor="@color/on_background"
                         android:textSize="@dimen/otp_text_size"
                         android:textStyle="bold" />
 
@@ -263,7 +263,7 @@
                         android:minWidth="@dimen/otp_box_min_width"
                         android:maxWidth="@dimen/otp_box_max_width"
                         android:textAlignment="center"
-                        android:textColor="#000000"
+                        android:textColor="@color/on_background"
                         android:textSize="@dimen/otp_text_size"
                         android:textStyle="bold" />
 
@@ -281,7 +281,7 @@
                         android:minWidth="@dimen/otp_box_min_width"
                         android:maxWidth="@dimen/otp_box_max_width"
                         android:textAlignment="center"
-                        android:textColor="#000000"
+                        android:textColor="@color/on_background"
                         android:textSize="@dimen/otp_text_size"
                         android:textStyle="bold" />
 
@@ -299,7 +299,7 @@
                         android:minWidth="@dimen/otp_box_min_width"
                         android:maxWidth="@dimen/otp_box_max_width"
                         android:textAlignment="center"
-                        android:textColor="#000000"
+                        android:textColor="@color/on_background"
                         android:textSize="@dimen/otp_text_size"
                         android:textStyle="bold" />
 

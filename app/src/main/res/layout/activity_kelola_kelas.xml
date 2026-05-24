@@ -10,7 +10,8 @@
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white">
+        android:background="@color/surface"
+        android:theme="@style/Theme.SAS_Mobile.WhiteBackground">
 
         <!-- Top Bar Background -->
         <View
@@ -142,7 +143,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Manajemen Kelas"
-                    android:textColor="#000000"
+                    android:textColor="@color/on_background"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
@@ -188,7 +189,7 @@
                     android:maxLines="1"
                     android:ellipsize="end"
                     android:hint="Pilih Jurusan"
-                    android:textColor="#666666"
+                    android:textColor="@color/text_secondary"
                     android:textSize="12sp"
                     android:inputType="none" />
 
@@ -242,7 +243,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:text="Tidak ada kelas ditemukan."
-                    android:textColor="#333333"
+                    android:textColor="@color/on_background"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 

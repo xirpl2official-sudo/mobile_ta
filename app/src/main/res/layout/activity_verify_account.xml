@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/background"
     tools:context=".VerifyAccountActivity">
 
     <androidx.constraintlayout.widget.Guideline
@@ -111,7 +111,7 @@
         android:id="@+id/cardForm"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:cardBackgroundColor="#FFFFFF"
+        app:cardBackgroundColor="@color/surface"
         app:cardCornerRadius="16dp"
         app:cardElevation="8dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -145,7 +145,7 @@
                 android:fontFamily="@font/poppins_medium"
                 android:gravity="center"
                 android:text="Verifikasi Akun"
-                android:textColor="#000000"
+                android:textColor="@color/on_background"
                 android:textSize="@dimen/text_bawah_title"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -160,7 +160,7 @@
                 android:fontFamily="@font/poppins_medium"
                 android:gravity="center"
                 android:text="Untuk keamanan akun Anda, silakan ubah kata sandi default Anda sebelum melanjutkan."
-                android:textColor="#666666"
+                android:textColor="@color/text_secondary"
                 android:textSize="@dimen/text_email"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -190,7 +190,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textPassword"
-                    android:textColor="#000000"
+                    android:textColor="@color/on_background"
                     android:textSize="@dimen/text_input_hint" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -202,7 +202,7 @@
                 android:layout_marginStart="4dp"
                 android:fontFamily="@font/poppins_medium"
                 android:text="Minimal 8 karakter, mengandung huruf besar, kecil, dan angka"
-                android:textColor="#666666"
+                android:textColor="@color/text_secondary"
                 android:textSize="11sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tilNewPassword" />
@@ -231,7 +231,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textPassword"
-                    android:textColor="#000000"
+                    android:textColor="@color/on_background"
                     android:textSize="@dimen/text_input_hint" />
             </com.google.android.material.textfield.TextInputLayout>
 

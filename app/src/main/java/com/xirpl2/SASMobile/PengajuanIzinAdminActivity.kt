@@ -421,6 +421,11 @@ class PengajuanIzinAdminActivity : BaseAdminActivity() {
         }
     }
 
+    override fun onDestroy() {
+        searchHandler.removeCallbacksAndMessages(null)
+        super.onDestroy()
+    }
+
     private fun showHelpDialog() {
         MaterialAlertDialogBuilder(this)
             .setTitle("Bantuan")

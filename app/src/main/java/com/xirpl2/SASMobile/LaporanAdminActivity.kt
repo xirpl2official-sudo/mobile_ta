@@ -46,6 +46,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
     private lateinit var tvFilterKelas: TextView
 
     // Chart views
+    private lateinit var lineChartTrend: com.github.mikephil.charting.charts.LineChart
     private lateinit var progressDonutKehadiran: ProgressBar
     private lateinit var tvDonutPersen: TextView
     private lateinit var tvLegendHadir: TextView
@@ -140,6 +141,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
         tvFilterJurusan = findViewById(R.id.tvFilterJurusan)
         tvFilterKelas = findViewById(R.id.tvFilterKelas)
 
+        lineChartTrend = findViewById(R.id.lineChartTrend)
         progressDonutKehadiran = findViewById(R.id.progressDonutKehadiran)
         tvDonutPersen = findViewById(R.id.tvDonutPersen)
         tvLegendHadir = findViewById(R.id.tvLegendHadir)
@@ -247,32 +249,83 @@ class LaporanAdminActivity : BaseAdminActivity() {
             }
         }
 
-        tvFilterSholat.setOnClickListener {
-            showFilterDialog("Pilih Jenis Sholat", sholatOptions, selectedSholat) { selected ->
-                selectedSholat = selected
-                tvFilterSholat.text = selected
-                currentPage = 1
-                loadData()
-            }
+        val openFilter = {
+            showAdvancedFilterBottomSheet()
         }
 
-        tvFilterJurusan.setOnClickListener {
-            showFilterDialog("Pilih Jurusan", jurusanOptions, selectedJurusan) { selected ->
-                selectedJurusan = selected
-                tvFilterJurusan.text = selected
-                currentPage = 1
-                loadData()
+        tvFilterSholat.setOnClickListener { openFilter() }
+        tvFilterJurusan.setOnClickListener { openFilter() }
+        tvFilterKelas.setOnClickListener { openFilter() }
+    }
+
+    private fun showAdvancedFilterBottomSheet() {
+        val dialog = com.google.android.material.bottomsheet.BottomSheetDialog(this)
+        val view = layoutInflater.inflate(R.layout.bottom_sheet_filter_laporan, null)
+        
+        val chipGroupSholat = view.findViewById<com.google.android.material.chip.ChipGroup>(R.id.chipGroupSholat)
+        val chipGroupJurusan = view.findViewById<com.google.android.material.chip.ChipGroup>(R.id.chipGroupJurusan)
+        val chipGroupKelas = view.findViewById<com.google.android.material.chip.ChipGroup>(R.id.chipGroupKelas)
+        val btnApply = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnApplyFilter)
+
+        // Set current selections
+        sholatOptions.forEach { opt ->
+            val chip = com.google.android.material.chip.Chip(this)
+            chip.text = opt
+            chip.isCheckable = true
+            chip.id = View.generateViewId()
+            if (opt == selectedSholat) {
+                chip.isChecked = true
             }
+            chipGroupSholat.addView(chip)
         }
 
-        tvFilterKelas.setOnClickListener {
-            showFilterDialog("Pilih Kelas", kelasOptions, selectedKelas) { selected ->
-                selectedKelas = selected
-                tvFilterKelas.text = selected
-                currentPage = 1
-                loadData()
+        jurusanOptions.forEach { opt ->
+            val chip = com.google.android.material.chip.Chip(this)
+            chip.text = opt
+            chip.isCheckable = true
+            chip.id = View.generateViewId()
+            if (opt == selectedJurusan) {
+                chip.isChecked = true
             }
+            chipGroupJurusan.addView(chip)
         }
+
+        kelasOptions.forEach { opt ->
+            val chip = com.google.android.material.chip.Chip(this)
+            chip.text = opt
+            chip.isCheckable = true
+            chip.id = View.generateViewId()
+            if (opt == selectedKelas) {
+                chip.isChecked = true
+            }
+            chipGroupKelas.addView(chip)
+        }
+
+        btnApply.setOnClickListener {
+            val checkedSholatId = chipGroupSholat.checkedChipId
+            val checkedJurusanId = chipGroupJurusan.checkedChipId
+            val checkedKelasId = chipGroupKelas.checkedChipId
+
+            if (checkedSholatId != View.NO_ID) {
+                selectedSholat = chipGroupSholat.findViewById<com.google.android.material.chip.Chip>(checkedSholatId).text.toString()
+                tvFilterSholat.text = selectedSholat
+            }
+            if (checkedJurusanId != View.NO_ID) {
+                selectedJurusan = chipGroupJurusan.findViewById<com.google.android.material.chip.Chip>(checkedJurusanId).text.toString()
+                tvFilterJurusan.text = selectedJurusan
+            }
+            if (checkedKelasId != View.NO_ID) {
+                selectedKelas = chipGroupKelas.findViewById<com.google.android.material.chip.Chip>(checkedKelasId).text.toString()
+                tvFilterKelas.text = selectedKelas
+            }
+
+            currentPage = 1
+            loadData()
+            dialog.dismiss()
+        }
+
+        dialog.setContentView(view)
+        dialog.show()
     }
 
     private fun setupButtons() {
@@ -496,13 +549,13 @@ class LaporanAdminActivity : BaseAdminActivity() {
                     val fileName = "Laporan_Absensi_${startDate}_$endDate.$ext"
                     
                     // Perform file I/O on IO thread
-                    val success = saveFileToDownloads(response.body()!!, fileName, mime)
+                    val fileUri = saveFileToDownloads(response.body()!!, fileName, mime)
                     
                     withContext(Dispatchers.Main) {
                         if (isFinishing || isDestroyed) return@withContext
                         btn.isEnabled = true
-                        if (success) {
-                            Toast.makeText(this@LaporanAdminActivity, "Laporan berhasil diunduh ke folder Download", Toast.LENGTH_LONG).show()
+                        if (fileUri != null) {
+                            showShareOption(fileUri, mime, fileName)
                         } else {
                             Toast.makeText(this@LaporanAdminActivity, "Gagal menyimpan file", Toast.LENGTH_SHORT).show()
                         }
@@ -524,7 +577,23 @@ class LaporanAdminActivity : BaseAdminActivity() {
         }
     }
 
-    private fun saveFileToDownloads(body: ResponseBody, fileName: String, mimeType: String = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"): Boolean {
+    private fun showShareOption(uri: android.net.Uri, mimeType: String, fileName: String) {
+        AlertDialog.Builder(this)
+            .setTitle("Laporan Berhasil Diunduh")
+            .setMessage("File: $fileName\n\nIngin membagikan laporan ini?")
+            .setPositiveButton("Bagikan") { _, _ ->
+                val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                    type = mimeType
+                    putExtra(android.content.Intent.EXTRA_STREAM, uri)
+                    addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+                startActivity(android.content.Intent.createChooser(intent, "Bagikan Laporan"))
+            }
+            .setNegativeButton("Tutup", null)
+            .show()
+    }
+
+    private fun saveFileToDownloads(body: ResponseBody, fileName: String, mimeType: String = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"): android.net.Uri? {
         return try {
             val contentValues = ContentValues().apply {
                 put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
@@ -538,11 +607,11 @@ class LaporanAdminActivity : BaseAdminActivity() {
                 contentResolver.openOutputStream(it)?.use { outputStream ->
                     body.byteStream().use { inputStream -> inputStream.copyTo(outputStream) }
                 }
-                true
-            } ?: false
+                uri
+            }
         } catch (e: Exception) { 
             android.util.Log.e("LaporanAdminActivity", "Error saving file: ${e.message}")
-            false 
+            null 
         }
     }
 

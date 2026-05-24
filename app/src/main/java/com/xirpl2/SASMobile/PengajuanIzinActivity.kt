@@ -27,7 +27,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.util.*
 
-class PengajuanIzinActivity : BaseActivity() {
+class PengajuanIzinActivity : BaseSiswaActivity() {
 
     // Form fields
     private lateinit var rgPermitType: RadioGroup
@@ -42,7 +42,7 @@ class PengajuanIzinActivity : BaseActivity() {
 
     private lateinit var btnSubmit: Button
     private lateinit var btnCancel: Button
-    private lateinit var btnMenu: ImageView
+    
     private lateinit var btnBack: ImageView
 
     // Photo upload
@@ -75,14 +75,17 @@ class PengajuanIzinActivity : BaseActivity() {
         }
     }
 
+    override fun getCurrentMenuItem(): SiswaMenuItem = SiswaMenuItem.PENGAJUAN_IZIN
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pengajuan_izin)
 
         initializeViews()
+        setupDrawerAndSidebar()
+        setupMenuIcon()
         setupPermitTypes()
         setupDatePickers()
-        setupMenu()
         setupSubmitButton()
         setupBackButton()
         setupCancelButton()
@@ -102,7 +105,7 @@ class PengajuanIzinActivity : BaseActivity() {
         etReason = findViewById(R.id.etReason)
         btnSubmit = findViewById(R.id.btnSubmit)
         btnCancel = findViewById(R.id.btnCancel)
-        btnMenu = findViewById(R.id.btnMenu)
+        
         btnBack = findViewById(R.id.btnBack)
 
         // Photo upload views
@@ -219,41 +222,6 @@ class PengajuanIzinActivity : BaseActivity() {
             // Use selected start date as minimum, fall back to today
             endDatePicker.datePicker.minDate = if (startDateMillis > 0L) startDateMillis else calendar.timeInMillis
             endDatePicker.show()
-        }
-    }
-
-    private fun setupMenu() {
-        val bottomSheetDialog = BottomSheetDialog(this)
-        val bottomSheetView = layoutInflater.inflate(R.layout.bottom_sheet_menu, null)
-        val navView = bottomSheetView.findViewById<NavigationView>(R.id.navView)
-
-        bottomSheetDialog.setContentView(bottomSheetView)
-
-        navView.setNavigationItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.nav_beranda -> {
-                    startActivity(Intent(this, BerandaActivity::class.java))
-                    finish()
-                }
-                R.id.nav_presensi -> {
-                    Toast.makeText(this, "Fitur dalam pengembangan", Toast.LENGTH_SHORT).show()
-                }
-                R.id.nav_pengajuan_izin -> {
-                    // Already here
-                }
-                R.id.nav_profile -> {
-                    startActivity(Intent(this, PengaturanAkunActivity::class.java))
-                }
-                R.id.nav_logout -> {
-                    logout()
-                }
-            }
-            bottomSheetDialog.dismiss()
-            true
-        }
-
-        btnMenu.setOnClickListener {
-            bottomSheetDialog.show()
         }
     }
 
@@ -498,7 +466,7 @@ class PengajuanIzinActivity : BaseActivity() {
     private fun setLoading(isLoading: Boolean) {
         btnSubmit.isEnabled = !isLoading
         btnSubmit.text = if (isLoading) "Mengirim..." else getString(R.string.kirim_pengajuan)
-        
+
         rbSakit.isEnabled = !isLoading
         rbIzin.isEnabled = !isLoading
         etStartDate.isEnabled = !isLoading
@@ -506,48 +474,5 @@ class PengajuanIzinActivity : BaseActivity() {
         etReason.isEnabled = !isLoading
         btnCancel.isEnabled = !isLoading
         layoutUploadPhoto.isClickable = !isLoading
-    }
-
-    private fun logout() {
-        MaterialAlertDialogBuilder(this)
-            .setTitle("Keluar")
-            .setMessage("Apakah Anda yakin ingin keluar?")
-            .setPositiveButton("Ya") { _, _ ->
-                val token = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this)
-                    .getString("auth_token", "") ?: ""
-
-                lifecycleScope.launch(Dispatchers.IO) {
-                    try {
-                        if (token.isNotEmpty()) {
-                            RetrofitClient.apiService.logout("Bearer $token")
-                        }
-                    } catch (e: Exception) { android.util.Log.w("PengajuanIzin", "Logout API failed", e) }
-
-                    launch(Dispatchers.Main) {
-                        // Clear ALL SharedPreferences stores
-                        with(com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this@PengajuanIzinActivity).edit()) {
-                            clear()
-                            apply()
-                        }
-                        with(com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this@PengajuanIzinActivity).edit()) {
-                            clear()
-                            apply()
-                        }
-                        with(getSharedPreferences("NotificationData", MODE_PRIVATE).edit()) {
-                            clear()
-                            apply()
-                        }
-
-                        Toast.makeText(this@PengajuanIzinActivity, "Logout berhasil", Toast.LENGTH_SHORT).show()
-
-                        val intent = Intent(this@PengajuanIzinActivity, MasukActivity::class.java)
-                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        startActivity(intent)
-                        finish()
-                    }
-                }
-            }
-            .setNegativeButton("Batal", null)
-            .show()
     }
 }

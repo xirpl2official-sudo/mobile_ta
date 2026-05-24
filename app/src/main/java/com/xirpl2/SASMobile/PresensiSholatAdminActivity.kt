@@ -375,7 +375,7 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
     }
 
     override fun onDestroy() {
-        searchRunnable?.let { searchHandler.removeCallbacks(it) }
+        searchHandler.removeCallbacksAndMessages(null)
         if (::recyclerPresensi.isInitialized) {
             recyclerPresensi.adapter = null
         }

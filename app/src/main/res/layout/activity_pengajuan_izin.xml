@@ -1,540 +1,544 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/slate_50"
+    android:fitsSystemWindows="false"
     tools:context=".PengajuanIzinActivity">
 
-    
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:elevation="2dp">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:paddingHorizontal="16dp">
-
-            <ImageView
-                android:id="@+id/btnBack"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:background="@drawable/ripple_circle"
-                android:padding="4dp"
-                android:src="@drawable/ic_arrow_back"
-                android:contentDescription="@string/back"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:tint="@color/slate_900" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/btnMenu"
-                app:layout_constraintStart_toEndOf="@id/btnBack"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/pengajuan_perizinan"
-                    android:textColor="@color/slate_900"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tvUserInfo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/user_class_placeholder"
-                    android:textColor="@color/slate_500"
-                    android:textSize="11sp"
-                    android:letterSpacing="0.05"
-                    android:textAllCaps="true" />
-
-            </LinearLayout>
-
-            <ImageView
-                android:id="@+id/btnMenu"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:background="@drawable/ripple_circle"
-                android:padding="4dp"
-                android:src="@drawable/ic_menu"
-                android:contentDescription="@string/menu"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:tint="@color/slate_900" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <androidx.core.widget.NestedScrollView
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:background="@color/slate_50">
 
-        <LinearLayout
+        <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:background="@color/surface"
+            android:elevation="2dp">
 
-            
-            <com.google.android.material.card.MaterialCardView
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardBackgroundColor="@color/white"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="1dp"
-                app:strokeColor="@color/slate_200"
-                app:strokeWidth="1dp">
+                android:layout_height="56dp"
+                android:paddingHorizontal="16dp">
+
+                <ImageView
+                    android:id="@+id/btnBack"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="@drawable/ripple_circle"
+                    android:padding="4dp"
+                    android:src="@drawable/ic_arrow_back"
+                    android:contentDescription="@string/back"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="@color/slate_900" />
 
                 <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="16dp"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/iconMenu"
+                    app:layout_constraintStart_toEndOf="@id/btnBack"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/pengajuan_perizinan"
+                        android:textColor="@color/slate_900"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvUserInfo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/user_class_placeholder"
+                        android:textColor="@color/slate_500"
+                        android:textSize="11sp"
+                        android:letterSpacing="0.05"
+                        android:textAllCaps="true" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/iconMenu"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="@drawable/ripple_circle"
+                    android:padding="4dp"
+                    android:src="@drawable/ic_menu"
+                    android:contentDescription="@string/menu"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="@color/slate_900" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Form Section -->
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:layout_marginBottom="16dp"
+                    app:cardBackgroundColor="@color/surface"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="1dp"
+                    app:strokeColor="@color/slate_200"
+                    app:strokeWidth="1dp">
 
-                    
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@color/slate_50"
-                        android:orientation="vertical"
-                        android:paddingHorizontal="20dp"
-                        android:paddingVertical="16dp">
+                        android:orientation="vertical">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/formulir_pengajuan"
-                            android:textColor="@color/slate_900"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="@string/formulir_subtitle"
-                            android:textColor="@color/slate_500"
-                            android:textSize="13sp" />
-
-                    </LinearLayout>
-
-                    
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/slate_200" />
-
-                    
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="20dp">
-
-                        
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="8dp"
-                            android:letterSpacing="0.05"
-                            android:text="@string/jenis_perizinan"
-                            android:textAllCaps="true"
-                            android:textColor="@color/slate_500"
-                            android:textSize="11sp"
-                            android:textStyle="bold" />
-
-                        <RadioGroup
-                            android:id="@+id/rgPermitType"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="20dp"
-                            android:orientation="horizontal">
-
-                            <RadioButton
-                                android:id="@+id/rbSakit"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:layout_marginEnd="6dp"
-                                android:background="@drawable/bg_radio_card_selector"
-                                android:button="@android:color/transparent"
-                                android:drawableTop="@drawable/ic_medical_services"
-                                android:drawablePadding="4dp"
-                                android:drawableTint="@color/slate_500"
-                                android:gravity="center"
-                                android:padding="12dp"
-                                android:text="@string/sakit_label"
-                                android:textColor="@color/slate_700"
-                                android:textSize="13sp"
-                                android:textStyle="bold" />
-
-                            <RadioButton
-                                android:id="@+id/rbIzin"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:layout_marginStart="6dp"
-                                android:background="@drawable/bg_radio_card_selector"
-                                android:button="@android:color/transparent"
-                                android:drawableTop="@drawable/ic_event_available"
-                                android:drawablePadding="4dp"
-                                android:drawableTint="@color/slate_500"
-                                android:gravity="center"
-                                android:padding="12dp"
-                                android:text="@string/izin_personal"
-                                android:textColor="@color/slate_700"
-                                android:textSize="13sp"
-                                android:textStyle="bold" />
-
-                        </RadioGroup>
-
-                        
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="8dp"
-                            android:letterSpacing="0.05"
-                            android:text="@string/tanggal_mulai"
-                            android:textAllCaps="true"
-                            android:textColor="@color/slate_500"
-                            android:textSize="11sp"
-                            android:textStyle="bold" />
-
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/tilStartDate"
-                            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="16dp"
-                            app:boxCornerRadiusBottomEnd="8dp"
-                            app:boxCornerRadiusBottomStart="8dp"
-                            app:boxCornerRadiusTopEnd="8dp"
-                            app:boxCornerRadiusTopStart="8dp"
-                            app:boxStrokeColor="@color/slate_300"
-                            app:boxStrokeWidth="1dp"
-                            app:endIconDrawable="@drawable/ic_calendar"
-                            app:endIconMode="custom"
-                            app:endIconTint="@color/secondary"
-                            app:hintEnabled="false">
-
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/etStartDate"
-                                android:layout_width="match_parent"
-                                android:layout_height="38dp"
-                                android:clickable="true"
-                                android:focusable="false"
-                                android:hint="@string/tanggal_mulai"
-                                android:inputType="none"
-                                android:textColor="@color/slate_900"
-                                android:textSize="14sp" />
-
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                        
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="8dp"
-                            android:letterSpacing="0.05"
-                            android:text="@string/tanggal_berakhir"
-                            android:textAllCaps="true"
-                            android:textColor="@color/slate_500"
-                            android:textSize="11sp"
-                            android:textStyle="bold" />
-
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/tilEndDate"
-                            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="16dp"
-                            app:boxCornerRadiusBottomEnd="8dp"
-                            app:boxCornerRadiusBottomStart="8dp"
-                            app:boxCornerRadiusTopEnd="8dp"
-                            app:boxCornerRadiusTopStart="8dp"
-                            app:boxStrokeColor="@color/slate_300"
-                            app:boxStrokeWidth="1dp"
-                            app:endIconDrawable="@drawable/ic_calendar"
-                            app:endIconMode="custom"
-                            app:endIconTint="@color/secondary"
-                            app:hintEnabled="false">
-
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/etEndDate"
-                                android:layout_width="match_parent"
-                                android:layout_height="38dp"
-                                android:clickable="true"
-                                android:focusable="false"
-                                android:hint="@string/tanggal_berakhir"
-                                android:inputType="none"
-                                android:textColor="@color/slate_900"
-                                android:textSize="14sp" />
-
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                        
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="8dp"
-                            android:letterSpacing="0.05"
-                            android:text="@string/alasan_keterangan"
-                            android:textAllCaps="true"
-                            android:textColor="@color/slate_500"
-                            android:textSize="11sp"
-                            android:textStyle="bold" />
-
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/tilReason"
-                            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="20dp"
-                            app:boxCornerRadiusBottomEnd="8dp"
-                            app:boxCornerRadiusBottomStart="8dp"
-                            app:boxCornerRadiusTopEnd="8dp"
-                            app:boxCornerRadiusTopStart="8dp"
-                            app:boxStrokeColor="@color/slate_300"
-                            app:boxStrokeWidth="1dp"
-                            app:hintEnabled="false">
-
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/etReason"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:gravity="top"
-                                android:hint="@string/tuliskan_alasan_detail"
-                                android:inputType="textMultiLine"
-                                android:lines="4"
-                                android:minLines="3"
-                                android:textColor="@color/slate_900"
-                                android:textSize="14sp" />
-
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                        <!-- Bukti Foto Section -->
-                        <TextView
-                            android:id="@+id/tvPhotoLabel"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="8dp"
-                            android:letterSpacing="0.05"
-                            android:text="BUKTI FOTO (OPSIONAL)"
-                            android:textAllCaps="true"
-                            android:textColor="@color/slate_500"
-                            android:textSize="11sp"
-                            android:textStyle="bold" />
-
-                        <FrameLayout
-                            android:id="@+id/layoutUploadPhoto"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="20dp"
-                            android:background="@drawable/bg_file_upload_dashed"
-                            android:padding="16dp"
-                            android:clickable="true"
-                            android:focusable="true">
-
-                            <LinearLayout
-                                android:id="@+id/layoutUploadPlaceholder"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical"
-                                android:gravity="center">
-
-                                <ImageView
-                                    android:layout_width="40dp"
-                                    android:layout_height="40dp"
-                                    android:src="@drawable/ic_cloud_upload"
-                                    android:contentDescription="Upload"
-                                    app:tint="@color/slate_400" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="8dp"
-                                    android:text="Ketuk untuk unggah foto bukti"
-                                    android:textColor="@color/slate_500"
-                                    android:textSize="13sp"
-                                    android:gravity="center" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="4dp"
-                                    android:text="JPG, PNG (Maks. 5MB)"
-                                    android:textColor="@color/slate_400"
-                                    android:textSize="11sp" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:id="@+id/layoutPhotoPreview"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical"
-                                android:gravity="center"
-                                android:visibility="gone">
-
-                                <ImageView
-                                    android:id="@+id/ivPhotoPreview"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="180dp"
-                                    android:scaleType="centerCrop"
-                                    android:contentDescription="Preview foto" />
-
-                                <com.google.android.material.button.MaterialButton
-                                    android:id="@+id/btnRemovePhoto"
-                                    style="@style/Widget.Material3.Button.TextButton"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Hapus Foto"
-                                    android:textColor="@color/error_color"
-                                    android:textSize="12sp"
-                                    app:icon="@drawable/ic_close"
-                                    app:iconTint="@color/error_color"
-                                    app:iconSize="14dp" />
-                            </LinearLayout>
-
-                        </FrameLayout>
-
-                        
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:layout_marginTop="20dp"
-                            android:background="@color/slate_100" />
-
-                        
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:gravity="end"
-                            android:orientation="horizontal">
+                            android:background="@color/slate_50"
+                            android:orientation="vertical"
+                            android:paddingHorizontal="20dp"
+                            android:paddingVertical="16dp">
 
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btnCancel"
-                                style="@style/Widget.Material3.Button.OutlinedButton"
+                            <TextView
                                 android:layout_width="wrap_content"
-                                android:layout_height="44dp"
-                                android:layout_marginEnd="12dp"
-                                android:text="@string/Batal"
-                                android:textColor="@color/slate_700"
-                                android:textSize="14sp"
-                                app:cornerRadius="8dp"
-                                app:strokeColor="@color/slate_300" />
+                                android:layout_height="wrap_content"
+                                android:text="@string/formulir_pengajuan"
+                                android:textColor="@color/slate_900"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
 
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btnSubmit"
-                                style="@style/Widget.Material3.Button"
+                            <TextView
                                 android:layout_width="wrap_content"
-                                android:layout_height="44dp"
-                                android:text="@string/kirim_pengajuan"
-                                android:textSize="14sp"
-                                app:backgroundTint="@color/secondary"
-                                app:cornerRadius="8dp"
-                                app:icon="@drawable/ic_send"
-                                app:iconGravity="textStart"
-                                app:iconPadding="8dp" />
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="@string/formulir_subtitle"
+                                android:textColor="@color/slate_500"
+                                android:textSize="13sp" />
+
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/slate_200" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="20dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp"
+                                android:letterSpacing="0.05"
+                                android:text="@string/jenis_perizinan"
+                                android:textAllCaps="true"
+                                android:textColor="@color/slate_500"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
+
+                            <RadioGroup
+                                android:id="@+id/rgPermitType"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="20dp"
+                                android:orientation="horizontal">
+
+                                <RadioButton
+                                    android:id="@+id/rbSakit"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:layout_marginEnd="6dp"
+                                    android:background="@drawable/bg_radio_card_selector"
+                                    android:button="@android:color/transparent"
+                                    android:drawableTop="@drawable/ic_medical_services"
+                                    android:drawablePadding="4dp"
+                                    android:drawableTint="@color/slate_500"
+                                    android:gravity="center"
+                                    android:padding="12dp"
+                                    android:text="@string/sakit_label"
+                                    android:textColor="@color/slate_700"
+                                    android:textSize="13sp"
+                                    android:textStyle="bold" />
+
+                                <RadioButton
+                                    android:id="@+id/rbIzin"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:layout_marginStart="6dp"
+                                    android:background="@drawable/bg_radio_card_selector"
+                                    android:button="@android:color/transparent"
+                                    android:drawableTop="@drawable/ic_event_available"
+                                    android:drawablePadding="4dp"
+                                    android:drawableTint="@color/slate_500"
+                                    android:gravity="center"
+                                    android:padding="12dp"
+                                    android:text="@string/izin_personal"
+                                    android:textColor="@color/slate_700"
+                                    android:textSize="13sp"
+                                    android:textStyle="bold" />
+
+                            </RadioGroup>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp"
+                                android:letterSpacing="0.05"
+                                android:text="@string/tanggal_mulai"
+                                android:textAllCaps="true"
+                                android:textColor="@color/slate_500"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/tilStartDate"
+                                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:boxCornerRadiusBottomEnd="8dp"
+                                app:boxCornerRadiusBottomStart="8dp"
+                                app:boxCornerRadiusTopEnd="8dp"
+                                app:boxCornerRadiusTopStart="8dp"
+                                app:boxStrokeColor="@color/slate_300"
+                                app:boxStrokeWidth="1dp"
+                                app:endIconDrawable="@drawable/ic_calendar"
+                                app:endIconMode="custom"
+                                app:endIconTint="@color/secondary"
+                                app:hintEnabled="false">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/etStartDate"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="38dp"
+                                    android:clickable="true"
+                                    android:focusable="false"
+                                    android:hint="@string/tanggal_mulai"
+                                    android:inputType="none"
+                                    android:textColor="@color/slate_900"
+                                    android:textSize="14sp" />
+
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp"
+                                android:letterSpacing="0.05"
+                                android:text="@string/tanggal_berakhir"
+                                android:textAllCaps="true"
+                                android:textColor="@color/slate_500"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/tilEndDate"
+                                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:boxCornerRadiusBottomEnd="8dp"
+                                app:boxCornerRadiusBottomStart="8dp"
+                                app:boxCornerRadiusTopEnd="8dp"
+                                app:boxCornerRadiusTopStart="8dp"
+                                app:boxStrokeColor="@color/slate_300"
+                                app:boxStrokeWidth="1dp"
+                                app:endIconDrawable="@drawable/ic_calendar"
+                                app:endIconMode="custom"
+                                app:endIconTint="@color/secondary"
+                                app:hintEnabled="false">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/etEndDate"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="38dp"
+                                    android:clickable="true"
+                                    android:focusable="false"
+                                    android:hint="@string/tanggal_berakhir"
+                                    android:inputType="none"
+                                    android:textColor="@color/slate_900"
+                                    android:textSize="14sp" />
+
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp"
+                                android:letterSpacing="0.05"
+                                android:text="@string/alasan_keterangan"
+                                android:textAllCaps="true"
+                                android:textColor="@color/slate_500"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/tilReason"
+                                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="20dp"
+                                app:boxCornerRadiusBottomEnd="8dp"
+                                app:boxCornerRadiusBottomStart="8dp"
+                                app:boxCornerRadiusTopEnd="8dp"
+                                app:boxCornerRadiusTopStart="8dp"
+                                app:boxStrokeColor="@color/slate_300"
+                                app:boxStrokeWidth="1dp"
+                                app:hintEnabled="false">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/etReason"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="top"
+                                    android:hint="@string/tuliskan_alasan_detail"
+                                    android:inputType="textMultiLine"
+                                    android:lines="4"
+                                    android:minLines="3"
+                                    android:textColor="@color/slate_900"
+                                    android:textSize="14sp" />
+
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <TextView
+                                android:id="@+id/tvPhotoLabel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp"
+                                android:letterSpacing="0.05"
+                                android:text="BUKTI FOTO (OPSIONAL)"
+                                android:textAllCaps="true"
+                                android:textColor="@color/slate_500"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
+
+                            <FrameLayout
+                                android:id="@+id/layoutUploadPhoto"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="20dp"
+                                android:background="@drawable/bg_file_upload_dashed"
+                                android:padding="16dp"
+                                android:clickable="true"
+                                android:focusable="true">
+
+                                <LinearLayout
+                                    android:id="@+id/layoutUploadPlaceholder"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:gravity="center">
+
+                                    <ImageView
+                                        android:layout_width="40dp"
+                                        android:layout_height="40dp"
+                                        android:src="@drawable/ic_cloud_upload"
+                                        android:contentDescription="Upload"
+                                        app:tint="@color/slate_400" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:text="Ketuk untuk unggah foto bukti"
+                                        android:textColor="@color/slate_500"
+                                        android:textSize="13sp"
+                                        android:gravity="center" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="4dp"
+                                        android:text="JPG, PNG (Maks. 5MB)"
+                                        android:textColor="@color/slate_400"
+                                        android:textSize="11sp" />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:id="@+id/layoutPhotoPreview"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:gravity="center"
+                                    android:visibility="gone">
+
+                                    <ImageView
+                                        android:id="@+id/ivPhotoPreview"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="180dp"
+                                        android:scaleType="centerCrop"
+                                        android:contentDescription="Preview foto" />
+
+                                    <com.google.android.material.button.MaterialButton
+                                        android:id="@+id/btnRemovePhoto"
+                                        style="@style/Widget.Material3.Button.TextButton"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Hapus Foto"
+                                        android:textColor="@color/error_color"
+                                        android:textSize="12sp"
+                                        app:icon="@drawable/ic_close"
+                                        app:iconTint="@color/error_color"
+                                        app:iconSize="14dp" />
+                                </LinearLayout>
+
+                            </FrameLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginTop="20dp"
+                                android:background="@color/slate_100" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:gravity="end"
+                                android:orientation="horizontal">
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btnCancel"
+                                    style="@style/Widget.Material3.Button.OutlinedButton"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="44dp"
+                                    android:layout_marginEnd="12dp"
+                                    android:text="@string/Batal"
+                                    android:textColor="@color/slate_700"
+                                    android:textSize="14sp"
+                                    app:cornerRadius="8dp"
+                                    app:strokeColor="@color/slate_300" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btnSubmit"
+                                    style="@style/Widget.Material3.Button"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="44dp"
+                                    android:text="@string/kirim_pengajuan"
+                                    android:textSize="14sp"
+                                    app:backgroundTint="@color/secondary"
+                                    app:cornerRadius="8dp"
+                                    app:icon="@drawable/ic_send"
+                                    app:iconGravity="textStart"
+                                    app:iconPadding="8dp" />
+
+                            </LinearLayout>
 
                         </LinearLayout>
 
                     </LinearLayout>
 
-                </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
-                app:cardBackgroundColor="@color/white"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="1dp"
-                app:strokeColor="@color/slate_200"
-                app:strokeWidth="1dp">
-
-                <LinearLayout
+                <!-- History Section -->
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:layout_marginBottom="24dp"
+                    app:cardBackgroundColor="@color/surface"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="1dp"
+                    app:strokeColor="@color/slate_200"
+                    app:strokeWidth="1dp">
 
-                    
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingHorizontal="20dp"
-                        android:paddingTop="16dp"
-                        android:paddingBottom="12dp"
-                        android:text="@string/riwayat_terakhir"
-                        android:textColor="@color/slate_900"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/slate_100" />
-
-                    <ProgressBar
-                        android:id="@+id/progressRiwayat"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:padding="24dp"
-                        android:visibility="gone" />
-
-                    <TextView
-                        android:id="@+id/tvEmptyRiwayat"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:padding="24dp"
-                        android:text="@string/belum_ada_pengajuan"
-                        android:textColor="@color/slate_400"
-                        android:textSize="13sp"
-                        android:visibility="gone" />
+                        android:orientation="vertical">
 
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rvRiwayatIzin"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:nestedScrollingEnabled="false" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingHorizontal="20dp"
+                            android:paddingTop="16dp"
+                            android:paddingBottom="12dp"
+                            android:text="@string/riwayat_terakhir"
+                            android:textColor="@color/slate_900"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
 
-                    
-                    <TextView
-                        android:id="@+id/btnViewAllHistory"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:paddingVertical="12dp"
-                        android:text="@string/lihat_semua_riwayat"
-                        android:textColor="@color/secondary"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/slate_100" />
 
-                </LinearLayout>
+                        <ProgressBar
+                            android:id="@+id/progressRiwayat"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:padding="24dp"
+                            android:visibility="gone" />
 
-            </com.google.android.material.card.MaterialCardView>
+                        <TextView
+                            android:id="@+id/tvEmptyRiwayat"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:padding="24dp"
+                            android:text="@string/belum_ada_pengajuan"
+                            android:textColor="@color/slate_400"
+                            android:textSize="13sp"
+                            android:visibility="gone" />
 
-        </LinearLayout>
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/rvRiwayatIzin"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:nestedScrollingEnabled="false" />
 
-    </androidx.core.widget.NestedScrollView>
+                        <TextView
+                            android:id="@+id/btnViewAllHistory"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:paddingVertical="12dp"
+                            android:text="@string/lihat_semua_riwayat"
+                            android:textColor="@color/secondary"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/navigationView"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        app:headerLayout="@layout/sidebar_siswa" />
+
+</androidx.drawerlayout.widget.DrawerLayout>

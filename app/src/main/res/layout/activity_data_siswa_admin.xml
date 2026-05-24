@@ -10,7 +10,8 @@
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
+        android:background="@color/surface"
+        android:theme="@style/Theme.SAS_Mobile.WhiteBackground"
         tools:context=".DataSiswaAdminActivity">
 
         
@@ -118,6 +119,71 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:padding="16dp">
 
+            <!-- Bulk Action Bar (Desktop Parity) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/bulkActionBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                app:strokeColor="@color/blue_theme"
+                app:strokeWidth="1dp"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="8dp">
+
+                    <CheckBox
+                        android:id="@+id/cbSelectAll"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Pilih Semua"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/tvSelectedCount"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="0 terpilih"
+                        android:textStyle="bold"
+                        android:layout_marginStart="8dp" />
+
+                    <ImageView
+                        android:id="@+id/btnBulkMutasi"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_perizinan"
+                        app:tint="@color/blue_theme"
+                        android:contentDescription="Mutasi Masal" />
+
+                    <ImageView
+                        android:id="@+id/btnBulkDelete"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_delete"
+                        app:tint="#EF4444"
+                        android:contentDescription="Hapus Masal" />
+
+                    <ImageView
+                        android:id="@+id/btnCloseBulk"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_close"
+                        app:tint="@color/gray" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
             
             <LinearLayout
                 android:id="@+id/headerRow"
@@ -125,7 +191,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/bulkActionBar"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 
@@ -134,9 +200,17 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/DataSiswa"
-                    android:textColor="#000000"
+                    android:textColor="@color/on_background"
                     android:textSize="20sp"
                     android:textStyle="bold" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAddSiswa"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tambah"
+                    app:icon="@drawable/ic_add" />
 
             </LinearLayout>
 
@@ -145,7 +219,7 @@
                 android:id="@+id/etSearch"
                 android:layout_width="0dp"
                 android:layout_height="44dp"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="8dp"
                 android:background="@drawable/bg_search_input"
                 android:drawableStart="@drawable/ic_search"
                 android:drawablePadding="12dp"
@@ -159,64 +233,82 @@
                 app:layout_constraintEnd_toEndOf="parent" />
 
             
-            <LinearLayout
-                android:id="@+id/filtersRow"
-                android:layout_width="0dp"
+            <HorizontalScrollView
+                android:id="@+id/filterScroll"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:orientation="horizontal"
-                app:layout_constraintTop_toBottomOf="@id/etSearch"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
+                android:scrollbars="none"
+                app:layout_constraintTop_toBottomOf="@id/etSearch">
 
-                <TextView
-                    android:id="@+id/filterKelas"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="6dp"
-                    android:background="@drawable/bg_dropdown"
-                    android:drawableEnd="@drawable/ic_chevron_right"
-                    android:gravity="center_vertical"
-                    android:paddingHorizontal="10dp"
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    android:text="@string/SemuaKelas"
-                    android:textColor="#666666"
-                    android:textSize="12sp" />
+                <LinearLayout
+                    android:id="@+id/filtersRow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/filterJurusan"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="6dp"
-                    android:background="@drawable/bg_dropdown"
-                    android:drawableEnd="@drawable/ic_chevron_right"
-                    android:gravity="center_vertical"
-                    android:paddingHorizontal="10dp"
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    android:text="@string/SemuaJurusan"
-                    android:textColor="#666666"
-                    android:textSize="12sp" />
+                    <TextView
+                        android:id="@+id/filterKelas"
+                        android:layout_width="100dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="@drawable/bg_dropdown"
+                        android:drawableEnd="@drawable/ic_chevron_right"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="10dp"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:text="@string/SemuaKelas"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp" />
 
-                <TextView
-                    android:id="@+id/filterGender"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_dropdown"
-                    android:drawableEnd="@drawable/ic_chevron_right"
-                    android:gravity="center_vertical"
-                    android:paddingHorizontal="10dp"
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    android:text="@string/SemuaJK"
-                    android:textColor="#666666"
-                    android:textSize="12sp" />
+                    <TextView
+                        android:id="@+id/filterJurusan"
+                        android:layout_width="120dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="@drawable/bg_dropdown"
+                        android:drawableEnd="@drawable/ic_chevron_right"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="10dp"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:text="@string/SemuaJurusan"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp" />
 
-            </LinearLayout>
+                    <TextView
+                        android:id="@+id/filterGender"
+                        android:layout_width="100dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="@drawable/bg_dropdown"
+                        android:drawableEnd="@drawable/ic_chevron_right"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="10dp"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:text="Semua JK"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/filterAgama"
+                        android:layout_width="100dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/bg_dropdown"
+                        android:drawableEnd="@drawable/ic_chevron_right"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="10dp"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:text="Semua Agama"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp" />
+
+                </LinearLayout>
+
+            </HorizontalScrollView>
 
             
             <TextView
@@ -225,7 +317,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:text="@string/MenampilkanSiswa"
-                android:textColor="#666666"
+                android:textColor="@color/text_secondary"
                 android:textSize="12sp"
                 app:layout_constraintTop_toBottomOf="@id/filtersRow"
                 app:layout_constraintStart_toStartOf="parent"
@@ -268,7 +360,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:text="@string/TidakDitemukanSiswa"
-                    android:textColor="#333333"
+                    android:textColor="@color/on_background"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
@@ -391,9 +483,10 @@
 
                 </LinearLayout>
 
-                </HorizontalScrollView>
+            </HorizontalScrollView>
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <include

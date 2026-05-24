@@ -14,7 +14,7 @@
         android:layout_width="40dp"
         android:layout_height="4dp"
         android:layout_marginTop="8dp"
-        android:background="#E0E0E0"
+        android:background="@color/divider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -147,7 +147,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:text="Riwayat Sholat (7 Hari Terakhir)"
-        android:textColor="#666666"
+        android:textColor="@color/text_secondary"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/summaryContainer" />

@@ -16,6 +16,7 @@ import com.xirpl2.SASMobile.model.JadwalSholat
 import com.xirpl2.SASMobile.model.JadwalSholatData
 import com.xirpl2.SASMobile.model.QRCodeData
 import com.xirpl2.SASMobile.model.StatusSholat
+import com.xirpl2.SASMobile.network.RetrofitClient
 import com.xirpl2.SASMobile.repository.BerandaRepository
 import com.xirpl2.SASMobile.repository.QRCodeRepository
 import kotlinx.coroutines.launch
@@ -32,10 +33,16 @@ class QRCodeAdminActivity : BaseAdminActivity() {
     private lateinit var btnRefresh: MaterialButton
     private lateinit var progressBar: ProgressBar
     private lateinit var containerQR: View
+    
+    // Manual Code Views
+    private lateinit var tvManualCode: TextView
+    private lateinit var tvCodeExpires: TextView
+    private lateinit var cardManualCode: View
 
     private val qrRepository = QRCodeRepository()
     private val berandaRepository = BerandaRepository()
     private var countDownTimer: CountDownTimer? = null
+    private var codeTimer: CountDownTimer? = null
     
     private val allowedPrayers = JadwalSholatHelper.ALLOWED_PRAYERS
 
@@ -55,6 +62,7 @@ class QRCodeAdminActivity : BaseAdminActivity() {
         setupClickListeners()
         
         loadQRCode()
+        loadAttendanceCode()
     }
 
     private fun initializeViews() {
@@ -66,12 +74,54 @@ class QRCodeAdminActivity : BaseAdminActivity() {
         btnRefresh = findViewById(R.id.btnRefresh)
         progressBar = findViewById(R.id.progressBar)
         containerQR = findViewById(R.id.containerQR)
+        
+        tvManualCode = findViewById(R.id.tvManualCode)
+        tvCodeExpires = findViewById(R.id.tvCodeExpires)
+        cardManualCode = findViewById(R.id.cardManualCode)
     }
 
     private fun setupClickListeners() {
         btnRefresh.setOnClickListener {
             loadQRCode()
+            loadAttendanceCode()
         }
+    }
+
+    private fun loadAttendanceCode() {
+        val token = getAuthToken()
+        if (token.isEmpty()) return
+        
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitClient.apiService.generateAttendanceCode("Bearer $token")
+                if (response.isSuccessful) {
+                    val data = response.body()?.data
+                    if (data != null) {
+                        runOnUiThread {
+                            displayAttendanceCode(data.code, data.expiresIn)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("QRCodeAdmin", "Failed to load attendance code", e)
+            }
+        }
+    }
+
+    private fun displayAttendanceCode(code: String, expiresIn: Int) {
+        tvManualCode.text = code
+        cardManualCode.visibility = View.VISIBLE
+        
+        codeTimer?.cancel()
+        codeTimer = object : CountDownTimer(expiresIn * 1000L, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                val seconds = millisUntilFinished / 1000
+                tvCodeExpires.text = "Kode berubah dalam $seconds detik"
+            }
+            override fun onFinish() {
+                loadAttendanceCode()
+            }
+        }.start()
     }
 
     private fun loadQRCode() {
@@ -229,5 +279,6 @@ class QRCodeAdminActivity : BaseAdminActivity() {
     override fun onDestroy() {
         super.onDestroy()
         countDownTimer?.cancel()
+        codeTimer?.cancel()
     }
 }

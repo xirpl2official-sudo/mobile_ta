@@ -155,6 +155,10 @@
             android:launchMode="singleTop"
             android:name=".StudentPromotionActivity"
             android:exported="false" />
+        <activity
+            android:launchMode="singleTop"
+            android:name=".FAQActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

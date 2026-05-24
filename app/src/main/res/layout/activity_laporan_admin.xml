@@ -11,7 +11,8 @@
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
+        android:background="@color/surface"
+        android:theme="@style/Theme.SAS_Mobile.WhiteBackground"
         tools:context=".LaporanAdminActivity">
 
         <!-- Top Bar -->
@@ -110,7 +111,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/LaporanPresensi"
-                    android:textColor="#000000"
+                    android:textColor="@color/on_background"
                     android:textSize="20sp"
                     android:textStyle="bold"
                     android:layout_marginBottom="16dp" />
@@ -124,7 +125,7 @@
                     android:layout_marginBottom="12dp"
                     app:cardCornerRadius="12dp"
                     app:cardElevation="2dp"
-                    app:cardBackgroundColor="#FFFFFF">
+                    app:cardBackgroundColor="@color/surface">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -136,7 +137,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Kehadiran Hari Ini"
-                            android:textColor="#000000"
+                            android:textColor="@color/on_background"
                             android:textSize="14sp"
                             android:textStyle="bold"
                             android:layout_marginBottom="12dp" />
@@ -174,7 +175,7 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="0%"
-                                        android:textColor="#000000"
+                                        android:textColor="@color/on_background"
                                         android:textSize="20sp"
                                         android:textStyle="bold" />
 
@@ -182,7 +183,7 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="Hadir"
-                                        android:textColor="#666666"
+                                        android:textColor="@color/text_secondary"
                                         android:textSize="11sp" />
 
                                 </LinearLayout>
@@ -199,29 +200,51 @@
 
                                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="6dp">
                                     <View android:layout_width="12dp" android:layout_height="12dp" android:background="#4CAF50" />
-                                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Hadir" android:textColor="#666666" android:textSize="12sp" android:layout_marginStart="8dp" />
-                                    <TextView android:id="@+id/tvLegendHadir" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="#000000" android:textSize="12sp" android:textStyle="bold" />
+                                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Hadir" android:textColor="@color/text_secondary" android:textSize="12sp" android:layout_marginStart="8dp" />
+                                    <TextView android:id="@+id/tvLegendHadir" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="@color/on_background" android:textSize="12sp" android:textStyle="bold" />
                                 </LinearLayout>
 
                                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="6dp">
                                     <View android:layout_width="12dp" android:layout_height="12dp" android:background="#FF9800" />
-                                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Izin" android:textColor="#666666" android:textSize="12sp" android:layout_marginStart="8dp" />
-                                    <TextView android:id="@+id/tvLegendIzin" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="#000000" android:textSize="12sp" android:textStyle="bold" />
+                                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Izin" android:textColor="@color/text_secondary" android:textSize="12sp" android:layout_marginStart="8dp" />
+                                    <TextView android:id="@+id/tvLegendIzin" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="@color/on_background" android:textSize="12sp" android:textStyle="bold" />
                                 </LinearLayout>
 
                                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="6dp">
                                     <View android:layout_width="12dp" android:layout_height="12dp" android:background="#2196F3" />
-                                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Sakit" android:textColor="#666666" android:textSize="12sp" android:layout_marginStart="8dp" />
-                                    <TextView android:id="@+id/tvLegendSakit" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="#000000" android:textSize="12sp" android:textStyle="bold" />
+                                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Sakit" android:textColor="@color/text_secondary" android:textSize="12sp" android:layout_marginStart="8dp" />
+                                    <TextView android:id="@+id/tvLegendSakit" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="@color/on_background" android:textSize="12sp" android:textStyle="bold" />
                                 </LinearLayout>
 
                                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
                                     <View android:layout_width="12dp" android:layout_height="12dp" android:background="#F44336" />
-                                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Alpha" android:textColor="#666666" android:textSize="12sp" android:layout_marginStart="8dp" />
-                                    <TextView android:id="@+id/tvLegendAlpha" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="#000000" android:textSize="12sp" android:textStyle="bold" />
+                                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Alpha" android:textColor="@color/text_secondary" android:textSize="12sp" android:layout_marginStart="8dp" />
+                                    <TextView android:id="@+id/tvLegendAlpha" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="@color/on_background" android:textSize="12sp" android:textStyle="bold" />
                                 </LinearLayout>
 
                             </LinearLayout>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginTop="24dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Tren Kehadiran (7 Hari Terakhir)"
+                                android:textColor="@color/on_background"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                android:layout_marginBottom="12dp" />
+
+                            <com.github.mikephil.charting.charts.LineChart
+                                android:id="@+id/lineChartTrend"
+                                android:layout_width="match_parent"
+                                android:layout_height="220dp" />
 
                         </LinearLayout>
 
@@ -236,7 +259,7 @@
                     android:layout_marginBottom="12dp"
                     app:cardCornerRadius="12dp"
                     app:cardElevation="2dp"
-                    app:cardBackgroundColor="#FFFFFF">
+                    app:cardBackgroundColor="@color/surface">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -248,7 +271,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Kehadiran per Jenis Sholat"
-                            android:textColor="#000000"
+                            android:textColor="@color/on_background"
                             android:textSize="14sp"
                             android:textStyle="bold"
                             android:layout_marginBottom="12dp" />
@@ -256,8 +279,8 @@
                         <!-- Dhuha -->
                         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginBottom="8dp">
                             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-                                <TextView android:layout_width="60dp" android:layout_height="wrap_content" android:text="Dhuha" android:textColor="#333333" android:textSize="12sp" />
-                                <TextView android:id="@+id/tvBarDhuha" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="#666666" android:textSize="11sp" android:layout_marginStart="4dp" />
+                                <TextView android:layout_width="60dp" android:layout_height="wrap_content" android:text="Dhuha" android:textColor="@color/on_background" android:textSize="12sp" />
+                                <TextView android:id="@+id/tvBarDhuha" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="@color/text_secondary" android:textSize="11sp" android:layout_marginStart="4dp" />
                             </LinearLayout>
                             <ProgressBar android:id="@+id/progressBarDhuha" style="?android:attr/progressBarStyleHorizontal" android:layout_width="match_parent" android:layout_height="12dp" android:max="100" android:progress="0" android:progressDrawable="@drawable/progress_bar_green" android:layout_marginTop="2dp" />
                         </LinearLayout>
@@ -265,8 +288,8 @@
                         <!-- Dzuhur -->
                         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginBottom="8dp">
                             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-                                <TextView android:layout_width="60dp" android:layout_height="wrap_content" android:text="Dzuhur" android:textColor="#333333" android:textSize="12sp" />
-                                <TextView android:id="@+id/tvBarDzuhur" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="#666666" android:textSize="11sp" android:layout_marginStart="4dp" />
+                                <TextView android:layout_width="60dp" android:layout_height="wrap_content" android:text="Dzuhur" android:textColor="@color/on_background" android:textSize="12sp" />
+                                <TextView android:id="@+id/tvBarDzuhur" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="@color/text_secondary" android:textSize="11sp" android:layout_marginStart="4dp" />
                             </LinearLayout>
                             <ProgressBar android:id="@+id/progressBarDzuhur" style="?android:attr/progressBarStyleHorizontal" android:layout_width="match_parent" android:layout_height="12dp" android:max="100" android:progress="0" android:progressDrawable="@drawable/progress_bar_blue" android:layout_marginTop="2dp" />
                         </LinearLayout>
@@ -274,8 +297,8 @@
                         <!-- Jumat -->
                         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
                             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-                                <TextView android:layout_width="60dp" android:layout_height="wrap_content" android:text="Jumat" android:textColor="#333333" android:textSize="12sp" />
-                                <TextView android:id="@+id/tvBarJumat" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="#666666" android:textSize="11sp" android:layout_marginStart="4dp" />
+                                <TextView android:layout_width="60dp" android:layout_height="wrap_content" android:text="Jumat" android:textColor="@color/on_background" android:textSize="12sp" />
+                                <TextView android:id="@+id/tvBarJumat" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="@color/text_secondary" android:textSize="11sp" android:layout_marginStart="4dp" />
                             </LinearLayout>
                             <ProgressBar android:id="@+id/progressBarJumat" style="?android:attr/progressBarStyleHorizontal" android:layout_width="match_parent" android:layout_height="12dp" android:max="100" android:progress="0" android:progressDrawable="@drawable/progress_bar_orange" android:layout_marginTop="2dp" />
                         </LinearLayout>
@@ -292,7 +315,7 @@
                     android:layout_marginBottom="16dp"
                     app:cardCornerRadius="12dp"
                     app:cardElevation="2dp"
-                    app:cardBackgroundColor="#FFFFFF">
+                    app:cardBackgroundColor="@color/surface">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -304,7 +327,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/FilterLaporan"
-                            android:textColor="#000000"
+                            android:textColor="@color/on_background"
                             android:textSize="16sp"
                             android:textStyle="bold"
                             android:layout_marginBottom="12dp" />
@@ -338,7 +361,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/TanggalAwal"
-                            android:textColor="#666666"
+                            android:textColor="@color/text_secondary"
                             android:textSize="12sp"
                             android:layout_marginBottom="4dp" />
 
@@ -350,7 +373,7 @@
                             android:gravity="center_vertical"
                             android:paddingHorizontal="12dp"
                             android:text="@string/PlaceholderTanggalAwal"
-                            android:textColor="#333333"
+                            android:textColor="@color/on_background"
                             android:textSize="14sp"
                             android:layout_marginBottom="12dp" />
 
@@ -359,7 +382,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/TanggalAkhir"
-                            android:textColor="#666666"
+                            android:textColor="@color/text_secondary"
                             android:textSize="12sp"
                             android:layout_marginBottom="4dp" />
 
@@ -371,7 +394,7 @@
                             android:gravity="center_vertical"
                             android:paddingHorizontal="12dp"
                             android:text="@string/PlaceholderTanggalAkhir"
-                            android:textColor="#333333"
+                            android:textColor="@color/on_background"
                             android:textSize="14sp"
                             android:layout_marginBottom="12dp" />
 
@@ -380,7 +403,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Jenis Sholat"
-                            android:textColor="#666666"
+                            android:textColor="@color/text_secondary"
                             android:textSize="12sp"
                             android:layout_marginBottom="4dp" />
 
@@ -393,7 +416,7 @@
                             android:gravity="center_vertical"
                             android:paddingHorizontal="12dp"
                             android:text="Semua Sholat"
-                            android:textColor="#666666"
+                            android:textColor="@color/text_secondary"
                             android:textSize="14sp"
                             android:layout_marginBottom="12dp" />
 
@@ -402,7 +425,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/Jurusan"
-                            android:textColor="#666666"
+                            android:textColor="@color/text_secondary"
                             android:textSize="12sp"
                             android:layout_marginBottom="4dp" />
 
@@ -415,7 +438,7 @@
                             android:gravity="center_vertical"
                             android:paddingHorizontal="12dp"
                             android:text="@string/SemuaJurusan"
-                            android:textColor="#666666"
+                            android:textColor="@color/text_secondary"
                             android:textSize="14sp"
                             android:layout_marginBottom="12dp" />
 
@@ -424,7 +447,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/Kelas"
-                            android:textColor="#666666"
+                            android:textColor="@color/text_secondary"
                             android:textSize="12sp"
                             android:layout_marginBottom="4dp" />
 
@@ -437,7 +460,7 @@
                             android:gravity="center_vertical"
                             android:paddingHorizontal="12dp"
                             android:text="@string/SemuaKelas"
-                            android:textColor="#666666"
+                            android:textColor="@color/text_secondary"
                             android:textSize="14sp" />
 
                     </LinearLayout>
@@ -451,7 +474,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/DataAbsensi0Entri"
-                    android:textColor="#000000"
+                    android:textColor="@color/on_background"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:layout_marginBottom="8dp" />
@@ -467,7 +490,7 @@
                         android:layout_width="0dp"
                         android:layout_height="36dp"
                         android:layout_weight="1"
-                        android:text="Download"
+                        android:text="@string/Unduh"
                         android:textColor="@android:color/white"
                         android:textSize="11sp"
                         app:backgroundTint="@color/blue_theme"
@@ -533,7 +556,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         android:text="@string/TidakAdaDataAbsensiAlt"
-                        android:textColor="#333333"
+                        android:textColor="@color/on_background"
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
@@ -678,7 +701,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="Halaman 1 dari 1"
-                        android:textColor="#666666"
+                        android:textColor="@color/text_secondary"
                         android:textSize="13sp"
                         android:gravity="center" />
 

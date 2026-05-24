@@ -118,6 +118,17 @@
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnNotifyBulk"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Pengingat"
+                    android:visibility="gone"
+                    app:icon="@drawable/ic_notification"
+                    app:iconTint="@color/blue_theme"
+                    android:textColor="@color/blue_theme" />
+
             </LinearLayout>
 
             <EditText

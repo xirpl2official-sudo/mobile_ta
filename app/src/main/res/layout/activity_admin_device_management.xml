@@ -10,7 +10,7 @@
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white">
+        android:background="@color/surface">
 
         <!-- Top Bar Background -->
         <View
@@ -183,7 +183,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:text="Tidak ada data"
-                    android:textColor="#333333"
+                    android:textColor="@color/on_background"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 

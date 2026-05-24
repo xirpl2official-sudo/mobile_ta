@@ -149,7 +149,7 @@ abstract class BaseAdminActivity : BaseActivity() {
                     }
                 }
             } catch (e: Exception) {
-                
+                Log.w("BaseAdminActivity", "Failed to load admin profile: ${e.message}")
             }
         }
     }
@@ -326,6 +326,7 @@ abstract class BaseAdminActivity : BaseActivity() {
                 sidebarView.findViewById<LinearLayout>(R.id.menuSiswaBelumTerdaftar)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuManajemenPerangkat)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuKenaikanKelas)?.setOnClickListener(null)
+                sidebarView.findViewById<LinearLayout>(R.id.menuFAQ)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuPengaturan)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuLogout)?.setOnClickListener(null)
             }

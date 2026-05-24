@@ -26,7 +26,7 @@ import com.xirpl2.SASMobile.model.QRCodeVerifyData
 import com.xirpl2.SASMobile.repository.QRCodeRepository
 import kotlinx.coroutines.launch
 
-class ScanQrActivity : BaseActivity() {
+class ScanQrActivity : BaseSiswaActivity() {
 
     private lateinit var barcodeView: BarcodeView
     private lateinit var btnScan: Button
@@ -54,12 +54,16 @@ class ScanQrActivity : BaseActivity() {
         }
     }
 
+    override fun getCurrentMenuItem(): SiswaMenuItem = SiswaMenuItem.QR_CODE
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_scan_qr)
         window.statusBarColor = 0xFF2886D6.toInt()
 
         initializeViews()
+        setupDrawerAndSidebar()
+        setupMenuIcon()
         setupWindowInsets()
         setupClickListeners()
         setupBarcodeScanner()
@@ -162,18 +166,16 @@ class ScanQrActivity : BaseActivity() {
         lifecycleScope.launch {
             repository.verifyQRCode(authToken, qrToken).fold(
                 onSuccess = { verifyData ->
-                    runOnUiThread {
-                        hideLoading()
-                        isProcessing = false
-                        showVerificationResult(verifyData)
-                    }
+                    if (isFinishing || isDestroyed) return@fold
+                    hideLoading()
+                    isProcessing = false
+                    showVerificationResult(verifyData)
                 },
                 onFailure = { error ->
-                    runOnUiThread {
-                        hideLoading()
-                        isProcessing = false
-                        showStatus(error.message ?: "Verifikasi gagal", false)
-                    }
+                    if (isFinishing || isDestroyed) return@fold
+                    hideLoading()
+                    isProcessing = false
+                    showStatus(error.message ?: "Verifikasi gagal", false)
                 }
             )
         }
@@ -236,6 +238,7 @@ class ScanQrActivity : BaseActivity() {
     }
 
     private fun showStatus(message: String, isSuccess: Boolean) {
+        if (isFinishing || isDestroyed) return
         tvStatus.text = message
         tvStatus.visibility = View.VISIBLE
         tvStatus.setTextColor(
@@ -245,25 +248,22 @@ class ScanQrActivity : BaseActivity() {
     }
 
     private fun hideResult() {
-        runOnUiThread {
-            cardResult.visibility = View.GONE
-        }
+        if (isFinishing || isDestroyed) return
+        cardResult.visibility = View.GONE
     }
 
     private fun showLoading() {
-        runOnUiThread {
-            progressBar.visibility = View.VISIBLE
-            btnScan.isEnabled = false
-            btnScan.alpha = 0.5f
-        }
+        if (isFinishing || isDestroyed) return
+        progressBar.visibility = View.VISIBLE
+        btnScan.isEnabled = false
+        btnScan.alpha = 0.5f
     }
 
     private fun hideLoading() {
-        runOnUiThread {
-            progressBar.visibility = View.GONE
-            btnScan.isEnabled = true
-            btnScan.alpha = 1.0f
-        }
+        if (isFinishing || isDestroyed) return
+        progressBar.visibility = View.GONE
+        btnScan.isEnabled = true
+        btnScan.alpha = 1.0f
     }
 
     private fun hasCameraPermission(): Boolean {
@@ -302,10 +302,6 @@ class ScanQrActivity : BaseActivity() {
             .show()
     }
 
-    private fun getAuthToken(): String {
-        val sharedPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this)
-        return sharedPref.getString("auth_token", "") ?: ""
-    }
 
     override fun onResume() {
         super.onResume()

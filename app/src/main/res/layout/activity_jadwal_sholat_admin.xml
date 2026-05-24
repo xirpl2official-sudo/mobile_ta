@@ -11,7 +11,7 @@
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
+        android:background="@color/surface"
         tools:context=".JadwalSholatAdminActivity">
 
 
@@ -93,7 +93,7 @@
             android:id="@+id/scrollContent"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@android:color/white"
+            android:background="@color/surface"
             android:clipToPadding="false"
             android:clipChildren="false"
             app:layout_constraintTop_toBottomOf="@id/topBarContent"
@@ -104,7 +104,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/white"
+                android:background="@color/surface"
                 android:paddingHorizontal="@dimen/spacing_medium"
                 android:paddingVertical="@dimen/spacing_medium"
                 android:clipToPadding="false"

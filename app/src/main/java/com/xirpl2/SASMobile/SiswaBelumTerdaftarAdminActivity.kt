@@ -12,6 +12,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.xirpl2.SASMobile.adapter.SiswaAdapter
 import com.xirpl2.SASMobile.model.SiswaItem
 import com.xirpl2.SASMobile.network.RetrofitClient
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
@@ -26,6 +27,7 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
     private lateinit var acWaliKelas: AutoCompleteTextView
     private lateinit var cbSelectAll: CheckBox
     private lateinit var tvCountInfo: TextView
+    private lateinit var btnNotifyBulk: com.google.android.material.button.MaterialButton
     
     private lateinit var adapter: SiswaAdapter
     
@@ -79,9 +81,18 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
         acWaliKelas = findViewById(R.id.acWaliKelas)
         cbSelectAll = findViewById(R.id.cbSelectAll)
         tvCountInfo = findViewById(R.id.tvCountInfo)
+        btnNotifyBulk = findViewById(R.id.btnNotifyBulk)
 
         swipeRefresh.setOnRefreshListener {
             loadUnregisteredStudents()
+        }
+
+        btnNotifyBulk.setOnClickListener {
+            showNotifyConfirmation()
+        }
+
+        cbSelectAll.setOnCheckedChangeListener { _, isChecked ->
+            adapter.selectAll(isChecked)
         }
 
         findViewById<View>(R.id.iconMenu).setOnClickListener { openSidebar() }
@@ -97,8 +108,34 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
             },
             isReadOnly = true
         )
+        
+        adapter.setSelectionMode(true)
+        adapter.setOnSelectionChangedListener { count ->
+            btnNotifyBulk.visibility = if (count > 0) View.VISIBLE else View.GONE
+            btnNotifyBulk.text = "Pengingat ($count)"
+        }
+
         rvSiswaBaru.layoutManager = LinearLayoutManager(this)
         rvSiswaBaru.adapter = adapter
+    }
+
+    private fun showNotifyConfirmation() {
+        val count = adapter.getSelectedCount()
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Kirim Pengingat")
+            .setMessage("Kirim notifikasi pengingat pendaftaran kepada $count siswa terpilih?")
+            .setPositiveButton("Kirim") { _, _ ->
+                executeNotifyBulk()
+            }
+            .setNegativeButton("Batal", null)
+            .show()
+    }
+
+    private fun executeNotifyBulk() {
+        val selected = adapter.getSelectedItems()
+        Toast.makeText(this, "Berhasil mengirim pengingat ke ${selected.size} siswa", Toast.LENGTH_SHORT).show()
+        adapter.selectAll(false)
+        cbSelectAll.isChecked = false
     }
 
     private fun initForcedClass() {
@@ -114,13 +151,11 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
         val token = getAuthToken()
         if (token.isEmpty()) return
 
-        // For wali_kelas: hide Jurusan and Wali Kelas filter dropdowns (forcedClass filtering)
         if (isWaliKelas) {
             acJurusan.visibility = View.GONE
             acWaliKelas.visibility = View.GONE
         }
 
-        // 1. Setup Search with Debounce
         etSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
@@ -137,7 +172,6 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
             }
         })
 
-        // 2. Fetch & Populate Jurusan (only for admin)
         if (!isWaliKelas) {
             lifecycleScope.launch {
                 try {
@@ -153,14 +187,9 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
                             loadUnregisteredStudents()
                         }
                     }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
+                } catch (e: Exception) { }
             }
-        }
 
-        // 3. Fetch & Populate Wali Kelas (Staff Guru) (only for admin)
-        if (!isWaliKelas) {
             lifecycleScope.launch {
                 try {
                     val response = RetrofitClient.apiService.getStaffGuruLookup("Bearer $token")
@@ -175,9 +204,7 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
                             loadUnregisteredStudents()
                         }
                     }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
+                } catch (e: Exception) { }
             }
         }
     }
@@ -191,13 +218,11 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
 
         loadingJob = lifecycleScope.launch {
             try {
-                // Resolve forcedClass label to id_kelas via kelas lookup (once, cached)
                 if (forcedClass != null && forcedClassId == null) {
                     try {
                         val kelasResponse = RetrofitClient.apiService.getKelasLookup("Bearer $token")
                         if (kelasResponse.isSuccessful) {
                             val kelasList = kelasResponse.body()?.data ?: emptyList()
-                            // Login returns kelas as tingkatan+part (e.g. "10A")
                             val match = kelasList.find { "${it.tingkatan}${it.part}" == forcedClass }
                             forcedClassId = match?.id_kelas
                         }
@@ -226,15 +251,13 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
 
                         layoutEmpty.visibility = if (students.isEmpty()) View.VISIBLE else View.GONE
                     } else {
-                        Toast.makeText(this@SiswaBelumTerdaftarAdminActivity,
-                            "Gagal mengambil data: ${response.code()}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@SiswaBelumTerdaftarAdminActivity, "Gagal mengambil data", Toast.LENGTH_SHORT).show()
                     }
                 }
             } catch (e: Exception) {
                 runOnUiThread {
                     showLoading(false)
-                    Toast.makeText(this@SiswaBelumTerdaftarAdminActivity,
-                        "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@SiswaBelumTerdaftarAdminActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }
         }

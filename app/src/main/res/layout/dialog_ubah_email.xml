@@ -6,7 +6,7 @@
     android:layout_margin="20dp"
     app:cardCornerRadius="16dp"
     app:cardElevation="12dp"
-    app:cardBackgroundColor="@color/white">
+    app:cardBackgroundColor="@color/surface">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -20,7 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Ubah Email"
-            android:textColor="#000000"
+            android:textColor="@color/on_background"
             android:textSize="20sp"
             android:fontFamily="@font/poppins_semibold"
             app:layout_constraintStart_toStartOf="parent"
@@ -41,7 +41,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Email"
-            android:textColor="#000000"
+            android:textColor="@color/on_background"
             android:textSize="14sp"
             android:fontFamily="@font/poppins_medium"
             android:layout_marginTop="5dp"
@@ -57,7 +57,7 @@
             android:paddingEnd="16dp"
             android:paddingBottom="4dp"
             android:background="@drawable/bg_input_shadow"
-            android:textColor="#212121"
+            android:textColor="@color/on_background"
             android:inputType="textEmailAddress"
             android:hint="Masukkan email"
             android:textColorHint="#999999"
@@ -79,7 +79,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="BATAL"
-                android:textColor="#000000"
+                android:textColor="@color/on_background"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:fontFamily="@font/poppins_bold"
@@ -96,7 +96,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="SIMPAN"
-                android:textColor="#000000"
+                android:textColor="@color/on_background"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:fontFamily="@font/poppins_bold"

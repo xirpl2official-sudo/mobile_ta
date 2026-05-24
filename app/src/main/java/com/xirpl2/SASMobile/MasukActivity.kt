@@ -387,15 +387,15 @@ class MasukActivity : BaseActivity() {
                         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         startActivity(intent)
                         finish()
-                    } else {
+                    } else if (response.code() == 401 || response.code() == 403) {
+                        // Only clear session if token is explicitly rejected by server
                         clearUserSession()
                     }
                 }
             } catch (e: Exception) {
-                Log.w(TAG, "Auto-login token validation failed (expected on physical devices without API): ${e.message}")
-                withContext(Dispatchers.Main) {
-                    if (!isFinishing && !isDestroyed) clearUserSession()
-                }
+                Log.w(TAG, "Auto-login token validation failed: ${e.message}")
+                // For network errors or other exceptions, we DON'T clear the session.
+                // This allows the user to try again later or work offline if supported.
             }
         }
     }
@@ -443,6 +443,11 @@ class MasukActivity : BaseActivity() {
      * Must match the dual-store pattern used by saveUserSession(), TokenAuthenticator,
      * and the logout handlers in BaseAdminActivity / BerandaActivity.
      */
+    override fun onDestroy() {
+        inputHandler.removeCallbacksAndMessages(null)
+        super.onDestroy()
+    }
+
     private fun clearUserSession() {
         com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this)
             .edit().clear().apply()

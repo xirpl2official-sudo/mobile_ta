@@ -8,7 +8,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/background"
     tools:context=".GantiKataSandi">
 
     <androidx.constraintlayout.widget.Guideline
@@ -117,10 +117,10 @@
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:id="@+id/nisLayout"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="56dp"
         android:hint="@string/N.N"
         android:layout_marginTop="@dimen/spacing_text"
-        app:boxBackgroundColor="#FFFFFF"
+        app:boxBackgroundColor="@color/surface"
         app:boxStrokeColor="@color/stroke_blue_always"
         app:boxStrokeWidth="1dp"
         app:boxStrokeWidthFocused="1dp"
@@ -132,8 +132,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/nisLabel"
-        app:layout_constraintWidth_percent="0.85"
-        app:layout_constraintHeight_percent="0.075">
+        app:layout_constraintWidth_percent="0.80">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_nis"
@@ -141,7 +140,7 @@
             android:layout_height="match_parent"
             android:autofillHints="username"
             android:inputType="text"
-            android:textColor="#000000"
+            android:textColor="@color/on_background"
             android:textSize="@dimen/text_input_hint" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -164,10 +163,10 @@
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:id="@+id/emailLayout"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="56dp"
         android:layout_marginTop="@dimen/spacing_text"
         android:hint="@string/Email"
-        app:boxBackgroundColor="#FFFFFF"
+        app:boxBackgroundColor="@color/surface"
         app:boxStrokeColor="@color/stroke_blue_always"
         app:boxStrokeWidth="1dp"
         app:boxStrokeWidthFocused="1dp"
@@ -179,8 +178,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/emailLabel"
-        app:layout_constraintWidth_percent="0.85"
-        app:layout_constraintHeight_percent="0.075">
+        app:layout_constraintWidth_percent="0.80">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_email"
@@ -188,7 +186,7 @@
             android:layout_height="match_parent"
             android:autofillHints="email"
             android:inputType="textEmailAddress"
-            android:textColor="#000000"
+            android:textColor="@color/on_background"
             android:textSize="@dimen/text_input_hint" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -196,17 +194,16 @@
     <Button
         android:id="@+id/buttonKirim"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="56dp"
         android:layout_marginTop="32dp"
         android:backgroundTint="#2D8FE3"
         android:text="@string/KirimOTP"
         android:textColor="#FFFFFF"
         android:textSize="@dimen/text_button"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.075"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/emailLayout"
-        app:layout_constraintWidth_percent="0.85" />
+        app:layout_constraintWidth_percent="0.80" />
 
     
     <ProgressBar

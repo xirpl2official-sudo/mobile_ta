@@ -6,7 +6,7 @@
     android:orientation="horizontal"
     android:gravity="center_vertical"
     android:paddingVertical="8dp"
-    android:background="@android:color/white">
+    android:background="@color/background">
 
     <TextView
         android:id="@+id/tvNo"
@@ -15,7 +15,7 @@
         android:layout_weight="0.08"
         android:text="1"
         android:textSize="12sp"
-        android:textColor="#333333"
+        android:textColor="@color/on_background"
         android:gravity="center" />
 
     <TextView
@@ -25,7 +25,7 @@
         android:layout_weight="0.20"
         android:text="6896/805.027"
         android:textSize="12sp"
-        android:textColor="#333333"
+        android:textColor="@color/on_background"
         android:gravity="center" />
 
     <TextView
@@ -35,7 +35,7 @@
         android:layout_weight="0.40"
         android:text="Aditia Firmansyah"
         android:textSize="12sp"
-        android:textColor="#333333"
+        android:textColor="@color/on_background"
         android:paddingHorizontal="4dp" />
 
     <TextView
@@ -45,7 +45,7 @@
         android:layout_weight="0.12"
         android:text="L"
         android:textSize="12sp"
-        android:textColor="#333333"
+        android:textColor="@color/on_background"
         android:gravity="center" />
 
     <com.google.android.material.button.MaterialButton
