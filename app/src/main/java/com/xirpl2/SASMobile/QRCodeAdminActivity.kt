@@ -1,9 +1,12 @@
 package com.xirpl2.SASMobile
 
+import android.content.ContentValues
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.os.Bundle
+import android.os.Build
 import android.os.CountDownTimer
+import android.os.Environment
+import android.provider.MediaStore
 import android.util.Base64
 import android.view.View
 import android.widget.ImageView
@@ -12,14 +15,11 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
-import com.xirpl2.SASMobile.model.JadwalSholat
-import com.xirpl2.SASMobile.model.JadwalSholatData
-import com.xirpl2.SASMobile.model.QRCodeData
-import com.xirpl2.SASMobile.model.StatusSholat
 import com.xirpl2.SASMobile.network.RetrofitClient
-import com.xirpl2.SASMobile.repository.BerandaRepository
-import com.xirpl2.SASMobile.repository.QRCodeRepository
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -33,22 +33,28 @@ class QRCodeAdminActivity : BaseAdminActivity() {
     private lateinit var btnRefresh: MaterialButton
     private lateinit var progressBar: ProgressBar
     private lateinit var containerQR: View
-    
+
     // Manual Code Views
     private lateinit var tvManualCode: TextView
     private lateinit var tvCodeExpires: TextView
     private lateinit var cardManualCode: View
 
-    private val qrRepository = QRCodeRepository()
-    private val berandaRepository = BerandaRepository()
+    // Download button
+    private lateinit var btnDownload: MaterialButton
+
     private var countDownTimer: CountDownTimer? = null
     private var codeTimer: CountDownTimer? = null
-    
+    private var autoRefreshJob: Job? = null
+    private var currentBitmap: Bitmap? = null
+
     private val allowedPrayers = JadwalSholatHelper.ALLOWED_PRAYERS
+
+    private val QR_REFRESH_INTERVAL = 30_000L  // 30 seconds (match desktop)
+    private val CODE_REFRESH_INTERVAL = 20_000L // 20 seconds (match desktop)
 
     override fun getCurrentMenuItem(): AdminMenuItem = AdminMenuItem.QR_CODE
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: android.os.Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_qr_code_admin)
         setupStatusBar()
@@ -60,9 +66,13 @@ class QRCodeAdminActivity : BaseAdminActivity() {
         setupDrawerAndSidebar()
         setupMenuIcon()
         setupClickListeners()
-        
+
+        // Load QR and manual code directly (match desktop - backend handles schedule check)
         loadQRCode()
         loadAttendanceCode()
+
+        // Auto-refresh QR every 30s and manual code every 20s (match desktop)
+        startAutoRefresh()
     }
 
     private fun initializeViews() {
@@ -74,10 +84,12 @@ class QRCodeAdminActivity : BaseAdminActivity() {
         btnRefresh = findViewById(R.id.btnRefresh)
         progressBar = findViewById(R.id.progressBar)
         containerQR = findViewById(R.id.containerQR)
-        
+
         tvManualCode = findViewById(R.id.tvManualCode)
         tvCodeExpires = findViewById(R.id.tvCodeExpires)
         cardManualCode = findViewById(R.id.cardManualCode)
+
+        btnDownload = findViewById(R.id.btnDownload)
     }
 
     private fun setupClickListeners() {
@@ -85,12 +97,79 @@ class QRCodeAdminActivity : BaseAdminActivity() {
             loadQRCode()
             loadAttendanceCode()
         }
+
+        btnDownload.setOnClickListener {
+            downloadQRCode()
+        }
+    }
+
+    private fun startAutoRefresh() {
+        autoRefreshJob = lifecycleScope.launch {
+            while (true) {
+                delay(QR_REFRESH_INTERVAL)
+                loadQRCode()
+            }
+        }
+        // Manual code refreshes every 20s
+        lifecycleScope.launch {
+            while (true) {
+                delay(CODE_REFRESH_INTERVAL)
+                loadAttendanceCode()
+            }
+        }
+    }
+
+    private fun loadQRCode() {
+        val token = getAuthToken()
+        if (token.isEmpty()) {
+            showError("Sesi telah berakhir, silakan login kembali")
+            return
+        }
+
+        // Only show loading on first load, not on auto-refresh
+        if (currentBitmap == null) {
+            showLoading()
+        }
+
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitClient.apiService.getCurrentQRCode("Bearer $token")
+                if (response.isSuccessful) {
+                    val data = response.body()?.data
+                    if (data != null) {
+                        if (!allowedPrayers.contains(data.jenis_sholat)) {
+                            runOnUiThread {
+                                showError("QR Code hanya tersedia untuk sholat Dhuha, Dhuhur, dan Jumat.")
+                            }
+                            return@launch
+                        }
+                        runOnUiThread {
+                            displayQRCode(data.qr_code, data.jenis_sholat, data.expires_at)
+                            showQRCode()
+                        }
+                    }
+                } else {
+                    if (response.code() == 404) {
+                        runOnUiThread {
+                            showNoSchedule("Tidak ada jadwal sholat aktif saat ini")
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                // Silent fail on auto-refresh to avoid spamming user
+                if (currentBitmap == null) {
+                    runOnUiThread {
+                        showError("Gagal memuat QR code: ${e.message}")
+                    }
+                }
+            }
+        }
     }
 
     private fun loadAttendanceCode() {
         val token = getAuthToken()
         if (token.isEmpty()) return
-        
+
         lifecycleScope.launch {
             try {
                 val response = RetrofitClient.apiService.generateAttendanceCode("Bearer $token")
@@ -101,9 +180,13 @@ class QRCodeAdminActivity : BaseAdminActivity() {
                             displayAttendanceCode(data.code, data.expiresIn)
                         }
                     }
+                } else {
+                    runOnUiThread {
+                        cardManualCode.visibility = View.GONE
+                    }
                 }
             } catch (e: Exception) {
-                android.util.Log.e("QRCodeAdmin", "Failed to load attendance code", e)
+                // Silent fail on auto-refresh
             }
         }
     }
@@ -111,7 +194,7 @@ class QRCodeAdminActivity : BaseAdminActivity() {
     private fun displayAttendanceCode(code: String, expiresIn: Int) {
         tvManualCode.text = code
         cardManualCode.visibility = View.VISIBLE
-        
+
         codeTimer?.cancel()
         codeTimer = object : CountDownTimer(expiresIn * 1000L, 1000) {
             override fun onTick(millisUntilFinished: Long) {
@@ -124,84 +207,23 @@ class QRCodeAdminActivity : BaseAdminActivity() {
         }.start()
     }
 
-    private fun loadQRCode() {
-        val token = getAuthToken()
-        if (token.isEmpty()) {
-            showError("Sesi telah berakhir, silakan login kembali")
-            return
-        }
-        
-        showLoading()
-        
-        lifecycleScope.launch {
-            berandaRepository.getJadwalSholat(token).fold(
-                onSuccess = { jadwalList ->
-                    val upcomingPrayer = JadwalSholatHelper.getUpcomingPrayerFromList(jadwalList)
-                    
-                    if (upcomingPrayer == null) {
-                        runOnUiThread {
-                            showError("Tidak ada jadwal sholat saat ini")
-                        }
-                        return@fold
-                    }
-                    
-                    if (upcomingPrayer.status == StatusSholat.SELESAI) {
-                        runOnUiThread {
-                            showError("Waktu sholat ${upcomingPrayer.namaSholat} telah berakhir.\n\nQR Code tidak tersedia di luar waktu sholat.")
-                        }
-                        return@fold
-                    }
-                    
-                    generateQRCode(token)
-                },
-                onFailure = { error ->
-                    runOnUiThread {
-                        showError("Gagal memuat jadwal sholat: ${error.message}")
-                    }
-                }
-            )
-        }
-    }
+    private fun displayQRCode(base64WithPrefix: String, jenisSholat: String, expiresAt: String) {
+        tvJenisSholat.text = "Sholat $jenisSholat"
+        tvStatus.text = "Auto-refresh setiap 30 detik"
+        tvStatus.setTextColor(getColor(android.R.color.holo_green_dark))
 
-    private fun getStatusFromAPI(jamMulai: String, jamSelesai: String): StatusSholat {
-        return JadwalSholatHelper.getStatusSholat(jamMulai, jamSelesai)
-    }
-
-    private fun generateQRCode(token: String) {
-        lifecycleScope.launch {
-            qrRepository.generateQRCode(token).fold(
-                onSuccess = { qrData ->
-                    runOnUiThread {
-                        if (!allowedPrayers.contains(qrData.jenis_sholat)) {
-                            showError("QR Code hanya tersedia untuk sholat Dhuha, Dhuhur, dan Jumat.")
-                            return@runOnUiThread
-                        }
-                        displayQRCode(qrData)
-                        showQRCode()
-                    }
-                },
-                onFailure = { error ->
-                    runOnUiThread {
-                        showError(error.message ?: "Gagal generate QR code")
-                    }
-                }
-            )
-        }
-    }
-
-    private fun displayQRCode(qrData: QRCodeData) {
-        tvJenisSholat.text = "Sholat ${qrData.jenis_sholat}"
-        val bitmap = decodeBase64ToBitmap(qrData.qr_code)
+        val bitmap = decodeBase64ToBitmap(base64WithPrefix)
         if (bitmap != null) {
+            currentBitmap = bitmap
             ivQRCode.setImageBitmap(bitmap)
+            ivQRCode.alpha = 1.0f
+            btnDownload.isEnabled = true
         } else {
             showError("Gagal memuat gambar QR code")
             return
         }
 
-        startCountdown(qrData.expires_at)
-        tvStatus.text = "QR Code Aktif"
-        tvStatus.setTextColor(getColor(android.R.color.holo_green_dark))
+        startCountdown(expiresAt)
     }
 
     private fun decodeBase64ToBitmap(base64String: String): Bitmap? {
@@ -217,12 +239,12 @@ class QRCodeAdminActivity : BaseAdminActivity() {
         try {
             val expiryTime = parseExpiryTime(expiresAt)
             val remainingTime = expiryTime - System.currentTimeMillis()
-            
+
             if (remainingTime <= 0) {
                 onQRCodeExpired()
                 return
             }
-            
+
             countDownTimer = object : CountDownTimer(remainingTime, 1000) {
                 override fun onTick(millisUntilFinished: Long) {
                     val minutes = (millisUntilFinished / 1000) / 60
@@ -251,10 +273,8 @@ class QRCodeAdminActivity : BaseAdminActivity() {
     private fun onQRCodeExpired() {
         tvCountdown.text = "QR Code Kadaluarsa"
         tvCountdown.setTextColor(getColor(android.R.color.holo_red_dark))
-        tvStatus.text = "QR Code Expired"
-        tvStatus.setTextColor(getColor(android.R.color.holo_red_dark))
         ivQRCode.alpha = 0.5f
-        btnRefresh.visibility = View.VISIBLE
+        // Auto-refresh will pick up a new one
     }
 
     private fun showLoading() {
@@ -265,7 +285,20 @@ class QRCodeAdminActivity : BaseAdminActivity() {
     private fun showQRCode() {
         progressBar.visibility = View.GONE
         containerQR.visibility = View.VISIBLE
-        ivQRCode.alpha = 1.0f
+    }
+
+    private fun showNoSchedule(message: String) {
+        progressBar.visibility = View.GONE
+        containerQR.visibility = View.VISIBLE
+        tvJenisSholat.text = message
+        tvStatus.text = "QR Code akan otomatis muncul saat waktu sholat tiba"
+        tvStatus.setTextColor(getColor(android.R.color.darker_gray))
+        tvCountdown.text = ""
+        ivQRCode.setImageResource(R.drawable.ic_qr_code)
+        ivQRCode.alpha = 0.3f
+        currentBitmap = null
+        btnDownload.isEnabled = false
+        cardManualCode.visibility = View.GONE
     }
 
     private fun showError(message: String) {
@@ -276,9 +309,53 @@ class QRCodeAdminActivity : BaseAdminActivity() {
         }
     }
 
+    private fun downloadQRCode() {
+        val bitmap = currentBitmap ?: return
+
+        lifecycleScope.launch {
+            try {
+                val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+                val filename = "QR_Presensi_$timestamp.png"
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    val values = ContentValues().apply {
+                        put(MediaStore.Images.Media.DISPLAY_NAME, filename)
+                        put(MediaStore.Images.Media.MIME_TYPE, "image/png")
+                        put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/SAS Mobile")
+                    }
+                    val uri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+                    uri?.let {
+                        val outputStream: OutputStream? = contentResolver.openOutputStream(it)
+                        outputStream?.use { stream ->
+                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+                        }
+                    }
+                } else {
+                    @Suppress("DEPRECATION")
+                    val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+                    val sasDir = java.io.File(dir, "SAS Mobile")
+                    sasDir.mkdirs()
+                    val file = java.io.File(sasDir, filename)
+                    file.outputStream().use { stream ->
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+                    }
+                }
+
+                runOnUiThread {
+                    Toast.makeText(this@QRCodeAdminActivity, "QR Code tersimpan di Pictures/SAS Mobile", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                runOnUiThread {
+                    Toast.makeText(this@QRCodeAdminActivity, "Gagal menyimpan: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         countDownTimer?.cancel()
         codeTimer?.cancel()
+        autoRefreshJob?.cancel()
     }
 }
