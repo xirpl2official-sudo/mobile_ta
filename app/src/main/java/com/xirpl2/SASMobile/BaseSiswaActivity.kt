@@ -85,12 +85,18 @@ abstract class BaseSiswaActivity : BaseActivity() {
         val sharedPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this)
         val nama = sharedPref.getString("nama_siswa", "Nama Siswa") ?: "Nama Siswa"
         val nis = sharedPref.getString("nis", "0000000000") ?: "0000000000"
+        val kelas = sharedPref.getString("user_kelas", "") ?: ""
 
         val tvStudentName = sidebarView.findViewById<TextView>(R.id.tvStudentName)
         val tvStudentNIS = sidebarView.findViewById<TextView>(R.id.tvStudentNIS)
-        
+        val tvStudentClass = sidebarView.findViewById<TextView>(R.id.tvStudentClass)
+
         tvStudentName?.text = nama
         tvStudentNIS?.text = nis
+        if (kelas.isNotBlank()) {
+            tvStudentClass?.text = kelas
+            tvStudentClass?.visibility = View.VISIBLE
+        }
     }
 
     private fun setupCloseSidebarButton() {
@@ -112,6 +118,12 @@ abstract class BaseSiswaActivity : BaseActivity() {
 
         setupMenuItem(R.id.menuPengajuanIzin, SiswaMenuItem.PENGAJUAN_IZIN, currentItem) {
             navigateTo(PengajuanIzinActivity::class.java)
+        }
+
+        sidebarView.findViewById<LinearLayout>(R.id.menuFAQ)?.setOnClickListener {
+            closeSidebar()
+            startActivity(Intent(this, FAQActivity::class.java))
+            overridePendingTransition(0, 0)
         }
 
         sidebarView.findViewById<LinearLayout>(R.id.menuPengaturan)?.setOnClickListener {
