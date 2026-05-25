@@ -14,22 +14,13 @@
         android:theme="@style/Theme.SAS_Mobile.WhiteBackground"
         tools:context=".KelolaGuruAdminActivity">
 
-        <!-- Header Background -->
-        <View
-            android:id="@+id/VectorAtasMenu"
-            android:layout_width="0dp"
-            android:layout_height="90dp"
-            android:background="@color/blue_theme"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <!-- Top Bar -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/topBarContent"
+            android:minHeight="90dp"
+            android:background="@color/blue_theme"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
             android:paddingBottom="4dp"
@@ -114,7 +105,7 @@
             app:cardElevation="6dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/VectorAtasMenu">
+            app:layout_constraintTop_toBottomOf="@id/topBarContent">
 
             <EditText
                 android:id="@+id/etSearch"
