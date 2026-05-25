@@ -122,40 +122,26 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
 
     private fun setupInputIzinButton() {
         val btnInputIzin = findViewById<com.google.android.material.button.MaterialButton>(R.id.btnInputIzin)
-        val btnTambah = findViewById<com.google.android.material.button.MaterialButton>(R.id.btnTambah)
-        
-        if (btnInputIzin == null || btnTambah == null) return
-        
+
+        if (btnInputIzin == null) return
+
         val session = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this)
         val role = session.getString("user_role", "")?.lowercase() ?: ""
-        
+
         when {
             role == "wali_kelas" || role == "wali kelas" -> {
                 btnInputIzin.visibility = View.VISIBLE
-                btnTambah.visibility = View.GONE
             }
-            role == "admin" -> {
+            else -> {
                 btnInputIzin.visibility = View.GONE
-                btnTambah.visibility = View.VISIBLE
-            }
-            else -> { 
-                btnInputIzin.visibility = View.GONE
-                btnTambah.visibility = View.GONE
             }
         }
-        
+
         btnInputIzin.setOnClickListener {
             val dialog = InputIzinDialogFragment.newInstance {
                 refreshData()
             }
             dialog.show(supportFragmentManager, "InputIzinDialog")
-        }
-
-        btnTambah.setOnClickListener {
-            val dialog = TambahAbsensiDialogFragment.newInstance {
-                refreshData()
-            }
-            dialog.show(supportFragmentManager, "TambahAbsensiDialog")
         }
     }
 
