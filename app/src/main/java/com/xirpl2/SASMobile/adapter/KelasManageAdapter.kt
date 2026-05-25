@@ -16,38 +16,113 @@ import com.xirpl2.SASMobile.R
 import com.xirpl2.SASMobile.model.KelasManagementItem
 import com.xirpl2.SASMobile.model.SiswaItem
 
-class KelasManageAdapter(
+data class JurusanGroup(
+    val jurusan: String,
+    val logoRes: Int,
+    val kelas: List<KelasManagementItem>
+)
+
+class JurusanGroupAdapter(
     private val onUbahWaliClick: (KelasManagementItem) -> Unit,
     private val onExpandClick: (KelasManagementItem, (List<SiswaItem>) -> Unit) -> Unit,
     private val onStudentDetailClick: (SiswaItem) -> Unit
-) : ListAdapter<KelasManagementItem, KelasManageAdapter.KelasViewHolder>(KelasDiffCallback) {
+) : ListAdapter<JurusanGroup, JurusanGroupAdapter.GroupViewHolder>(GroupDiffCallback) {
 
-    private val expandedIds = mutableSetOf<Int>()
+    private val expandedGroups = mutableSetOf<String>()
+    private val expandedKelas = mutableSetOf<Int>()
     private val classStudentsMap = mutableMapOf<Int, List<SiswaItem>>()
     private val loadingStates = mutableSetOf<Int>()
 
-    fun setLoading(idKelas: Int, isLoading: Boolean) {
-        if (isLoading) loadingStates.add(idKelas) else loadingStates.remove(idKelas)
-        notifyDataSetChanged()
+    inner class GroupViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val cardGroup: com.google.android.material.card.MaterialCardView = view.findViewById(R.id.cardJurusanGroup)
+        val jurusanHeader: View = view.findViewById(R.id.jurusanHeader)
+        val ivJurusanLogo: ImageView = view.findViewById(R.id.ivJurusanLogo)
+        val tvJurusanName: TextView = view.findViewById(R.id.tvJurusanName)
+        val tvKelasCount: TextView = view.findViewById(R.id.tvKelasCount)
+        val ivExpandGroup: ImageView = view.findViewById(R.id.ivExpandGroup)
+        val layoutExpandableGroup: View = view.findViewById(R.id.layoutExpandableGroup)
+        val rvKelasInGroup: RecyclerView = view.findViewById(R.id.rvKelasInGroup)
+
+        private val kelasAdapter = KelasInGroupAdapter(
+            onUbahWaliClick = onUbahWaliClick,
+            onExpandClick = onExpandClick,
+            onStudentDetailClick = onStudentDetailClick,
+            expandedKelasIds = expandedKelas,
+            classStudentsMap = classStudentsMap,
+            loadingStates = loadingStates
+        )
+
+        init {
+            rvKelasInGroup.layoutManager = LinearLayoutManager(view.context)
+            rvKelasInGroup.adapter = kelasAdapter
+        }
+
+        fun bind(group: JurusanGroup) {
+            ivJurusanLogo.setImageResource(group.logoRes)
+            tvJurusanName.text = group.jurusan
+            tvKelasCount.text = "${group.kelas.size} Kelas"
+
+            val isExpanded = expandedGroups.contains(group.jurusan)
+            layoutExpandableGroup.visibility = if (isExpanded) View.VISIBLE else View.GONE
+            ivExpandGroup.rotation = if (isExpanded) 90f else 0f
+
+            kelasAdapter.submitList(group.kelas)
+
+            jurusanHeader.setOnClickListener {
+                if (isExpanded) {
+                    expandedGroups.remove(group.jurusan)
+                    layoutExpandableGroup.visibility = View.GONE
+                    ivExpandGroup.animate().rotation(0f).setDuration(200).start()
+                } else {
+                    expandedGroups.add(group.jurusan)
+                    layoutExpandableGroup.visibility = View.VISIBLE
+                    ivExpandGroup.animate().rotation(90f).setDuration(200).start()
+                }
+            }
+        }
     }
 
-    inner class KelasViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val layoutJurusanHeader: View = view.findViewById(R.id.layoutJurusanHeader)
-        val tvJurusanTitle: TextView = view.findViewById(R.id.tvJurusanTitle)
-        val tvJurusanCount: TextView = view.findViewById(R.id.tvJurusanCount)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_jurusan_group, parent, false)
+        return GroupViewHolder(view)
+    }
 
-        val cardContainer: com.google.android.material.card.MaterialCardView = view.findViewById(R.id.cardContainer)
-        val ivJurusanLogo: ImageView = view.findViewById(R.id.ivJurusanLogo)
+    override fun onBindViewHolder(holder: GroupViewHolder, position: Int) {
+        holder.bind(getItem(position))
+    }
+
+    fun updateGroups(groups: List<JurusanGroup>) {
+        submitList(groups)
+    }
+}
+
+private object GroupDiffCallback : DiffUtil.ItemCallback<JurusanGroup>() {
+    override fun areItemsTheSame(oldItem: JurusanGroup, newItem: JurusanGroup) = oldItem.jurusan == newItem.jurusan
+    override fun areContentsTheSame(oldItem: JurusanGroup, newItem: JurusanGroup) = oldItem == newItem
+}
+
+class KelasInGroupAdapter(
+    private val onUbahWaliClick: (KelasManagementItem) -> Unit,
+    private val onExpandClick: (KelasManagementItem, (List<SiswaItem>) -> Unit) -> Unit,
+    private val onStudentDetailClick: (SiswaItem) -> Unit,
+    private val expandedKelasIds: MutableSet<Int>,
+    private val classStudentsMap: MutableMap<Int, List<SiswaItem>>,
+    private val loadingStates: MutableSet<Int>
+) : ListAdapter<KelasManagementItem, KelasInGroupAdapter.KelasViewHolder>(KelasDiffCallback) {
+
+    inner class KelasViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvNamaKelas: TextView = view.findViewById(R.id.tvNamaKelas)
         val badgeSiswaCount: TextView = view.findViewById(R.id.badgeSiswaCount)
         val layoutWaliInfo: View = view.findViewById(R.id.layoutWaliInfo)
         val tvWaliKelas: TextView = view.findViewById(R.id.tvWaliKelas)
         val btnUbahWaliQuick: MaterialButton = view.findViewById(R.id.btnUbahWaliQuick)
         val btnUbahWaliSection: MaterialButton = view.findViewById(R.id.btnUbahWaliSection)
-        val ivExpand: ImageView = view.findViewById(R.id.ivExpand)
+        val ivExpandKelas: ImageView = view.findViewById(R.id.ivExpandKelas)
         val pbSavingWali: ProgressBar = view.findViewById(R.id.pbSavingWali)
-        
-        val layoutExpandable: View = view.findViewById(R.id.layoutExpandable)
+        val cardKelas: com.google.android.material.card.MaterialCardView = view.findViewById(R.id.cardKelas)
+        val kelasHeader: View = view.findViewById(R.id.kelasHeader)
+
+        val layoutExpandableKelas: View = view.findViewById(R.id.layoutExpandableKelas)
         val recyclerSiswa: RecyclerView = view.findViewById(R.id.recyclerSiswaInClass)
         val pbLoadingSiswa: ProgressBar = view.findViewById(R.id.pbLoadingSiswa)
         val emptyStateSiswa: View = view.findViewById(R.id.emptyStateSiswa)
@@ -60,26 +135,13 @@ class KelasManageAdapter(
             recyclerSiswa.adapter = siswaAdapter
         }
 
-        fun bind(kelas: KelasManagementItem, position: Int) {
+        fun bind(kelas: KelasManagementItem) {
             val context = itemView.context
-            
-            // Visual Jurusan
-            val logoRes = when(kelas.jurusan?.uppercase()) {
-                "RPL" -> R.drawable.logo_rpl
-                "TKJ" -> R.drawable.logo_tkj
-                "DKV" -> R.drawable.logo_dkv
-                "TEI" -> R.drawable.logo_tei
-                "BC" -> R.drawable.logo_bc
-                "TMT" -> R.drawable.logo_mt
-                "TAV" -> R.drawable.logo_tav
-                else -> R.drawable.ic_class
-            }
-            ivJurusanLogo.setImageResource(logoRes)
 
             tvNamaKelas.text = "${kelas.tingkatan} ${kelas.part}"
             badgeSiswaCount.text = "${kelas.siswa_count} Siswa"
             tvDaftarSiswaTitle.text = "Daftar Siswa (${kelas.siswa_count})"
-            
+
             // Wali Kelas UI
             if (kelas.wali_kelas.isNullOrBlank()) {
                 tvWaliKelas.text = "Wali belum diatur"
@@ -95,30 +157,30 @@ class KelasManageAdapter(
             pbSavingWali.visibility = if (isLoading) View.VISIBLE else View.GONE
             btnUbahWaliQuick.isEnabled = !isLoading
             btnUbahWaliSection.isEnabled = !isLoading
-            
+
             btnUbahWaliQuick.setOnClickListener { onUbahWaliClick(kelas) }
             btnUbahWaliSection.setOnClickListener { onUbahWaliClick(kelas) }
 
             // Expand logic
-            val isExpanded = expandedIds.contains(kelas.id_kelas)
-            layoutExpandable.visibility = if (isExpanded) View.VISIBLE else View.GONE
-            ivExpand.rotation = if (isExpanded) 90f else 0f
+            val isExpanded = expandedKelasIds.contains(kelas.id_kelas)
+            layoutExpandableKelas.visibility = if (isExpanded) View.VISIBLE else View.GONE
+            ivExpandKelas.rotation = if (isExpanded) 90f else 0f
 
-            cardContainer.setOnClickListener {
+            kelasHeader.setOnClickListener {
                 if (isExpanded) {
-                    expandedIds.remove(kelas.id_kelas)
-                    layoutExpandable.visibility = View.GONE
-                    ivExpand.animate().rotation(0f).setDuration(200).start()
+                    expandedKelasIds.remove(kelas.id_kelas)
+                    layoutExpandableKelas.visibility = View.GONE
+                    ivExpandKelas.animate().rotation(0f).setDuration(200).start()
                 } else {
-                    expandedIds.add(kelas.id_kelas)
-                    layoutExpandable.visibility = View.VISIBLE
-                    ivExpand.animate().rotation(90f).setDuration(200).start()
-                    
+                    expandedKelasIds.add(kelas.id_kelas)
+                    layoutExpandableKelas.visibility = View.VISIBLE
+                    ivExpandKelas.animate().rotation(90f).setDuration(200).start()
+
                     if (!classStudentsMap.containsKey(kelas.id_kelas)) {
                         pbLoadingSiswa.visibility = View.VISIBLE
                         recyclerSiswa.visibility = View.GONE
                         emptyStateSiswa.visibility = View.GONE
-                        
+
                         onExpandClick(kelas) { students ->
                             classStudentsMap[kelas.id_kelas] = students
                             pbLoadingSiswa.visibility = View.GONE
@@ -149,27 +211,18 @@ class KelasManageAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): KelasViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_kelas_manage, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_kelas_in_group, parent, false)
         return KelasViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: KelasViewHolder, position: Int) {
-        holder.bind(getItem(position), position)
-    }
-
-    fun updateData(newList: List<KelasManagementItem>) {
-        submitList(newList)
+        holder.bind(getItem(position))
     }
 }
 
 private object KelasDiffCallback : DiffUtil.ItemCallback<KelasManagementItem>() {
-    override fun areItemsTheSame(oldItem: KelasManagementItem, newItem: KelasManagementItem): Boolean {
-        return oldItem.id_kelas == newItem.id_kelas
-    }
-
-    override fun areContentsTheSame(oldItem: KelasManagementItem, newItem: KelasManagementItem): Boolean {
-        return oldItem == newItem
-    }
+    override fun areItemsTheSame(oldItem: KelasManagementItem, newItem: KelasManagementItem) = oldItem.id_kelas == newItem.id_kelas
+    override fun areContentsTheSame(oldItem: KelasManagementItem, newItem: KelasManagementItem) = oldItem == newItem
 }
 
 class SiswaInClassAdapter(

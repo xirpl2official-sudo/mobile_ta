@@ -9,7 +9,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.xirpl2.SASMobile.adapter.KelasManageAdapter
+import com.xirpl2.SASMobile.adapter.JurusanGroupAdapter
+import com.xirpl2.SASMobile.adapter.JurusanGroup
 import com.xirpl2.SASMobile.model.KelasManagementItem
 import com.xirpl2.SASMobile.model.SiswaItem
 import com.xirpl2.SASMobile.model.StaffInfo
@@ -21,7 +22,7 @@ import kotlinx.coroutines.launch
 class KelolaKelasActivity : BaseAdminActivity() {
 
     private val repository = BerandaRepository()
-    private lateinit var kelasAdapter: KelasManageAdapter
+    private lateinit var kelasAdapter: JurusanGroupAdapter
     
     private lateinit var etSearch: EditText
     private lateinit var spinnerJurusan: AutoCompleteTextView
@@ -32,7 +33,6 @@ class KelolaKelasActivity : BaseAdminActivity() {
     private lateinit var iconNotification: ImageView
 
     private var allKelasList = mutableListOf<KelasManagementItem>()
-    private var filteredKelasList = mutableListOf<KelasManagementItem>()
     private var staffList = listOf<StaffInfo>()
     private var majorsList = mutableListOf("Semua Jurusan")
     
@@ -73,14 +73,14 @@ class KelolaKelasActivity : BaseAdminActivity() {
     }
 
     private fun setupRecyclerView() {
-        kelasAdapter = KelasManageAdapter(
+        kelasAdapter = JurusanGroupAdapter(
             onUbahWaliClick = { kelas -> showUbahWaliDialog(kelas) },
             onExpandClick = { kelas, callback -> loadStudentsInClass(kelas.id_kelas, callback) },
             onStudentDetailClick = { siswa ->
                 if (siswa.id_siswa == 0) {
-                   Toast.makeText(this, "Membuka form tambah siswa...", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Membuka form tambah siswa...", Toast.LENGTH_SHORT).show()
                 } else {
-                   showStudentDetail(siswa)
+                    showStudentDetail(siswa)
                 }
             }
         )
@@ -132,10 +132,8 @@ class KelolaKelasActivity : BaseAdminActivity() {
                     setupJurusanDropdown(majors)
 
                     applyFilters()
-                    
+
                     progressLoading.visibility = View.GONE
-                    recyclerKelas.visibility = if (filteredKelasList.isNotEmpty()) View.VISIBLE else View.GONE
-                    emptyStateContainer.visibility = if (filteredKelasList.isEmpty()) View.VISIBLE else View.GONE
                 },
                 onFailure = { error ->
                     progressLoading.visibility = View.GONE
@@ -167,19 +165,38 @@ class KelolaKelasActivity : BaseAdminActivity() {
     }
 
     private fun applyFilters() {
-        filteredKelasList.clear()
         val result = allKelasList.filter { kelas ->
-            val matchSearch = kelas.label.contains(searchQuery, ignoreCase = true) || 
+            val matchSearch = kelas.label.contains(searchQuery, ignoreCase = true) ||
                              (kelas.wali_kelas?.contains(searchQuery, ignoreCase = true) ?: false)
             val matchJurusan = selectedJurusan == "Semua Jurusan" || kelas.jurusan == selectedJurusan
             matchSearch && matchJurusan
-        }.sortedWith(compareBy({ it.jurusan }, { it.label }))
-        
-        filteredKelasList.addAll(result)
-        kelasAdapter.updateData(filteredKelasList)
-        
-        emptyStateContainer.visibility = if (filteredKelasList.isEmpty()) View.VISIBLE else View.GONE
-        recyclerKelas.visibility = if (filteredKelasList.isNotEmpty()) View.VISIBLE else View.GONE
+        }
+
+        val groups = result
+            .groupBy { it.jurusan }
+            .toSortedMap()
+            .map { (jurusan, kelasList) ->
+                val logoRes = when (jurusan.uppercase()) {
+                    "RPL" -> R.drawable.logo_rpl
+                    "TKJ" -> R.drawable.logo_tkj
+                    "DKV" -> R.drawable.logo_dkv
+                    "TEI" -> R.drawable.logo_tei
+                    "BC" -> R.drawable.logo_bc
+                    "TMT" -> R.drawable.logo_mt
+                    "TAV" -> R.drawable.logo_tav
+                    else -> R.drawable.ic_class
+                }
+                JurusanGroup(
+                    jurusan = jurusan,
+                    logoRes = logoRes,
+                    kelas = kelasList.sortedWith(compareBy { it.label })
+                )
+            }
+
+        kelasAdapter.updateGroups(groups)
+
+        emptyStateContainer.visibility = if (groups.isEmpty()) View.VISIBLE else View.GONE
+        recyclerKelas.visibility = if (groups.isNotEmpty()) View.VISIBLE else View.GONE
     }
 
     private fun loadStudentsInClass(idKelas: Int, callback: (List<SiswaItem>) -> Unit) {
