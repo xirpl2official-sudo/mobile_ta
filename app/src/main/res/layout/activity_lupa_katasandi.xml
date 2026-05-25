@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- NAMING MISMATCH: This file is named activity_lupa_katasandi.xml but the owning class is
+     GantiKataSandi. Conventional name would be activity_ganti_kata_sandi.xml.
+     Not renamed to avoid breaking R.layout references. -->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -6,227 +9,239 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    android:clipChildren="false"
     tools:context=".GantiKataSandi">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipChildren="false"
-        android:clipToPadding="false"
-        android:fillViewport="true">
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineInorasi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.36" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+    <ImageView
+        android:id="@+id/BagroundInorasi2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:contentDescription="@string/LatarBelakangIno"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/guidelineInorasi"
+        app:srcCompat="@drawable/inorasi_baground" />
+
+    <ImageView
+        android:id="@+id/VectorAtasO"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:contentDescription="@string/DekorasiBiru"
+        android:scaleType="centerCrop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.38"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/gelombangbiru" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardLogo"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:cardBackgroundColor="@android:color/transparent"
+        app:cardCornerRadius="200dp"
+        app:cardElevation="10dp"
+        app:layout_constraintBottom_toBottomOf="@id/VectorAtasO"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.13"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.22">
+
+        <ImageView
+            android:id="@+id/LogoInorasi2"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="24dp">
+            android:layout_height="match_parent"
+            android:contentDescription="@string/LogoSMKN2"
+            android:scaleType="fitCenter"
+            app:srcCompat="@drawable/logo_smk" />
 
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/guidelineInorasi"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layout_constraintGuide_begin="250dp" />
+    </androidx.cardview.widget.CardView>
 
-            <ImageView
-                android:id="@+id/BagroundInorasi2"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:contentDescription="@string/LatarBelakangIno"
-                app:layout_constraintDimensionRatio="1:1"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/guidelineInorasi"
-                app:srcCompat="@drawable/inorasi_baground" />
+    <TextView
+        android:id="@+id/textHalaman2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:fontFamily="@font/poppins_medium"
+        android:shadowColor="#80000000"
+        android:shadowDx="0"
+        android:shadowDy="6"
+        android:shadowRadius="4"
+        android:text="@string/SMK"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_title"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cardLogo" />
 
-            <ImageView
-                android:id="@+id/VectorAtasO"
-                android:layout_width="0dp"
-                android:layout_height="280dp"
-                android:contentDescription="@string/DekorasiBiru"
-                android:scaleType="fitXY"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/gelombangbiru" />
+    <TextView
+        android:id="@+id/textDaftar2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/poppins_medium"
+        android:shadowColor="#40000000"
+        android:shadowDx="0"
+        android:shadowDy="4"
+        android:shadowRadius="4"
+        android:text="@string/LupaSandi"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_bawah_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textHalaman2" />
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardLogo"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:cardBackgroundColor="@android:color/transparent"
-                app:cardCornerRadius="200dp"
-                app:cardElevation="10dp"
-                app:layout_constraintBottom_toBottomOf="@id/VectorAtasO"
-                app:layout_constraintDimensionRatio="1:1"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHeight_percent="0.13"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.22">
+    <TextView
+        android:id="@+id/nisLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_xlarge"
+        android:text="NIS"
+        android:textColor="@color/on_background"
+        android:textSize="@dimen/text_small"
+        android:fontFamily="sans-serif-medium"
+        app:layout_constraintEnd_toEndOf="@id/nisLayout"
+        app:layout_constraintStart_toStartOf="@id/nisLayout"
+        app:layout_constraintTop_toBottomOf="@id/VectorAtasO" />
 
-                <ImageView
-                    android:id="@+id/LogoInorasi2"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:contentDescription="@string/LogoSMKN2"
-                    android:scaleType="fitCenter"
-                    app:srcCompat="@drawable/logo_smk" />
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        android:id="@+id/nisLayout"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:hint="@string/N.N"
+        android:layout_marginTop="@dimen/spacing_text"
+        app:boxBackgroundColor="@color/surface"
+        app:boxStrokeColor="@color/stroke_blue_always"
+        app:boxStrokeWidth="1dp"
+        app:boxStrokeWidthFocused="1dp"
+        app:boxCornerRadiusTopStart="20dp"
+        app:boxCornerRadiusTopEnd="20dp"
+        app:boxCornerRadiusBottomStart="20dp"
+        app:boxCornerRadiusBottomEnd="20dp"
+        app:layout_constraintBottom_toTopOf="@id/emailLabel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/nisLabel"
+        app:layout_constraintWidth_percent="0.80">
 
-            </androidx.cardview.widget.CardView>
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_nis"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:autofillHints="username"
+            android:inputType="text"
+            android:textColor="@color/on_background"
+            android:textSize="@dimen/text_input_hint" />
 
-            <TextView
-                android:id="@+id/textHalaman2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:fontFamily="@font/poppins_medium"
-                android:shadowColor="#80000000"
-                android:shadowDx="0"
-                android:shadowDy="6"
-                android:shadowRadius="4"
-                android:text="@string/SMK"
-                android:textColor="@color/white"
-                android:textSize="@dimen/text_title"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/cardLogo" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-            <TextView
-                android:id="@+id/textDaftar2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/poppins_medium"
-                android:shadowColor="#40000000"
-                android:shadowDx="0"
-                android:shadowDy="4"
-                android:shadowRadius="4"
-                android:text="@string/LupaSandi"
-                android:textColor="@color/white"
-                android:textSize="@dimen/text_bawah_title"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textHalaman2" />
+    <TextView
+        android:id="@+id/emailLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_medium"
+        android:text="Email"
+        android:textColor="@color/on_background"
+        android:textSize="@dimen/text_small"
+        android:fontFamily="sans-serif-medium"
+        app:layout_constraintBottom_toTopOf="@id/emailLayout"
+        app:layout_constraintEnd_toEndOf="@id/emailLayout"
+        app:layout_constraintStart_toStartOf="@id/emailLayout"
+        app:layout_constraintTop_toBottomOf="@id/nisLayout" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:id="@+id/nisLayout"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:hint="@string/N.N"
-                android:layout_marginTop="@dimen/spacing_xlarge"
-                app:boxBackgroundColor="@color/surface"
-                app:boxStrokeColor="@color/stroke_blue_always"
-                app:boxStrokeWidth="1dp"
-                app:boxStrokeWidthFocused="1dp"
-                app:boxCornerRadiusTopStart="20dp"
-                app:boxCornerRadiusTopEnd="20dp"
-                app:boxCornerRadiusBottomStart="20dp"
-                app:boxCornerRadiusBottomEnd="20dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/VectorAtasO"
-                app:layout_constraintWidth_percent="0.80">
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        android:id="@+id/emailLayout"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginTop="@dimen/spacing_text"
+        android:hint="@string/Email"
+        app:boxBackgroundColor="@color/surface"
+        app:boxStrokeColor="@color/stroke_blue_always"
+        app:boxStrokeWidth="1dp"
+        app:boxStrokeWidthFocused="1dp"
+        app:boxCornerRadiusTopStart="20dp"
+        app:boxCornerRadiusTopEnd="20dp"
+        app:boxCornerRadiusBottomStart="20dp"
+        app:boxCornerRadiusBottomEnd="20dp"
+        app:layout_constraintBottom_toTopOf="@id/buttonKirim"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/emailLabel"
+        app:layout_constraintWidth_percent="0.80">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_nis"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:autofillHints="username"
-                    android:inputType="text"
-                    android:textColor="@color/on_background"
-                    android:textSize="@dimen/text_input_hint" />
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_email"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:autofillHints="email"
+            android:inputType="textEmailAddress"
+            android:textColor="@color/on_background"
+            android:textSize="@dimen/text_input_hint" />
 
-            </com.google.android.material.textfield.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:id="@+id/emailLayout"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_medium"
-                android:hint="@string/Email"
-                app:boxBackgroundColor="@color/surface"
-                app:boxStrokeColor="@color/stroke_blue_always"
-                app:boxStrokeWidth="1dp"
-                app:boxStrokeWidthFocused="1dp"
-                app:boxCornerRadiusTopStart="20dp"
-                app:boxCornerRadiusTopEnd="20dp"
-                app:boxCornerRadiusBottomStart="20dp"
-                app:boxCornerRadiusBottomEnd="20dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/nisLayout"
-                app:layout_constraintWidth_percent="0.80">
+    <Button
+        android:id="@+id/buttonKirim"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginTop="32dp"
+        android:backgroundTint="#2D8FE3"
+        android:text="@string/KirimOTP"
+        android:textColor="#FFFFFF"
+        android:textSize="@dimen/text_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/emailLayout"
+        app:layout_constraintWidth_percent="0.80" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_email"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:autofillHints="email"
-                    android:inputType="textEmailAddress"
-                    android:textColor="@color/on_background"
-                    android:textSize="@dimen/text_input_hint" />
+    
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/buttonKirim" />
 
-            </com.google.android.material.textfield.TextInputLayout>
+    <TextView
+        android:id="@+id/tvKembaliMasuk"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="Kembali ke Masuk"
+        android:textColor="@color/blue_theme"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/progressBar" />
 
-            <Button
-                android:id="@+id/buttonKirim"
-                android:layout_width="0dp"
-                android:layout_height="56dp"
-                android:layout_marginTop="32dp"
-                android:backgroundTint="#2D8FE3"
-                android:text="@string/KirimOTP"
-                android:textColor="#FFFFFF"
-                android:textSize="@dimen/text_button"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/emailLayout"
-                app:layout_constraintWidth_percent="0.80" />
-
-            
-            <ProgressBar
-                android:id="@+id/progressBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/buttonKirim" />
-
-            <TextView
-                android:id="@+id/tvKembaliMasuk"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:text="Kembali ke Masuk"
-                android:textColor="@color/blue_theme"
-                android:textSize="14sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/progressBar" />
-
-            <TextView
-                android:id="@+id/tvVerifikasiOtp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="24dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:text="Sudah punya OTP? Verifikasi"
-                android:textColor="@color/blue_theme"
-                android:textSize="14sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvKembaliMasuk" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </ScrollView>
+    <TextView
+        android:id="@+id/tvVerifikasiOtp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="Sudah punya OTP? Verifikasi"
+        android:textColor="@color/blue_theme"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvKembaliMasuk" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
