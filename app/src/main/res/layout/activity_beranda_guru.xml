@@ -515,21 +515,6 @@
                             android:layout_height="wrap_content"
                             android:padding="@dimen/card_padding">
 
-                            <ImageView
-                                android:id="@+id/iconPrayer"
-                                android:layout_width="0dp"
-                                android:layout_height="0dp"
-                                android:src="@drawable/ic_sun"
-                                android:contentDescription="Dhuha"
-                                app:layout_constraintDimensionRatio="1:1"
-                                app:layout_constraintWidth_percent="0.06"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintEnd_toStartOf="@id/tvNamaSholat"
-                                app:layout_constraintTop_toTopOf="@id/tvNamaSholat"
-                                app:layout_constraintBottom_toBottomOf="@id/tvNamaSholat"
-                                app:layout_constraintHorizontal_chainStyle="packed"
-                                android:layout_marginStart="@dimen/spacing_text" />
-
                             <TextView
                                 android:id="@+id/tvNamaSholat"
                                 android:layout_width="wrap_content"
@@ -539,7 +524,7 @@
                                 android:textSize="@dimen/text_prayer_name"
                                 android:textStyle="bold"
                                 android:layout_marginTop="4dp"
-                                app:layout_constraintStart_toEndOf="@id/iconPrayer"
+                                app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintEnd_toStartOf="@id/tvStatusBadge"
                                 android:layout_marginStart="@dimen/spacing_text" />
@@ -641,19 +626,53 @@
 
             </androidx.cardview.widget.CardView>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvJurusan"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardJurusanDhuhaHariIni"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/surface"
+                app:cardUseCompatPadding="true"
+                app:layout_constraintTop_toBottomOf="@id/cardJadwalDhuha"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/cardJadwalDhuha"
                 android:layout_marginTop="@dimen/spacing_small"
-                android:layout_marginBottom="@dimen/spacing_large"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/item_jurusan"
-                tools:itemCount="8" />
+                android:layout_marginBottom="@dimen/spacing_large">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/spacing_medium">
+
+                    <TextView
+                        android:id="@+id/tvJurusanDhuhaTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="Jadwal Jurusan Dhuha Hari Ini"
+                        android:textColor="@color/on_background"
+                        android:textSize="@dimen/text_prayer_title"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvJurusan"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="false"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvJurusanDhuhaTitle"
+                        android:layout_marginTop="@dimen/spacing_small"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        tools:listitem="@layout/item_jurusan"
+                        tools:itemCount="8" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
