@@ -104,18 +104,19 @@ class PengajuanIzinAdminAdapter(
         }
 
         private fun setupLeaveTypeBadge(type: String) {
+            val ctx = itemView.context
             when (type.lowercase()) {
                 "sakit" -> {
-                    tvLeaveType.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#DBEAFE"))
-                    tvLeaveType.setTextColor(Color.parseColor("#1E40AF"))
+                    tvLeaveType.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(ctx, R.color.badge_sakit_bg))
+                    tvLeaveType.setTextColor(ContextCompat.getColor(ctx, R.color.badge_sakit_text))
                 }
                 "izin" -> {
-                    tvLeaveType.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FEF3C7"))
-                    tvLeaveType.setTextColor(Color.parseColor("#92400E"))
+                    tvLeaveType.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(ctx, R.color.badge_izin_bg))
+                    tvLeaveType.setTextColor(ContextCompat.getColor(ctx, R.color.badge_izin_text))
                 }
                 else -> {
-                    tvLeaveType.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#F3E8FF"))
-                    tvLeaveType.setTextColor(Color.parseColor("#6B21A8"))
+                    tvLeaveType.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(ctx, R.color.badge_other_bg))
+                    tvLeaveType.setTextColor(ContextCompat.getColor(ctx, R.color.badge_other_text))
                 }
             }
         }
@@ -127,18 +128,18 @@ class PengajuanIzinAdminAdapter(
             when (status.lowercase()) {
                 "pending" -> {
                     statusBadge.text = "PENDING"
-                    statusBadge.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FEF3C7"))
-                    statusBadge.setTextColor(Color.parseColor("#92400E"))
+                    statusBadge.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.badge_pending_bg))
+                    statusBadge.setTextColor(ContextCompat.getColor(context, R.color.badge_pending_text))
                 }
                 "disetujui", "approved" -> {
                     statusBadge.text = "APPROVED"
-                    statusBadge.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#D1FAE5"))
-                    statusBadge.setTextColor(Color.parseColor("#065F46"))
+                    statusBadge.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.badge_approved_bg))
+                    statusBadge.setTextColor(ContextCompat.getColor(context, R.color.badge_approved_text))
                 }
                 "ditolak", "rejected" -> {
                     statusBadge.text = "REJECTED"
-                    statusBadge.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FEE2E2"))
-                    statusBadge.setTextColor(Color.parseColor("#991B1B"))
+                    statusBadge.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.badge_rejected_bg))
+                    statusBadge.setTextColor(ContextCompat.getColor(context, R.color.badge_rejected_text))
                 }
                 else -> {
                     statusBadge.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.gray))

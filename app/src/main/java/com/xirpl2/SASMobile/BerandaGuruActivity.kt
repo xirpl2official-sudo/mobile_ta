@@ -20,10 +20,10 @@ class BerandaGuruActivity : BaseAdminActivity() {
     private lateinit var tvTotalSiswaValue: TextView
     private lateinit var tvHadirHariIniValue: TextView
     private lateinit var tvIzinSakitValue: TextView
-    private lateinit var tvKehadiranValue: TextView
+    private lateinit var tvAlphaValue: TextView
     private lateinit var tvHadirHariIniSub: TextView
     private lateinit var tvIzinSakitSub: TextView
-    private lateinit var tvKehadiranSub: TextView
+    private lateinit var tvAlphaSub: TextView
     private lateinit var tvNamaSholat: TextView
     private lateinit var tvWaktuSholat: TextView
     private lateinit var tvStatusBadge: TextView
@@ -76,10 +76,10 @@ class BerandaGuruActivity : BaseAdminActivity() {
         tvTotalSiswaValue = findViewById(R.id.tvTotalSiswaValue)
         tvHadirHariIniValue = findViewById(R.id.tvHadirHariIniValue)
         tvIzinSakitValue = findViewById(R.id.tvIzinSakitValue)
-        tvKehadiranValue = findViewById(R.id.tvKehadiranValue)
+        tvAlphaValue = findViewById(R.id.tvAlphaValue)
         tvHadirHariIniSub = findViewById(R.id.tvHadirHariIniSub)
         tvIzinSakitSub = findViewById(R.id.tvIzinSakitSub)
-        tvKehadiranSub = findViewById(R.id.tvKehadiranSub)
+        tvAlphaSub = findViewById(R.id.tvAlphaSub)
         tvNamaSholat = findViewById(R.id.tvNamaSholat)
         tvWaktuSholat = findViewById(R.id.tvWaktuSholat)
         tvStatusBadge = findViewById(R.id.tvStatusBadge)
@@ -107,12 +107,11 @@ class BerandaGuruActivity : BaseAdminActivity() {
                         tvHadirHariIniValue.text = stats.total_kehadiran_hari_ini.toString()
                         val izinSakit = stats.total_izin_hari_ini + stats.total_sakit_hari_ini
                         tvIzinSakitValue.text = izinSakit.toString()
-                        val kehadiranPct = String.format(java.util.Locale.US, "%.0f%%", stats.persentase_kehadiran)
-                        tvKehadiranValue.text = kehadiranPct
+                        tvAlphaValue.text = stats.total_alpha_hari_ini.toString()
                         val todayLabel = java.text.SimpleDateFormat("dd MMM yyyy", java.util.Locale("id")).format(java.util.Date())
                         tvHadirHariIniSub.text = todayLabel
                         tvIzinSakitSub.text = todayLabel
-                        tvKehadiranSub.text = todayLabel
+                        tvAlphaSub.text = todayLabel
                     }
                 },
                 onFailure = { error ->

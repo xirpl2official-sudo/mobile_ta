@@ -285,7 +285,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="#F8FAFC"
+                android:background="@color/slate_200"
                 android:layout_marginBottom="24dp"/>
 
             
@@ -310,7 +310,7 @@
                 android:textStyle="bold"
                 android:textColor="@color/text_secondary"
                 app:backgroundTint="@android:color/transparent"
-                app:rippleColor="#F1F5F9"
+                app:rippleColor="@color/slate_100"
                 style="@style/Widget.MaterialComponents.Button.TextButton" />
 
         </LinearLayout>

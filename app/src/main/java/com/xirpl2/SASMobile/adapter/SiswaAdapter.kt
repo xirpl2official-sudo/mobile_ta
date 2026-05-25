@@ -161,10 +161,10 @@ class SiswaAdapter(
 
             // FIX-012: Visual distinction for old NIS format
             if (siswa.nis.contains("/") || siswa.nis.contains(".")) {
-                tvNis.setTextColor(android.graphics.Color.parseColor("#9E9E9E"))
+                tvNis.setTextColor(androidx.core.content.ContextCompat.getColor(itemView.context, R.color.slate_400))
                 tvNis.setTypeface(null, android.graphics.Typeface.ITALIC)
             } else {
-                tvNis.setTextColor(android.graphics.Color.parseColor("#1565C0"))
+                tvNis.setTextColor(androidx.core.content.ContextCompat.getColor(itemView.context, R.color.blue_primary))
                 tvNis.setTypeface(null, android.graphics.Typeface.NORMAL)
             }
             

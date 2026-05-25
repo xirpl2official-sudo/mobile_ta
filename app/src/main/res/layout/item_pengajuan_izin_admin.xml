@@ -85,7 +85,7 @@
                     android:textSize="12sp"
                     android:textStyle="bold"
                     android:background="@drawable/bg_badge_jurusan"
-                    android:backgroundTint="#DBEAFE"
+                    android:backgroundTint="@color/badge_sakit_bg"
                     android:paddingHorizontal="12dp"
                     android:paddingVertical="4dp"
                     tools:text="Sakit" />

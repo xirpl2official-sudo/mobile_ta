@@ -1,6 +1,7 @@
 package com.xirpl2.SASMobile
 
 import android.content.Context
+import androidx.core.content.ContextCompat
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -240,14 +241,14 @@ class PresenceDetailPopUpFragment : DialogFragment() {
             val cardView = holder.itemView as com.google.android.material.card.MaterialCardView
             
             if (isSelected) {
-                cardView.setCardBackgroundColor(Color.BLACK)
+                cardView.setCardBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.blue_theme))
                 holder.tvDayName.setTextColor(Color.WHITE)
                 holder.tvDateNumber.setTextColor(Color.WHITE)
                 cardView.strokeWidth = 0
             } else {
-                cardView.setCardBackgroundColor(Color.WHITE)
-                holder.tvDayName.setTextColor(Color.parseColor("#999999"))
-                holder.tvDateNumber.setTextColor(Color.parseColor("#1A1A1A"))
+                cardView.setCardBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.surface))
+                holder.tvDayName.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.slate_400))
+                holder.tvDateNumber.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.on_background))
                 cardView.strokeWidth = 1
             }
 

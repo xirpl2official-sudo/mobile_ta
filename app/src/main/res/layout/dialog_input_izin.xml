@@ -286,7 +286,7 @@
                 android:textStyle="bold"
                 android:textColor="@color/text_secondary"
                 app:backgroundTint="@android:color/transparent"
-                app:rippleColor="#F1F5F9"
+                app:rippleColor="@color/slate_100"
                 style="@style/Widget.MaterialComponents.Button.TextButton" />
 
         </LinearLayout>

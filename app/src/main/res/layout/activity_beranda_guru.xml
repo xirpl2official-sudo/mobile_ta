@@ -311,7 +311,7 @@
                     app:cardBackgroundColor="@android:color/transparent"
                     app:layout_constraintTop_toBottomOf="@id/cardTotalSiswa"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/cardKehadiran"
+                    app:layout_constraintEnd_toStartOf="@id/cardAlpha"
                     app:layout_constraintWidth_percent="0.4"
                     app:layout_constraintDimensionRatio="W,1:1.3"
                     android:layout_marginEnd="@dimen/spacing_text"
@@ -379,7 +379,7 @@
                 </androidx.cardview.widget.CardView>
 
                 <androidx.cardview.widget.CardView
-                    android:id="@+id/cardKehadiran"
+                    android:id="@+id/cardAlpha"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     app:cardCornerRadius="12dp"
@@ -396,7 +396,7 @@
                     <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@drawable/card_shadow_purple">
+                        android:background="@drawable/card_shadow_red">
 
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_width="match_parent"
@@ -404,47 +404,42 @@
                             android:padding="@dimen/card_padding">
 
                             <TextView
-                                android:id="@+id/tvKehadiranLabel"
+                                android:id="@+id/tvAlphaLabel"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/Kehadiran"
+                                android:text="Total Alpha"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="@dimen/text_admin_card_label"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
                             <TextView
-                                android:id="@+id/tvKehadiranValue"
+                                android:id="@+id/tvAlphaValue"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/PlaceholderDash"
+                                android:text="0"
                                 android:textColor="@color/on_background"
                                 android:textSize="@dimen/text_value_card"
                                 android:textStyle="bold"
                                 app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@id/tvKehadiranLabel"
-                                android:layout_marginTop="4dp"
-                                app:layout_constraintVertical_bias="0"
-                                app:layout_constraintVertical_chainStyle="packed" />
+                                app:layout_constraintTop_toBottomOf="@id/tvAlphaLabel"
+                                android:layout_marginTop="4dp" />
 
                             <TextView
-                                android:id="@+id/tvKehadiranSub"
+                                android:id="@+id/tvAlphaSub"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textColor="@color/slate_500"
                                 android:textSize="10sp"
                                 app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@id/tvKehadiranValue"
+                                app:layout_constraintTop_toBottomOf="@id/tvAlphaValue"
                                 android:layout_marginTop="2dp" />
 
                             <ImageView
-                                android:id="@+id/iconKehadiran"
-                                android:layout_width="0dp"
-                                android:layout_height="0dp"
-                                android:src="@drawable/bar"
-                                android:contentDescription="@string/Kehadiran"
-                                app:layout_constraintDimensionRatio="1:1"
-                                app:layout_constraintWidth_percent="0.25"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_peringatan"
+                                app:tint="#EF4444"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintBottom_toBottomOf="parent" />
 

@@ -85,7 +85,6 @@ class MasukActivity : BaseActivity() {
             }
 
             initializeViews()
-            setupNonBlockingInputHandling()
             setHintTextColors()
             checkCameraPermission()
 
@@ -136,30 +135,6 @@ class MasukActivity : BaseActivity() {
         textLupaPassword = findViewById(R.id.textLupaPassword)
         nisLayout = findViewById(R.id.nisLayout)
         passwordLayout = findViewById(R.id.passwordLayout)
-    }
-
-    /**
-     * Prevents ANR by handling IME operations outside the immediate UI focus call.
-     */
-    private fun setupNonBlockingInputHandling() {
-        val inputViews = listOf(etNis, etPassword)
-        inputViews.forEach { view ->
-            view.setOnFocusChangeListener { v, hasFocus ->
-                if (hasFocus) {
-                    AnrDetector.recordUiInteraction()
-                    inputHandler.postDelayed({
-                        try {
-                            if (!isFinishing && !isDestroyed) {
-                                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                                imm.showSoftInput(v, InputMethodManager.SHOW_IMPLICIT)
-                            }
-                        } catch (e: Exception) {
-                            Log.e(TAG, "Keyboard focus handling error", e)
-                        }
-                    }, 100)
-                }
-            }
-        }
     }
 
     private fun setupClickListeners() {

@@ -42,7 +42,7 @@
                     android:layout_alignParentEnd="true"
                     android:src="@drawable/ic_close"
                     android:contentDescription="Close"
-                    app:tint="#999999" />
+                    app:tint="@color/slate_400" />
             </RelativeLayout>
 
             <TextView
@@ -92,7 +92,7 @@
                 android:gravity="center"
                 android:padding="20dp"
                 android:text="Tidak ada riwayat untuk minggu ini"
-                android:textColor="#999999"
+                android:textColor="@color/slate_400"
                 android:visibility="gone" />
 
             <com.google.android.material.button.MaterialButton

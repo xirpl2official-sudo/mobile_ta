@@ -123,7 +123,7 @@ class DaftarActivity : BaseActivity() {
             MotionToast.createColorToast(
                 this,
                 "Peringatan",
-                "Password minimal 8 karakter",
+                "Kata sandi minimal 8 karakter. Contoh: Sandi123",
                 MotionToastStyle.WARNING,
                 Gravity.CENTER,
                 MotionToast.LONG_DURATION,

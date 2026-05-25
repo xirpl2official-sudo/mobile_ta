@@ -27,6 +27,7 @@
     <string name="JudulSandi">Ganti Kata Sandi</string>
     <string name="Sandi">Kata Sandi</string>
     <string name="konfirSandi">Konfirmasi Kata Sandi</string>
+    <string name="password_requirements">Minimal 8 karakter, huruf &amp; angka. Contoh: Sandi123</string>
     <string name="SandiBaru">Kata Sandi Baru</string>
     <string name="KonfirmSandiBaru">Konfirmasi Kata Sandi Baru</string>
     <string name="Lupa_KataSandi">Lupa Kata Sandi Anda?</string>

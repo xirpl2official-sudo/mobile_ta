@@ -187,7 +187,7 @@
                                     android:layout_marginTop="4dp"
                                     app:cardCornerRadius="8dp"
                                     app:cardElevation="0dp"
-                                    app:cardBackgroundColor="#F1F5F9">
+                                    app:cardBackgroundColor="@color/bg_card_gray">
                                     <Spinner
                                         android:id="@+id/spinnerFilterStatus"
                                         android:layout_width="match_parent"
@@ -217,7 +217,7 @@
                                     android:layout_marginTop="4dp"
                                     app:cardCornerRadius="8dp"
                                     app:cardElevation="0dp"
-                                    app:cardBackgroundColor="#F1F5F9">
+                                    app:cardBackgroundColor="@color/bg_card_gray">
                                     <Spinner
                                         android:id="@+id/spinnerSort"
                                         android:layout_width="match_parent"
@@ -238,7 +238,7 @@
                     android:layout_marginTop="12dp"
                     app:cardCornerRadius="8dp"
                     app:cardElevation="0dp"
-                    app:cardBackgroundColor="#E0F2FE"
+                    app:cardBackgroundColor="@color/bg_card_sky"
                     app:layout_constraintTop_toBottomOf="@id/filterCard">
                     <LinearLayout
                         android:layout_width="match_parent"

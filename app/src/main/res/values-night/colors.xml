@@ -31,4 +31,38 @@
     <color name="text_hint">#64748B</color>
     <color name="divider">#334155</color>
     <color name="background_gray">#121212</color>
+
+    <!-- Semantic background colors for dark theme -->
+    <color name="bg_card_green">#1A3A1A</color>
+    <color name="bg_card_blue">#1A2A3A</color>
+    <color name="bg_card_orange">#3A2A1A</color>
+    <color name="bg_card_yellow">#3A3A1A</color>
+    <color name="bg_card_sky">#1A2A3A</color>
+    <color name="bg_card_gray">#1E1E1E</color>
+    <color name="blue_700">#93C5FD</color>
+
+    <!-- Badge colors dark -->
+    <color name="badge_pending_bg">#3A2A1A</color>
+    <color name="badge_pending_text">#FCD34D</color>
+    <color name="badge_approved_bg">#1A3A1A</color>
+    <color name="badge_approved_text">#6EE7B7</color>
+    <color name="badge_rejected_bg">#3A1A1A</color>
+    <color name="badge_rejected_text">#FCA5A5</color>
+    <color name="badge_sakit_bg">#1A2A3A</color>
+    <color name="badge_sakit_text">#93C5FD</color>
+    <color name="badge_izin_bg">#3A2A1A</color>
+    <color name="badge_izin_text">#FCD34D</color>
+    <color name="badge_other_bg">#2A1A3A</color>
+    <color name="badge_other_text">#D8B4FE</color>
+
+    <!-- Missing overrides for dark mode -->
+    <color name="secondary_light">#1A2A3A</color>
+    <color name="green_100">#1A3A1A</color>
+    <color name="status_error_bg">#3A1A1A</color>
+    <color name="status_warning_bg">#3A2A1A</color>
+    <color name="status_success_bg">#1A3A1A</color>
+    <color name="qr_background">#1E1E1E</color>
+    <color name="qr_surface">#121212</color>
+    <color name="qr_text_primary">#F1F5F9</color>
+    <color name="qr_text_secondary">#94A3B8</color>
 </resources>

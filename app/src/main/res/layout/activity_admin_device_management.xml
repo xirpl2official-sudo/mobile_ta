@@ -115,7 +115,7 @@
                 android:background="@android:color/transparent"
                 app:tabIndicatorColor="@color/blue_theme"
                 app:tabSelectedTextColor="@color/blue_theme"
-                app:tabTextColor="#666666"
+                app:tabTextColor="@color/slate_500"
                 app:tabIndicatorHeight="3dp"
                 app:tabGravity="fill"
                 app:tabMode="fixed"

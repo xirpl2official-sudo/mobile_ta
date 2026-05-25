@@ -258,7 +258,7 @@
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
                             android:padding="10dp"
-                            android:background="#FEF3C7">
+                            android:background="@color/status_warning_bg">
 
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Mutasi" android:textColor="@color/slate_500" android:textSize="11sp" />
                             <TextView android:id="@+id/tvSimMutasi" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="#D97706" android:textSize="22sp" android:textStyle="bold" android:layout_marginTop="2dp" />

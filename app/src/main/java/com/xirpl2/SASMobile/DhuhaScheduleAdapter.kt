@@ -89,7 +89,8 @@ class DhuhaScheduleAdapter(
         val row = getItem(position)
         holder.tvDay.text = row.hari
 
-        holder.itemView.setBackgroundColor(if (position % 2 == 0) Color.WHITE else Color.parseColor("#FAFAFA"))
+        val bgRes = if (position % 2 == 0) R.color.surface else R.color.slate_100
+        holder.itemView.setBackgroundColor(holder.itemView.context.getColor(bgRes))
 
         holder.tvJurusan1.text = row.jurusan1?.nama_jurusan ?: "-"
         holder.tvJurusan2.text = row.jurusan2?.nama_jurusan ?: "-"
@@ -98,23 +99,25 @@ class DhuhaScheduleAdapter(
             val isSelected1 = (position == selectedRow && selectedCol == 1)
             val isSelected2 = (position == selectedRow && selectedCol == 2)
 
-            holder.tvJurusan1.setTextColor(if (isSelected1) Color.WHITE else Color.parseColor("#1E3A8A"))
+            val primaryTextColor = holder.itemView.context.getColor(R.color.blue_700)
+            holder.tvJurusan1.setTextColor(if (isSelected1) Color.WHITE else primaryTextColor)
             if (isSelected1) {
                 holder.tvJurusan1.setBackgroundResource(R.drawable.bg_selected_jurusan)
             } else {
                 holder.tvJurusan1.setBackgroundResource(0)
             }
 
-            holder.tvJurusan2.setTextColor(if (isSelected2) Color.WHITE else Color.parseColor("#1E3A8A"))
+            holder.tvJurusan2.setTextColor(if (isSelected2) Color.WHITE else primaryTextColor)
             if (isSelected2) {
                 holder.tvJurusan2.setBackgroundResource(R.drawable.bg_selected_jurusan)
             } else {
                 holder.tvJurusan2.setBackgroundResource(0)
             }
         } else {
-            holder.tvJurusan1.setTextColor(Color.BLACK)
+            val textColor = holder.itemView.context.getColor(R.color.on_background)
+            holder.tvJurusan1.setTextColor(textColor)
             holder.tvJurusan1.setBackgroundResource(0)
-            holder.tvJurusan2.setTextColor(Color.BLACK)
+            holder.tvJurusan2.setTextColor(textColor)
             holder.tvJurusan2.setBackgroundResource(0)
         }
     }

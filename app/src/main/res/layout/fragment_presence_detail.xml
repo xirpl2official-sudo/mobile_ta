@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:text="Ringkasan Absensi (Bulan ini)"
-        android:textColor="#1A1A1A"
+        android:textColor="@color/on_background"
         android:textSize="20sp"
         android:fontFamily="sans-serif-medium"
         app:layout_constraintStart_toStartOf="parent"
@@ -47,7 +47,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginEnd="8dp"
-            app:cardBackgroundColor="#E8F5E9"
+            app:cardBackgroundColor="@color/bg_card_green"
             app:cardCornerRadius="12dp"
             app:cardElevation="0dp"
             app:strokeWidth="0dp">
@@ -80,7 +80,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginHorizontal="4dp"
-            app:cardBackgroundColor="#E3F2FD"
+            app:cardBackgroundColor="@color/bg_card_blue"
             app:cardCornerRadius="12dp"
             app:cardElevation="0dp"
             app:strokeWidth="0dp">
@@ -113,7 +113,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginStart="8dp"
-            app:cardBackgroundColor="#FFF3E0"
+            app:cardBackgroundColor="@color/bg_card_orange"
             app:cardCornerRadius="12dp"
             app:cardElevation="0dp"
             app:strokeWidth="0dp">

@@ -20,11 +20,9 @@ class BerandaAdminActivity : BaseAdminActivity() {
     private lateinit var tvTotalSiswaValue: TextView
     private lateinit var tvHadirHariIniValue: TextView
     private lateinit var tvIzinSakitValue: TextView
-    private lateinit var tvKehadiranValue: TextView
     private lateinit var tvAlphaValue: TextView
     private lateinit var tvHadirHariIniSub: TextView
     private lateinit var tvIzinSakitSub: TextView
-    private lateinit var tvKehadiranSub: TextView
     private lateinit var tvAlphaSub: TextView
     private lateinit var tvNamaSholat: TextView
     private lateinit var tvWaktuSholat: TextView
@@ -90,12 +88,10 @@ class BerandaAdminActivity : BaseAdminActivity() {
         tvTotalSiswaValue = findViewById(R.id.tvTotalSiswaValue)
         tvHadirHariIniValue = findViewById(R.id.tvHadirHariIniValue)
         tvIzinSakitValue = findViewById(R.id.tvIzinSakitValue)
-        tvKehadiranValue = findViewById(R.id.tvKehadiranValue)
         tvAlphaValue = findViewById(R.id.tvAlphaValue)
-        
+
         tvHadirHariIniSub = findViewById(R.id.tvHadirHariIniSub)
         tvIzinSakitSub = findViewById(R.id.tvIzinSakitSub)
-        tvKehadiranSub = findViewById(R.id.tvKehadiranSub)
         tvAlphaSub = findViewById(R.id.tvAlphaSub)
 
         tvNamaSholat = findViewById(R.id.tvNamaSholat)
@@ -173,14 +169,10 @@ class BerandaAdminActivity : BaseAdminActivity() {
                         val izinSakit = globalStats.total_izin_hari_ini + globalStats.total_sakit_hari_ini
                         tvIzinSakitValue.text = izinSakit.toString()
                         tvAlphaValue.text = globalStats.total_alpha_hari_ini.toString()
-                        
-                        val kehadiranPct = String.format(java.util.Locale.US, "%.0f%%", globalStats.persentase_kehadiran)
-                        tvKehadiranValue.text = kehadiranPct
-                        
+
                         val todayLabel = java.text.SimpleDateFormat("dd MMM yyyy", java.util.Locale("id")).format(java.util.Date())
                         tvHadirHariIniSub.text = todayLabel
                         tvIzinSakitSub.text = todayLabel
-                        tvKehadiranSub.text = todayLabel
                         tvAlphaSub.text = todayLabel
                     }
                 },

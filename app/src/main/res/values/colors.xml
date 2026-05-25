@@ -23,6 +23,7 @@
     <color name="green_700">#15803D</color>
     <color name="orange_400">#FB923C</color>
     <color name="blue_500">#3B82F6</color>
+    <color name="blue_700">#1E3A8A</color>
     <color name="blue_primary">#1976D2</color>
     <color name="orange_warning">#F59E0B</color>
     <color name="white">#FFFFFF</color>
@@ -65,4 +66,26 @@
     <color name="sidebar_active">#1d4ed8</color>
     <color name="sidebar_text">#ffffff</color>
     <color name="sidebar_text_secondary">#bfdbfe</color>
+
+    <!-- Semantic background colors for cards -->
+    <color name="bg_card_green">#E8F5E9</color>
+    <color name="bg_card_blue">#E3F2FD</color>
+    <color name="bg_card_orange">#FFF3E0</color>
+    <color name="bg_card_yellow">#FEFCE8</color>
+    <color name="bg_card_sky">#E0F2FE</color>
+    <color name="bg_card_gray">#F1F5F9</color>
+
+    <!-- Badge colors -->
+    <color name="badge_pending_bg">#FEF3C7</color>
+    <color name="badge_pending_text">#92400E</color>
+    <color name="badge_approved_bg">#D1FAE5</color>
+    <color name="badge_approved_text">#065F46</color>
+    <color name="badge_rejected_bg">#FEE2E2</color>
+    <color name="badge_rejected_text">#991B1B</color>
+    <color name="badge_sakit_bg">#DBEAFE</color>
+    <color name="badge_sakit_text">#1E40AF</color>
+    <color name="badge_izin_bg">#FEF3C7</color>
+    <color name="badge_izin_text">#92400E</color>
+    <color name="badge_other_bg">#F3E8FF</color>
+    <color name="badge_other_text">#6B21A8</color>
 </resources>

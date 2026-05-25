@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.xirpl2.SASMobile.model.DhuhaJurusanData
 
@@ -19,7 +18,6 @@ class JurusanAdapter(
     }
 
     inner class JurusanViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val cardJurusan: CardView = itemView.findViewById(R.id.cardJurusan)
         val tvNamaJurusan: TextView = itemView.findViewById(R.id.tvNamaJurusan)
         val tvLabelHariIni: TextView = itemView.findViewById(R.id.tvLabelHariIni)
     }
@@ -54,9 +52,9 @@ class JurusanAdapter(
             holder.tvLabelHariIni.text = "Dhuha Hari Ini"
         }
 
-        
-        val warnaJurusan = JurusanHelper.getColorForJurusan(jurusanData.jurusan)
-        holder.cardJurusan.setCardBackgroundColor(Color.parseColor(warnaJurusan))
+        val warnaJurusan = Color.parseColor(JurusanHelper.getColorForJurusan(jurusanData.jurusan))
+        holder.tvNamaJurusan.setTextColor(warnaJurusan)
+        holder.tvLabelHariIni.setTextColor(warnaJurusan)
     }
 
     override fun getItemCount(): Int = listJurusan.size
