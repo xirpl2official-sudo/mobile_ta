@@ -69,6 +69,7 @@ class BerandaAdminActivity : BaseAdminActivity() {
         }
 
         initializeViews()
+        setupRecyclerViews()
         setupDrawerAndSidebar()
         setupMenuIcon()
         setupQuickActions()
@@ -111,6 +112,22 @@ class BerandaAdminActivity : BaseAdminActivity() {
 
         btnQRCode.setOnClickListener {
             startActivity(Intent(this, QRCodeAdminActivity::class.java))
+        }
+    }
+
+    private fun setupRecyclerViews() {
+        jurusanAdapter = JurusanAdapter()
+        rvJurusan.apply {
+            layoutManager = LinearLayoutManager(this@BerandaAdminActivity)
+            adapter = jurusanAdapter
+            isNestedScrollingEnabled = false
+        }
+
+        dhuhaScheduleAdapter = DhuhaScheduleAdapter()
+        rvDhuhaSchedule.apply {
+            layoutManager = LinearLayoutManager(this@BerandaAdminActivity)
+            adapter = dhuhaScheduleAdapter
+            isNestedScrollingEnabled = false
         }
     }
 
@@ -261,13 +278,7 @@ class BerandaAdminActivity : BaseAdminActivity() {
             repository.getJadwalDhuhaKeahlian(token).fold(
                 onSuccess = { data ->
                     if (!isFinishing && !isDestroyed) {
-                        dhuhaScheduleAdapter = DhuhaScheduleAdapter()
                         dhuhaScheduleAdapter.submitList(data)
-                        rvDhuhaSchedule.apply {
-                            layoutManager = LinearLayoutManager(this@BerandaAdminActivity)
-                            adapter = dhuhaScheduleAdapter
-                            isNestedScrollingEnabled = false
-                        }
                     }
                 },
                 onFailure = { error ->
@@ -316,24 +327,12 @@ class BerandaAdminActivity : BaseAdminActivity() {
                 onSuccess = { dhuhaData ->
                     if (!isFinishing && !isDestroyed) {
                         val safeData = dhuhaData ?: emptyList()
-                        jurusanAdapter = JurusanAdapter(safeData)
-                        
-                        rvJurusan.apply {
-                            layoutManager = LinearLayoutManager(this@BerandaAdminActivity)
-                            adapter = jurusanAdapter
-                            isNestedScrollingEnabled = false
-                        }
+                        jurusanAdapter.updateData(safeData)
                     }
                 },
                 onFailure = { error ->
                     if (!isFinishing && !isDestroyed) {
-                        jurusanAdapter = JurusanAdapter(emptyList<DhuhaJurusanData>())
-                        
-                        rvJurusan.apply {
-                            layoutManager = LinearLayoutManager(this@BerandaAdminActivity)
-                            adapter = jurusanAdapter
-                            isNestedScrollingEnabled = false
-                        }
+                        jurusanAdapter.updateData(emptyList())
                     }
                 }
             )

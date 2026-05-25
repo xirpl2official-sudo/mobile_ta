@@ -201,6 +201,10 @@ class KelolaKelasActivity : BaseAdminActivity() {
 
     private fun loadStudentsInClass(idKelas: Int, callback: (List<SiswaItem>) -> Unit) {
         val token = getAuthToken()
+        if (token.isEmpty()) {
+            callback(emptyList())
+            return
+        }
         lifecycleScope.launch {
             repository.getAdminManagementKelasDetail(token, idKelas).fold(
                 onSuccess = { detail -> callback(detail.students) },
@@ -239,6 +243,7 @@ class KelolaKelasActivity : BaseAdminActivity() {
 
     private fun updateWaliKelas(idKelas: Int, idStaff: Int) {
         val token = getAuthToken()
+        if (token.isEmpty()) return
         lifecycleScope.launch {
             repository.updateWaliKelas(token, idKelas, idStaff).fold(
                 onSuccess = { message ->

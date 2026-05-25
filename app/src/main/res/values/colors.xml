@@ -41,6 +41,7 @@
     <color name="bg_sidebar">#FFFFFF</color>
     <color name="bg_profile_card">#EFF6FF</color>
     <color name="text_danger">#EF4444</color>
+    <color name="error_color">#EF4444</color>
     <color name="status_error">#EF4444</color>
     <color name="status_error_bg">#FEE2E2</color>
     <color name="status_warning">#F59E0B</color>

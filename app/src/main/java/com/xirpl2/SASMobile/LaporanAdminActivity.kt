@@ -106,9 +106,6 @@ class LaporanAdminActivity : BaseAdminActivity() {
     private val kelasOptions = listOf("Semua Kelas", "10", "11", "12")
     private val sholatOptions = listOf("Semua Sholat", "Dhuha", "Dzuhur", "Jumat")
 
-    private val displayDateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-    private val apiDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-
     override fun getCurrentMenuItem(): AdminMenuItem = AdminMenuItem.LAPORAN
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -340,6 +337,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
         val token = getAuthToken()
         if (token.isEmpty()) return
 
+        val apiDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val startDate = apiDateFormat.format(tanggalAwal.time)
         val endDate = apiDateFormat.format(tanggalAkhir.time)
 
@@ -412,6 +410,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
         val jurusanApi = if (selectedJurusan == "Semua Jurusan") null else selectedJurusan
         val sholatApi = if (selectedSholat == "Semua Sholat") null else selectedSholat.lowercase()
         val searchApi = searchQuery.ifEmpty { null }
+        val apiDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val startDate = apiDateFormat.format(tanggalAwal.time)
         val endDate = apiDateFormat.format(tanggalAkhir.time)
 
@@ -429,6 +428,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
             ).fold(
                 onSuccess = { data ->
                     runOnUiThread {
+                        if (isFinishing || isDestroyed) return@runOnUiThread
                         currentPageItems = data.absensi
                         val pagination = data.pagination
                         totalItems = pagination?.totalItems ?: currentPageItems.size
@@ -452,6 +452,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
                 },
                 onFailure = { error ->
                     runOnUiThread {
+                        if (isFinishing || isDestroyed) return@runOnUiThread
                         showLoading(false)
                         isLoading = false
                         showEmptyState("Gagal memuat data: ${error.message}")
@@ -493,6 +494,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
             return
         }
 
+        val apiDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val startDate = apiDateFormat.format(tanggalAwal.time)
         val endDate = apiDateFormat.format(tanggalAkhir.time)
         val jurusanApi = if (selectedJurusan == "Semua Jurusan") null else selectedJurusan
@@ -638,6 +640,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
     }
 
     private fun updateDateDisplay() {
+        val displayDateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         tvTanggalAwal.text = displayDateFormat.format(tanggalAwal.time)
         tvTanggalAkhir.text = displayDateFormat.format(tanggalAkhir.time)
     }

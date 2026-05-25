@@ -227,6 +227,12 @@ abstract class BaseAdminActivity : BaseActivity() {
             navigateTo(StudentPromotionActivity::class.java)
         }
 
+        sidebarView.findViewById<LinearLayout>(R.id.menuFAQ)?.setOnClickListener {
+            closeSidebar()
+            startActivity(Intent(this, FAQActivity::class.java))
+            overridePendingTransition(0, 0)
+        }
+
         sidebarView.findViewById<LinearLayout>(R.id.menuPengaturan)?.setOnClickListener {
             closeSidebar()
             startActivity(Intent(this, PengaturanActivity::class.java))

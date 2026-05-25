@@ -316,6 +316,10 @@ class PresenceDetailDialogFragment : BottomSheetDialogFragment() {
                 holder.itemView.findViewById<View>(R.id.dateContent).setBackgroundResource(R.drawable.bg_date_selected)
                 holder.tvDayName.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.white))
                 holder.tvDateNumber.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.white))
+            } else {
+                holder.itemView.findViewById<View>(R.id.dateContent).background = null
+                holder.tvDayName.setTextColor(ContextCompat.getColor(requireContext(), R.color.slate_400))
+                holder.tvDateNumber.setTextColor(ContextCompat.getColor(requireContext(), R.color.on_background))
             }
         }
 

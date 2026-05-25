@@ -190,7 +190,7 @@ class KelasInGroupAdapter(
                             } else {
                                 emptyStateSiswa.visibility = View.GONE
                                 recyclerSiswa.visibility = View.VISIBLE
-                                siswaAdapter.updateStudents(students)
+                                siswaAdapter.submitList(students)
                             }
                         }
                     } else {
@@ -202,7 +202,7 @@ class KelasInGroupAdapter(
                         } else {
                             emptyStateSiswa.visibility = View.GONE
                             recyclerSiswa.visibility = View.VISIBLE
-                            siswaAdapter.updateStudents(students)
+                            siswaAdapter.submitList(students)
                         }
                     }
                 }
@@ -227,14 +227,7 @@ private object KelasDiffCallback : DiffUtil.ItemCallback<KelasManagementItem>() 
 
 class SiswaInClassAdapter(
     private val onDetailClick: (SiswaItem) -> Unit
-) : RecyclerView.Adapter<SiswaInClassAdapter.SiswaViewHolder>() {
-
-    private var students: List<SiswaItem> = emptyList()
-
-    fun updateStudents(newStudents: List<SiswaItem>) {
-        students = newStudents
-        notifyDataSetChanged()
-    }
+) : ListAdapter<SiswaItem, SiswaInClassAdapter.SiswaViewHolder>(SiswaInGroupDiffCallback) {
 
     inner class SiswaViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvNo: TextView = view.findViewById(R.id.tvNo)
@@ -258,8 +251,11 @@ class SiswaInClassAdapter(
     }
 
     override fun onBindViewHolder(holder: SiswaViewHolder, position: Int) {
-        holder.bind(students[position], position)
+        holder.bind(getItem(position), position)
     }
+}
 
-    override fun getItemCount(): Int = students.size
+private object SiswaInGroupDiffCallback : DiffUtil.ItemCallback<SiswaItem>() {
+    override fun areItemsTheSame(oldItem: SiswaItem, newItem: SiswaItem) = oldItem.nis == newItem.nis
+    override fun areContentsTheSame(oldItem: SiswaItem, newItem: SiswaItem) = oldItem == newItem
 }

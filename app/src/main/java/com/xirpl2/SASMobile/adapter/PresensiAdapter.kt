@@ -94,10 +94,10 @@ class PresensiAdapter :
                 } else {
                     item.deskripsi
                 }
-                Pair("Dokumen Pendukung - ${item.nama_siswa}", "Status: ${item.status.uppercase()}\n\nKeterangan:\n$text")
+                Pair("Dokumen Pendukung - ${item.nama_siswa}", "Status: ${status.uppercase()}\n\nKeterangan:\n$text")
             }
             else -> {
-                Pair("Detail Presensi - ${item.nama_siswa}", "Detail Kosong\n(Tidak memiliki dokumen pendukung untuk status ${item.status.uppercase()})")
+                Pair("Detail Presensi - ${item.nama_siswa}", "Detail Kosong\n(Tidak memiliki dokumen pendukung untuk status ${status.uppercase()})")
             }
         }
 

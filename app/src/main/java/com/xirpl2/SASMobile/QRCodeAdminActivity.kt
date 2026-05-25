@@ -45,6 +45,7 @@ class QRCodeAdminActivity : BaseAdminActivity() {
     private var countDownTimer: CountDownTimer? = null
     private var codeTimer: CountDownTimer? = null
     private var autoRefreshJob: Job? = null
+    private var codeRefreshJob: Job? = null
     private var currentBitmap: Bitmap? = null
 
     private val allowedPrayers = JadwalSholatHelper.ALLOWED_PRAYERS
@@ -111,7 +112,7 @@ class QRCodeAdminActivity : BaseAdminActivity() {
             }
         }
         // Manual code refreshes every 20s
-        lifecycleScope.launch {
+        codeRefreshJob = lifecycleScope.launch {
             while (true) {
                 delay(CODE_REFRESH_INTERVAL)
                 loadAttendanceCode()
@@ -357,5 +358,6 @@ class QRCodeAdminActivity : BaseAdminActivity() {
         countDownTimer?.cancel()
         codeTimer?.cancel()
         autoRefreshJob?.cancel()
+        codeRefreshJob?.cancel()
     }
 }

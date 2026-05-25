@@ -227,6 +227,10 @@ class DetailAbsensiActivity : BaseActivity() {
                 holder.itemView.findViewById<View>(R.id.dateContent).setBackgroundResource(R.drawable.bg_date_selected)
                 holder.tvDayName.setTextColor(resources.getColor(android.R.color.white))
                 holder.tvDateNumber.setTextColor(resources.getColor(android.R.color.white))
+            } else {
+                holder.itemView.findViewById<View>(R.id.dateContent).background = null
+                holder.tvDayName.setTextColor(resources.getColor(R.color.slate_400))
+                holder.tvDateNumber.setTextColor(resources.getColor(R.color.on_background))
             }
         }
 
