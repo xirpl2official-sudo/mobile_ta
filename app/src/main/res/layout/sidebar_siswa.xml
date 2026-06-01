@@ -69,6 +69,8 @@
             app:cardBackgroundColor="@color/surface"
             app:cardCornerRadius="16dp"
             app:cardElevation="0dp"
+            android:clickable="true"
+            android:focusable="true"
             app:layout_constraintTop_toBottomOf="@id/headerTopSection"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
@@ -152,7 +154,7 @@
             android:paddingHorizontal="16dp"
             android:paddingVertical="12dp">
 
-            <!-- Item Dashboard / Beranda -->
+            <!-- Item Beranda -->
             <LinearLayout
                 android:id="@+id/menuBeranda"
                 android:layout_width="match_parent"
@@ -166,21 +168,7 @@
                 <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Beranda" android:textColor="@color/slate_700" android:textSize="15sp" />
             </LinearLayout>
 
-            <!-- Item QR Code -->
-            <LinearLayout
-                android:id="@+id/menuQRCode"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:padding="16dp"
-                android:layout_marginBottom="4dp"
-                android:background="@drawable/bg_sidebar_item_selector">
-                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_qr_code" android:contentDescription="QR Code" app:tint="@color/slate_500" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Scan QR Code" android:textColor="@color/slate_700" android:textSize="15sp" />
-            </LinearLayout>
-
-            <!-- Item Pengajuan Izin -->
+            <!-- Item Perizinan -->
             <LinearLayout
                 android:id="@+id/menuPengajuanIzin"
                 android:layout_width="match_parent"
@@ -190,13 +178,13 @@
                 android:padding="16dp"
                 android:layout_marginBottom="4dp"
                 android:background="@drawable/bg_sidebar_item_selector">
-                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_perizinan" android:contentDescription="Pengajuan Izin" app:tint="@color/slate_500" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Pengajuan Izin" android:textColor="@color/slate_700" android:textSize="15sp" />
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_perizinan" android:contentDescription="Perizinan" app:tint="@color/slate_500" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Perizinan" android:textColor="@color/slate_700" android:textSize="15sp" />
             </LinearLayout>
 
-            <!-- Item Pusat Bantuan -->
+            <!-- Item Scan QR Code -->
             <LinearLayout
-                android:id="@+id/menuFAQ"
+                android:id="@+id/menuQRCode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -204,15 +192,15 @@
                 android:padding="16dp"
                 android:layout_marginBottom="4dp"
                 android:background="@drawable/bg_sidebar_item_selector">
-                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_info" android:contentDescription="Pusat Bantuan" app:tint="@color/slate_500" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Pusat Bantuan" android:textColor="@color/slate_700" android:textSize="15sp" />
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_qr_code" android:contentDescription="Scan QR Code" app:tint="@color/slate_500" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Scan QR Code" android:textColor="@color/slate_700" android:textSize="15sp" />
             </LinearLayout>
 
             <View
-                android:layout_width="match_parent" 
-                android:layout_height="1dp" 
-                android:background="@color/divider" 
-                android:layout_marginVertical="12dp" 
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/divider"
+                android:layout_marginVertical="12dp"
                 android:layout_marginHorizontal="8dp" />
 
             <!-- Item Pengaturan -->

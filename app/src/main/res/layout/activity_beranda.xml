@@ -76,46 +76,8 @@
             app:layout_constraintStart_toStartOf="@id/tvPageTitle"
             app:layout_constraintTop_toBottomOf="@id/tvPageTitle"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/notifikasiFrame"
-            android:layout_marginEnd="8dp" />
-
-        
-        <FrameLayout
-            android:id="@+id/notifikasiFrame"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintHeight_percent="0.35"
-            android:layout_marginEnd="@dimen/spacing_text"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent">
-
-            <ImageView
-                android:id="@+id/iconNotifikasi"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:src="@drawable/notification"
-                android:contentDescription="@string/Notif" />
-
-            
-            <TextView
-                android:id="@+id/notificationCounter"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="top|end"
-                android:layout_marginTop="-4dp"
-                android:layout_marginEnd="-4dp"
-                android:background="@drawable/bg_notification_badge"
-                android:text="@string/PlaceholderNol"
-                android:textColor="@android:color/white"
-                android:textSize="@dimen/spacing_small"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:visibility="gone"
-                android:fontFamily="@font/poppins_medium" />
-
-        </FrameLayout>
+            android:layout_marginEnd="8dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -209,7 +171,7 @@
                         android:paddingVertical="@dimen/spacing_text"
                         android:textColor="#F76E13"
                         app:backgroundTint="#FFFFFF"
-                        app:cornerRadius="12dp"
+                        app:cornerRadius="8dp"
                         app:rippleColor="#E0E0E0"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
@@ -229,7 +191,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginTop="@dimen/spacing_small"
                 android:paddingHorizontal="@dimen/spacing_tiny"
-                android:paddingVertical="@dimen/spacing_tiny"
+                android:paddingTop="@dimen/spacing_tiny"
+                android:paddingBottom="@dimen/spacing_small"
                 android:clipToPadding="false"
                 android:clipChildren="false">
 
@@ -291,6 +254,7 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/iconTotalAbsensi"
                             app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
                             android:layout_marginTop="@dimen/spacing_small" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -355,6 +319,7 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/iconTotalAlpha"
                             app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
                             android:layout_marginTop="@dimen/spacing_small" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -419,6 +384,7 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/iconIzinSakit"
                             app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
                             android:layout_marginTop="@dimen/spacing_small" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>

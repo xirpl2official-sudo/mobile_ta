@@ -10,11 +10,11 @@
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/surface"
+        android:background="@color/background"
         android:theme="@style/Theme.SAS_Mobile.WhiteBackground"
         tools:context=".DataSiswaAdminActivity">
 
-        
+        <!-- Blue Header -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/topBarContent"
             android:minHeight="90dp"
@@ -28,7 +28,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
-                            <FrameLayout
+            <FrameLayout
                 android:id="@+id/iconMenuContainer"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
@@ -47,438 +47,689 @@
 
             </FrameLayout>
 
-        <ImageView
-            android:id="@+id/logoSekolah"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:src="@drawable/logo_smk"
-            android:contentDescription="Logo SMKN 2"
-            app:layout_constraintStart_toEndOf="@id/iconMenuContainer"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginStart="8dp" />
+            <ImageView
+                android:id="@+id/logoSekolah"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/logo_smk"
+                android:contentDescription="Logo SMKN 2"
+                app:layout_constraintStart_toEndOf="@id/iconMenuContainer"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginStart="8dp" />
 
-        <TextView
-            android:id="@+id/tvPageTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/DataSiswa"
-            android:textColor="#FFFFFF"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toEndOf="@id/logoSekolah"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/textNamaSekolah"
-            app:layout_constraintVertical_chainStyle="packed"
-            android:layout_marginStart="8dp" />
+            <TextView
+                android:id="@+id/tvPageTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/DataSiswa"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toEndOf="@id/logoSekolah"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/textNamaSekolah"
+                app:layout_constraintVertical_chainStyle="packed"
+                android:layout_marginStart="8dp" />
 
-        <TextView
-            android:id="@+id/textNamaSekolah"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="SMK Negeri 2 Singosari"
-            android:textColor="#FFFFFF"
-            android:textSize="12sp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            app:layout_constraintStart_toStartOf="@id/tvPageTitle"
-            app:layout_constraintTop_toBottomOf="@id/tvPageTitle"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/btnMore"
-            android:layout_marginEnd="8dp" />
+            <TextView
+                android:id="@+id/textNamaSekolah"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="SMK Negeri 2 Singosari"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                app:layout_constraintStart_toStartOf="@id/tvPageTitle"
+                app:layout_constraintTop_toBottomOf="@id/tvPageTitle"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btnMore"
+                android:layout_marginEnd="8dp" />
 
-        <ImageView
-            android:id="@+id/btnMore"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:padding="12dp"
-            android:src="@drawable/ic_more_vert"
-            android:contentDescription="Menu lainnya"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:tint="@android:color/white" />
+            <ImageView
+                android:id="@+id/btnMore"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:padding="12dp"
+                android:src="@drawable/ic_more_vert"
+                android:contentDescription="Menu lainnya"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:tint="@android:color/white" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/contentArea"
+        <!-- Scrollable Content -->
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scrollContent"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:fillViewport="true"
+            android:clipToPadding="false"
             app:layout_constraintTop_toBottomOf="@id/topBarContent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:padding="16dp">
+            app:layout_constraintEnd_toEndOf="parent">
 
-            <!-- Bulk Action Bar (Desktop Parity) -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/bulkActionBar"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp"
-                app:strokeColor="@color/blue_theme"
-                app:strokeWidth="1dp"
-                app:layout_constraintTop_toTopOf="parent">
+                android:orientation="vertical"
+                android:padding="12dp">
 
+                <!-- Stat Cards Row -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:padding="8dp">
+                    android:layout_marginBottom="12dp">
 
-                    <CheckBox
-                        android:id="@+id/cbSelectAll"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Pilih Semua"
-                        android:textSize="12sp" />
-
-                    <TextView
-                        android:id="@+id/tvSelectedCount"
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardTotalSiswa"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="0 terpilih"
-                        android:textStyle="bold"
-                        android:layout_marginStart="8dp" />
+                        android:layout_marginEnd="6dp"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="2dp"
+                        app:cardBackgroundColor="@color/surface"
+                        app:strokeColor="@color/slate_200"
+                        app:strokeWidth="1dp">
 
-                    <ImageView
-                        android:id="@+id/btnBulkMutasi"
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:padding="8dp"
-                        android:src="@drawable/ic_perizinan"
-                        app:tint="@color/blue_theme"
-                        android:contentDescription="Mutasi Masal" />
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="12dp">
 
-                    <ImageView
-                        android:id="@+id/btnBulkDelete"
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:padding="8dp"
-                        android:src="@drawable/ic_delete"
-                        app:tint="#EF4444"
-                        android:contentDescription="Hapus Masal" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Total Siswa"
+                                android:textSize="10sp"
+                                android:textColor="@color/slate_500" />
 
-                    <ImageView
-                        android:id="@+id/btnCloseBulk"
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:padding="8dp"
-                        android:src="@drawable/ic_close"
-                        app:tint="@color/gray" />
+                            <TextView
+                                android:id="@+id/tvStatTotalSiswa"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="0"
+                                android:textSize="20sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/blue_theme" />
 
-                </LinearLayout>
+                        </LinearLayout>
 
-            </com.google.android.material.card.MaterialCardView>
+                    </com.google.android.material.card.MaterialCardView>
 
-            
-            <LinearLayout
-                android:id="@+id/headerRow"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                app:layout_constraintTop_toBottomOf="@id/bulkActionBar"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/DataSiswa"
-                    android:textColor="@color/on_background"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnAddSiswa"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Tambah"
-                    app:icon="@drawable/ic_add" />
-
-            </LinearLayout>
-
-            
-            <EditText
-                android:id="@+id/etSearch"
-                android:layout_width="0dp"
-                android:layout_height="44dp"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/bg_search_input"
-                android:drawableStart="@drawable/ic_search"
-                android:drawablePadding="12dp"
-                android:hint="cari siswa"
-                android:inputType="text"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:textSize="14sp"
-                app:layout_constraintTop_toBottomOf="@id/headerRow"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
-
-            
-            <HorizontalScrollView
-                android:id="@+id/filterScroll"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:scrollbars="none"
-                app:layout_constraintTop_toBottomOf="@id/etSearch">
-
-                <LinearLayout
-                    android:id="@+id/filtersRow"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/filterKelas"
-                        android:layout_width="100dp"
-                        android:layout_height="40dp"
-                        android:layout_marginEnd="8dp"
-                        android:background="@drawable/bg_dropdown"
-                        android:drawableEnd="@drawable/ic_chevron_right"
-                        android:gravity="center_vertical"
-                        android:paddingHorizontal="10dp"
-                        android:maxLines="1"
-                        android:ellipsize="end"
-                        android:text="@string/SemuaKelas"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="12sp" />
-
-                    <TextView
-                        android:id="@+id/filterJurusan"
-                        android:layout_width="120dp"
-                        android:layout_height="40dp"
-                        android:layout_marginEnd="8dp"
-                        android:background="@drawable/bg_dropdown"
-                        android:drawableEnd="@drawable/ic_chevron_right"
-                        android:gravity="center_vertical"
-                        android:paddingHorizontal="10dp"
-                        android:maxLines="1"
-                        android:ellipsize="end"
-                        android:text="@string/SemuaJurusan"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="12sp" />
-
-                    <TextView
-                        android:id="@+id/filterGender"
-                        android:layout_width="100dp"
-                        android:layout_height="40dp"
-                        android:layout_marginEnd="8dp"
-                        android:background="@drawable/bg_dropdown"
-                        android:drawableEnd="@drawable/ic_chevron_right"
-                        android:gravity="center_vertical"
-                        android:paddingHorizontal="10dp"
-                        android:maxLines="1"
-                        android:ellipsize="end"
-                        android:text="Semua JK"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="12sp" />
-
-                    <TextView
-                        android:id="@+id/filterAgama"
-                        android:layout_width="100dp"
-                        android:layout_height="40dp"
-                        android:background="@drawable/bg_dropdown"
-                        android:drawableEnd="@drawable/ic_chevron_right"
-                        android:gravity="center_vertical"
-                        android:paddingHorizontal="10dp"
-                        android:maxLines="1"
-                        android:ellipsize="end"
-                        android:text="Semua Agama"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="12sp" />
-
-                </LinearLayout>
-
-            </HorizontalScrollView>
-
-            
-            <TextView
-                android:id="@+id/tvCountInfo"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:text="@string/MenampilkanSiswa"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp"
-                app:layout_constraintTop_toBottomOf="@id/filterScroll"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
-
-            
-            <ProgressBar
-                android:id="@+id/progressLoading"
-                android:layout_width="48dp"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                app:layout_constraintTop_toBottomOf="@id/tvCountInfo"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
-
-            <!-- Empty State -->
-            <LinearLayout
-                android:id="@+id/emptyState"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:visibility="gone"
-                app:layout_constraintTop_toBottomOf="@id/tvCountInfo"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
-
-                <ImageView
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:src="@drawable/ic_search"
-                    android:alpha="0.5"
-                    android:contentDescription="Tidak ada siswa" />
-
-                <TextView
-                    android:id="@+id/tvEmptyState"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="@string/TidakDitemukanSiswa"
-                    android:textColor="@color/on_background"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="Coba ubah filter atau kata kunci pencarian"
-                    android:textColor="@color/slate_400"
-                    android:textSize="13sp" />
-
-            </LinearLayout>
-
-            
-            <HorizontalScrollView
-                android:id="@+id/tableHorizontalScrollView"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginTop="12dp"
-                android:fillViewport="true"
-                app:layout_constraintTop_toBottomOf="@id/tvCountInfo"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
-
-                    
-                    <LinearLayout
-                        android:id="@+id/tableHeader"
-                        android:layout_width="wrap_content"
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardTotalKelas"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:background="@color/blue_theme"
-                        android:paddingVertical="12dp"
-                        android:gravity="center_vertical">
+                        android:layout_weight="1"
+                        android:layout_marginHorizontal="3dp"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="2dp"
+                        app:cardBackgroundColor="@color/surface"
+                        app:strokeColor="@color/slate_200"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="12dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Total Kelas"
+                                android:textSize="10sp"
+                                android:textColor="@color/slate_500" />
+
+                            <TextView
+                                android:id="@+id/tvStatTotalKelas"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="0"
+                                android:textSize="20sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/blue_theme" />
+
+                        </LinearLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardTotalJurusan"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="6dp"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="2dp"
+                        app:cardBackgroundColor="@color/surface"
+                        app:strokeColor="@color/slate_200"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="12dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Total Jurusan"
+                                android:textSize="10sp"
+                                android:textColor="@color/slate_500" />
+
+                            <TextView
+                                android:id="@+id/tvStatTotalJurusan"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="0"
+                                android:textSize="20sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/blue_theme" />
+
+                        </LinearLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                </LinearLayout>
+
+                <!-- Card: Kelola Siswa (Header + Actions + Filters) -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="@color/surface">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
 
                         <TextView
-                            android:layout_width="90dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/NIS"
-                            android:textColor="@android:color/white"
-                            android:textSize="12sp"
+                            android:text="Kelola Siswa"
+                            android:textSize="16sp"
                             android:textStyle="bold"
-                            android:paddingHorizontal="8dp"
-                            android:gravity="center" />
+                            android:textColor="@color/on_surface"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:paddingTop="16dp" />
 
                         <TextView
-                            android:layout_width="220dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/Nama"
-                            android:textColor="@android:color/white"
+                            android:text="Manajemen data siswa: tambah, edit, import, dan export."
                             android:textSize="12sp"
-                            android:textStyle="bold"
-                            android:paddingHorizontal="8dp"
-                            android:gravity="start" />
+                            android:textColor="@color/slate_400"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:paddingTop="2dp" />
 
-                        <TextView
-                            android:layout_width="40dp"
+                        <!-- Action Buttons Row -->
+                        <HorizontalScrollView
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="@string/JK"
-                            android:textColor="@android:color/white"
-                            android:textSize="12sp"
-                            android:textStyle="bold"
-                            android:paddingHorizontal="4dp"
-                            android:gravity="center" />
+                            android:scrollbars="none"
+                            android:layout_marginTop="12dp"
+                            android:layout_marginHorizontal="12dp">
 
-                        <TextView
-                            android:layout_width="60dp"
-                            android:layout_height="wrap_content"
-                            android:text="@string/Kelas"
-                            android:textColor="@android:color/white"
-                            android:textSize="12sp"
-                            android:textStyle="bold"
-                            android:paddingHorizontal="4dp"
-                            android:gravity="center" />
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
 
-                        <TextView
-                            android:layout_width="80dp"
-                            android:layout_height="wrap_content"
-                            android:text="@string/Jurusan"
-                            android:textColor="@android:color/white"
-                            android:textSize="12sp"
-                            android:textStyle="bold"
-                            android:paddingHorizontal="8dp"
-                            android:gravity="center" />
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btnTambahSiswa"
+                                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="36dp"
+                                    android:text="Tambah"
+                                    android:textAllCaps="false"
+                                    android:textSize="12sp"
+                                    app:icon="@drawable/ic_add"
+                                    app:iconSize="16dp"
+                                    app:cornerRadius="8dp"
+                                    app:strokeColor="@color/blue_theme"
+                                    android:textColor="@color/blue_theme"
+                                    android:layout_marginEnd="8dp" />
 
-                        <TextView
-                            android:layout_width="120dp"
-                            android:layout_height="wrap_content"
-                            android:text="Keterangan"
-                            android:textColor="@android:color/white"
-                            android:textSize="12sp"
-                            android:textStyle="bold"
-                            android:paddingHorizontal="8dp"
-                            android:gravity="center" />
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btnImportSiswa"
+                                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="36dp"
+                                    android:text="Import"
+                                    android:textAllCaps="false"
+                                    android:textSize="12sp"
+                                    app:icon="@drawable/ic_upload"
+                                    app:iconSize="16dp"
+                                    app:cornerRadius="8dp"
+                                    app:strokeColor="@color/slate_300"
+                                    android:textColor="@color/slate_700"
+                                    android:layout_marginEnd="8dp" />
 
-                        <TextView
-                            android:layout_width="100dp"
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btnUnduhData"
+                                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="36dp"
+                                    android:text="Unduh"
+                                    android:textAllCaps="false"
+                                    android:textSize="12sp"
+                                    app:icon="@drawable/ic_download"
+                                    app:iconSize="16dp"
+                                    app:cornerRadius="8dp"
+                                    app:strokeColor="@color/slate_300"
+                                    android:textColor="@color/slate_700"
+                                    android:layout_marginEnd="8dp" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btnCetakData"
+                                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="36dp"
+                                    android:text="Cetak"
+                                    android:textAllCaps="false"
+                                    android:textSize="12sp"
+                                    app:icon="@drawable/ic_print"
+                                    app:iconSize="16dp"
+                                    app:cornerRadius="8dp"
+                                    app:strokeColor="@color/slate_300"
+                                    android:textColor="@color/slate_700" />
+
+                            </LinearLayout>
+
+                        </HorizontalScrollView>
+
+                        <!-- Search -->
+                        <EditText
+                            android:id="@+id/etSearch"
+                            android:layout_width="match_parent"
+                            android:layout_height="44dp"
+                            android:layout_marginHorizontal="12dp"
+                            android:layout_marginTop="12dp"
+                            android:background="@drawable/bg_search_input"
+                            android:drawableStart="@drawable/ic_search"
+                            android:drawablePadding="12dp"
+                            android:hint="Cari siswa..."
+                            android:inputType="text"
+                            android:paddingStart="12dp"
+                            android:paddingEnd="12dp"
+                            android:textSize="14sp" />
+
+                        <!-- Filters -->
+                        <HorizontalScrollView
+                            android:id="@+id/filterScroll"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="@string/Aksi"
-                            android:textColor="@android:color/white"
-                            android:textSize="12sp"
-                            android:textStyle="bold"
-                            android:paddingHorizontal="8dp"
-                            android:gravity="center" />
+                            android:layout_marginTop="10dp"
+                            android:layout_marginHorizontal="12dp"
+                            android:layout_marginBottom="16dp"
+                            android:scrollbars="none">
+
+                            <LinearLayout
+                                android:id="@+id/filtersRow"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/filterKelas"
+                                    android:layout_width="100dp"
+                                    android:layout_height="40dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:background="@drawable/bg_dropdown"
+                                    android:drawableEnd="@drawable/ic_chevron_right"
+                                    android:gravity="center_vertical"
+                                    android:paddingHorizontal="10dp"
+                                    android:maxLines="1"
+                                    android:ellipsize="end"
+                                    android:text="@string/SemuaKelas"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="12sp" />
+
+                                <TextView
+                                    android:id="@+id/filterJurusan"
+                                    android:layout_width="120dp"
+                                    android:layout_height="40dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:background="@drawable/bg_dropdown"
+                                    android:drawableEnd="@drawable/ic_chevron_right"
+                                    android:gravity="center_vertical"
+                                    android:paddingHorizontal="10dp"
+                                    android:maxLines="1"
+                                    android:ellipsize="end"
+                                    android:text="@string/SemuaJurusan"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="12sp" />
+
+                                <TextView
+                                    android:id="@+id/filterGender"
+                                    android:layout_width="100dp"
+                                    android:layout_height="40dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:background="@drawable/bg_dropdown"
+                                    android:drawableEnd="@drawable/ic_chevron_right"
+                                    android:gravity="center_vertical"
+                                    android:paddingHorizontal="10dp"
+                                    android:maxLines="1"
+                                    android:ellipsize="end"
+                                    android:text="Semua JK"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="12sp" />
+
+                                <TextView
+                                    android:id="@+id/filterAgama"
+                                    android:layout_width="100dp"
+                                    android:layout_height="40dp"
+                                    android:background="@drawable/bg_dropdown"
+                                    android:drawableEnd="@drawable/ic_chevron_right"
+                                    android:gravity="center_vertical"
+                                    android:paddingHorizontal="10dp"
+                                    android:maxLines="1"
+                                    android:ellipsize="end"
+                                    android:text="Semua Agama"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="12sp" />
+
+                            </LinearLayout>
+
+                        </HorizontalScrollView>
+
+                        <!-- Bulk Action Bar (shown when items selected) -->
+                        <LinearLayout
+                            android:id="@+id/bulkActionCard"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:paddingHorizontal="12dp"
+                            android:paddingVertical="10dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginHorizontal="4dp"
+                            android:background="@drawable/bg_bulk_action"
+                            android:visibility="gone">
+
+                            <CheckBox
+                                android:id="@+id/cbSelectAll"
+                                android:layout_width="36dp"
+                                android:layout_height="wrap_content"
+                                android:padding="0dp"
+                                android:layout_marginEnd="8dp" />
+
+                            <TextView
+                                android:id="@+id/tvSelectedCount"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="0 siswa terpilih"
+                                android:textSize="13sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/on_surface" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnManajemenMassal"
+                                style="@style/Widget.MaterialComponents.Button"
+                                android:layout_width="wrap_content"
+                                android:layout_height="36dp"
+                                android:text="Manajemen Massal"
+                                android:textAllCaps="false"
+                                android:textSize="12sp"
+                                app:icon="@drawable/ic_bulk_action"
+                                app:iconSize="16dp"
+                                app:cornerRadius="8dp"
+                                app:backgroundTint="@color/blue_theme"
+                                android:textColor="@android:color/white" />
+
+                            <ImageView
+                                android:id="@+id/btnCloseBulk"
+                                android:layout_width="32dp"
+                                android:layout_height="32dp"
+                                android:padding="6dp"
+                                android:layout_marginStart="8dp"
+                                android:src="@drawable/ic_close"
+                                app:tint="@color/slate_500"
+                                android:contentDescription="Tutup" />
+
+                        </LinearLayout>
+
+                        <!-- Divider -->
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/slate_200"
+                            android:layout_marginTop="12dp" />
+
+                        <!-- Count Info + Table -->
+                        <TextView
+                            android:id="@+id/tvCountInfo"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:layout_marginHorizontal="16dp"
+                            android:text="Menampilkan 0 dari 0 data"
+                            android:textColor="@color/slate_500"
+                            android:textSize="12sp" />
+
+                        <!-- Loading -->
+                        <ProgressBar
+                            android:id="@+id/progressLoading"
+                            android:layout_width="48dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="24dp"
+                            android:layout_marginBottom="24dp"
+                            android:visibility="gone" />
+
+                        <!-- Empty State -->
+                        <LinearLayout
+                            android:id="@+id/emptyState"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:visibility="gone"
+                            android:paddingVertical="32dp">
+
+                            <ImageView
+                                android:layout_width="80dp"
+                                android:layout_height="80dp"
+                                android:src="@drawable/ic_search"
+                                android:alpha="0.5"
+                                android:contentDescription="Tidak ada siswa" />
+
+                            <TextView
+                                android:id="@+id/tvEmptyState"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/TidakDitemukanSiswa"
+                                android:textColor="@color/on_background"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="Coba ubah filter atau kata kunci pencarian"
+                                android:textColor="@color/slate_400"
+                                android:textSize="13sp" />
+
+                        </LinearLayout>
+
+                        <!-- Table -->
+                        <HorizontalScrollView
+                            android:id="@+id/tableHorizontalScrollView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:fillViewport="true"
+                            android:paddingBottom="16dp">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:orientation="vertical">
+
+                                <LinearLayout
+                                    android:id="@+id/tableHeader"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:background="@color/blue_theme"
+                                    android:paddingVertical="12dp"
+                                    android:gravity="center_vertical">
+
+                                    <CheckBox
+                                        android:id="@+id/cbHeaderSelectAll"
+                                        android:layout_width="36dp"
+                                        android:layout_height="wrap_content"
+                                        android:padding="0dp"
+                                        android:minWidth="0dp"
+                                        android:minHeight="0dp"
+                                        android:gravity="center" />
+
+                                    <TextView
+                                        android:layout_width="90dp"
+                                        android:layout_height="wrap_content"
+                                        android:text="@string/NIS"
+                                        android:textColor="@android:color/white"
+                                        android:textSize="12sp"
+                                        android:textStyle="bold"
+                                        android:paddingHorizontal="8dp"
+                                        android:gravity="center" />
+
+                                    <TextView
+                                        android:layout_width="220dp"
+                                        android:layout_height="wrap_content"
+                                        android:text="@string/Nama"
+                                        android:textColor="@android:color/white"
+                                        android:textSize="12sp"
+                                        android:textStyle="bold"
+                                        android:paddingHorizontal="8dp"
+                                        android:gravity="start" />
+
+                                    <TextView
+                                        android:layout_width="40dp"
+                                        android:layout_height="wrap_content"
+                                        android:text="@string/JK"
+                                        android:textColor="@android:color/white"
+                                        android:textSize="12sp"
+                                        android:textStyle="bold"
+                                        android:paddingHorizontal="4dp"
+                                        android:gravity="center" />
+
+                                    <TextView
+                                        android:layout_width="60dp"
+                                        android:layout_height="wrap_content"
+                                        android:text="@string/Kelas"
+                                        android:textColor="@android:color/white"
+                                        android:textSize="12sp"
+                                        android:textStyle="bold"
+                                        android:paddingHorizontal="4dp"
+                                        android:gravity="center" />
+
+                                    <TextView
+                                        android:layout_width="80dp"
+                                        android:layout_height="wrap_content"
+                                        android:text="@string/Jurusan"
+                                        android:textColor="@android:color/white"
+                                        android:textSize="12sp"
+                                        android:textStyle="bold"
+                                        android:paddingHorizontal="8dp"
+                                        android:gravity="center" />
+
+                                    <TextView
+                                        android:layout_width="70dp"
+                                        android:layout_height="wrap_content"
+                                        android:text="Keterangan"
+                                        android:textColor="@android:color/white"
+                                        android:textSize="12sp"
+                                        android:textStyle="bold"
+                                        android:paddingHorizontal="8dp"
+                                        android:gravity="center" />
+
+                                    <View
+                                        android:layout_width="40dp"
+                                        android:layout_height="1dp" />
+
+                                </LinearLayout>
+
+                                <androidx.recyclerview.widget.RecyclerView
+                                    android:id="@+id/recyclerSiswa"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:scrollbars="vertical"
+                                    android:nestedScrollingEnabled="false" />
+
+                            </LinearLayout>
+
+                        </HorizontalScrollView>
+
+                        <!-- Pagination Controls -->
+                        <LinearLayout
+                            android:id="@+id/paginationControls"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:paddingHorizontal="16dp"
+                            android:paddingVertical="12dp"
+                            android:layout_marginTop="4dp">
+
+                            <ImageView
+                                android:id="@+id/btnPrevPage"
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                android:padding="8dp"
+                                android:src="@drawable/ic_chevron_left"
+                                android:contentDescription="Halaman sebelumnya"
+                                app:tint="@color/slate_500" />
+
+                            <TextView
+                                android:id="@+id/tvPageInfo"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="Halaman 1 dari 1"
+                                android:textSize="13sp"
+                                android:textColor="@color/on_surface" />
+
+                            <ImageView
+                                android:id="@+id/btnNextPage"
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                android:padding="8dp"
+                                android:src="@drawable/ic_chevron_right"
+                                android:contentDescription="Halaman berikutnya"
+                                app:tint="@color/slate_500" />
+
+                        </LinearLayout>
 
                     </LinearLayout>
 
-                    
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recyclerSiswa"
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:scrollbars="vertical" />
+                </com.google.android.material.card.MaterialCardView>
 
-                </LinearLayout>
+            </LinearLayout>
 
-            </HorizontalScrollView>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

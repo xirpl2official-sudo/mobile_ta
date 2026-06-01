@@ -149,7 +149,7 @@ class PengajuanIzinActivity : BaseSiswaActivity() {
         rgPermitType.setOnCheckedChangeListener { _, checkedId ->
             if (checkedId == R.id.rbSakit) {
                 tvPhotoLabel.text = "BUKTI FOTO (WAJIB)"
-                tvPhotoLabel.setTextColor(getColor(android.R.color.holo_red_dark))
+                tvPhotoLabel.setTextColor(getColor(R.color.status_error))
             } else {
                 tvPhotoLabel.text = "BUKTI FOTO (OPSIONAL)"
                 tvPhotoLabel.setTextColor(getColor(R.color.slate_500))

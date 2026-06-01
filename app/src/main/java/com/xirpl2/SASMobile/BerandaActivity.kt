@@ -1,10 +1,8 @@
 package com.xirpl2.SASMobile
 
-import android.content.BroadcastReceiver
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
@@ -48,20 +46,7 @@ class BerandaActivity : BaseSiswaActivity() {
     
     private val repository = BerandaRepository()
     private val TAG = "BerandaActivity"
-    
-    private val notificationCounterBroadcast = object : BroadcastReceiver() {
-        override fun onReceive(context: android.content.Context, intent: android.content.Intent) {
-            val newCount = intent.getIntExtra("count", 0)
-            if (newCount > 0) {
-                notificationCounter.text = newCount.toString()
-                notificationCounter.visibility = android.view.View.VISIBLE
-            } else {
-                notificationCounter.visibility = android.view.View.GONE
-            }
-        }
-    }
-    private lateinit var notificationCounter: android.widget.TextView
-    
+
     // Guard against duplicate loadAllData calls from onCreate+onResume race condition
     private var isDataLoaded = false
 
@@ -83,8 +68,7 @@ class BerandaActivity : BaseSiswaActivity() {
         setupJadwalSholat()
         setupRiwayatAbsensi()
         setupAbsensiButton()
-        setupNotificationButton()
-        
+
         // Load data is handled in onResume to prevent duplicate calls and race conditions
     }
 
@@ -113,31 +97,8 @@ class BerandaActivity : BaseSiswaActivity() {
         tvIzinSakitValue = findViewById(R.id.tvIzinSakitValue)
         tvJadwalError = findViewById(R.id.tvJadwalError)
         tvRiwayatError = findViewById(R.id.tvRiwayatError)
-        notificationCounter = findViewById(R.id.notificationCounter)
     }
 
-    private fun setupNotificationButton() {
-        val iconNotifikasi = findViewById<ImageView>(R.id.iconNotifikasi)
-        
-        iconNotifikasi.setOnClickListener {
-            startActivity(Intent(this, NotifikasiActivity::class.java))
-        }
-        
-        
-        updateNotificationCounter()
-    }
-    
-    private fun updateNotificationCounter() {
-        val sharedPref = getSharedPreferences("NotificationData", Context.MODE_PRIVATE)
-        val count = sharedPref.getInt("notification_count", 0)
-        
-        if (count > 0) {
-            notificationCounter.text = count.toString()
-            notificationCounter.visibility = android.view.View.VISIBLE
-        } else {
-            notificationCounter.visibility = android.view.View.GONE
-        }
-    }
 
     private fun setupAbsensiButton() {
         val btnAbsensi = findViewById<android.widget.Button>(R.id.btnAbsensi)
@@ -433,32 +394,17 @@ class BerandaActivity : BaseSiswaActivity() {
     
     override fun onResume() {
         super.onResume()
-        updateNotificationCounter()
-        
+
         val token = getAuthToken()
         if (token.isNotEmpty() && !isDataLoaded) {
             isDataLoaded = true
             loadAllData()
-        }
-        
-        
-        val filter = IntentFilter("com.xirpl2.SASMobile.NOTIFICATION_COUNT_CHANGED")
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(notificationCounterBroadcast, filter, android.content.Context.RECEIVER_NOT_EXPORTED)
-        } else {
-            @Suppress("UnspecifiedRegisterReceiverFlag")
-            registerReceiver(notificationCounterBroadcast, filter)
         }
     }
 
     override fun onPause() {
         super.onPause()
         isDataLoaded = false
-        try {
-            unregisterReceiver(notificationCounterBroadcast)
-        } catch (e: IllegalArgumentException) {
-            // Already unregistered
-        }
     }
 
     override fun onDestroy() {

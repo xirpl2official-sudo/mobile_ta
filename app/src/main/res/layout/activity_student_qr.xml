@@ -141,7 +141,7 @@
             android:textColor="@android:color/white"
             android:textStyle="bold"
             app:backgroundTint="#3D92DA"
-            app:cornerRadius="12dp"
+            app:cornerRadius="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

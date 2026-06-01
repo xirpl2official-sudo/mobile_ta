@@ -211,7 +211,7 @@ class QRCodeAdminActivity : BaseAdminActivity() {
     private fun displayQRCode(base64WithPrefix: String, jenisSholat: String, expiresAt: String) {
         tvJenisSholat.text = "Sholat $jenisSholat"
         tvStatus.text = "Auto-refresh setiap 30 detik"
-        tvStatus.setTextColor(getColor(android.R.color.holo_green_dark))
+        tvStatus.setTextColor(getColor(R.color.status_success))
 
         val bitmap = decodeBase64ToBitmap(base64WithPrefix)
         if (bitmap != null) {
@@ -251,7 +251,7 @@ class QRCodeAdminActivity : BaseAdminActivity() {
                     val minutes = (millisUntilFinished / 1000) / 60
                     val seconds = (millisUntilFinished / 1000) % 60
                     tvCountdown.text = String.format("Berlaku: %02d:%02d", minutes, seconds)
-                    tvCountdown.setTextColor(getColor(if (millisUntilFinished < 60000) android.R.color.holo_red_light else android.R.color.holo_green_dark))
+                    tvCountdown.setTextColor(getColor(if (millisUntilFinished < 60000) R.color.status_error else R.color.status_success))
                 }
                 override fun onFinish() { onQRCodeExpired() }
             }.start()
@@ -273,7 +273,7 @@ class QRCodeAdminActivity : BaseAdminActivity() {
 
     private fun onQRCodeExpired() {
         tvCountdown.text = "QR Code Kadaluarsa"
-        tvCountdown.setTextColor(getColor(android.R.color.holo_red_dark))
+        tvCountdown.setTextColor(getColor(R.color.status_error))
         ivQRCode.alpha = 0.5f
         // Auto-refresh will pick up a new one
     }
@@ -293,7 +293,7 @@ class QRCodeAdminActivity : BaseAdminActivity() {
         containerQR.visibility = View.VISIBLE
         tvJenisSholat.text = message
         tvStatus.text = "QR Code akan otomatis muncul saat waktu sholat tiba"
-        tvStatus.setTextColor(getColor(android.R.color.darker_gray))
+        tvStatus.setTextColor(getColor(R.color.gray_light))
         tvCountdown.text = ""
         ivQRCode.setImageResource(R.drawable.ic_qr_code)
         ivQRCode.alpha = 0.3f

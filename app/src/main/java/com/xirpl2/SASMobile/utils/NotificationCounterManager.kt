@@ -6,11 +6,6 @@ import androidx.lifecycle.MutableLiveData
 
 /**
  * Singleton manager for notification counter state.
- * Replaces the BroadcastReceiver pattern for cross-activity communication,
- * which was unreliable because the receiver was never registered when the
- * broadcast was sent (BerandaActivity.onPause unregisters before
- * NotifikasiActivity sends the broadcast).
- *
  * LiveData survives configuration changes and respects lifecycle automatically.
  */
 object NotificationCounterManager {
@@ -19,7 +14,7 @@ object NotificationCounterManager {
     val counter: LiveData<Int> = _counter
 
     /**
-     * Set the counter value. Called from NotifikasiActivity when clearing notifications.
+     * Set the counter value.
      */
     fun setCounter(value: Int) {
         _counter.postValue(value)
@@ -37,7 +32,6 @@ object NotificationCounterManager {
 
     /**
      * Clear counter in SharedPreferences and update LiveData.
-     * Consolidates the write + broadcast that was in NotifikasiActivity.
      */
     fun clearCounter(context: Context) {
         val sharedPref = context.getSharedPreferences("NotificationData", Context.MODE_PRIVATE)

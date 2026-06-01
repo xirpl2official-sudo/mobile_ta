@@ -88,6 +88,15 @@ abstract class BaseAdminActivity : BaseActivity() {
             setupCloseSidebarButton()
             applyRoleBasedFiltering()
             setupMenuItems()
+
+            // Account card → Pengaturan
+            sidebarView.findViewById<CardView>(R.id.cardUserProfile)?.setOnClickListener {
+                closeSidebar()
+                drawerLayout.postDelayed({
+                    startActivity(Intent(this, PengaturanActivity::class.java))
+                    overridePendingTransition(0, 0)
+                }, 250)
+            }
         } else {
             android.util.Log.e("BaseAdminActivity", "Drawer or Sidebar view not found!")
         }
@@ -229,14 +238,18 @@ abstract class BaseAdminActivity : BaseActivity() {
 
         sidebarView.findViewById<LinearLayout>(R.id.menuFAQ)?.setOnClickListener {
             closeSidebar()
-            startActivity(Intent(this, FAQActivity::class.java))
-            overridePendingTransition(0, 0)
+            drawerLayout.postDelayed({
+                startActivity(Intent(this, FAQActivity::class.java))
+                overridePendingTransition(0, 0)
+            }, 250)
         }
 
         sidebarView.findViewById<LinearLayout>(R.id.menuPengaturan)?.setOnClickListener {
             closeSidebar()
-            startActivity(Intent(this, PengaturanActivity::class.java))
-            overridePendingTransition(0, 0)
+            drawerLayout.postDelayed({
+                startActivity(Intent(this, PengaturanActivity::class.java))
+                overridePendingTransition(0, 0)
+            }, 250)
         }
 
         
@@ -335,6 +348,7 @@ abstract class BaseAdminActivity : BaseActivity() {
                 sidebarView.findViewById<LinearLayout>(R.id.menuFAQ)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuPengaturan)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuLogout)?.setOnClickListener(null)
+                sidebarView.findViewById<CardView>(R.id.cardUserProfile)?.setOnClickListener(null)
             }
             
             if (::drawerLayout.isInitialized) {

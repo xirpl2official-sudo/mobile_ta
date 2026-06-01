@@ -40,9 +40,9 @@ import java.util.Locale
 class DataSiswaAdminActivity : BaseAdminActivity() {
 
     private val TAG = "DataSiswaAdminActivity"
-    
+
     private val repository = BerandaRepository()
-    
+
     private val pickCsvLauncher = registerForActivityResult(
         androidx.activity.result.contract.ActivityResultContracts.GetContent()
     ) { uri: android.net.Uri? ->
@@ -50,59 +50,60 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
             uploadCsvFile(uri)
         }
     }
-    
-    
+
     private lateinit var recyclerSiswa: RecyclerView
     private lateinit var siswaAdapter: SiswaAdapter
     private lateinit var progressLoading: ProgressBar
     private lateinit var tvEmptyState: TextView
     private lateinit var emptyStateContainer: View
     private lateinit var tvCountInfo: TextView
-    
-    
+    private lateinit var tvStatTotalSiswa: TextView
+    private lateinit var tvStatTotalKelas: TextView
+    private lateinit var tvStatTotalJurusan: TextView
+
     private val allStudentList = mutableListOf<SiswaItem>()
-    
-    
+
     private var currentPage = 1
     private var totalPages = 1
     private var totalItems = 0
     private var isLoading = false
     private var isLastPage = false
     private val pageSize = 100
-    
-    
+
     private var selectedJurusan: String = "Semua Jurusan"
     private var selectedKelas: String = "Semua Kelas"
     private var selectedGender: String = "Semua JK"
     private var selectedAgama: String = "Semua Agama"
     private var searchQuery: String = ""
 
+    // Pagination UI
+    private lateinit var tvPageInfo: TextView
+    private lateinit var btnPrevPage: View
+    private lateinit var btnNextPage: View
+
     // Bulk Action views
-    private lateinit var bulkActionBar: View
+    private lateinit var bulkActionCard: View
     private lateinit var tvSelectedCount: TextView
     private lateinit var cbSelectAll: CheckBox
+    private lateinit var cbHeaderSelectAll: CheckBox
     private var isSelectionMode = false
 
     // ForcedClass: for wali_kelas, auto-filter to their assigned class
     private var forcedClass: String? = null
     private var isWaliKelas: Boolean = false
-    
-    
+
     private val searchHandler = Handler(Looper.getMainLooper())
     private var searchRunnable: Runnable? = null
     private val searchDebounceMs = 300L
-    
-    
+
     private var loadingJob: Job? = null
-    
-    
+
     private val fixedJurusanList = listOf("RPL", "TKJ", "TEI", "TAV", "BC", "TMT", "DKV", "ANM")
     private val jurusanOptions: List<String> = listOf("Semua Jurusan") + fixedJurusanList
     private val kelasOptions: List<String> = listOf("Semua Kelas", "10", "11", "12")
     private val genderOptions: List<String> = listOf("Semua JK", "Laki-laki", "Perempuan")
     private val agamaOptions: List<String> = listOf("Semua Agama", "Islam", "Kristen", "Katolik", "Hindu", "Budha", "Khonghucu")
-    
-    
+
     private fun getGenderApiValue(displayValue: String): String? {
         return when (displayValue) {
             "Laki-laki" -> "L"
@@ -112,54 +113,58 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
     }
 
     override fun getCurrentMenuItem(): AdminMenuItem = AdminMenuItem.DATA_SISWA
-override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_data_siswa_admin)
-    setupStatusBar()
 
-    val topBarContent = findViewById<View>(R.id.topBarContent)
-    applyEdgeToEdge(topBarContent)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_data_siswa_admin)
+        setupStatusBar()
 
-    initViews()
-    setupDrawerAndSidebar()
-        
-        
+        val topBarContent = findViewById<View>(R.id.topBarContent)
+        applyEdgeToEdge(topBarContent)
+
+        initViews()
+        setupDrawerAndSidebar()
         setupMenuIcon()
-        
-
         setupButtons()
-
-
         setupSearch()
-
         initForcedClass()
-
         setupFilters()
-        
-        
         setupRecyclerView()
         setupBulkActionLogic()
-        
-        
+        setupPagination()
+
         loadStudentData(reset = true)
     }
-    
+
     override fun onDestroy() {
         super.onDestroy()
         searchHandler.removeCallbacksAndMessages(null)
         loadingJob?.cancel()
     }
-    
+
     private fun initViews() {
         recyclerSiswa = findViewById(R.id.recyclerSiswa)
         progressLoading = findViewById(R.id.progressLoading)
         tvEmptyState = findViewById(R.id.tvEmptyState)
         emptyStateContainer = findViewById(R.id.emptyState)
         tvCountInfo = findViewById(R.id.tvCountInfo)
+        tvStatTotalSiswa = findViewById(R.id.tvStatTotalSiswa)
+        tvStatTotalKelas = findViewById(R.id.tvStatTotalKelas)
+        tvStatTotalJurusan = findViewById(R.id.tvStatTotalJurusan)
 
-        bulkActionBar = findViewById(R.id.bulkActionBar)
+        bulkActionCard = findViewById(R.id.bulkActionCard)
         tvSelectedCount = findViewById(R.id.tvSelectedCount)
         cbSelectAll = findViewById(R.id.cbSelectAll)
+        cbHeaderSelectAll = findViewById(R.id.cbHeaderSelectAll)
+
+        // Pagination UI
+        tvPageInfo = findViewById(R.id.tvPageInfo)
+        btnPrevPage = findViewById(R.id.btnPrevPage)
+        btnNextPage = findViewById(R.id.btnNextPage)
+
+        // Stat cards: kelas = 3 (10,11,12), jurusan = fixed list size
+        tvStatTotalKelas.text = "3"
+        tvStatTotalJurusan.text = fixedJurusanList.size.toString()
     }
 
     private fun setupBulkActionLogic() {
@@ -171,51 +176,43 @@ override fun onCreate(savedInstanceState: Bundle?) {
             }
             tvSelectedCount.text = "$count terpilih"
             cbSelectAll.isChecked = count == allStudentList.size && allStudentList.isNotEmpty()
+            cbHeaderSelectAll.isChecked = count == allStudentList.size && allStudentList.isNotEmpty()
         }
 
         cbSelectAll.setOnCheckedChangeListener { _, isChecked ->
             siswaAdapter.selectAll(isChecked)
         }
 
-        findViewById<View>(R.id.btnCloseBulk).setOnClickListener {
+        cbHeaderSelectAll.setOnCheckedChangeListener { _, isChecked ->
+            siswaAdapter.selectAll(isChecked)
+        }
+
+        findViewById<View>(R.id.btnCloseBulk)?.setOnClickListener {
             exitSelectionMode()
         }
 
-        findViewById<View>(R.id.btnBulkDelete).setOnClickListener {
-            showBulkDeleteConfirmation()
-        }
-
-        findViewById<View>(R.id.btnBulkMutasi).setOnClickListener {
-            showBulkMutationDialog()
-        }
+        // TODO: btnBulkMutasi, btnBulkDelete, btnBulkDetail not yet added to layout
+        // findViewById<View>(R.id.btnBulkMutasi)?.setOnClickListener { showBulkMutationDialog() }
+        // findViewById<View>(R.id.btnBulkDelete)?.setOnClickListener { showBulkDeleteConfirmation() }
     }
 
     private fun enterSelectionMode() {
         isSelectionMode = true
-        bulkActionBar.visibility = View.VISIBLE
+        bulkActionCard.visibility = View.VISIBLE
         siswaAdapter.setSelectionMode(true)
     }
 
     private fun exitSelectionMode() {
         isSelectionMode = false
-        bulkActionBar.visibility = View.GONE
+        bulkActionCard.visibility = View.GONE
+        cbHeaderSelectAll.isChecked = false
         siswaAdapter.setSelectionMode(false)
-    }
-
-    private fun showBulkDeleteConfirmation() {
-        val selectedItems = siswaAdapter.getSelectedItems()
-        MaterialAlertDialogBuilder(this)
-            .setTitle("Hapus Masal")
-            .setMessage("Apakah Anda yakin ingin menghapus ${selectedItems.size} siswa terpilih?")
-            .setPositiveButton("Hapus") { _, _ -> executeBulkDelete(selectedItems) }
-            .setNegativeButton("Batal", null)
-            .show()
     }
 
     private fun showBulkMutationDialog() {
         val selectedItems = siswaAdapter.getSelectedItems()
         val view = layoutInflater.inflate(R.layout.dialog_bulk_mutasi, null)
-        
+
         val spinnerKelas = view.findViewById<android.widget.Spinner>(R.id.spinnerTargetKelas)
         val spinnerJurusan = view.findViewById<android.widget.Spinner>(R.id.spinnerTargetJurusan)
         val spinnerStatus = view.findViewById<android.widget.Spinner>(R.id.spinnerTargetStatus)
@@ -240,7 +237,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
     private fun executeBulkMutation(items: List<SiswaItem>, kelas: String, jurusan: String, status: String) {
         val nises = items.map { it.nis }
         val token = getAuthToken()
-        
+
         lifecycleScope.launch {
             try {
                 val request = com.xirpl2.SASMobile.model.BulkFieldsRequest(
@@ -261,26 +258,30 @@ override fun onCreate(savedInstanceState: Bundle?) {
         }
     }
 
+    private fun showBulkDeleteConfirmation() {
+        val selected = siswaAdapter.getSelectedItems()
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Hapus ${selected.size} Siswa?")
+            .setMessage("Data siswa yang dihapus tidak dapat dikembalikan.")
+            .setPositiveButton("Hapus") { _, _ -> executeBulkDelete(selected) }
+            .setNegativeButton("Batal", null)
+            .show()
+    }
+
     private fun executeBulkDelete(items: List<SiswaItem>) {
         val token = getAuthToken()
         lifecycleScope.launch {
             try {
                 var successCount = 0
-                items.forEach { siswa ->
-                    repository.deleteSiswa(token, siswa.nis).fold(
-                        onSuccess = { successCount++ },
-                        onFailure = { /* ignore individual failure */ }
-                    )
+                for (siswa in items) {
+                    val result = repository.deleteSiswa("Bearer $token", siswa.nis)
+                    if (result.isSuccess) successCount++
                 }
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(this@DataSiswaAdminActivity, "Berhasil menghapus $successCount siswa", Toast.LENGTH_SHORT).show()
-                    exitSelectionMode()
-                    loadStudentData(reset = true)
-                }
+                Toast.makeText(this@DataSiswaAdminActivity, "Berhasil menghapus $successCount/${items.size} siswa", Toast.LENGTH_SHORT).show()
+                exitSelectionMode()
+                loadStudentData(reset = true)
             } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(this@DataSiswaAdminActivity, "Gagal menghapus: ${e.message}", Toast.LENGTH_SHORT).show()
-                }
+                Toast.makeText(this@DataSiswaAdminActivity, "Gagal menghapus: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -292,67 +293,40 @@ override fun onCreate(savedInstanceState: Bundle?) {
         if (isWaliKelas) {
             forcedClass = session.getString("user_kelas", "")?.takeIf { it.isNotBlank() }
             if (forcedClass != null) {
-                // Auto-set the kelas filter to the wali_kelas's assigned class
                 selectedKelas = forcedClass!!
             }
         }
     }
-    
+
     private fun setupRecyclerView() {
-        
         val session = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this)
         val role = session.getString("user_role", "")?.lowercase() ?: ""
         val isReadOnly = role.contains("wali") || role == "guru"
 
         siswaAdapter = SiswaAdapter(
-            onEditClick = { siswa ->
-                if (!isReadOnly) showEditSiswaDialog(siswa)
-            },
-            onDeleteClick = { siswa ->
-                if (!isReadOnly) showDeleteConfirmationDialog(siswa)
-            },
             onDetailClick = { siswa ->
                 showStudentDetailDialog(siswa)
             },
+            onMoreMenuClick = { anchorView, siswa ->
+                showRowPopupMenu(anchorView, siswa)
+            },
             isReadOnly = isReadOnly
         )
-        
+
         recyclerSiswa.apply {
             layoutManager = LinearLayoutManager(this@DataSiswaAdminActivity)
             adapter = siswaAdapter
-            
-            
-            addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    super.onScrolled(recyclerView, dx, dy)
-                    
-                    val layoutManager = recyclerView.layoutManager as LinearLayoutManager
-                    val visibleItemCount = layoutManager.childCount
-                    val totalItemCount = layoutManager.itemCount
-                    val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
-                    
-                    
-                    if (!isLoading && !isLastPage) {
-                        if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount - 5
-                            && firstVisibleItemPosition >= 0) {
-                            loadMoreData()
-                        }
-                    }
-                }
-            })
         }
     }
-    
+
     private fun setupSearch() {
         val etSearch = findViewById<EditText>(R.id.etSearch)
         etSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
-                
                 searchRunnable?.let { searchHandler.removeCallbacks(it) }
-                
-                
+
                 searchRunnable = Runnable {
                     val newQuery = s?.toString() ?: ""
                     if (newQuery != searchQuery) {
@@ -364,7 +338,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
             }
         })
     }
-    
+
     private fun setupFilters() {
         val filterJurusan = findViewById<TextView>(R.id.filterJurusan)
         val filterKelas = findViewById<TextView>(R.id.filterKelas)
@@ -409,10 +383,10 @@ override fun onCreate(savedInstanceState: Bundle?) {
             }
         }
     }
-    
+
     private fun showFilterDialog(title: String, options: List<String>, currentSelection: String, onSelect: (String) -> Unit) {
         val selectedIndex = options.indexOf(currentSelection).takeIf { it >= 0 } ?: 0
-        
+
         AlertDialog.Builder(this)
             .setTitle(title)
             .setSingleChoiceItems(options.toTypedArray(), selectedIndex) { dialog, which ->
@@ -422,33 +396,32 @@ override fun onCreate(savedInstanceState: Bundle?) {
             .setNegativeButton("Batal", null)
             .show()
     }
-    
+
     private fun loadStudentData(reset: Boolean = false) {
         val token = getAuthToken()
-        
+
         if (token.isEmpty()) {
             Toast.makeText(this, "Token tidak valid, silakan login ulang", Toast.LENGTH_SHORT).show()
             return
         }
-        
-        
+
         loadingJob?.cancel()
-        
+
         if (reset) {
             currentPage = 1
             allStudentList.clear()
-            siswaAdapter.submitList(emptyList())
+            siswaAdapter.setFullList(emptyList())
             isLastPage = false
             progressLoading.visibility = View.VISIBLE
             emptyStateContainer.visibility = View.GONE
             recyclerSiswa.visibility = View.GONE
             findViewById<View>(R.id.tableHorizontalScrollView).visibility = View.GONE
         } else {
-            siswaAdapter.setLoadingMore(true)
+            // Loading more pages from API — no visual indicator needed
         }
-        
+
         isLoading = true
-        
+
         loadingJob = lifecycleScope.launch {
             repository.getSiswaList(
                 token = token,
@@ -462,23 +435,29 @@ override fun onCreate(savedInstanceState: Bundle?) {
                 onSuccess = { response ->
                     if (isFinishing || isDestroyed) return@fold
                     progressLoading.visibility = View.GONE
-                    siswaAdapter.setLoadingMore(false)
-                    
+
                     val newStudents = response.data ?: emptyList()
                     totalItems = response.pagination?.total_items ?: 0
                     totalPages = response.pagination?.total_pages ?: 1
-                    
+
                     if (reset) {
                         allStudentList.clear()
                     }
                     allStudentList.addAll(newStudents)
-                    
+
                     if (newStudents.size < pageSize) {
                         isLastPage = true
                     }
-                    
-                    siswaAdapter.submitList(allStudentList.toList())
-                    
+
+                    siswaAdapter.setFullList(allStudentList.toList())
+
+                    // Auto-fetch remaining pages if more data exists
+                    if (!isLastPage && totalPages > currentPage) {
+                        isLoading = false
+                        loadMoreData()
+                        return@fold
+                    }
+
                     if (allStudentList.isEmpty()) {
                         tvEmptyState.text = "Tidak ada data siswa"
                         emptyStateContainer.visibility = View.VISIBLE
@@ -489,17 +468,17 @@ override fun onCreate(savedInstanceState: Bundle?) {
                         recyclerSiswa.visibility = View.VISIBLE
                         findViewById<View>(R.id.tableHorizontalScrollView).visibility = View.VISIBLE
                     }
-                    
+
                     updateCountInfo()
+                    updatePaginationUI()
                     isLoading = false
                 },
                 onFailure = { error ->
                     if (isFinishing || isDestroyed) return@fold
                     Toast.makeText(this@DataSiswaAdminActivity, "Gagal memuat data: ${error.message}", Toast.LENGTH_SHORT).show()
-                    
+
                     progressLoading.visibility = View.GONE
-                    siswaAdapter.setLoadingMore(false)
-                    
+
                     if (allStudentList.isEmpty()) {
                         tvEmptyState.text = "Gagal memuat data siswa"
                         emptyStateContainer.visibility = View.VISIBLE
@@ -508,7 +487,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
                     } else {
                         findViewById<View>(R.id.tableHorizontalScrollView).visibility = View.VISIBLE
                     }
-                    
+
                     isLoading = false
                 }
             )
@@ -524,6 +503,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
     private fun updateCountInfo() {
         tvCountInfo.text = "Menampilkan ${allStudentList.size} dari $totalItems data"
+        tvStatTotalSiswa.text = totalItems.toString()
     }
 
     private fun setupButtons() {
@@ -532,15 +512,44 @@ override fun onCreate(savedInstanceState: Bundle?) {
         btnMore?.setOnClickListener { view ->
             showOverflowMenu(view)
         }
+
+        // Action buttons inside card
+        val session = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this)
+        val role = session.getString("user_role", "")
+        val isReadOnly = role == "wali_kelas" || role == "guru"
+
+        findViewById<View>(R.id.btnTambahSiswa)?.setOnClickListener {
+            if (isReadOnly) {
+                Toast.makeText(this, "Akses ditolak", Toast.LENGTH_SHORT).show()
+            } else {
+                startActivity(Intent(this, TambahSiswaActivity::class.java))
+            }
+        }
+
+        findViewById<View>(R.id.btnImportSiswa)?.setOnClickListener {
+            if (isReadOnly) {
+                Toast.makeText(this, "Akses ditolak", Toast.LENGTH_SHORT).show()
+            } else {
+                showImportSiswaDialog()
+            }
+        }
+
+        findViewById<View>(R.id.btnUnduhData)?.setOnClickListener {
+            showExportSiswaDialog()
+        }
+
+        findViewById<View>(R.id.btnCetakData)?.setOnClickListener {
+            Toast.makeText(this, "Fitur cetak akan segera tersedia", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun showOverflowMenu(view: View) {
         val popup = androidx.appcompat.widget.PopupMenu(this, view)
-        
+
         popup.menu.add(0, 1, 0, "Tambah Siswa")
         popup.menu.add(0, 2, 1, "Import Data")
         popup.menu.add(0, 3, 2, "Export Data")
-        
+
         try {
             val fields = popup.javaClass.declaredFields
             for (field in fields) {
@@ -567,7 +576,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
                     if (isReadOnly) {
                         Toast.makeText(this, "Akses ditolak", Toast.LENGTH_SHORT).show()
                     } else {
-                        startActivity(android.content.Intent(this, TambahSiswaActivity::class.java))
+                        startActivity(Intent(this, TambahSiswaActivity::class.java))
                     }
                     true
                 }
@@ -593,9 +602,9 @@ override fun onCreate(savedInstanceState: Bundle?) {
         MaterialAlertDialogBuilder(this)
             .setTitle("Export Data Siswa")
             .setMessage("Filter aktif saat ini:\n" +
-                    "• Kelas: $selectedKelas\n" +
-                    "• Jurusan: $selectedJurusan\n" +
-                    "• Jenis Kelamin: $selectedGender\n\n" +
+                    "- Kelas: $selectedKelas\n" +
+                    "- Jurusan: $selectedJurusan\n" +
+                    "- Jenis Kelamin: $selectedGender\n\n" +
                     "Data akan diekspor ke format CSV (.csv)")
             .setPositiveButton("Export") { dialog, _ ->
                 dialog.dismiss()
@@ -705,12 +714,12 @@ override fun onCreate(savedInstanceState: Bundle?) {
             .setTitle("Import Data Siswa")
             .setMessage("Silakan unggah file CSV berisi data siswa.\n\n" +
                     "Header kolom yang WAJIB ada:\n" +
-                    "• nis (Nomor Induk Siswa)\n" +
-                    "• nama_siswa\n" +
-                    "• jk (L / P)\n" +
-                    "• tingkatan (X / XI / XII)\n" +
-                    "• jurusan (Singkatan Jurusan, misal: RPL)\n" +
-                    "• part (Rombel, misal: 1 / 2)\n\n" +
+                    "- nis (Nomor Induk Siswa)\n" +
+                    "- nama_siswa\n" +
+                    "- jk (L / P)\n" +
+                    "- tingkatan (X / XI / XII)\n" +
+                    "- jurusan (Singkatan Jurusan, misal: RPL)\n" +
+                    "- part (Rombel, misal: 1 / 2)\n\n" +
                     "Pastikan file berformat .csv dengan pemisah koma.")
             .setPositiveButton("Pilih File CSV") { _, _ ->
                 pickCsvLauncher.launch("text/csv")
@@ -745,7 +754,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
                 val tempFile = java.io.File.createTempFile("siswa_import", ".csv", cacheDir)
                 tempFile.deleteOnExit()
-                
+
                 tempFile.outputStream().use { output ->
                     inputStream.use { input ->
                         input.copyTo(output)
@@ -795,11 +804,10 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
     private fun showEditSiswaDialog(siswa: SiswaItem) {
         val dialogView = layoutInflater.inflate(R.layout.dialog_tambah_siswa, null)
-        
-        
-        val tvTitle = dialogView.findViewById<TextView>(android.R.id.title) 
+
+        val tvTitle = dialogView.findViewById<TextView>(android.R.id.title)
             ?: dialogView.findViewWithTag<TextView>("title")
-        
+
         val etNis = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etNis)
         val etNama = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etNama)
         val rgJenisKelamin = dialogView.findViewById<android.widget.RadioGroup>(R.id.rgJenisKelamin)
@@ -810,10 +818,9 @@ override fun onCreate(savedInstanceState: Bundle?) {
         val btnBatal = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnBatal)
         val btnSimpan = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnSimpan)
         val btnClose = dialogView.findViewById<android.widget.ImageView>(R.id.btnClose)
-        
-        
+
         etNis.setText(siswa.nis)
-        etNis.isEnabled = false 
+        etNis.isEnabled = false
         etNama.setText(siswa.nama_siswa)
         if (siswa.jenis_kelamin == "L") {
             rbLakiLaki.isChecked = true
@@ -822,35 +829,31 @@ override fun onCreate(savedInstanceState: Bundle?) {
         }
         etKelas.setText(siswa.kelas)
         actvJurusan.setText(siswa.jurusan)
-        
-        
+
         val jurusanAdapter = android.widget.ArrayAdapter(
             this,
             android.R.layout.simple_dropdown_item_1line,
             fixedJurusanList
         )
         actvJurusan.setAdapter(jurusanAdapter)
-        
-        
+
         btnSimpan.text = "Update"
-        
-        
+
         val dialog = AlertDialog.Builder(this)
             .setView(dialogView)
             .setCancelable(false)
             .create()
-        
+
         btnBatal.setOnClickListener {
             dialog.dismiss()
         }
-        
+
         btnSimpan.setOnClickListener {
             val nama = etNama.text?.toString()?.trim() ?: ""
             val jenisKelamin = if (rbLakiLaki.isChecked) "L" else "P"
             val kelas = etKelas.text?.toString()?.trim()?.uppercase() ?: ""
             val jurusan = actvJurusan.text?.toString()?.trim()?.uppercase() ?: ""
-            
-            
+
             if (nama.isEmpty()) {
                 etNama.error = "Nama tidak boleh kosong"
                 return@setOnClickListener
@@ -863,27 +866,24 @@ override fun onCreate(savedInstanceState: Bundle?) {
                 Toast.makeText(this, "Pilih jurusan", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            
-            
+
             val request = com.xirpl2.SASMobile.model.UpdateSiswaRequest(
                 nama_siswa = nama,
                 jenis_kelamin = jenisKelamin,
                 kelas = kelas,
                 jurusan = jurusan
             )
-            
-            
+
             btnSimpan.isEnabled = false
             btnSimpan.text = "Mengupdate..."
-            
-            
+
             lifecycleScope.launch {
                 repository.updateSiswa(getAuthToken(), siswa.nis, request).fold(
                     onSuccess = { updatedSiswa ->
                         runOnUiThread {
                             Toast.makeText(this@DataSiswaAdminActivity, "Siswa berhasil diupdate!", Toast.LENGTH_SHORT).show()
                             dialog.dismiss()
-                            
+
                             loadStudentData(reset = true)
                         }
                     },
@@ -897,11 +897,11 @@ override fun onCreate(savedInstanceState: Bundle?) {
                 )
             }
         }
-        
+
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
         dialog.show()
     }
-    
+
     private fun showDeleteConfirmationDialog(siswa: SiswaItem) {
         MaterialAlertDialogBuilder(this)
             .setTitle("Hapus Siswa")
@@ -913,14 +913,14 @@ override fun onCreate(savedInstanceState: Bundle?) {
             .setNegativeButton("Batal", null)
             .show()
     }
-    
+
     private fun deleteSiswa(siswa: SiswaItem) {
         lifecycleScope.launch {
             repository.deleteSiswa(getAuthToken(), siswa.nis).fold(
                 onSuccess = { message ->
                     runOnUiThread {
                         Toast.makeText(this@DataSiswaAdminActivity, "Siswa berhasil dihapus!", Toast.LENGTH_SHORT).show()
-                        
+
                         loadStudentData(reset = true)
                     }
                 },
@@ -931,6 +931,79 @@ override fun onCreate(savedInstanceState: Bundle?) {
                 }
             )
         }
+    }
+
+    private fun showRowPopupMenu(anchor: View, siswa: SiswaItem) {
+        val popup = androidx.appcompat.widget.PopupMenu(this, anchor)
+        popup.menu.add(0, 1, 0, "Detail")
+        popup.menu.add(0, 2, 1, "Edit")
+        popup.menu.add(0, 3, 2, "Hapus")
+
+        // Force show icons
+        try {
+            val fields = popup.javaClass.declaredFields
+            for (field in fields) {
+                if ("mPopup" == field.name) {
+                    field.isAccessible = true
+                    val menuPopupHelper = field.get(popup)
+                    val classPopupHelper = Class.forName(menuPopupHelper.javaClass.name)
+                    val setForceShowIcon = classPopupHelper.getMethod("setForceShowIcon", Boolean::class.javaPrimitiveType)
+                    setForceShowIcon.invoke(menuPopupHelper, true)
+                    break
+                }
+            }
+        } catch (e: Exception) { }
+
+        val session = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this)
+        val role = session.getString("user_role", "")
+        val isReadOnly = role == "wali_kelas" || role == "guru"
+
+        popup.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                1 -> { showStudentDetailDialog(siswa); true }
+                2 -> {
+                    if (isReadOnly) {
+                        Toast.makeText(this, "Akses ditolak", Toast.LENGTH_SHORT).show()
+                    } else {
+                        showEditSiswaDialog(siswa)
+                    }
+                    true
+                }
+                3 -> {
+                    if (isReadOnly) {
+                        Toast.makeText(this, "Akses ditolak", Toast.LENGTH_SHORT).show()
+                    } else {
+                        showDeleteConfirmationDialog(siswa)
+                    }
+                    true
+                }
+                else -> false
+            }
+        }
+        popup.show()
+    }
+
+    private fun setupPagination() {
+        btnPrevPage.setOnClickListener {
+            siswaAdapter.prevPage()
+            updatePaginationUI()
+        }
+        btnNextPage.setOnClickListener {
+            siswaAdapter.nextPage()
+            updatePaginationUI()
+        }
+    }
+
+    private fun updatePaginationUI() {
+        val totalPages = siswaAdapter.getTotalPages()
+        val currentPage = siswaAdapter.getCurrentPage()
+        tvPageInfo.text = "Halaman $currentPage dari $totalPages"
+        btnPrevPage.alpha = if (currentPage <= 1) 0.3f else 1f
+        btnNextPage.alpha = if (currentPage >= totalPages) 0.3f else 1f
+        // Update count info
+        val start = (currentPage - 1) * 20 + 1
+        val end = minOf(currentPage * 20, allStudentList.size)
+        tvCountInfo.text = "Menampilkan $start-$end dari ${allStudentList.size} data"
     }
 
     private fun showStudentDetailDialog(siswa: SiswaItem) {

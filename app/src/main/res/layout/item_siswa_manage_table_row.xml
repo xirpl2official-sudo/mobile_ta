@@ -61,6 +61,6 @@
         app:strokeColor="@color/primary"
         app:strokeWidth="1dp"
         android:textColor="@color/primary"
-        app:cornerRadius="4dp" />
+        app:cornerRadius="8dp" />
 
 </LinearLayout>

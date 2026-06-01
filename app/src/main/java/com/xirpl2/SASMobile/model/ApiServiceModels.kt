@@ -178,10 +178,10 @@ data class PrayerTypeResponse(
 )
 
 data class PrayerType(
-    @SerializedName("id_jenis_sholat")
+    @SerializedName("id_jenis")
     val id: Int,
     val nama_jenis: String,
-    val urutan: Int,
+    val urutan: Int = 0,
     val created_at: String? = null,
     val updated_at: String? = null
 )
@@ -204,11 +204,14 @@ data class PrayerTimeResponse(
 )
 
 data class PrayerTime(
-    @SerializedName("id_waktu_sholat")
+    @SerializedName("id_waktu")
     val id: Int,
+    @SerializedName("id_jenis")
     val id_jenis_sholat: Int,
     val waktu_mulai: String,
     val waktu_selesai: String,
+    @SerializedName("jenis_sholat")
+    val jenisSholat: JenisSholatData? = null,
     val created_at: String? = null,
     val updated_at: String? = null
 )

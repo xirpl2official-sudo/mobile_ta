@@ -55,6 +55,9 @@ class SASMobileApp : Application() {
         // Initialize RetrofitClient with application context for TokenAuthenticator
         com.xirpl2.SASMobile.network.RetrofitClient.init(this)
 
+        // Create notification channel for system notifications
+        com.xirpl2.SASMobile.utils.NotificationHelper.createNotificationChannel(this)
+
         setupGlobalExceptionHandler()
         setupTransitionTimeouts()
     }

@@ -32,7 +32,6 @@ class StudentPromotionActivity : BaseAdminActivity() {
     private lateinit var emptyState: View
     private lateinit var tvEmptyState: TextView
     private lateinit var btnBulkProgression: MaterialButton
-    private lateinit var iconNotification: ImageView
 
     // Simulation views
     private lateinit var btnSimulasi: MaterialButton
@@ -84,7 +83,6 @@ class StudentPromotionActivity : BaseAdminActivity() {
         emptyState = findViewById(R.id.emptyState)
         tvEmptyState = findViewById(R.id.tvEmptyState)
         btnBulkProgression = findViewById(R.id.btnBulkProgression)
-        iconNotification = findViewById(R.id.iconNotification)
 
         // Simulation views
         btnSimulasi = findViewById(R.id.btnSimulasi)
@@ -119,10 +117,6 @@ class StudentPromotionActivity : BaseAdminActivity() {
 
         btnBulkProgression.setOnClickListener {
             showConfirmationDialog()
-        }
-
-        iconNotification.setOnClickListener {
-            startActivity(android.content.Intent(this, NotifikasiActivity::class.java))
         }
 
         btnSimulasi.setOnClickListener {

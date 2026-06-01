@@ -25,8 +25,8 @@ android {
         applicationId = "com.xirpl2.SASMobile"
         minSdk = 23
         targetSdk = 36
-        versionCode = 3
-        versionName = "1.0.3"
+        versionCode = 4
+        versionName = "1.0.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -88,4 +88,7 @@ dependencies {
 
     implementation(platform("com.google.firebase:firebase-bom:34.8.0"))
     implementation("com.google.firebase:firebase-analytics")
+
+    // WorkManager for periodic notification polling
+    implementation(libs.androidx.work.runtime.ktx)
 }

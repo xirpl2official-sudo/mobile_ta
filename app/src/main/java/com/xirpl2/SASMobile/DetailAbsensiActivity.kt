@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -193,10 +194,10 @@ class DetailAbsensiActivity : BaseActivity() {
             val statusTv = view.findViewById<TextView>(R.id.tvPresenceStatus)
             if (status.equals("HADIR", true)) {
                 statusTv.text = "Sudah Sholat ✅"
-                statusTv.setTextColor(resources.getColor(android.R.color.holo_green_dark))
+                statusTv.setTextColor(ContextCompat.getColor(this, R.color.status_success))
             } else {
                 statusTv.text = "Belum Sholat"
-                statusTv.setTextColor(resources.getColor(android.R.color.darker_gray))
+                statusTv.setTextColor(ContextCompat.getColor(this, R.color.gray_light))
             }
         }
     }

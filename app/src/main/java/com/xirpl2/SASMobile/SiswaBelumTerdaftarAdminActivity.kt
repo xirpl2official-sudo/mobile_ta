@@ -100,12 +100,11 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
 
     private fun setupRecyclerView() {
         adapter = SiswaAdapter(
-            onEditClick = {},
-            onDeleteClick = {},
             onDetailClick = { siswa ->
                 val dialog = SiswaDetailDialogFragment.newInstance(siswa)
                 dialog.show(supportFragmentManager, "SiswaDetail")
             },
+            onMoreMenuClick = { _, _ -> },
             isReadOnly = true
         )
         
@@ -244,7 +243,7 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
                     if (response.isSuccessful) {
                         val body = response.body()
                         val students = body?.data ?: emptyList()
-                        adapter.submitList(students)
+                        adapter.setFullList(students)
 
                         val total = body?.pagination?.total_items ?: students.size
                         tvCountInfo.text = "Menampilkan ${students.size} dari $total data"

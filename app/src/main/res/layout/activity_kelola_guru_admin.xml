@@ -10,7 +10,7 @@
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/surface"
+        android:background="@color/background"
         android:theme="@style/Theme.SAS_Mobile.WhiteBackground"
         tools:context=".KelolaGuruAdminActivity">
 
@@ -101,7 +101,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
             app:cardBackgroundColor="@color/surface"
-            app:cardCornerRadius="24dp"
+            app:cardCornerRadius="12dp"
             app:cardElevation="6dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

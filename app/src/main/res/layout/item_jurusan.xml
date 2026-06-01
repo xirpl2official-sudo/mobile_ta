@@ -1,27 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardJurusan"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="@dimen/spacing_medium">
+    android:layout_margin="4dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp"
+    app:strokeWidth="0dp">
 
-    <TextView
-        android:id="@+id/tvLabelHariIni"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Silahkan Hari Ini"
-        android:textColor="@color/on_background"
-        android:textSize="@dimen/text_smkn2s"
-        android:layout_marginBottom="@dimen/spacing_tiny" />
+        android:orientation="vertical"
+        android:padding="14dp">
 
-    <TextView
-        android:id="@+id/tvNamaJurusan"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Nama Jurusan"
-        android:textColor="@color/on_background"
-        android:textSize="@dimen/text_beranda"
-        android:textStyle="bold" />
+        <TextView
+            android:id="@+id/tvNamaJurusan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nama Jurusan"
+            android:textColor="@android:color/white"
+            android:textSize="15sp"
+            android:textStyle="bold" />
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/tvLabelHariIni"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Dhuha 07:00-08:00"
+            android:textColor="#CCFFFFFF"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

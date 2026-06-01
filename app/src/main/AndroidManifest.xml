@@ -100,10 +100,6 @@
             android:exported="false" />
         <activity
             android:launchMode="singleTop"
-            android:name=".NotifikasiActivity"
-            android:exported="false" />
-        <activity
-            android:launchMode="singleTop"
             android:name=".DetailAbsensiActivity"
             android:exported="false"
             android:theme="@style/Theme.SAS_Mobile" />
@@ -159,6 +155,16 @@
             android:launchMode="singleTop"
             android:name=".FAQActivity"
             android:exported="false" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 
 </manifest>

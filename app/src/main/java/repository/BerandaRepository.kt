@@ -38,6 +38,46 @@ class BerandaRepository {
         }
     }
 
+    suspend fun getPrayerTimes(token: String): Result<List<PrayerTime>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.getPrayerTimes("Bearer $token")
+                if (!response.isSuccessful) {
+                    return@withContext Result.failure(
+                        Exception("HTTP Error: ${response.code()} - ${response.message()}")
+                    )
+                }
+                val body = response.body()
+                if (body == null) {
+                    return@withContext Result.failure(Exception("Response body kosong"))
+                }
+                return@withContext Result.success(body.data)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun getPrayerTypes(token: String): Result<List<PrayerType>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.getPrayerTypes("Bearer $token")
+                if (!response.isSuccessful) {
+                    return@withContext Result.failure(
+                        Exception("HTTP Error: ${response.code()} - ${response.message()}")
+                    )
+                }
+                val body = response.body()
+                if (body == null) {
+                    return@withContext Result.failure(Exception("Response body kosong"))
+                }
+                return@withContext Result.success(body.data)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
     suspend fun getJadwalDhuhaKeahlian(token: String): Result<List<com.xirpl2.SASMobile.model.JadwalDhuhaKeahlian>> {
         return try {
             val response = apiService.getJurusanDhuhaSchedules("Bearer $token")

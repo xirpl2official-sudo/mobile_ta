@@ -11,6 +11,11 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.xirpl2.SASMobile.utils.AnrDetector
 import com.xirpl2.SASMobile.utils.UniversalSafeNavigator
+import com.xirpl2.SASMobile.update.UpdateChecker
+import com.xirpl2.SASMobile.update.UpdateDialog
+import com.xirpl2.SASMobile.update.UpdateDownloader
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -21,6 +26,7 @@ abstract class BaseActivity : AppCompatActivity() {
     
     companion object {
         private const val TAG = "BaseActivity"
+        private var updateCheckedThisSession = false
     }
 
     protected val isTransitioning = AtomicBoolean(false)
@@ -55,6 +61,24 @@ abstract class BaseActivity : AppCompatActivity() {
         SASMobileApp.setIsForegrounded(true)
         AnrDetector.recordUiInteraction()
         Log.d(TAG, "onResume: ${this::class.java.simpleName}")
+        checkForUpdate()
+    }
+
+    private fun checkForUpdate() {
+        if (updateCheckedThisSession) return
+        updateCheckedThisSession = true
+        lifecycleScope.launch {
+            try {
+                val updateInfo = UpdateChecker.checkForUpdate(this@BaseActivity)
+                if (updateInfo != null && !isFinishing && !isDestroyed) {
+                    UpdateDialog.show(this@BaseActivity, updateInfo) {
+                        UpdateDownloader.downloadAndInstall(this@BaseActivity, updateInfo)
+                    }
+                }
+            } catch (e: Exception) {
+                Log.w(TAG, "Update check failed: ${e.message}")
+            }
+        }
     }
 
     override fun onPause() {

@@ -9,7 +9,7 @@
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/surface">
+        android:background="@color/background">
 
         <!-- Top Bar Content -->
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -60,7 +60,7 @@
                 android:orientation="vertical"
                 android:layout_marginStart="8dp"
                 app:layout_constraintStart_toEndOf="@id/logoSekolah"
-                app:layout_constraintEnd_toStartOf="@id/iconNotifContainer"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent">
 
@@ -84,24 +84,6 @@
                     android:maxLines="1" />
             </LinearLayout>
 
-            <FrameLayout
-                android:id="@+id/iconNotifContainer"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent">
-
-                <ImageView
-                    android:id="@+id/iconNotification"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_notification"
-                    android:contentDescription="Notifikasi"
-                    app:tint="@android:color/white" />
-            </FrameLayout>
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- Content Area -->
@@ -123,7 +105,7 @@
                 android:text="Simulasi Kenaikan"
                 android:textAllCaps="false"
                 android:textSize="14sp"
-                app:cornerRadius="10dp"
+                app:cornerRadius="8dp"
                 app:backgroundTint="@color/blue_theme"
                 app:icon="@drawable/ic_eye"
                 app:iconGravity="textStart"
@@ -474,7 +456,7 @@
                 android:textAllCaps="false"
                 android:textSize="15sp"
                 android:enabled="false"
-                app:cornerRadius="12dp"
+                app:cornerRadius="8dp"
                 app:backgroundTint="@color/blue_theme"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

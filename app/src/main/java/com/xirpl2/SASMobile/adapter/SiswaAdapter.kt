@@ -6,8 +6,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.CheckBox
-import com.google.android.material.button.MaterialButton
-import android.widget.Toast
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -15,15 +13,49 @@ import com.xirpl2.SASMobile.R
 import com.xirpl2.SASMobile.model.SiswaItem
 
 class SiswaAdapter(
-    private val onEditClick: (SiswaItem) -> Unit,
-    private val onDeleteClick: (SiswaItem) -> Unit,
     private val onDetailClick: (SiswaItem) -> Unit,
+    private val onMoreMenuClick: (View, SiswaItem) -> Unit,
     private val isReadOnly: Boolean = false
 ) : ListAdapter<SiswaItem, RecyclerView.ViewHolder>(SiswaDiffCallback()) {
 
     private val selectedNis = mutableSetOf<String>()
     private var isSelectionMode = false
     private var onSelectionChanged: ((Int) -> Unit)? = null
+
+    // Client-side pagination
+    private var fullList: List<SiswaItem> = emptyList()
+    private var currentPage = 0
+    private val pageSize = 20
+
+    fun setFullList(list: List<SiswaItem>) {
+        fullList = list
+        currentPage = 0
+        refreshPage()
+    }
+
+    fun getTotalPages(): Int = if (fullList.isEmpty()) 1 else Math.ceil(fullList.size.toDouble() / pageSize).toInt()
+
+    fun getCurrentPage(): Int = currentPage + 1 // 1-based for UI
+
+    fun getTotalItems(): Int = fullList.size
+
+    fun goToPage(page: Int) { // 1-based
+        val zeroBased = page - 1
+        if (zeroBased in 0 until getTotalPages()) {
+            currentPage = zeroBased
+            refreshPage()
+        }
+    }
+
+    fun nextPage() { goToPage(currentPage + 2) }
+    fun prevPage() { goToPage(currentPage) } // currentPage is 0-based, goToPage is 1-based
+
+    private fun refreshPage() {
+        val start = currentPage * pageSize
+        val end = minOf(start + pageSize, fullList.size)
+        val pageItems = if (start < fullList.size) fullList.subList(start, end) else emptyList()
+        submitList(pageItems.toList())
+    }
 
     fun setOnSelectionChangedListener(listener: (Int) -> Unit) {
         onSelectionChanged = listener
@@ -50,7 +82,7 @@ class SiswaAdapter(
 
     fun selectAll(select: Boolean) {
         if (select) {
-            currentList.forEach { selectedNis.add(it.nis) }
+            fullList.forEach { selectedNis.add(it.nis) }
         } else {
             selectedNis.clear()
         }
@@ -59,64 +91,25 @@ class SiswaAdapter(
     }
 
     fun getSelectedItems(): List<SiswaItem> {
-        return currentList.filter { selectedNis.contains(it.nis) }
+        return fullList.filter { selectedNis.contains(it.nis) }
     }
 
     fun getSelectedCount(): Int = selectedNis.size
 
-    companion object {
-        private const val VIEW_TYPE_ITEM = 0
-        private const val VIEW_TYPE_LOADING = 1
-    }
-
-    private var isLoadingMore = false
-
-    fun setLoadingMore(loading: Boolean) {
-        val wasLoading = isLoadingMore
-        isLoadingMore = loading
-        
-        if (loading && !wasLoading) {
-            notifyItemInserted(itemCount)
-        } else if (!loading && wasLoading) {
-            notifyItemRemoved(itemCount)
-        }
-    }
-
-    override fun getItemCount(): Int {
-        return super.getItemCount() + if (isLoadingMore) 1 else 0
-    }
-
-    override fun getItemViewType(position: Int): Int {
-        return if (isLoadingMore && position == itemCount - 1) {
-            VIEW_TYPE_LOADING
-        } else {
-            VIEW_TYPE_ITEM
-        }
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return if (viewType == VIEW_TYPE_LOADING) {
-            val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.item_loading, parent, false)
-            LoadingViewHolder(view)
-        } else {
-            val layoutId = if (isReadOnly) R.layout.item_siswa_unregistered_row else R.layout.item_siswa
-            val view = LayoutInflater.from(parent.context)
-                .inflate(layoutId, parent, false)
-            SiswaViewHolder(view)
-        }
+        val layoutId = if (isReadOnly) R.layout.item_siswa_unregistered_row else R.layout.item_siswa
+        val view = LayoutInflater.from(parent.context)
+            .inflate(layoutId, parent, false)
+        return SiswaViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is SiswaViewHolder -> {
                 val siswa = getItem(position)
-                holder.bind(siswa, onEditClick, onDeleteClick, onDetailClick, isReadOnly, isSelectionMode, selectedNis.contains(siswa.nis)) {
+                holder.bind(siswa, onDetailClick, onMoreMenuClick, isReadOnly, isSelectionMode, selectedNis.contains(siswa.nis)) {
                     toggleSelection(siswa.nis)
                 }
-            }
-            is LoadingViewHolder -> {
-                
             }
         }
     }
@@ -124,31 +117,28 @@ class SiswaAdapter(
     class SiswaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val tvNis: TextView = itemView.findViewById(R.id.tvNis)
         private val tvNama: TextView = itemView.findViewById(R.id.tvNama)
+        private val tvJenisKelamin: TextView? = itemView.findViewById(R.id.tvJenisKelamin)
         private val tvKelas: TextView = itemView.findViewById(R.id.tvKelas)
         private val tvJurusan: TextView? = itemView.findViewById(R.id.tvJurusan)
         private val tvWaliKelas: TextView? = itemView.findViewById(R.id.tvWaliKelas)
         private val tvStatusAkademik: TextView? = itemView.findViewById(R.id.tvStatusAkademik)
-        private val btnDetailSiswa: MaterialButton? = itemView.findViewById(R.id.btnDetailSiswa)
-        private val btnDetailRow: MaterialButton? = itemView.findViewById(R.id.btnDetail)
-        private val btnEdit: ImageView? = itemView.findViewById(R.id.btnEdit)
-        private val btnDelete: ImageView? = itemView.findViewById(R.id.btnDelete)
+        private val btnMoreMenu: ImageView? = itemView.findViewById(R.id.btnMoreMenu)
         private val ivDeviceStatus: ImageView? = itemView.findViewById(R.id.ivDeviceStatus)
         private val cbRow: CheckBox? = itemView.findViewById(R.id.cbRow)
 
         fun bind(
             siswa: SiswaItem,
-            onEditClick: (SiswaItem) -> Unit,
-            onDeleteClick: (SiswaItem) -> Unit,
             onDetailClick: (SiswaItem) -> Unit,
+            onMoreMenuClick: (View, SiswaItem) -> Unit,
             isReadOnly: Boolean,
             selectionMode: Boolean,
             isSelected: Boolean,
             onToggleSelection: () -> Unit
         ) {
             tvNis.text = siswa.nis
-            
-            // Selection logic
-            cbRow?.visibility = if (selectionMode) View.VISIBLE else View.GONE
+
+            // Selection logic — checkbox always visible
+            cbRow?.visibility = View.VISIBLE
             cbRow?.isChecked = isSelected
             cbRow?.setOnClickListener { onToggleSelection() }
             itemView.setOnClickListener {
@@ -167,9 +157,10 @@ class SiswaAdapter(
                 tvNis.setTextColor(androidx.core.content.ContextCompat.getColor(itemView.context, R.color.blue_primary))
                 tvNis.setTypeface(null, android.graphics.Typeface.NORMAL)
             }
-            
+
             tvNama.text = siswa.nama_siswa
-            
+            tvJenisKelamin?.text = if (siswa.jenis_kelamin == "L") "L" else "P"
+
             // Status Akademik Badge (Desktop Parity)
             tvStatusAkademik?.let { tv ->
                 val status = siswa.statusAkademik ?: "AKTIF"
@@ -201,25 +192,19 @@ class SiswaAdapter(
             }
 
             tvKelas.text = siswa.kelas
+            tvJenisKelamin?.text = if (siswa.jenis_kelamin == "L") "L" else "P"
             tvJurusan?.text = siswa.jurusan
             tvWaliKelas?.text = siswa.waliKelasName?.ifEmpty { "-" } ?: "-"
 
-            val detailButton = btnDetailRow ?: btnDetailSiswa
-            detailButton?.setOnClickListener { onDetailClick(siswa) }
-
+            // More menu button (3-dot)
             if (isReadOnly || selectionMode) {
-                btnEdit?.visibility = View.GONE
-                btnDelete?.visibility = View.GONE
+                btnMoreMenu?.visibility = View.GONE
             } else {
-                btnEdit?.visibility = View.VISIBLE
-                btnDelete?.visibility = View.VISIBLE
-                btnEdit?.setOnClickListener { onEditClick(siswa) }
-                btnDelete?.setOnClickListener { onDeleteClick(siswa) }
+                btnMoreMenu?.visibility = View.VISIBLE
+                btnMoreMenu?.setOnClickListener { onMoreMenuClick(it, siswa) }
             }
         }
     }
-
-    class LoadingViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 }
 
 class SiswaDiffCallback : DiffUtil.ItemCallback<SiswaItem>() {

@@ -268,23 +268,23 @@ class PresenceDetailDialogFragment : BottomSheetDialogFragment() {
             when {
                 status.equals("HADIR", true) -> {
                     statusTv.text = "Sudah Sholat ✅"
-                    statusTv.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_green_dark))
+                    statusTv.setTextColor(ContextCompat.getColor(requireContext(), R.color.status_success))
                 }
                 status.equals("IZIN", true) -> {
                     statusTv.text = "Izin"
-                    statusTv.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_orange_dark))
+                    statusTv.setTextColor(ContextCompat.getColor(requireContext(), R.color.status_warning))
                 }
                 status.equals("SAKIT", true) -> {
                     statusTv.text = "Sakit"
-                    statusTv.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_orange_dark))
+                    statusTv.setTextColor(ContextCompat.getColor(requireContext(), R.color.status_warning))
                 }
                 status.equals("ALPHA", true) -> {
                     statusTv.text = "Alpha"
-                    statusTv.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_red_dark))
+                    statusTv.setTextColor(ContextCompat.getColor(requireContext(), R.color.status_error))
                 }
                 else -> {
                     statusTv.text = "Belum Sholat"
-                    statusTv.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.darker_gray))
+                    statusTv.setTextColor(ContextCompat.getColor(requireContext(), R.color.gray_light))
                 }
             }
         }

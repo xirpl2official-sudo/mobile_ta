@@ -30,7 +30,6 @@ class KelolaKelasActivity : BaseAdminActivity() {
     private lateinit var tvEmptyState: TextView
     private lateinit var emptyStateContainer: View
     private lateinit var recyclerKelas: RecyclerView
-    private lateinit var iconNotification: ImageView
 
     private var allKelasList = mutableListOf<KelasManagementItem>()
     private var staffList = listOf<StaffInfo>()
@@ -69,7 +68,6 @@ class KelolaKelasActivity : BaseAdminActivity() {
         tvEmptyState = findViewById(R.id.tvEmptyState)
         emptyStateContainer = findViewById(R.id.emptyState)
         recyclerKelas = findViewById(R.id.recyclerKelas)
-        iconNotification = findViewById(R.id.iconNotification)
     }
 
     private fun setupRecyclerView() {
@@ -107,10 +105,6 @@ class KelolaKelasActivity : BaseAdminActivity() {
         spinnerJurusan.setOnItemClickListener { parent, _, position, _ ->
             selectedJurusan = parent.getItemAtPosition(position).toString()
             applyFilters()
-        }
-
-        iconNotification.setOnClickListener {
-            Toast.makeText(this, "Belum ada notifikasi baru", Toast.LENGTH_SHORT).show()
         }
     }
 

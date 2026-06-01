@@ -13,14 +13,19 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import com.xirpl2.SASMobile.adapter.PrayerScheduleAdapter
 import com.xirpl2.SASMobile.adapter.PrayerScheduleItem
 import com.xirpl2.SASMobile.model.JadwalDhuhaKeahlian
 import com.xirpl2.SASMobile.model.JadwalSholatData
 import com.xirpl2.SASMobile.model.JadwalSholatUpdateRequest
+import com.xirpl2.SASMobile.model.JenisSholatData
+import com.xirpl2.SASMobile.model.PrayerTime
+import com.xirpl2.SASMobile.model.PrayerType
 import com.xirpl2.SASMobile.model.SholatDhuhaDetail
 import com.xirpl2.SASMobile.model.SholatDzuhurDetail
+import com.xirpl2.SASMobile.model.WaktuSholatData
 import com.xirpl2.SASMobile.repository.BerandaRepository
 import kotlinx.coroutines.launch
 
@@ -32,6 +37,8 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
     
     private var jadwalList: List<JadwalSholatData> = emptyList()
     private var dhuhaKeahlianList: List<com.xirpl2.SASMobile.model.JadwalDhuhaKeahlian> = emptyList()
+    private var prayerTimesList: List<PrayerTime> = emptyList()
+    private var prayerTypesList: List<PrayerType> = emptyList()
 
     private val daysOptions = listOf("Semua Hari", "Senin", "Selasa", "Rabu", "Kamis", "Jumat")
     private val allKeahlian = arrayOf("RPL", "TKJ", "TAV", "ANM", "TMT", "BC", "TEI", "DKV")
@@ -129,23 +136,41 @@ override fun onCreate(savedInstanceState: Bundle?) {
         if (token.isEmpty()) return
 
         lifecycleScope.launch {
+            // Fetch all 3 sources, then update UI once
             repository.getJadwalSholat(token).fold(
                 onSuccess = { list ->
                     if (isFinishing || isDestroyed) return@fold
                     jadwalList = list
-
-                    
-                    list.forEach { item ->
-                    }
-
-                    
-                    updateJadwalUI()
                 },
                 onFailure = { error ->
                     android.util.Log.w(TAG, "Failed to load jadwal list: ${error.message}")
-                    if (isFinishing || isDestroyed) return@fold
                 }
             )
+
+            repository.getPrayerTimes(token).fold(
+                onSuccess = { times ->
+                    if (isFinishing || isDestroyed) return@fold
+                    prayerTimesList = times
+                },
+                onFailure = { error ->
+                    android.util.Log.w(TAG, "Failed to load prayer times: ${error.message}")
+                }
+            )
+
+            repository.getPrayerTypes(token).fold(
+                onSuccess = { types ->
+                    if (isFinishing || isDestroyed) return@fold
+                    prayerTypesList = types
+                },
+                onFailure = { error ->
+                    android.util.Log.w(TAG, "Failed to load prayer types: ${error.message}")
+                }
+            )
+
+            // Single UI update after all data is loaded
+            if (!isFinishing && !isDestroyed) {
+                updateJadwalUI()
+            }
         }
     }
 
@@ -223,26 +248,71 @@ override fun onCreate(savedInstanceState: Bundle?) {
         // Add Dhuha Keahlian table first
         items.add(PrayerScheduleItem.DhuhaKeahlian(dhuhaKeahlianList))
 
-        // Build generic prayer cards from API data (group by jenis_sholat, skip per-jurusan entries)
+        // Build maps for enrichment — same approach as desktop
+        // 1. Existing jadwal entries (generic, no jurusan) grouped by prayer type
         val genericPrayers = jadwalList.filter { it.jurusan.isNullOrEmpty() }
-        val groupedByType = genericPrayers.groupBy { it.jenis_sholat.lowercase() }
+        val jadwalByType = genericPrayers.associateBy { it.jenis_sholat.lowercase() }
+
+        // 2. Prayer times map: id_jenis -> PrayerTime (for time enrichment)
+        val timeByTypeId = prayerTimesList.associateBy { it.id_jenis_sholat }
+
+        // 3. Prayer types map: id -> PrayerType (for names)
+        val typeById = prayerTypesList.associateBy { it.id }
 
         // Preferred display order
         val displayOrder = listOf("dhuha", "dzuhur", "jumat")
         val addedTypes = mutableSetOf<String>()
 
-        for (type in displayOrder) {
-            val jadwal = groupedByType[type]?.firstOrNull()
-            if (jadwal != null) {
-                items.add(PrayerScheduleItem.PrayerCard(jadwal))
-                addedTypes.add(type)
+        // Build cards for ALL prayer types (matching desktop behavior)
+        for (typeKey in displayOrder) {
+            val existingJadwal = jadwalByType[typeKey]
+            if (existingJadwal != null) {
+                // Has a jadwal_sholat entry — use it directly
+                items.add(PrayerScheduleItem.PrayerCard(existingJadwal))
+                addedTypes.add(typeKey)
+            } else {
+                // No jadwal_sholat entry — create placeholder from prayer_times + prayer_types
+                val matchingType = typeById.values.find { it.nama_jenis.lowercase() == typeKey }
+                if (matchingType != null) {
+                    val pt = timeByTypeId[matchingType.id]
+                    val placeholder = JadwalSholatData(
+                        id = 0,
+                        hari = null,
+                        jurusan = null,
+                        kelas = null,
+                        waktuSholat = WaktuSholatData(
+                            waktuMulai = pt?.waktu_mulai ?: "",
+                            waktuSelesai = pt?.waktu_selesai ?: "",
+                            jenisSholat = JenisSholatData(namaJenis = matchingType.nama_jenis)
+                        )
+                    )
+                    items.add(PrayerScheduleItem.PrayerCard(placeholder))
+                    addedTypes.add(typeKey)
+                }
             }
         }
 
-        // Add any remaining types not in displayOrder
-        for ((type, jadwals) in groupedByType) {
-            if (type !in addedTypes && jadwals.isNotEmpty()) {
+        // Add remaining jadwal types not in displayOrder
+        val groupedByType = genericPrayers.groupBy { it.jenis_sholat.lowercase() }
+        for ((typeKey, jadwals) in groupedByType) {
+            if (typeKey !in addedTypes && jadwals.isNotEmpty()) {
                 items.add(PrayerScheduleItem.PrayerCard(jadwals.first()))
+                addedTypes.add(typeKey)
+            }
+        }
+        for (type in typeById.values) {
+            val key = type.nama_jenis.lowercase()
+            if (key !in addedTypes) {
+                val pt = timeByTypeId[type.id]
+                val placeholder = JadwalSholatData(
+                    id = 0,
+                    waktuSholat = WaktuSholatData(
+                        waktuMulai = pt?.waktu_mulai ?: "",
+                        waktuSelesai = pt?.waktu_selesai ?: "",
+                        jenisSholat = JenisSholatData(namaJenis = type.nama_jenis)
+                    )
+                )
+                items.add(PrayerScheduleItem.PrayerCard(placeholder))
             }
         }
 
@@ -339,7 +409,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
     }
 
     private fun setupButtons() {
-        val btnTambah = findViewById<MaterialButton>(R.id.btnTambah)
+        val btnTambah = findViewById<FloatingActionButton>(R.id.btnTambah)
 
         if (!canUserEdit()) {
             btnTambah.visibility = View.GONE
@@ -512,15 +582,15 @@ override fun onCreate(savedInstanceState: Bundle?) {
                 if (duplicateDay != null) {
                     
                     ivValidationIcon.setImageResource(android.R.drawable.ic_dialog_alert)
-                    ivValidationIcon.setColorFilter(ContextCompat.getColor(this, android.R.color.holo_orange_dark))
+                    ivValidationIcon.setColorFilter(ContextCompat.getColor(this, R.color.status_warning))
                     tvValidationStatus.text = "⚠️ Jurusan $selectedJurusan sudah ada di hari $duplicateDay!"
-                    tvValidationStatus.setTextColor(ContextCompat.getColor(this, android.R.color.holo_orange_dark))
+                    tvValidationStatus.setTextColor(ContextCompat.getColor(this, R.color.status_warning))
                 } else {
-                    
+
                     ivValidationIcon.setImageResource(android.R.drawable.ic_menu_send)
-                    ivValidationIcon.setColorFilter(ContextCompat.getColor(this, android.R.color.holo_green_dark))
+                    ivValidationIcon.setColorFilter(ContextCompat.getColor(this, R.color.status_success))
                     tvValidationStatus.text = "✅ Jurusan tersedia"
-                    tvValidationStatus.setTextColor(ContextCompat.getColor(this, android.R.color.holo_green_dark))
+                    tvValidationStatus.setTextColor(ContextCompat.getColor(this, R.color.status_success))
                 }
             } else {
                 validationContainer.visibility = View.GONE

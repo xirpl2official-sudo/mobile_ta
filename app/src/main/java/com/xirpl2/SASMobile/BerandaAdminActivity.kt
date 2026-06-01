@@ -79,7 +79,6 @@ class BerandaAdminActivity : BaseAdminActivity() {
             loadStatistikFromAPI()
             setupJadwalSholat()
             setupJurusanList()
-            loadNotificationCount()
             checkUnregisteredStudents()
         }
     }
@@ -118,7 +117,7 @@ class BerandaAdminActivity : BaseAdminActivity() {
     private fun setupRecyclerViews() {
         jurusanAdapter = JurusanAdapter()
         rvJurusan.apply {
-            layoutManager = LinearLayoutManager(this@BerandaAdminActivity)
+            layoutManager = androidx.recyclerview.widget.GridLayoutManager(this@BerandaAdminActivity, 2)
             adapter = jurusanAdapter
             isNestedScrollingEnabled = false
         }
@@ -205,8 +204,7 @@ class BerandaAdminActivity : BaseAdminActivity() {
         setupJadwalSholat()
         setupJurusanList()
         loadStatistikFromAPI()
-        loadNotificationCount()
-        
+
         clockHandler.postDelayed(clockRunnable, clockRefreshInterval)
     }
     
@@ -285,33 +283,6 @@ class BerandaAdminActivity : BaseAdminActivity() {
                     Log.w(TAG, "Failed to load dhuha schedule: ${error.message}")
                 }
             )
-        }
-    }
-    
-    private fun loadNotificationCount() {
-        val token = getAuthToken()
-        if (token.isEmpty()) return
-        
-        lifecycleScope.launch {
-            try {
-                val response = RetrofitClient.apiService.getNotifications("Bearer $token")
-                if (response.isSuccessful) {
-                    val count = response.body()?.pagination?.totalRecords ?: 0
-                    runOnUiThread {
-                        val tvNotifBadge = findViewById<TextView>(R.id.tvNotifBadge)
-                        if (tvNotifBadge != null) {
-                            if (count > 0) {
-                                tvNotifBadge.visibility = View.VISIBLE
-                                tvNotifBadge.text = if (count > 99) "99+" else count.toString()
-                            } else {
-                                tvNotifBadge.visibility = View.GONE
-                            }
-                        }
-                    }
-                }
-            } catch (e: Exception) {
-                Log.w(TAG, "Failed to load notification count: ${e.message}")
-            }
         }
     }
     

@@ -274,7 +274,7 @@
                 android:textColor="@android:color/white"
                 android:textStyle="bold"
                 app:backgroundTint="#F48C25"
-                app:cornerRadius="12dp"
+                app:cornerRadius="8dp"
                 android:layout_marginBottom="8dp" />
 
             <com.google.android.material.button.MaterialButton

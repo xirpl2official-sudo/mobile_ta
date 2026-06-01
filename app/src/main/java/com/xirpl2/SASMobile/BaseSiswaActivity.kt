@@ -76,6 +76,15 @@ abstract class BaseSiswaActivity : BaseActivity() {
             setupStudentProfile()
             setupCloseSidebarButton()
             setupMenuItems()
+
+            // Account card → Pengaturan
+            sidebarView.findViewById<androidx.cardview.widget.CardView>(R.id.cardUserProfile)?.setOnClickListener {
+                closeSidebar()
+                drawerLayout.postDelayed({
+                    startActivity(Intent(this, PengaturanActivity::class.java))
+                    overridePendingTransition(0, 0)
+                }, 250)
+            }
         } else {
             Log.e("BaseSiswaActivity", "Drawer or Sidebar view not found!")
         }
@@ -120,16 +129,12 @@ abstract class BaseSiswaActivity : BaseActivity() {
             navigateTo(PengajuanIzinActivity::class.java)
         }
 
-        sidebarView.findViewById<LinearLayout>(R.id.menuFAQ)?.setOnClickListener {
-            closeSidebar()
-            startActivity(Intent(this, FAQActivity::class.java))
-            overridePendingTransition(0, 0)
-        }
-
         sidebarView.findViewById<LinearLayout>(R.id.menuPengaturan)?.setOnClickListener {
             closeSidebar()
-            startActivity(Intent(this, PengaturanActivity::class.java))
-            overridePendingTransition(0, 0)
+            drawerLayout.postDelayed({
+                startActivity(Intent(this, PengaturanActivity::class.java))
+                overridePendingTransition(0, 0)
+            }, 250)
         }
 
         sidebarView.findViewById<LinearLayout>(R.id.menuLogout)?.setOnClickListener {
@@ -209,11 +214,11 @@ abstract class BaseSiswaActivity : BaseActivity() {
         try {
             if (::sidebarView.isInitialized) {
                 sidebarView.findViewById<LinearLayout>(R.id.menuBeranda)?.setOnClickListener(null)
-                sidebarView.findViewById<LinearLayout>(R.id.menuQRCode)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuPengajuanIzin)?.setOnClickListener(null)
-                sidebarView.findViewById<LinearLayout>(R.id.menuFAQ)?.setOnClickListener(null)
+                sidebarView.findViewById<LinearLayout>(R.id.menuQRCode)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuPengaturan)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuLogout)?.setOnClickListener(null)
+                sidebarView.findViewById<androidx.cardview.widget.CardView>(R.id.cardUserProfile)?.setOnClickListener(null)
             }
             if (::drawerLayout.isInitialized) {
                 drawerLayout.setDrawerListener(null)

@@ -199,9 +199,9 @@ class ScanQrActivity : BaseSiswaActivity() {
 
 
         val statusColor = when (data.status.trim().uppercase()) {
-            "HADIR" -> getColor(android.R.color.holo_green_dark)
-            "ALPHA" -> getColor(android.R.color.holo_red_dark)
-            else -> getColor(android.R.color.holo_orange_dark)
+            "HADIR" -> getColor(R.color.status_success)
+            "ALPHA" -> getColor(R.color.status_error)
+            else -> getColor(R.color.status_warning)
         }
         tvAttendanceStatus.setTextColor(statusColor)
         
@@ -242,8 +242,8 @@ class ScanQrActivity : BaseSiswaActivity() {
         tvStatus.text = message
         tvStatus.visibility = View.VISIBLE
         tvStatus.setTextColor(
-            if (isSuccess) getColor(android.R.color.holo_green_dark)
-            else getColor(android.R.color.holo_red_dark)
+            if (isSuccess) getColor(R.color.status_success)
+            else getColor(R.color.status_error)
         )
     }
 

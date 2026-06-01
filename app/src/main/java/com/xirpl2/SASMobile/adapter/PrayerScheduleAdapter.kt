@@ -136,8 +136,9 @@ class PrayerScheduleAdapter(
 
         fun bind(item: PrayerScheduleItem.PrayerCard) {
             val jadwal = item.jadwal
+            val isPlaceholder = jadwal.id == 0
 
-            tvPrayerName.text = "Sholat ${jadwal.jenis_sholat}"
+            tvPrayerName.text = jadwal.jenis_sholat
 
             if (!jadwal.hari.isNullOrEmpty()) {
                 tvPrayerDay.text = jadwal.hari
@@ -173,9 +174,14 @@ class PrayerScheduleAdapter(
                 btnEdit.setOnClickListener {
                     onEditPrayer(jadwal.jenis_sholat)
                 }
-                btnDelete.visibility = View.VISIBLE
-                btnDelete.setOnClickListener {
-                    onDeletePrayer(jadwal)
+                // Hide delete for placeholder cards (no schedule entry yet)
+                if (isPlaceholder) {
+                    btnDelete.visibility = View.GONE
+                } else {
+                    btnDelete.visibility = View.VISIBLE
+                    btnDelete.setOnClickListener {
+                        onDeletePrayer(jadwal)
+                    }
                 }
             } else {
                 btnEdit.visibility = View.GONE

@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.card.MaterialCardView
 import com.xirpl2.SASMobile.model.DhuhaJurusanData
 
 class JurusanAdapter(
@@ -18,6 +19,7 @@ class JurusanAdapter(
     }
 
     inner class JurusanViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val cardJurusan: MaterialCardView = itemView.findViewById(R.id.cardJurusan)
         val tvNamaJurusan: TextView = itemView.findViewById(R.id.tvNamaJurusan)
         val tvLabelHariIni: TextView = itemView.findViewById(R.id.tvLabelHariIni)
     }
@@ -30,13 +32,11 @@ class JurusanAdapter(
 
     override fun onBindViewHolder(holder: JurusanViewHolder, position: Int) {
         val jurusanData = listJurusan[position]
-        
-        
+
         holder.tvNamaJurusan.text = jurusanData.jurusan
-        
-        // Tampilkan waktu sholat jika tersedia
+
         if (jurusanData.jadwal.isNotEmpty()) {
-            val jadwal = jurusanData.jadwal[0] 
+            val jadwal = jurusanData.jadwal[0]
             val rawMulai = jadwal.jam_mulai
             val rawSelesai = jadwal.jam_selesai
 
@@ -44,7 +44,7 @@ class JurusanAdapter(
             val waktuSelesai = if (rawSelesai.length >= 5) rawSelesai.substring(0, 5) else rawSelesai
 
             if (waktuMulai.isNotEmpty() && waktuSelesai.isNotEmpty()) {
-                holder.tvLabelHariIni.text = "Dhuha ${waktuMulai}-${waktuSelesai}"
+                holder.tvLabelHariIni.text = "Dhuha ${waktuMulai}-${waktuSelesai} WIB"
             } else {
                 holder.tvLabelHariIni.text = "Dhuha Hari Ini"
             }
@@ -53,8 +53,7 @@ class JurusanAdapter(
         }
 
         val warnaJurusan = Color.parseColor(JurusanHelper.getColorForJurusan(jurusanData.jurusan))
-        holder.tvNamaJurusan.setTextColor(warnaJurusan)
-        holder.tvLabelHariIni.setTextColor(warnaJurusan)
+        holder.cardJurusan.setCardBackgroundColor(warnaJurusan)
     }
 
     override fun getItemCount(): Int = listJurusan.size

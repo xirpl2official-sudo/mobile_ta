@@ -62,13 +62,11 @@ class BerandaGuruActivity : BaseAdminActivity() {
         initializeViews()
         setupDrawerAndSidebar()
         setupMenuIcon()
-        
-        
+
         findViewById<android.view.View>(R.id.main)?.post {
             loadStatistik()
             setupJadwalSholat()
             setupJurusanList()
-            loadNotificationCount()
         }
     }
     
@@ -204,42 +202,12 @@ class BerandaGuruActivity : BaseAdminActivity() {
         loadStatistik()
         setupJadwalSholat()
         setupJurusanList()
-        loadNotificationCount()
         clockHandler.postDelayed(clockRunnable, clockRefreshInterval)
     }
     
     override fun onPause() {
         super.onPause()
         clockHandler.removeCallbacks(clockRunnable)
-    }
-    
-    private fun loadNotificationCount() {
-        val token = getAuthToken()
-        if (token.isEmpty()) return
-        
-        lifecycleScope.launch {
-            try {
-                val response = RetrofitClient.apiService.getNotifications("Bearer $token")
-                if (response.isSuccessful) {
-                    val count = response.body()?.pagination?.totalRecords ?: 0
-                    runOnUiThread {
-                        if (!isFinishing && !isDestroyed) {
-                            val tvNotifBadge = findViewById<TextView>(R.id.tvNotifBadge)
-                            if (tvNotifBadge != null) {
-                                if (count > 0) {
-                                    tvNotifBadge.visibility = android.view.View.VISIBLE
-                                    tvNotifBadge.text = if (count > 99) "99+" else count.toString()
-                                } else {
-                                    tvNotifBadge.visibility = android.view.View.GONE
-                                }
-                            }
-                        }
-                    }
-                }
-            } catch (e: Exception) {
-                Log.w(TAG, "Failed to load notification count: ${e.message}")
-            }
-        }
     }
     
     private fun setupJurusanList() {
@@ -255,7 +223,7 @@ class BerandaGuruActivity : BaseAdminActivity() {
                         jurusanAdapter = JurusanAdapter(safeData)
 
                         rvJurusan.apply {
-                            layoutManager = LinearLayoutManager(this@BerandaGuruActivity)
+                            layoutManager = androidx.recyclerview.widget.GridLayoutManager(this@BerandaGuruActivity, 2)
                             adapter = jurusanAdapter
                             isNestedScrollingEnabled = false
                         }
@@ -267,7 +235,7 @@ class BerandaGuruActivity : BaseAdminActivity() {
                         jurusanAdapter = JurusanAdapter(emptyList<DhuhaJurusanData>())
 
                         rvJurusan.apply {
-                            layoutManager = LinearLayoutManager(this@BerandaGuruActivity)
+                            layoutManager = androidx.recyclerview.widget.GridLayoutManager(this@BerandaGuruActivity, 2)
                             adapter = jurusanAdapter
                             isNestedScrollingEnabled = false
                         }

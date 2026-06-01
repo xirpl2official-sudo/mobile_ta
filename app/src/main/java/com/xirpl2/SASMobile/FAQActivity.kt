@@ -7,6 +7,8 @@ import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.xirpl2.SASMobile.adapter.FAQAdapter
@@ -34,6 +36,13 @@ class FAQActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_faq)
+
+        val topBar = findViewById<View>(R.id.topBarContent)
+        ViewCompat.setOnApplyWindowInsetsListener(topBar) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            view.setPadding(view.paddingLeft, systemBars.top, view.paddingRight, view.paddingBottom)
+            insets
+        }
 
         initViews()
         setupRecyclerView()

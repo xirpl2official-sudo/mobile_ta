@@ -162,7 +162,7 @@ class StaffQRActivity : BaseActivity() {
         }
         startCountdown(qrData.expires_at)
         tvStatus.text = "QR Code Aktif"
-        tvStatus.setTextColor(getColor(android.R.color.holo_green_dark))
+        tvStatus.setTextColor(getColor(R.color.status_success))
         tvInstructions.text = "Tampilkan QR code ini di layar/proyektor.\nSiswa dapat memindai untuk absensi."
         tvInstructions.visibility = View.VISIBLE
     }
@@ -189,7 +189,7 @@ class StaffQRActivity : BaseActivity() {
                     val minutes = (millisUntilFinished / 1000) / 60
                     val seconds = (millisUntilFinished / 1000) % 60
                     tvCountdown.text = String.format("Berlaku: %02d:%02d", minutes, seconds)
-                    tvCountdown.setTextColor(getColor(if (millisUntilFinished < 60000) android.R.color.holo_red_light else android.R.color.holo_green_dark))
+                    tvCountdown.setTextColor(getColor(if (millisUntilFinished < 60000) R.color.status_error else R.color.status_success))
                 }
                 override fun onFinish() { onQRCodeExpired() }
             }.start()
@@ -211,9 +211,9 @@ class StaffQRActivity : BaseActivity() {
 
     private fun onQRCodeExpired() {
         tvCountdown.text = "QR Code Kadaluarsa"
-        tvCountdown.setTextColor(getColor(android.R.color.holo_red_dark))
+        tvCountdown.setTextColor(getColor(R.color.status_error))
         tvStatus.text = "QR Code Expired"
-        tvStatus.setTextColor(getColor(android.R.color.holo_red_dark))
+        tvStatus.setTextColor(getColor(R.color.status_error))
         tvInstructions.text = "Tekan tombol refresh untuk generate QR code baru"
         ivQRCode.alpha = 0.5f
         btnRefresh.visibility = View.VISIBLE

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Dark theme color overrides -->
-    <color name="background">#000000</color>
-    <color name="surface">#121212</color>
-    <color name="surface_container">#121212</color>
+    <color name="background">#111314</color>
+    <color name="surface">#1C1D1F</color>
+    <color name="surface_container">#1C1D1F</color>
     <color name="on_background">#F1F5F9</color>
     <color name="on_surface">#F1F5F9</color>
     <color name="outline">#334155</color>
@@ -12,13 +12,13 @@
     <color name="black">#FFFFFF</color>
     <color name="blue_theme_light">#1E3A5F</color>
     <color name="bg_profile_card">#1E3A5F</color>
-    <color name="bg_sidebar">#121212</color>
+    <color name="bg_sidebar">#1C1D1F</color>
 
     <!-- Slate color scale inversion for dark mode -->
-    <color name="slate_50">#000000</color>
-    <color name="slate_100">#121212</color>
-    <color name="slate_200">#1E1E1E</color>
-    <color name="slate_300">#2C2C2C</color>
+    <color name="slate_50">#111314</color>
+    <color name="slate_100">#1C1D1F</color>
+    <color name="slate_200">#27292A</color>
+    <color name="slate_300">#333538</color>
     <color name="slate_400">#64748B</color>
     <color name="slate_500">#94A3B8</color>
     <color name="slate_600">#CBD5E1</color>
@@ -30,7 +30,7 @@
     <color name="text_secondary">#CBD5E1</color>
     <color name="text_hint">#64748B</color>
     <color name="divider">#334155</color>
-    <color name="background_gray">#121212</color>
+    <color name="background_gray">#1C1D1F</color>
 
     <!-- Semantic background colors for dark theme -->
     <color name="bg_card_green">#1A3A1A</color>
@@ -38,7 +38,7 @@
     <color name="bg_card_orange">#3A2A1A</color>
     <color name="bg_card_yellow">#3A3A1A</color>
     <color name="bg_card_sky">#1A2A3A</color>
-    <color name="bg_card_gray">#1E1E1E</color>
+    <color name="bg_card_gray">#27292A</color>
     <color name="blue_700">#93C5FD</color>
 
     <!-- Badge colors dark -->
@@ -62,8 +62,43 @@
     <color name="status_error_bg">#3A1A1A</color>
     <color name="status_warning_bg">#3A2A1A</color>
     <color name="status_success_bg">#1A3A1A</color>
-    <color name="qr_background">#1E1E1E</color>
-    <color name="qr_surface">#121212</color>
+    <color name="qr_background">#1C1D1F</color>
+    <color name="qr_surface">#111314</color>
     <color name="qr_text_primary">#F1F5F9</color>
     <color name="qr_text_secondary">#94A3B8</color>
+
+    <!-- Named colors dark -->
+    <color name="gray">#94A3B8</color>
+    <color name="gray_light">#64748B</color>
+    <color name="green">#34D399</color>
+    <color name="red">#F87171</color>
+    <color name="orange">#FBBF24</color>
+    <color name="blue">#60A5FA</color>
+    <color name="green_700">#6EE7B7</color>
+    <color name="orange_400">#FBBF24</color>
+    <color name="blue_500">#60A5FA</color>
+    <color name="qr_primary">#93C5FD</color>
+
+    <!-- Sidebar colors dark -->
+    <color name="sidebar_text_secondary">#94A3B8</color>
+    <color name="sidebar_bg">#1C1D1F</color>
+    <color name="sidebar_active">#1E3A5F</color>
+    <color name="sidebar_text">#F1F5F9</color>
+    <color name="icon_sidebar_inactive">#64748B</color>
+    <color name="text_sidebar_inactive">#94A3B8</color>
+
+    <!-- Semantic status colors dark -->
+    <color name="status_error">#F87171</color>
+    <color name="status_warning">#FBBF24</color>
+    <color name="status_success">#34D399</color>
+    <color name="text_danger">#F87171</color>
+
+    <!-- Primary colors dark -->
+    <color name="primary">#90CAF9</color>
+    <color name="primary_dark">#64B5F6</color>
+    <color name="primary_light">#1565C0</color>
+    <color name="blue_primary">#90CAF9</color>
+    <color name="blue_theme">#64B5F6</color>
+    <color name="blue_theme_dark">#90CAF9</color>
+    <color name="secondary">#90CAF9</color>
 </resources>
