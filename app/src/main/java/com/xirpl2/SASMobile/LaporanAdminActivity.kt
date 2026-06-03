@@ -10,10 +10,12 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -67,16 +69,15 @@ class LaporanAdminActivity : BaseAdminActivity() {
     private lateinit var emptyStateContainer: View
     private lateinit var recyclerAbsensi: RecyclerView
 
-    // Pagination views
-    private lateinit var btnPrevPage: MaterialButton
-    private lateinit var tvPageInfo: TextView
-    private lateinit var btnNextPage: MaterialButton
+    // Pagination
+    private lateinit var paginationContainer: LinearLayout
 
     // Buttons
     private lateinit var btnDownloadLaporan: MaterialButton
     private lateinit var btnExportExcel: MaterialButton
     private lateinit var btnExportPdf: MaterialButton
 
+    private lateinit var swipeRefresh: SwipeRefreshLayout
     private lateinit var absensiAdapter: LaporanAbsensiAdapter
 
     private var currentPageItems = listOf<AbsensiStaffItem>()
@@ -127,6 +128,12 @@ class LaporanAdminActivity : BaseAdminActivity() {
 
         updateDateDisplay()
         loadData()
+        swipeRefresh = findViewById(R.id.swipeRefresh)
+        swipeRefresh.setOnRefreshListener {
+            loadData()
+            fetchChartData()
+        }
+
         fetchChartData()
     }
 
@@ -158,9 +165,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
         emptyStateContainer = findViewById(R.id.emptyState)
         recyclerAbsensi = findViewById(R.id.recyclerAbsensi)
 
-        btnPrevPage = findViewById(R.id.btnPrevPage)
-        tvPageInfo = findViewById(R.id.tvPageInfo)
-        btnNextPage = findViewById(R.id.btnNextPage)
+        paginationContainer = findViewById(R.id.paginationContainer)
 
         btnDownloadLaporan = findViewById(R.id.btnDownloadLaporan)
         btnExportExcel = findViewById(R.id.btnExportExcel)
@@ -177,18 +182,6 @@ class LaporanAdminActivity : BaseAdminActivity() {
     }
 
     private fun setupPagination() {
-        btnPrevPage.setOnClickListener {
-            if (currentPage > 1 && !isLoading) {
-                currentPage--
-                loadData()
-            }
-        }
-        btnNextPage.setOnClickListener {
-            if (currentPage < totalPages && !isLoading) {
-                currentPage++
-                loadData()
-            }
-        }
         updatePaginationUI()
     }
 
@@ -427,6 +420,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
                 limit = pageSize
             ).fold(
                 onSuccess = { data ->
+                    if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                     runOnUiThread {
                         if (isFinishing || isDestroyed) return@runOnUiThread
                         currentPageItems = data.absensi
@@ -451,6 +445,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
                     }
                 },
                 onFailure = { error ->
+                    if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                     runOnUiThread {
                         if (isFinishing || isDestroyed) return@runOnUiThread
                         showLoading(false)
@@ -463,9 +458,83 @@ class LaporanAdminActivity : BaseAdminActivity() {
     }
 
     private fun updatePaginationUI() {
-        btnPrevPage.isEnabled = currentPage > 1
-        btnNextPage.isEnabled = currentPage < totalPages
-        tvPageInfo.text = "Halaman $currentPage dari $totalPages"
+        paginationContainer.removeAllViews()
+        if (totalPages <= 1) return
+
+        val maxVisible = 5
+        var startPage = maxOf(1, currentPage - maxVisible / 2)
+        val endPage = minOf(totalPages, startPage + maxVisible - 1)
+        startPage = maxOf(1, endPage - maxVisible + 1)
+
+        if (currentPage > 1) {
+            val prevBtn = createPageButton("‹") {
+                if (!isLoading) { currentPage--; loadData() }
+            }
+            paginationContainer.addView(prevBtn)
+        }
+
+        if (startPage > 1) {
+            paginationContainer.addView(createPageButton("1") { currentPage = 1; loadData() })
+            if (startPage > 2) {
+                val dots = TextView(this).apply {
+                    text = "…"
+                    setPadding(8, 0, 8, 0)
+                    gravity = android.view.Gravity.CENTER
+                    textSize = 14f
+                    setTextColor(getColor(R.color.text_secondary))
+                }
+                paginationContainer.addView(dots)
+            }
+        }
+
+        for (i in startPage..endPage) {
+            val btn = createPageButton(i.toString()) {
+                if (!isLoading && currentPage != i) { currentPage = i; loadData() }
+            }
+            if (i == currentPage) {
+                btn.setBackgroundResource(R.drawable.bg_pagination_active)
+                btn.setTextColor(getColor(android.R.color.white))
+            }
+            paginationContainer.addView(btn)
+        }
+
+        if (endPage < totalPages) {
+            if (endPage < totalPages - 1) {
+                val dots = TextView(this).apply {
+                    text = "…"
+                    setPadding(8, 0, 8, 0)
+                    gravity = android.view.Gravity.CENTER
+                    textSize = 14f
+                    setTextColor(getColor(R.color.text_secondary))
+                }
+                paginationContainer.addView(dots)
+            }
+            paginationContainer.addView(createPageButton(totalPages.toString()) { currentPage = totalPages; loadData() })
+        }
+
+        if (currentPage < totalPages) {
+            val nextBtn = createPageButton("›") {
+                if (!isLoading) { currentPage++; loadData() }
+            }
+            paginationContainer.addView(nextBtn)
+        }
+    }
+
+    private fun createPageButton(text: String, onClick: () -> Unit): TextView {
+        return TextView(this).apply {
+            this.text = text
+            textSize = 13f
+            setTextColor(getColor(R.color.blue_theme))
+            setPadding(24, 12, 24, 12)
+            gravity = android.view.Gravity.CENTER
+            setBackgroundResource(R.drawable.bg_pagination_button)
+            val params = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply { setMargins(4, 0, 4, 0) }
+            layoutParams = params
+            setOnClickListener { onClick() }
+        }
     }
 
     // ===== FORMAT PICKER (SIMPLE BOTTOM SHEET) =====

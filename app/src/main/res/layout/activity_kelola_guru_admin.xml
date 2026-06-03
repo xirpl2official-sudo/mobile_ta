@@ -56,7 +56,7 @@
                 android:layout_marginStart="8dp"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/btnMore"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/logoSekolah"
                 app:layout_constraintTop_toTopOf="parent">
 
@@ -79,18 +79,6 @@
                     android:textColor="#FFFFFF"
                     android:textSize="12sp" />
             </LinearLayout>
-
-            <ImageView
-                android:id="@+id/btnMore"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:padding="12dp"
-                android:contentDescription="Menu lainnya"
-                android:src="@drawable/ic_more_vert"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:tint="@android:color/white" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -138,17 +126,23 @@
             app:layout_constraintTop_toBottomOf="@id/searchCard" />
 
         <!-- List -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerGuru"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefresh"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="8dp"
-            android:clipToPadding="false"
-            android:paddingBottom="100dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvCountInfo" />
+            app:layout_constraintTop_toBottomOf="@id/tvCountInfo">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerGuru"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingBottom="100dp" />
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <!-- Loading -->
         <ProgressBar

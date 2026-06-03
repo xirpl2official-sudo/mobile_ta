@@ -18,8 +18,6 @@ import com.google.android.material.button.MaterialButton
 import com.xirpl2.SASMobile.model.JadwalSholat
 import com.xirpl2.SASMobile.model.JadwalSholatData
 import com.xirpl2.SASMobile.model.QRCodeData
-import com.xirpl2.SASMobile.model.StatusSholat
-import com.xirpl2.SASMobile.repository.BerandaRepository
 import com.xirpl2.SASMobile.repository.QRCodeRepository
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -37,21 +35,15 @@ class StaffQRActivity : BaseActivity() {
     private lateinit var containerQR: View
 
     private val repository = QRCodeRepository()
-    private val berandaRepository = BerandaRepository()
     private var countDownTimer: CountDownTimer? = null
     private var currentQRData: QRCodeData? = null
     
     private val TAG = "StaffQRActivity"
 
-    private val allowedPrayers = JadwalSholatHelper.ALLOWED_PRAYERS
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_staff_qr)
         window.statusBarColor = 0xFF2886D6.toInt()
-        WindowInsetsControllerCompat(window, window.decorView).apply {
-            isAppearanceLightStatusBars = true
-        }
 
         initializeViews()
         setupClickListeners()
@@ -83,68 +75,35 @@ class StaffQRActivity : BaseActivity() {
         }
     }
 
-    private fun getStatusFromAPI(jamMulai: String, jamSelesai: String): StatusSholat {
-        return JadwalSholatHelper.getStatusSholat(jamMulai, jamSelesai)
-    }
-    
     private fun loadQRCode() {
         val token = getAuthToken()
-        
+
         if (token.isEmpty()) {
             showError("Sesi telah berakhir, silakan login kembali")
             return
         }
-        
+
         showLoading()
-        
-        lifecycleScope.launch {
-            berandaRepository.getJadwalSholat(token).fold(
-                onSuccess = { jadwalList ->
-                    val upcomingPrayer = JadwalSholatHelper.getUpcomingPrayerFromList(jadwalList)
-                    
-                    if (upcomingPrayer == null) {
-                        runOnUiThread {
-                            showError("Tidak ada jadwal sholat saat ini")
-                        }
-                        return@fold
-                    }
-                    
-                    if (upcomingPrayer.status == StatusSholat.SELESAI) {
-                        runOnUiThread {
-                            showError("Waktu sholat ${upcomingPrayer.namaSholat} telah berakhir.\n\nQR Code tidak tersedia di luar waktu sholat.")
-                        }
-                        return@fold
-                    }
-                    
-                    generateQRCode(token)
-                },
-                onFailure = { error ->
-                    runOnUiThread {
-                        showError("Gagal memuat jadwal sholat: ${error.message}")
-                    }
-                }
-            )
-        }
-    }
-    
-    private fun generateQRCode(token: String) {
+
         lifecycleScope.launch {
             repository.generateQRCode(token).fold(
                 onSuccess = { qrData ->
+                    if (isFinishing || isDestroyed) return@fold
                     runOnUiThread {
-                        if (!allowedPrayers.contains(qrData.jenis_sholat)) {
-                            showError("QR Code hanya tersedia untuk sholat Dhuha, Dhuhur, dan Jumat.")
-                            return@runOnUiThread
-                        }
-                        
                         currentQRData = qrData
                         displayQRCode(qrData)
                         showQRCode()
                     }
                 },
                 onFailure = { error ->
+                    if (isFinishing || isDestroyed) return@fold
                     runOnUiThread {
-                        showError(error.message ?: "Gagal generate QR code")
+                        val msg = error.message ?: "Gagal generate QR code"
+                        if (msg.contains("404") || msg.contains("Tidak ada jadwal")) {
+                            showError("Tidak ada jadwal sholat aktif saat ini.\n\nQR Code akan otomatis muncul saat waktu sholat tiba.")
+                        } else {
+                            showError(msg)
+                        }
                     }
                 }
             )

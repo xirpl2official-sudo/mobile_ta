@@ -369,8 +369,8 @@ data class BarcodeData(
     val expiresAt: String,
     @SerializedName("jenis_sholat")
     val jenisSholat: String,
-    @SerializedName("id_template")
-    val idTemplate: Int
+    @SerializedName("id_jenis")
+    val idJenis: Int
 )
 
 data class BarcodeVerifyRequest(

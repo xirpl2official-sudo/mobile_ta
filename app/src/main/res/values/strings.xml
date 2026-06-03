@@ -61,12 +61,13 @@
     
     <string name="TotalSiswa">Total Siswa</string>
     <string name="TotalHadirHariIni">Total Hadir Hari Ini</string>
+    <string name="TotalAlpha">Total Alpha</string>
     <string name="IzinSakit">Total Izin / Sakit</string>
     <string name="Kehadiran">Kehadiran</string>
     <string name="Alpha">Alpha</string>
     <string name="JadwalSholatTerdekat">Jadwal Sholat Terdekat</string>
     <string name="SilahkanHariIni">Silahkan Hari Ini</string>
-    <string name="icon">Icon</string>
+    <string name="icon">Ikon</string>
 
     
     <string name="Pengaturan">Pengaturan</string>
@@ -159,7 +160,7 @@
     <string name="Izin">Izin</string>
     <string name="Sakit">Sakit</string>
     <string name="DataAbsensi0Entri">Data Absensi (0 entri)</string>
-    <string name="ExportExcel">Export Excel</string>
+    <string name="ExportExcel">Ekspor Excel</string>
     <string name="TidakAdaDataAbsensiAlt">Tidak ada data absensi</string>
     <string name="Nama">Nama</string>
 

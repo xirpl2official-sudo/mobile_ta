@@ -9,6 +9,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -27,6 +28,7 @@ class DetailAbsensiActivity : BaseActivity() {
     private lateinit var tvDateTitle: TextView
     private lateinit var tvTitle: TextView
 
+    private lateinit var swipeRefresh: SwipeRefreshLayout
     private val repository = BerandaRepository()
     
     private var studentNis: String? = null
@@ -54,6 +56,9 @@ class DetailAbsensiActivity : BaseActivity() {
 
         setupDateStrip()
         setupPrayerList()
+        swipeRefresh = findViewById(R.id.swipeRefresh)
+        swipeRefresh.setOnRefreshListener { loadAttendanceData() }
+
         loadAttendanceData()
 
         findViewById<View>(R.id.btnTutup).setOnClickListener {
@@ -124,6 +129,7 @@ class DetailAbsensiActivity : BaseActivity() {
         lifecycleScope.launch {
             repository.getJadwalSholat(token).fold(
                 onSuccess = { jadwals ->
+                    if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                     val isDhuhaScheduled = jadwals.any { 
                         it.jenis_sholat.equals("Dhuha", ignoreCase = true) && 
                                 (it.jurusan.equals("Semua Jurusan", ignoreCase = true) || it.jurusan.equals(major, ignoreCase = true))
@@ -141,6 +147,7 @@ class DetailAbsensiActivity : BaseActivity() {
                     }
                 },
                 onFailure = {
+                    if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                     runOnUiThread { itemDhuha?.visibility = View.GONE }
                 }
             )
@@ -161,6 +168,7 @@ class DetailAbsensiActivity : BaseActivity() {
                 filters = filtersMap
             ).fold(
                 onSuccess = { historyStaffData ->
+                    if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                     runOnUiThread {
                         val absensiList = historyStaffData.absensi
                         tvHadirCount.text = absensiList.count { it.status.equals("HADIR", true) }.toString()
@@ -171,6 +179,7 @@ class DetailAbsensiActivity : BaseActivity() {
                     }
                 },
                 onFailure = { error ->
+                    if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                     runOnUiThread {
                         Toast.makeText(this@DetailAbsensiActivity, "Gagal memuat data: ${error.message}", Toast.LENGTH_SHORT).show()
                     }

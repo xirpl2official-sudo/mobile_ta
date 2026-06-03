@@ -6,6 +6,7 @@ import android.text.TextWatcher
 import android.view.View
 import android.widget.*
 import androidx.lifecycle.lifecycleScope
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -37,6 +38,7 @@ class KelolaKelasActivity : BaseAdminActivity() {
     
     private var selectedJurusan = "Semua Jurusan"
     private var searchQuery = ""
+    private lateinit var swipeRefresh: SwipeRefreshLayout
     private var searchJob: Job? = null
 
     override fun getCurrentMenuItem(): AdminMenuItem = AdminMenuItem.KELOLA_KELAS
@@ -56,6 +58,12 @@ class KelolaKelasActivity : BaseAdminActivity() {
         setupMenuIcon()
         setupRecyclerView()
         setupListeners()
+
+        swipeRefresh = findViewById(R.id.swipeRefresh)
+        swipeRefresh.setOnRefreshListener {
+            loadData()
+            loadStaffList()
+        }
 
         loadData()
         loadStaffList()
@@ -119,6 +127,7 @@ class KelolaKelasActivity : BaseAdminActivity() {
         lifecycleScope.launch {
             repository.getAdminManagementKelas(token).fold(
                 onSuccess = { list ->
+                    if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                     allKelasList.clear()
                     allKelasList.addAll(list)
                     
@@ -130,6 +139,7 @@ class KelolaKelasActivity : BaseAdminActivity() {
                     progressLoading.visibility = View.GONE
                 },
                 onFailure = { error ->
+                    if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                     progressLoading.visibility = View.GONE
                     Toast.makeText(this@KelolaKelasActivity, "Gagal memuat data: ${error.message}", Toast.LENGTH_SHORT).show()
                 }
@@ -175,9 +185,10 @@ class KelolaKelasActivity : BaseAdminActivity() {
                     "TKJ" -> R.drawable.logo_tkj
                     "DKV" -> R.drawable.logo_dkv
                     "TEI" -> R.drawable.logo_tei
-                    "BC" -> R.drawable.logo_bc
-                    "TMT" -> R.drawable.logo_mt
+                    "BC", "BROADCASTING" -> R.drawable.logo_bc
+                    "TMT", "MEKATRONIKA" -> R.drawable.logo_mt
                     "TAV" -> R.drawable.logo_tav
+                    "ANM", "ANIMASI" -> R.drawable.logo_animasi
                     else -> R.drawable.ic_class
                 }
                 JurusanGroup(

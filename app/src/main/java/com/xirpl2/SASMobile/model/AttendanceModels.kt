@@ -11,8 +11,6 @@ data class AttendanceCodeData(
     val code: String,
     @SerializedName("expires_in")
     val expiresIn: Int,
-    @SerializedName("id_template")
-    val idTemplate: Int?,
     @SerializedName("jenis_sholat")
     val jenisSholat: String?,
     @SerializedName("id_jenis")

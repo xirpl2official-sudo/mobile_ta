@@ -65,7 +65,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Beranda"
-            android:textColor="#FFFFFF"
+            android:textColor="@android:color/white"
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@id/logoSekolah"
@@ -79,7 +79,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="SMK Negeri 2 Singosari"
-            android:textColor="#FFFFFF"
+            android:textColor="@android:color/white"
             android:textSize="12sp"
             android:ellipsize="end"
             android:maxLines="1"
@@ -93,21 +93,28 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/scrollContent"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefresh"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:clipToPadding="false"
         app:layout_constraintTop_toBottomOf="@id/topBarContent"
         app:layout_constraintBottom_toTopOf="@id/VectorBawah"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollContent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false">
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingHorizontal="12dp"
-            android:paddingVertical="16dp">
+            android:paddingVertical="16dp"
+            android:clipChildren="false"
+            android:clipToPadding="false">
 
             
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -115,6 +122,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:paddingBottom="8dp"
+                android:clipChildren="false"
+                android:clipToPadding="false"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
@@ -421,8 +431,9 @@
                             <ImageView
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
+                                android:contentDescription="@string/Alpha"
                                 android:src="@drawable/ic_peringatan"
-                                app:tint="#EF4444"
+                                app:tint="@color/status_error"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -470,6 +481,7 @@
                         android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:background="@drawable/bg_circle_light_blue_ripple"
+                        android:contentDescription="Buka Presensi"
                         android:src="@drawable/ic_presensi"
                         android:padding="12dp"
                         app:tint="@color/blue_theme" />
@@ -498,6 +510,7 @@
                         android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:background="@drawable/bg_circle_light_blue_ripple"
+                        android:contentDescription="Buka Laporan"
                         android:src="@drawable/ic_statistik"
                         android:padding="12dp"
                         app:tint="@color/blue_theme" />
@@ -526,6 +539,7 @@
                         android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:background="@drawable/bg_circle_light_blue_ripple"
+                        android:contentDescription="Buka Data Siswa"
                         android:src="@drawable/users"
                         android:padding="12dp"
                         app:tint="@color/blue_theme" />
@@ -554,6 +568,7 @@
                         android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:background="@drawable/bg_circle_light_blue_ripple"
+                        android:contentDescription="Buka Jadwal Sholat"
                         android:src="@drawable/ic_jadwal"
                         android:padding="12dp"
                         app:tint="@color/blue_theme" />
@@ -656,7 +671,7 @@
                                 android:layout_height="wrap_content"
                                 android:background="@drawable/bg_badge_berlangsung"
                                 android:text="Berlangsung"
-                                android:textColor="#FFFFFF"
+                                android:textColor="@android:color/white"
                                 android:textSize="10sp"
                                 android:textStyle="bold"
                                 android:visibility="gone"
@@ -795,7 +810,7 @@
                 android:visibility="gone"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="0dp"
-                app:strokeColor="#FACC15"
+                app:strokeColor="@color/status_warning"
                 app:strokeWidth="1dp"
                 app:cardBackgroundColor="@color/bg_card_yellow"
                 app:layout_constraintTop_toBottomOf="@id/cardJurusanDhuhaHariIni"
@@ -814,7 +829,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:src="@drawable/ic_peringatan"
-                        app:tint="#A16207" />
+                        app:tint="@color/status_warning" />
 
                     <TextView
                         android:id="@+id/tvUnregisteredCount"
@@ -823,7 +838,7 @@
                         android:layout_weight="1"
                         android:layout_marginStart="12dp"
                         android:text="Beberapa siswa belum mendaftarkan perangkat"
-                        android:textColor="#854D0E"
+                        android:textColor="@color/text_secondary"
                         android:textSize="13sp"
                         android:textStyle="bold" />
 
@@ -831,7 +846,7 @@
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:src="@drawable/ic_chevron_right"
-                        app:tint="#A16207" />
+                        app:tint="@color/status_warning" />
 
                 </LinearLayout>
 
@@ -840,6 +855,8 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.core.widget.NestedScrollView>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <View
         android:id="@+id/VectorBawah"

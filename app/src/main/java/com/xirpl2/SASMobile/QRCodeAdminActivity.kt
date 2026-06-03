@@ -14,6 +14,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.button.MaterialButton
 import com.xirpl2.SASMobile.network.RetrofitClient
 import kotlinx.coroutines.Job
@@ -48,7 +49,7 @@ class QRCodeAdminActivity : BaseAdminActivity() {
     private var codeRefreshJob: Job? = null
     private var currentBitmap: Bitmap? = null
 
-    private val allowedPrayers = JadwalSholatHelper.ALLOWED_PRAYERS
+    private lateinit var swipeRefresh: SwipeRefreshLayout
 
     private val QR_REFRESH_INTERVAL = 30_000L  // 30 seconds (match desktop)
     private val CODE_REFRESH_INTERVAL = 20_000L // 20 seconds (match desktop)
@@ -71,6 +72,12 @@ class QRCodeAdminActivity : BaseAdminActivity() {
         // Load QR and manual code directly (match desktop - backend handles schedule check)
         loadQRCode()
         loadAttendanceCode()
+
+        swipeRefresh = findViewById(R.id.swipeRefresh)
+        swipeRefresh.setOnRefreshListener {
+            loadQRCode()
+            loadAttendanceCode()
+        }
 
         // Auto-refresh QR every 30s and manual code every 20s (match desktop)
         startAutoRefresh()
@@ -138,25 +145,27 @@ class QRCodeAdminActivity : BaseAdminActivity() {
                 if (response.isSuccessful) {
                     val data = response.body()?.data
                     if (data != null) {
-                        if (!allowedPrayers.contains(data.jenis_sholat)) {
-                            runOnUiThread {
-                                showError("QR Code hanya tersedia untuk sholat Dhuha, Dhuhur, dan Jumat.")
-                            }
-                            return@launch
-                        }
                         runOnUiThread {
                             displayQRCode(data.qr_code, data.jenis_sholat, data.expires_at)
                             showQRCode()
                         }
                     }
                 } else {
-                    if (response.code() == 404) {
-                        runOnUiThread {
-                            showNoSchedule("Tidak ada jadwal sholat aktif saat ini")
+                    runOnUiThread {
+                        when (response.code()) {
+                            404 -> showNoSchedule("Tidak ada jadwal sholat aktif saat ini")
+                            401 -> showError("Sesi telah berakhir, silakan login kembali")
+                            else -> {
+                                if (currentBitmap == null) {
+                                    showError("Gagal memuat QR code (${response.code()})")
+                                }
+                            }
                         }
                     }
                 }
+                if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
             } catch (e: Exception) {
+                if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                 // Silent fail on auto-refresh to avoid spamming user
                 if (currentBitmap == null) {
                     runOnUiThread {
@@ -186,7 +195,9 @@ class QRCodeAdminActivity : BaseAdminActivity() {
                         cardManualCode.visibility = View.GONE
                     }
                 }
+                if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
             } catch (e: Exception) {
+                if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                 // Silent fail on auto-refresh
             }
         }

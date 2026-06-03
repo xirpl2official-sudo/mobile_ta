@@ -57,7 +57,7 @@ class MasukActivity : BaseActivity() {
         private const val KEY_COOLDOWN_UNTIL = "cooldown_until"
     }
 
-    private fun getBruteForcePrefs() = getSharedPreferences(BRUTE_FORCE_PREFS, Context.MODE_PRIVATE)
+    private fun getBruteForcePrefs() = com.xirpl2.SASMobile.utils.SecurePreferences.getBruteForceData(this)
 
     private fun getFailedAttempts(): Int = getBruteForcePrefs().getInt(KEY_FAILED_ATTEMPTS, 0)
 
@@ -73,6 +73,19 @@ class MasukActivity : BaseActivity() {
 
     private fun clearBruteForceState() {
         getBruteForcePrefs().edit().clear().apply()
+    }
+
+    private fun dismissKeyboard() {
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val currentFocus = currentFocus
+        if (currentFocus != null) {
+            imm.hideSoftInputFromWindow(currentFocus.windowToken, 0)
+        }
+    }
+
+    private fun clearFieldErrors() {
+        nisLayout.error = null
+        passwordLayout.error = null
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -152,6 +165,14 @@ class MasukActivity : BaseActivity() {
             AnrDetector.recordUiInteraction()
             safeNavigateTo(GantiKataSandi::class.java)
         }
+
+        // IME "Done" action on password field triggers login
+        etPassword.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE) {
+                loginUser()
+                true
+            } else false
+        }
     }
 
     private fun checkCameraPermission() {
@@ -171,17 +192,27 @@ class MasukActivity : BaseActivity() {
         val cooldownUntil = getCooldownUntil()
         if (cooldownUntil > System.currentTimeMillis()) return
 
+        clearFieldErrors()
+
         val nisOrUsername = etNis.text.toString().trim()
         val password = etPassword.text.toString()
 
-        if (nisOrUsername.isEmpty() || password.isEmpty()) {
-            showToast("Gagal", "NIS/Username dan Password wajib diisi!", MotionToastStyle.ERROR)
+        // Inline field-level validation errors
+        if (nisOrUsername.isEmpty()) {
+            nisLayout.error = "NIS/Username wajib diisi"
+            etNis.requestFocus()
+            return
+        }
+        if (password.isEmpty()) {
+            passwordLayout.error = "Password wajib diisi"
+            etPassword.requestFocus()
             return
         }
 
         // Cancel auto login if manual login is started
         autoLoginJob?.cancel()
 
+        dismissKeyboard()
         btnMasuk.isEnabled = false
         btnMasuk.text = "Masuk..."
 
@@ -258,7 +289,7 @@ class MasukActivity : BaseActivity() {
                 withContext(Dispatchers.Main) {
                     if (isFinishing || isDestroyed) return@withContext
                     onLoginFailed()
-                    showToast("Error", "Error: ${e.message}", MotionToastStyle.ERROR)
+                    showToast("Error", "Terjadi kesalahan jaringan. Periksa koneksi Anda.", MotionToastStyle.ERROR)
                 }
             }
         }

@@ -29,14 +29,22 @@ class PengaturanAkunActivity : BaseActivity() {
     private lateinit var btnBack: ImageView
     private lateinit var cardProfilePhoto: CardView
     private lateinit var tvInitial: TextView
+    private lateinit var tvFotoProfilLabel: TextView
     private lateinit var etNIS: TextView
     private lateinit var etNamaLengkap: TextView
     private lateinit var tvJenisKelamin: TextView
     private lateinit var etEmail: TextView
-    private lateinit var tvChangeEmail: TextView
+    private lateinit var tvChangeEmail: com.google.android.material.button.MaterialButton
+    private lateinit var tilNIS: View
+    private lateinit var tilNamaLengkap: View
+    private lateinit var tilJenisKelamin: View
+    private lateinit var tilEmail: View
+    private lateinit var tilChangeEmail: View
+    private lateinit var cardDeviceChange: View
     
     private var currentUserData: UserData? = null
     private var selectedImageUri: Uri? = null
+    private var userRole: String = ""
     
     private val TAG = "PengaturanAkunActivity"
     
@@ -56,9 +64,21 @@ class PengaturanAkunActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pengaturan_akun)
 
-        
+        window.statusBarColor = androidx.core.content.ContextCompat.getColor(this, R.color.blue_theme)
+        androidx.core.view.WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightStatusBars = false
+
+        val headerContent = findViewById<android.view.View>(R.id.headerContent)
+        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(headerContent) { v, insets ->
+            val statusBars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.statusBars())
+            v.setPadding(v.paddingLeft, statusBars.top, v.paddingRight, v.paddingBottom)
+            insets
+        }
+
         initializeViews()
 
+        val sessionPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this)
+        userRole = sessionPref.getString("user_role", "")?.lowercase() ?: ""
+        applyRoleBasedVisibility()
 
         loadUserDataFromAPI()
         
@@ -70,11 +90,55 @@ class PengaturanAkunActivity : BaseActivity() {
         btnBack = findViewById(R.id.btnBack)
         cardProfilePhoto = findViewById(R.id.cardProfilePhoto)
         tvInitial = findViewById(R.id.tvInitial)
+        tvFotoProfilLabel = findViewById(R.id.tvFotoProfilLabel)
         etNIS = findViewById(R.id.etNIS)
         etNamaLengkap = findViewById(R.id.etNamaLengkap)
         tvJenisKelamin = findViewById(R.id.tvJenisKelamin)
         etEmail = findViewById(R.id.etEmail)
-        tvChangeEmail = findViewById(R.id.tvChangeEmail)
+        tvChangeEmail = findViewById(R.id.tilChangeEmail)
+        tilNIS = findViewById(R.id.tilNIS)
+        tilNamaLengkap = findViewById(R.id.tilNamaLengkap)
+        tilJenisKelamin = findViewById(R.id.tilJenisKelamin)
+        tilEmail = findViewById(R.id.tilEmail)
+        tilChangeEmail = findViewById(R.id.tilChangeEmail)
+        cardDeviceChange = findViewById(R.id.cardDeviceChange)
+    }
+
+    private fun applyRoleBasedVisibility() {
+        when {
+            userRole.contains("admin") -> {
+                tilNIS.visibility = View.GONE
+                tilNamaLengkap.visibility = View.VISIBLE
+                tilJenisKelamin.visibility = View.GONE
+                tilEmail.visibility = View.VISIBLE
+                tilChangeEmail.visibility = View.VISIBLE
+                cardDeviceChange.visibility = View.GONE
+            }
+            userRole.contains("wali") -> {
+                tilNIS.visibility = View.VISIBLE
+                tilNamaLengkap.visibility = View.VISIBLE
+                tilJenisKelamin.visibility = View.GONE
+                tilEmail.visibility = View.VISIBLE
+                tilChangeEmail.visibility = View.VISIBLE
+                cardDeviceChange.visibility = View.GONE
+            }
+            userRole.contains("guru") -> {
+                tilNIS.visibility = View.GONE
+                tilNamaLengkap.visibility = View.VISIBLE
+                tilJenisKelamin.visibility = View.GONE
+                tilEmail.visibility = View.VISIBLE
+                tilChangeEmail.visibility = View.VISIBLE
+                cardDeviceChange.visibility = View.GONE
+            }
+            else -> {
+                tilNIS.visibility = View.VISIBLE
+                tilNamaLengkap.visibility = View.VISIBLE
+                tilJenisKelamin.visibility = View.VISIBLE
+                tilEmail.visibility = View.VISIBLE
+                tilChangeEmail.visibility = View.VISIBLE
+                cardDeviceChange.visibility = View.VISIBLE
+            }
+        }
     }
 
     private fun setupListeners() {
@@ -100,7 +164,7 @@ class PengaturanAkunActivity : BaseActivity() {
             showChangePasswordDialog()
         }
 
-        // Device change request button
+        // Device change request button (only visible for siswa)
         val btnDeviceChangeRequest = findViewById<com.google.android.material.button.MaterialButton>(R.id.btnDeviceChangeRequest)
         btnDeviceChangeRequest?.setOnClickListener {
             showDeviceChangeDialog()
@@ -217,6 +281,7 @@ class PengaturanAkunActivity : BaseActivity() {
         
         if (userData.namaLengkap.isNotEmpty()) {
             tvInitial.text = userData.namaLengkap.first().uppercase()
+            tvFotoProfilLabel.text = userData.namaLengkap
         }
     }
 

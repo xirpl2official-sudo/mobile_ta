@@ -10,6 +10,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -31,6 +32,7 @@ class KelolaGuruAdminActivity : BaseAdminActivity() {
     private lateinit var tvCountInfo: TextView
 
     private lateinit var adapter: KelolaGuruAdminAdapter
+    private lateinit var swipeRefresh: SwipeRefreshLayout
     private var guruList = mutableListOf<GuruItem>()
     private var searchJob: Job? = null
 
@@ -48,6 +50,9 @@ class KelolaGuruAdminActivity : BaseAdminActivity() {
         setupMenuIcon()
         setupRecyclerView()
         setupSearch()
+
+        swipeRefresh = findViewById(R.id.swipeRefresh)
+        swipeRefresh.setOnRefreshListener { loadDataGuru(etSearch.text.toString()) }
 
         loadDataGuru()
     }
@@ -124,6 +129,7 @@ class KelolaGuruAdminActivity : BaseAdminActivity() {
                 )
                 
                 withContext(Dispatchers.Main) {
+                    if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                     progressLoading.visibility = View.GONE
                     if (response.isSuccessful) {
                         val body = response.body()
@@ -152,6 +158,7 @@ class KelolaGuruAdminActivity : BaseAdminActivity() {
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
+                    if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                     progressLoading.visibility = View.GONE
                     Toast.makeText(this@KelolaGuruAdminActivity, "Terjadi kesalahan: ${e.message}", Toast.LENGTH_SHORT).show()
                 }

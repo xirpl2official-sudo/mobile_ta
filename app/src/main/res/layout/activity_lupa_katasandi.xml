@@ -100,26 +100,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textHalaman2" />
 
-    <TextView
-        android:id="@+id/nisLabel"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_xlarge"
-        android:text="NIS"
-        android:textColor="@color/on_background"
-        android:textSize="@dimen/text_small"
-        android:fontFamily="sans-serif-medium"
-        app:layout_constraintEnd_toEndOf="@id/nisLayout"
-        app:layout_constraintStart_toStartOf="@id/nisLayout"
-        app:layout_constraintTop_toBottomOf="@id/VectorAtasO" />
-
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:id="@+id/nisLayout"
         android:layout_width="0dp"
         android:layout_height="56dp"
+        android:layout_marginTop="@dimen/spacing_xlarge"
         android:hint="@string/N.N"
-        android:layout_marginTop="@dimen/spacing_text"
         app:boxBackgroundColor="@color/surface"
         app:boxStrokeColor="@color/stroke_blue_always"
         app:boxStrokeWidth="1dp"
@@ -128,10 +115,10 @@
         app:boxCornerRadiusTopEnd="12dp"
         app:boxCornerRadiusBottomStart="12dp"
         app:boxCornerRadiusBottomEnd="12dp"
-        app:layout_constraintBottom_toTopOf="@id/emailLabel"
+        app:layout_constraintBottom_toTopOf="@id/emailLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/nisLabel"
+        app:layout_constraintTop_toBottomOf="@id/VectorAtasO"
         app:layout_constraintWidth_percent="0.80">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -139,32 +126,20 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:autofillHints="username"
+            android:imeOptions="actionNext"
             android:inputType="text"
+            android:nextFocusDown="@id/et_email"
             android:textColor="@color/on_background"
             android:textSize="@dimen/text_input_hint" />
 
     </com.google.android.material.textfield.TextInputLayout>
-
-    <TextView
-        android:id="@+id/emailLabel"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_medium"
-        android:text="Email"
-        android:textColor="@color/on_background"
-        android:textSize="@dimen/text_small"
-        android:fontFamily="sans-serif-medium"
-        app:layout_constraintBottom_toTopOf="@id/emailLayout"
-        app:layout_constraintEnd_toEndOf="@id/emailLayout"
-        app:layout_constraintStart_toStartOf="@id/emailLayout"
-        app:layout_constraintTop_toBottomOf="@id/nisLayout" />
 
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:id="@+id/emailLayout"
         android:layout_width="0dp"
         android:layout_height="56dp"
-        android:layout_marginTop="@dimen/spacing_text"
+        android:layout_marginTop="@dimen/spacing_medium"
         android:hint="@string/Email"
         app:boxBackgroundColor="@color/surface"
         app:boxStrokeColor="@color/stroke_blue_always"
@@ -177,14 +152,15 @@
         app:layout_constraintBottom_toTopOf="@id/buttonKirim"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/emailLabel"
+        app:layout_constraintTop_toBottomOf="@id/nisLayout"
         app:layout_constraintWidth_percent="0.80">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_email"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:autofillHints="email"
+            android:autofillHints="emailAddress"
+            android:imeOptions="actionDone"
             android:inputType="textEmailAddress"
             android:textColor="@color/on_background"
             android:textSize="@dimen/text_input_hint" />
@@ -196,9 +172,9 @@
         android:layout_width="0dp"
         android:layout_height="56dp"
         android:layout_marginTop="32dp"
-        android:backgroundTint="#2D8FE3"
+        android:backgroundTint="@color/blue_theme"
         android:text="@string/KirimOTP"
-        android:textColor="#FFFFFF"
+        android:textColor="@android:color/white"
         android:textSize="@dimen/text_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -220,6 +196,8 @@
         android:id="@+id/tvKembaliMasuk"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:gravity="center_vertical"
         android:layout_marginTop="16dp"
         android:clickable="true"
         android:focusable="true"
@@ -234,6 +212,8 @@
         android:id="@+id/tvVerifikasiOtp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:gravity="center_vertical"
         android:layout_marginTop="8dp"
         android:clickable="true"
         android:focusable="true"

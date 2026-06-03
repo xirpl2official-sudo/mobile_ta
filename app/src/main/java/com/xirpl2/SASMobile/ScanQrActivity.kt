@@ -204,15 +204,18 @@ class ScanQrActivity : BaseSiswaActivity() {
             else -> getColor(R.color.status_warning)
         }
         tvAttendanceStatus.setTextColor(statusColor)
-        
-        
+
+
         cardResult.visibility = View.VISIBLE
-        
-        
-        showStatus("✓ Kehadiran Anda berhasil dicatat!", true)
-        
-        
-        Toast.makeText(this, "Kehadiran berhasil dicatat!", Toast.LENGTH_SHORT).show()
+
+
+        if (data.valid) {
+            showStatus("Kehadiran Anda berhasil dicatat!", true)
+            Toast.makeText(this, "Kehadiran berhasil dicatat!", Toast.LENGTH_SHORT).show()
+        } else {
+            showStatus("Anda sudah tercatat hadir untuk sholat ini.", false)
+            Toast.makeText(this, "Sudah tercatat sebelumnya", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun formatDate(tanggal: String?): String {

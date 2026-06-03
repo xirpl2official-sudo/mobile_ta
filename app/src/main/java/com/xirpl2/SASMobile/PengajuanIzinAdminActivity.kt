@@ -1,5 +1,6 @@
 package com.xirpl2.SASMobile
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -7,6 +8,7 @@ import android.os.Looper
 import android.view.View
 import android.widget.*
 import androidx.appcompat.widget.SearchView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,8 +23,8 @@ class PengajuanIzinAdminActivity : BaseAdminActivity() {
 
     private lateinit var rvPengajuanIzin: RecyclerView
     private lateinit var adapter: PengajuanIzinAdminAdapter
-    private lateinit var spinnerFilterStatus: Spinner
-    private lateinit var spinnerSort: Spinner
+    private lateinit var spinnerFilterStatus: TextView
+    private lateinit var spinnerSort: TextView
     private lateinit var searchView: SearchView
     private lateinit var tvInfoBanner: TextView
     private lateinit var infoBanner: View
@@ -46,6 +48,7 @@ class PengajuanIzinAdminActivity : BaseAdminActivity() {
     private var searchRunnable: Runnable? = null
     private var dataJob: Job? = null
     
+    private lateinit var swipeRefresh: SwipeRefreshLayout
     private val allData = mutableListOf<PengajuanIzin>()
 
     override fun getCurrentMenuItem(): AdminMenuItem = AdminMenuItem.PENGAJUAN_IZIN
@@ -65,6 +68,9 @@ class PengajuanIzinAdminActivity : BaseAdminActivity() {
         setupFilters()
         setupSearch()
         setupActions()
+
+        swipeRefresh = findViewById(R.id.swipeRefresh)
+        swipeRefresh.setOnRefreshListener { loadData(reset = true) }
 
         loadData(reset = true)
     }
@@ -94,33 +100,45 @@ class PengajuanIzinAdminActivity : BaseAdminActivity() {
     }
 
     private fun setupFilters() {
-        spinnerFilterStatus.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                val selected = parent?.getItemAtPosition(position).toString().lowercase()
-                val mappedStatus = when (selected) {
-                    "semua" -> null
-                    "pending" -> "pending"
-                    "approved" -> "disetujui"
-                    "rejected" -> "ditolak"
-                    else -> null
+        val statusOptions = arrayOf("Semua Status", "Pending", "Approved", "Rejected")
+        spinnerFilterStatus.setOnClickListener {
+            AlertDialog.Builder(this)
+                .setTitle("Filter Status")
+                .setSingleChoiceItems(statusOptions, -1) { dialog, which ->
+                    val selected = statusOptions[which].lowercase()
+                    val mappedStatus = when (selected) {
+                        "semua status" -> null
+                        "pending" -> "pending"
+                        "approved" -> "disetujui"
+                        "rejected" -> "ditolak"
+                        else -> null
+                    }
+                    spinnerFilterStatus.text = statusOptions[which]
+                    if (currentStatusFilter != mappedStatus) {
+                        currentStatusFilter = mappedStatus
+                        loadData(reset = true)
+                    }
+                    dialog.dismiss()
                 }
-                if (currentStatusFilter != mappedStatus) {
-                    currentStatusFilter = mappedStatus
-                    loadData(reset = true)
-                }
-            }
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
+                .setNegativeButton("Batal", null)
+                .show()
         }
 
-        spinnerSort.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                val selected = parent?.getItemAtPosition(position).toString().lowercase().replace(" ", "_")
-                if (currentSort != selected) {
-                    currentSort = selected
-                    loadData(reset = true)
+        val sortOptions = arrayOf("Terbaru", "Terlama")
+        spinnerSort.setOnClickListener {
+            AlertDialog.Builder(this)
+                .setTitle("Urutkan")
+                .setSingleChoiceItems(sortOptions, -1) { dialog, which ->
+                    val selected = sortOptions[which].lowercase().replace(" ", "_")
+                    spinnerSort.text = sortOptions[which]
+                    if (currentSort != selected) {
+                        currentSort = selected
+                        loadData(reset = true)
+                    }
+                    dialog.dismiss()
                 }
-            }
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
+                .setNegativeButton("Batal", null)
+                .show()
         }
     }
 
@@ -165,8 +183,8 @@ class PengajuanIzinAdminActivity : BaseAdminActivity() {
 
     private fun resetFilters() {
         searchView.setQuery("", false)
-        spinnerFilterStatus.setSelection(0)
-        spinnerSort.setSelection(0)
+        spinnerFilterStatus.text = "Semua Status"
+        spinnerSort.text = "Terbaru"
         currentStatusFilter = null
         currentSort = "terbaru"
         searchQuery = ""
@@ -202,6 +220,7 @@ class PengajuanIzinAdminActivity : BaseAdminActivity() {
                 limit
             ).fold(
                 onSuccess = { response ->
+                    if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                     val newData = response.data
                     allData.addAll(newData)
                     totalItems = response.pagination?.totalItems ?: allData.size
@@ -233,6 +252,7 @@ class PengajuanIzinAdminActivity : BaseAdminActivity() {
                     setLoading(false)
                 },
                 onFailure = { error ->
+                    if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                     Toast.makeText(this@PengajuanIzinAdminActivity, "Error: ${error.message}", Toast.LENGTH_SHORT).show()
                     setLoading(false)
                 }

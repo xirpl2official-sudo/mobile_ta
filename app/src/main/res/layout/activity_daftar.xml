@@ -80,25 +80,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textHalaman2" />
 
-    <TextView
-        android:id="@+id/nisLabel"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_xlarge"
-        android:text="@string/NIS"
-        android:textColor="@color/on_background"
-        android:textSize="@dimen/text_small"
-        android:fontFamily="sans-serif-medium"
-        app:layout_constraintEnd_toEndOf="@id/nisLayout"
-        app:layout_constraintStart_toStartOf="@id/nisLayout"
-        app:layout_constraintTop_toBottomOf="@id/vectorAtasOrange" />
-
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:id="@+id/nisLayout"
         android:layout_width="0dp"
         android:layout_height="56dp"
-        android:layout_marginTop="@dimen/spacing_text"
+        android:layout_marginTop="@dimen/spacing_tiny"
         android:hint="@string/NIS"
         app:boxBackgroundColor="@color/surface"
         app:boxStrokeColor="@color/stroke_orange_always"
@@ -108,10 +95,10 @@
         app:boxCornerRadiusTopEnd="12dp"
         app:boxCornerRadiusBottomStart="12dp"
         app:boxCornerRadiusBottomEnd="12dp"
-        app:layout_constraintBottom_toTopOf="@id/emailLabel"
+        app:layout_constraintBottom_toTopOf="@id/emailLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/nisLabel"
+        app:layout_constraintTop_toBottomOf="@id/vectorAtasOrange"
         app:layout_constraintWidth_percent="0.80">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -119,32 +106,20 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:autofillHints="username"
+            android:imeOptions="actionNext"
             android:inputType="text"
+            android:nextFocusDown="@id/et_email"
             android:textColor="@color/on_background"
             android:textSize="@dimen/text_input_hint" />
 
     </com.google.android.material.textfield.TextInputLayout>
-
-    <TextView
-        android:id="@+id/emailLabel"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_medium"
-        android:text="@string/Email"
-        android:textColor="@color/on_background"
-        android:textSize="@dimen/text_small"
-        android:fontFamily="sans-serif-medium"
-        app:layout_constraintBottom_toTopOf="@id/emailLayout"
-        app:layout_constraintEnd_toEndOf="@id/emailLayout"
-        app:layout_constraintStart_toStartOf="@id/emailLayout"
-        app:layout_constraintTop_toBottomOf="@id/nisLayout" />
 
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:id="@+id/emailLayout"
         android:layout_width="0dp"
         android:layout_height="56dp"
-        android:layout_marginTop="@dimen/spacing_text"
+        android:layout_marginTop="@dimen/spacing_tiny"
         android:hint="@string/Email"
         app:boxBackgroundColor="@color/surface"
         app:boxStrokeColor="@color/stroke_orange_always"
@@ -154,10 +129,10 @@
         app:boxCornerRadiusTopEnd="12dp"
         app:boxCornerRadiusBottomStart="12dp"
         app:boxCornerRadiusBottomEnd="12dp"
-        app:layout_constraintBottom_toTopOf="@id/passwordLabel"
+        app:layout_constraintBottom_toTopOf="@id/passwordLayout2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/emailLabel"
+        app:layout_constraintTop_toBottomOf="@id/nisLayout"
         app:layout_constraintWidth_percent="0.80">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -165,32 +140,20 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:autofillHints="emailAddress"
+            android:imeOptions="actionNext"
             android:inputType="textEmailAddress"
+            android:nextFocusDown="@id/et_password"
             android:textColor="@color/on_background"
             android:textSize="@dimen/text_input_hint" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <TextView
-        android:id="@+id/passwordLabel"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_medium"
-        android:text="@string/Sandi"
-        android:textColor="@color/on_background"
-        android:textSize="@dimen/text_small"
-        android:fontFamily="sans-serif-medium"
-        app:layout_constraintBottom_toTopOf="@id/passwordLayout2"
-        app:layout_constraintEnd_toEndOf="@id/passwordLayout2"
-        app:layout_constraintStart_toStartOf="@id/passwordLayout2"
-        app:layout_constraintTop_toBottomOf="@id/emailLayout" />
-
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:id="@+id/passwordLayout2"
         android:layout_width="0dp"
-        android:layout_height="56dp"
-        android:layout_marginTop="@dimen/spacing_text"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_tiny"
         android:hint="@string/Sandi"
         app:boxBackgroundColor="@color/surface"
         app:boxStrokeColor="@color/stroke_orange_always"
@@ -201,43 +164,36 @@
         app:boxCornerRadiusBottomStart="12dp"
         app:boxCornerRadiusBottomEnd="12dp"
         app:endIconMode="password_toggle"
-        app:endIconTint="#B3B3B3"
-        app:layout_constraintBottom_toTopOf="@id/confirmPasswordLabel"
+        app:endIconTint="@color/text_hint"
+        app:helperText="Minimal 8 karakter, kombinasi huruf &amp; angka"
+        app:helperTextEnabled="true"
+        app:helperTextTextColor="@color/text_secondary"
+        app:errorEnabled="true"
+        app:layout_constraintBottom_toTopOf="@id/confirmPasswordLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/passwordLabel"
+        app:layout_constraintTop_toBottomOf="@id/emailLayout"
         app:layout_constraintWidth_percent="0.80">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_password"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:autofillHints="password"
+            android:imeOptions="actionNext"
             android:inputType="textPassword"
+            android:nextFocusDown="@id/et_confirm_password"
             android:textColor="@color/on_background"
             android:textSize="@dimen/text_input_hint" />
 
     </com.google.android.material.textfield.TextInputLayout>
-
-    <TextView
-        android:id="@+id/confirmPasswordLabel"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_medium"
-        android:text="@string/konfirSandi"
-        android:textColor="@color/on_background"
-        android:textSize="@dimen/text_small"
-        android:fontFamily="sans-serif-medium"
-        app:layout_constraintBottom_toTopOf="@id/confirmPasswordLayout"
-        app:layout_constraintEnd_toEndOf="@id/confirmPasswordLayout"
-        app:layout_constraintStart_toStartOf="@id/confirmPasswordLayout"
-        app:layout_constraintTop_toBottomOf="@id/passwordLayout2" />
 
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:id="@+id/confirmPasswordLayout"
         android:layout_width="0dp"
         android:layout_height="56dp"
-        android:layout_marginTop="@dimen/spacing_text"
+        android:layout_marginTop="@dimen/spacing_tiny"
         android:hint="@string/konfirSandi"
         app:boxBackgroundColor="@color/surface"
         app:boxStrokeColor="@color/stroke_orange_always"
@@ -248,17 +204,19 @@
         app:boxCornerRadiusBottomStart="12dp"
         app:boxCornerRadiusBottomEnd="12dp"
         app:endIconMode="password_toggle"
-        app:endIconTint="#B3B3B3"
+        app:endIconTint="@color/text_hint"
         app:layout_constraintBottom_toTopOf="@id/btn_daftar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/confirmPasswordLabel"
+        app:layout_constraintTop_toBottomOf="@id/passwordLayout2"
         app:layout_constraintWidth_percent="0.80">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_confirm_password"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:autofillHints="password"
+            android:imeOptions="actionDone"
             android:inputType="textPassword"
             android:textColor="@color/on_background"
             android:textSize="@dimen/text_input_hint" />
@@ -269,10 +227,10 @@
         android:id="@+id/btn_daftar"
         android:layout_width="0dp"
         android:layout_height="56dp"
-        android:layout_marginTop="32dp"
-        android:backgroundTint="#E58133"
+        android:layout_marginTop="@dimen/spacing_text"
+        android:backgroundTint="@color/orange_theme"
         android:text="@string/buatakun"
-        android:textColor="#FFFFFF"
+        android:textColor="@android:color/white"
         android:textSize="@dimen/text_button"
         app:layout_constraintBottom_toTopOf="@id/textSudahPunyaAkun"
         app:layout_constraintEnd_toEndOf="parent"
@@ -286,6 +244,8 @@
         android:id="@+id/textSudahPunyaAkun"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:gravity="center_vertical"
         android:text="@string/SudahAkun"
         android:textColor="@color/on_background"
         android:textSize="@dimen/text_small"
@@ -299,10 +259,12 @@
         android:id="@+id/textMasuk"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:gravity="center_vertical"
         android:layout_marginBottom="24dp"
         android:layout_marginStart="4dp"
         android:text="@string/Masuk"
-        android:textColor="#E58133"
+        android:textColor="@color/orange_theme"
         android:textSize="@dimen/text_small"
         app:layout_constraintBaseline_toBaselineOf="@id/textSudahPunyaAkun"
         app:layout_constraintBottom_toBottomOf="parent"

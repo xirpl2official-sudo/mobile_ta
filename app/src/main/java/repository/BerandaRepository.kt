@@ -80,20 +80,21 @@ class BerandaRepository {
 
     suspend fun getJadwalDhuhaKeahlian(token: String): Result<List<com.xirpl2.SASMobile.model.JadwalDhuhaKeahlian>> {
         return try {
+            // Same endpoint as desktop: GET /v2/jurusan/dhuha-schedules
             val response = apiService.getJurusanDhuhaSchedules("Bearer $token")
             if (response.isSuccessful) {
                 val jurusans = response.body()?.data ?: emptyList()
                 val days = listOf("Senin", "Selasa", "Rabu", "Kamis")
-                val grouped = jurusans.filter { it.hari_dhuha != null && it.hari_dhuha.isNotEmpty() }.groupBy { it.hari_dhuha!! }
+                val grouped = jurusans
+                    .filter { !it.hari_dhuha.isNullOrBlank() }
+                    .groupBy { it.hari_dhuha!! }
 
                 val resultList = days.map { day ->
-                    val jurusansOnDay = grouped[day] ?: emptyList()
-                    val j1 = if (jurusansOnDay.isNotEmpty()) jurusansOnDay[0] else null
-                    val j2 = if (jurusansOnDay.size > 1) jurusansOnDay[1] else null
+                    val onDay = grouped[day] ?: emptyList()
                     com.xirpl2.SASMobile.model.JadwalDhuhaKeahlian(
                         hari = day,
-                        jurusan1 = j1,
-                        jurusan2 = j2
+                        jurusan1 = onDay.getOrNull(0),
+                        jurusan2 = onDay.getOrNull(1)
                     )
                 }
                 Result.success(resultList)

@@ -83,25 +83,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textHalaman1" />
 
-    <TextView
-        android:id="@+id/nisLabel"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_xlarge"
-        android:text="@string/NIS"
-        android:textColor="@color/on_background"
-        android:textSize="@dimen/text_small"
-        android:fontFamily="sans-serif-medium"
-        app:layout_constraintEnd_toEndOf="@id/nisLayout"
-        app:layout_constraintStart_toStartOf="@id/nisLayout"
-        app:layout_constraintTop_toBottomOf="@id/vectorAtasBiru" />
-
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:id="@+id/nisLayout"
         android:layout_width="0dp"
         android:layout_height="56dp"
-        android:layout_marginTop="@dimen/spacing_text"
+        android:layout_marginTop="@dimen/spacing_medium"
         android:hint="@string/NIS"
         app:boxBackgroundColor="@color/surface"
         app:hintTextColor="@color/hint_and_floating"
@@ -112,10 +99,10 @@
         app:boxCornerRadiusTopEnd="12dp"
         app:boxCornerRadiusBottomStart="12dp"
         app:boxCornerRadiusBottomEnd="12dp"
-        app:layout_constraintBottom_toTopOf="@id/passwordLabel"
+        app:layout_constraintBottom_toTopOf="@id/passwordLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/nisLabel"
+        app:layout_constraintTop_toBottomOf="@id/vectorAtasBiru"
         app:layout_constraintWidth_percent="0.80">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -123,32 +110,20 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:autofillHints="username"
+            android:imeOptions="actionNext"
             android:inputType="text"
+            android:nextFocusDown="@id/et_password"
             android:textColor="@color/on_background"
             android:textSize="@dimen/text_input_hint" />
 
     </com.google.android.material.textfield.TextInputLayout>
-
-    <TextView
-        android:id="@+id/passwordLabel"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_medium"
-        android:text="@string/Sandi"
-        android:textColor="@color/on_background"
-        android:textSize="@dimen/text_small"
-        android:fontFamily="sans-serif-medium"
-        app:layout_constraintBottom_toTopOf="@id/passwordLayout"
-        app:layout_constraintEnd_toEndOf="@id/passwordLayout"
-        app:layout_constraintStart_toStartOf="@id/passwordLayout"
-        app:layout_constraintTop_toBottomOf="@id/nisLayout" />
 
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:id="@+id/passwordLayout"
         android:layout_width="0dp"
         android:layout_height="56dp"
-        android:layout_marginTop="@dimen/spacing_text"
+        android:layout_marginTop="@dimen/spacing_small"
         android:hint="@string/Sandi"
         app:boxBackgroundColor="@color/surface"
         app:hintTextColor="@color/hint_and_floating"
@@ -164,13 +139,15 @@
         app:layout_constraintBottom_toTopOf="@id/textLupaPassword"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/passwordLabel"
+        app:layout_constraintTop_toBottomOf="@id/nisLayout"
         app:layout_constraintWidth_percent="0.80">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_password"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:autofillHints="password"
+            android:imeOptions="actionDone"
             android:inputType="textPassword"
             android:textColor="@color/on_background"
             android:textSize="@dimen/text_input_hint" />
@@ -181,6 +158,8 @@
         android:id="@+id/textLupaPassword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:gravity="center_vertical"
         android:layout_marginTop="@dimen/spacing_text"
         android:text="@string/Lupa_KataSandi"
         android:textColor="@color/slate_500"
@@ -192,10 +171,10 @@
         android:id="@+id/btn_masuk"
         android:layout_width="0dp"
         android:layout_height="56dp"
-        android:layout_marginTop="32dp"
-        android:backgroundTint="#2D8FE3"
+        android:layout_marginTop="@dimen/spacing_large"
+        android:backgroundTint="@color/blue_theme"
         android:text="@string/Masuk"
-        android:textColor="#FFFFFF"
+        android:textColor="@android:color/white"
         android:textSize="@dimen/text_button"
         app:layout_constraintBottom_toTopOf="@id/textBelumPunyaAkun"
         app:layout_constraintEnd_toEndOf="parent"
@@ -223,6 +202,8 @@
         android:id="@+id/textBuatAkun"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:gravity="center_vertical"
         android:layout_marginStart="4dp"
         android:layout_marginBottom="24dp"
         android:text="@string/BuatAkun"

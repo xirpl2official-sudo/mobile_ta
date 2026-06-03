@@ -7,6 +7,7 @@ import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.TextView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -32,6 +33,7 @@ class BerandaGuruActivity : BaseAdminActivity() {
     private lateinit var rvDhuhaSchedule: RecyclerView
     private lateinit var rvJurusan: RecyclerView
 
+    private lateinit var swipeRefresh: SwipeRefreshLayout
     private lateinit var jurusanAdapter: JurusanAdapter
     private lateinit var dhuhaScheduleAdapter: DhuhaScheduleAdapter
     
@@ -62,6 +64,13 @@ class BerandaGuruActivity : BaseAdminActivity() {
         initializeViews()
         setupDrawerAndSidebar()
         setupMenuIcon()
+
+        swipeRefresh = findViewById(R.id.swipeRefresh)
+        swipeRefresh.setOnRefreshListener {
+            loadStatistik()
+            setupJadwalSholat()
+            setupJurusanList()
+        }
 
         findViewById<android.view.View>(R.id.main)?.post {
             loadStatistik()
@@ -111,9 +120,11 @@ class BerandaGuruActivity : BaseAdminActivity() {
                         tvIzinSakitSub.text = todayLabel
                         tvAlphaSub.text = todayLabel
                     }
+                    if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                 },
                 onFailure = { error ->
                     Log.w(TAG, "Failed to load statistik: ${error.message}")
+                    if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                 }
             )
         }
@@ -160,6 +171,7 @@ class BerandaGuruActivity : BaseAdminActivity() {
                             cardJadwalDhuha.visibility = View.GONE
                         }
                     }
+                    if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                 },
                 onFailure = { error ->
                     Log.w(TAG, "Failed to load jadwal sholat: ${error.message}")
@@ -168,6 +180,7 @@ class BerandaGuruActivity : BaseAdminActivity() {
                         tvWaktuSholat.text = "Gagal memuat jadwal"
                         tvStatusBadge.visibility = View.GONE
                     }
+                    if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                 }
             )
         }
@@ -228,9 +241,10 @@ class BerandaGuruActivity : BaseAdminActivity() {
                             isNestedScrollingEnabled = false
                         }
                     }
+                    if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                 },
                 onFailure = { error ->
-
+                    if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                     if (!isFinishing && !isDestroyed) {
                         jurusanAdapter = JurusanAdapter(emptyList<DhuhaJurusanData>())
 

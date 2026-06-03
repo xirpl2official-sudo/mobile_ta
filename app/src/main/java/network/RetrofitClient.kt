@@ -12,7 +12,6 @@ object RetrofitClient {
     // - Android Emulator: http://10.0.2.2:3000/api/
     // - Physical device (USB): Run 'adb reverse tcp:3000 tcp:3000' and use http://127.0.0.1:3000/api/
     // - Production: https://absensholat-api.vercel.app/api/
-    // private const val BASE_URL = "http://127.0.0.1:3000/api/"
     private const val BASE_URL = "https://absensholat-api.vercel.app/api/"
 
     private lateinit var appContext: Context

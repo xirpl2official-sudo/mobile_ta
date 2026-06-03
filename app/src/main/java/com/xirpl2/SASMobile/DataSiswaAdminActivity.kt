@@ -18,6 +18,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -61,6 +62,7 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
     private lateinit var tvStatTotalKelas: TextView
     private lateinit var tvStatTotalJurusan: TextView
 
+    private lateinit var swipeRefresh: SwipeRefreshLayout
     private val allStudentList = mutableListOf<SiswaItem>()
 
     private var currentPage = 1
@@ -132,6 +134,9 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
         setupRecyclerView()
         setupBulkActionLogic()
         setupPagination()
+
+        swipeRefresh = findViewById(R.id.swipeRefresh)
+        swipeRefresh.setOnRefreshListener { loadStudentData(reset = true) }
 
         loadStudentData(reset = true)
     }
@@ -433,6 +438,7 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
                 search = if (searchQuery.isNotEmpty()) searchQuery else null
             ).fold(
                 onSuccess = { response ->
+                    if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                     if (isFinishing || isDestroyed) return@fold
                     progressLoading.visibility = View.GONE
 
@@ -474,6 +480,7 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
                     isLoading = false
                 },
                 onFailure = { error ->
+                    if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                     if (isFinishing || isDestroyed) return@fold
                     Toast.makeText(this@DataSiswaAdminActivity, "Gagal memuat data: ${error.message}", Toast.LENGTH_SHORT).show()
 
@@ -507,12 +514,6 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
     }
 
     private fun setupButtons() {
-        val btnMore = findViewById<android.view.View>(R.id.btnMore)
-
-        btnMore?.setOnClickListener { view ->
-            showOverflowMenu(view)
-        }
-
         // Action buttons inside card
         val session = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this)
         val role = session.getString("user_role", "")
@@ -541,61 +542,6 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
         findViewById<View>(R.id.btnCetakData)?.setOnClickListener {
             Toast.makeText(this, "Fitur cetak akan segera tersedia", Toast.LENGTH_SHORT).show()
         }
-    }
-
-    private fun showOverflowMenu(view: View) {
-        val popup = androidx.appcompat.widget.PopupMenu(this, view)
-
-        popup.menu.add(0, 1, 0, "Tambah Siswa")
-        popup.menu.add(0, 2, 1, "Import Data")
-        popup.menu.add(0, 3, 2, "Export Data")
-
-        try {
-            val fields = popup.javaClass.declaredFields
-            for (field in fields) {
-                if ("mPopup" == field.name) {
-                    field.isAccessible = true
-                    val menuPopupHelper = field.get(popup)
-                    val classPopupHelper = Class.forName(menuPopupHelper.javaClass.name)
-                    val setForceShowIcon = classPopupHelper.getMethod("setForceShowIcon", Boolean::class.javaPrimitiveType)
-                    setForceShowIcon.invoke(menuPopupHelper, true)
-                    break
-                }
-            }
-        } catch (e: Exception) {
-            // ignore
-        }
-
-        val session2 = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this)
-        val role = session2.getString("user_role", "")
-        val isReadOnly = role == "wali_kelas" || role == "guru"
-
-        popup.setOnMenuItemClickListener { item ->
-            when (item.itemId) {
-                1 -> {
-                    if (isReadOnly) {
-                        Toast.makeText(this, "Akses ditolak", Toast.LENGTH_SHORT).show()
-                    } else {
-                        startActivity(Intent(this, TambahSiswaActivity::class.java))
-                    }
-                    true
-                }
-                2 -> {
-                    if (isReadOnly) {
-                        Toast.makeText(this, "Akses ditolak", Toast.LENGTH_SHORT).show()
-                    } else {
-                        showImportSiswaDialog()
-                    }
-                    true
-                }
-                3 -> {
-                    showExportSiswaDialog()
-                    true
-                }
-                else -> false
-            }
-        }
-        popup.show()
     }
 
     private fun showExportSiswaDialog() {

@@ -11,6 +11,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -37,6 +38,7 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
     private lateinit var tvEmptyState: TextView
 
     
+    private lateinit var swipeRefresh: SwipeRefreshLayout
     private lateinit var presensiAdapter: PresensiAdapter
     private lateinit var tableHorizontalScrollView: View
 
@@ -112,6 +114,10 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
                     }
                 }
             }, 100)
+
+            // Initialize swipe-to-refresh after content is set up
+            swipeRefresh = findViewById(R.id.swipeRefresh)
+            swipeRefresh.setOnRefreshListener { refreshData() }
             
         } catch (e: Exception) {
             android.util.Log.e(TAG, "Error in onCreate: ${e.message}", e)
@@ -122,26 +128,8 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
 
     private fun setupInputIzinButton() {
         val btnInputIzin = findViewById<com.google.android.material.button.MaterialButton>(R.id.btnInputIzin)
-
-        if (btnInputIzin == null) return
-
-        val session = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this)
-        val role = session.getString("user_role", "")?.lowercase() ?: ""
-
-        when {
-            role == "wali_kelas" || role == "wali kelas" -> {
-                btnInputIzin.visibility = View.VISIBLE
-            }
-            else -> {
-                btnInputIzin.visibility = View.GONE
-            }
-        }
-
-        btnInputIzin.setOnClickListener {
-            val dialog = InputIzinDialogFragment.newInstance {
-                refreshData()
-            }
-            dialog.show(supportFragmentManager, "InputIzinDialog")
+        if (btnInputIzin != null) {
+            btnInputIzin.visibility = View.GONE
         }
     }
 
@@ -321,6 +309,7 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
                 limit = limit
             ).fold(
                 onSuccess = { data ->
+                    if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                     if (isFinishing || isDestroyed) return@fold
                     isLoading = false
                     showLoading(false)
@@ -349,6 +338,7 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
                     }
                 },
                 onFailure = { error ->
+                    if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                     if (isFinishing || isDestroyed) return@fold
                     isLoading = false
                     showLoading(false)

@@ -10,6 +10,8 @@ import android.widget.TextView
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.material.snackbar.Snackbar
 import com.xirpl2.SASMobile.repository.BerandaRepository
 import com.xirpl2.SASMobile.model.DhuhaJurusanData
 import com.xirpl2.SASMobile.network.RetrofitClient
@@ -36,6 +38,7 @@ class BerandaAdminActivity : BaseAdminActivity() {
     private lateinit var btnQuickLaporan: View
     private lateinit var btnQuickSiswa: View
     private lateinit var btnQuickJadwal: View
+    private lateinit var swipeRefresh: SwipeRefreshLayout
 
     private lateinit var cardJadwalDhuha: View
     private lateinit var rvDhuhaSchedule: RecyclerView
@@ -74,16 +77,14 @@ class BerandaAdminActivity : BaseAdminActivity() {
         setupMenuIcon()
         setupQuickActions()
 
-        // Load data safely
-        if (!isFinishing && !isDestroyed) {
-            loadStatistikFromAPI()
-            setupJadwalSholat()
-            setupJurusanList()
-            checkUnregisteredStudents()
-        }
+        // Data loads in onResume — no need to load here
     }
     
     private fun initializeViews() {
+        swipeRefresh = findViewById(R.id.swipeRefresh)
+        swipeRefresh.setColorSchemeResources(R.color.blue_theme)
+        swipeRefresh.setOnRefreshListener { refreshAllData() }
+
         rvJurusan = findViewById(R.id.rvJurusan)
         tvTotalSiswaValue = findViewById(R.id.tvTotalSiswaValue)
         tvHadirHariIniValue = findViewById(R.id.tvHadirHariIniValue)
@@ -194,6 +195,13 @@ class BerandaAdminActivity : BaseAdminActivity() {
                 },
                 onFailure = { error ->
                     Log.w(TAG, "Failed to load statistics: ${error.message}")
+                    if (!isFinishing && !isDestroyed) {
+                        tvTotalSiswaValue.text = "-"
+                        tvHadirHariIniValue.text = "-"
+                        tvIzinSakitValue.text = "-"
+                        tvAlphaValue.text = "-"
+                        showErrorWithRetry("Gagal memuat statistik")
+                    }
                 }
             )
         }
@@ -201,9 +209,10 @@ class BerandaAdminActivity : BaseAdminActivity() {
     
     override fun onResume() {
         super.onResume()
+        loadStatistikFromAPI()
         setupJadwalSholat()
         setupJurusanList()
-        loadStatistikFromAPI()
+        checkUnregisteredStudents()
 
         clockHandler.postDelayed(clockRunnable, clockRefreshInterval)
     }
@@ -231,7 +240,7 @@ class BerandaAdminActivity : BaseAdminActivity() {
                             val jamSelesai = activePrayer.waktuSholat.waktuSelesai ?: ""
 
                             tvNamaSholat.text = namaSholat
-                            tvWaktuSholat.text = "Waktu : $jamMulai - $jamSelesai"
+                            tvWaktuSholat.text = "Waktu : $jamMulai - $jamSelesai WIB"
 
                             if (isCurrentlyActive) {
                                 tvStatusBadge.visibility = View.VISIBLE
@@ -262,10 +271,34 @@ class BerandaAdminActivity : BaseAdminActivity() {
                         tvNamaSholat.text = "-"
                         tvWaktuSholat.text = "Gagal memuat jadwal"
                         tvStatusBadge.visibility = View.GONE
+                        showErrorWithRetry("Gagal memuat jadwal sholat")
                     }
                 }
             )
         }
+    }
+
+    private fun refreshAllData() {
+        loadStatistikFromAPI()
+        setupJadwalSholat()
+        setupJurusanList()
+        checkUnregisteredStudents()
+
+        // Stop spinner after a short delay to let coroutines start
+        lifecycleScope.launch {
+            kotlinx.coroutines.delay(1500)
+            if (!isFinishing && !isDestroyed) {
+                swipeRefresh.isRefreshing = false
+            }
+        }
+    }
+
+    private fun showErrorWithRetry(message: String) {
+        if (isFinishing || isDestroyed) return
+        Snackbar.make(findViewById(R.id.main), message, Snackbar.LENGTH_INDEFINITE)
+            .setAction("Coba Lagi") { refreshAllData() }
+            .setActionTextColor(getColor(R.color.blue_theme))
+            .show()
     }
 
     private fun loadDhuhaSchedule() {

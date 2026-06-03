@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -60,6 +61,7 @@ class PengajuanIzinActivity : BaseSiswaActivity() {
     private lateinit var progressRiwayat: ProgressBar
     private lateinit var tvEmptyRiwayat: TextView
     private lateinit var riwayatAdapter: RiwayatIzinAdapter
+    private lateinit var swipeRefresh: SwipeRefreshLayout
     private val repository = PengajuanIzinRepository()
 
     private val calendar = Calendar.getInstance()
@@ -90,6 +92,9 @@ class PengajuanIzinActivity : BaseSiswaActivity() {
         setupBackButton()
         setupCancelButton()
         setupPhotoUpload()
+        swipeRefresh = findViewById(R.id.swipeRefresh)
+        swipeRefresh.setOnRefreshListener { loadRiwayatIzin() }
+
         loadRiwayatIzin()
     }
 
@@ -440,6 +445,7 @@ class PengajuanIzinActivity : BaseSiswaActivity() {
             progressRiwayat.visibility = View.GONE
 
             result.onSuccess { response ->
+                if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                 val data = response.data
                 if (data.isEmpty()) {
                     tvEmptyRiwayat.visibility = View.VISIBLE
@@ -451,6 +457,7 @@ class PengajuanIzinActivity : BaseSiswaActivity() {
                 }
             }
             result.onFailure {
+                if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                 tvEmptyRiwayat.visibility = View.VISIBLE
                 tvEmptyRiwayat.text = getString(R.string.gagal_memuat_riwayat)
                 rvRiwayatIzin.visibility = View.GONE

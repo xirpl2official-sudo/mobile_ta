@@ -18,6 +18,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -41,6 +42,7 @@ class BerandaActivity : BaseSiswaActivity() {
     private lateinit var tvJadwalError: TextView
     private lateinit var tvRiwayatError: TextView
 
+    private lateinit var swipeRefresh: SwipeRefreshLayout
     private lateinit var jadwalAdapter: JadwalSholatAdapter
     private lateinit var riwayatAdapter: RiwayatAbsensiAdapter
     
@@ -68,6 +70,9 @@ class BerandaActivity : BaseSiswaActivity() {
         setupJadwalSholat()
         setupRiwayatAbsensi()
         setupAbsensiButton()
+
+        swipeRefresh = findViewById(R.id.swipeRefresh)
+        swipeRefresh.setOnRefreshListener { loadAllData() }
 
         // Load data is handled in onResume to prevent duplicate calls and race conditions
     }
@@ -223,7 +228,8 @@ class BerandaActivity : BaseSiswaActivity() {
         val allowedByGender = JadwalSholatHelper.getJadwalSholatByGender(jenisKelamin)
 
         repository.getJadwalSholatToday(token).fold(
-            onSuccess = { jadwalDataList ->
+                onSuccess = { jadwalDataList ->
+                    if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
 
                 val jadwalList = jadwalDataList
                     .filter { data ->
@@ -257,6 +263,7 @@ class BerandaActivity : BaseSiswaActivity() {
                     rvJadwalSholat.visibility = android.view.View.GONE
                     tvJadwalError.visibility = android.view.View.VISIBLE
                 }
+                if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
             }
         )
     }
@@ -333,6 +340,7 @@ class BerandaActivity : BaseSiswaActivity() {
         lifecycleScope.launch {
             repository.getHistorySiswa(token, 0).fold(
                 onSuccess = { historyData ->
+                    if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
 
                     // Update stat cards from the student's own statistik (matching desktop:
                     // statsData = historyWrapper.statistik from getStudentAttendanceHistory)
@@ -381,6 +389,7 @@ class BerandaActivity : BaseSiswaActivity() {
                 },
                 onFailure = { error ->
                     Log.w(TAG, "Failed to load riwayat absensi: ${error.message}")
+                    if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                     runOnUiThread {
                         rvRiwayatAbsensi.visibility = android.view.View.GONE
                         findViewById<LinearLayout>(R.id.riwayatHeader).visibility = android.view.View.GONE

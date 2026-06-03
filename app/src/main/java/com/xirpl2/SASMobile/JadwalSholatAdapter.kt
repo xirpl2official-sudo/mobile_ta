@@ -14,13 +14,16 @@ import com.xirpl2.SASMobile.model.StatusSholat
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.DiffUtil
 
-class JadwalSholatAdapter : ListAdapter<JadwalSholat, JadwalSholatAdapter.JadwalViewHolder>(JadwalDiffCallback()) {
+class JadwalSholatAdapter(
+    private val onDeleteClick: ((JadwalSholat) -> Unit)? = null
+) : ListAdapter<JadwalSholat, JadwalSholatAdapter.JadwalViewHolder>(JadwalDiffCallback()) {
 
     inner class JadwalViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val cardJadwalItem: androidx.cardview.widget.CardView = itemView.findViewById(R.id.cardJadwalItem)
         val tvNamaSholat: TextView = itemView.findViewById(R.id.tvNamaSholat)
         val tvJamSholat: TextView = itemView.findViewById(R.id.tvJamSholat)
         val textStatusSholat: TextView = itemView.findViewById(R.id.textStatusSholat)
+        val btnDelete: android.widget.ImageView = itemView.findViewById(R.id.btnDelete)
     }
 
 
@@ -68,6 +71,10 @@ class JadwalSholatAdapter : ListAdapter<JadwalSholat, JadwalSholatAdapter.Jadwal
                 holder.textStatusSholat.setBackgroundResource(R.drawable.bg_badge_akandatang)
                 holder.textStatusSholat.setTextColor(Color.WHITE)
             }
+        }
+
+        holder.btnDelete.setOnClickListener {
+            onDeleteClick?.invoke(jadwal)
         }
     }
 }

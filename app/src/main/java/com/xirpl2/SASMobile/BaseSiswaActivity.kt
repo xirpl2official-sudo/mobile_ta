@@ -29,9 +29,7 @@ abstract class BaseSiswaActivity : BaseActivity() {
     enum class SiswaMenuItem {
         BERANDA,
         QR_CODE,
-        PENGAJUAN_IZIN,
-        PENGATURAN,
-        LOGOUT
+        PENGAJUAN_IZIN
     }
 
     abstract fun getCurrentMenuItem(): SiswaMenuItem
@@ -128,19 +126,6 @@ abstract class BaseSiswaActivity : BaseActivity() {
         setupMenuItem(R.id.menuPengajuanIzin, SiswaMenuItem.PENGAJUAN_IZIN, currentItem) {
             navigateTo(PengajuanIzinActivity::class.java)
         }
-
-        sidebarView.findViewById<LinearLayout>(R.id.menuPengaturan)?.setOnClickListener {
-            closeSidebar()
-            drawerLayout.postDelayed({
-                startActivity(Intent(this, PengaturanActivity::class.java))
-                overridePendingTransition(0, 0)
-            }, 250)
-        }
-
-        sidebarView.findViewById<LinearLayout>(R.id.menuLogout)?.setOnClickListener {
-            closeSidebar()
-            handleLogout()
-        }
     }
 
     private fun setupMenuItem(
@@ -216,8 +201,6 @@ abstract class BaseSiswaActivity : BaseActivity() {
                 sidebarView.findViewById<LinearLayout>(R.id.menuBeranda)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuPengajuanIzin)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuQRCode)?.setOnClickListener(null)
-                sidebarView.findViewById<LinearLayout>(R.id.menuPengaturan)?.setOnClickListener(null)
-                sidebarView.findViewById<LinearLayout>(R.id.menuLogout)?.setOnClickListener(null)
                 sidebarView.findViewById<androidx.cardview.widget.CardView>(R.id.cardUserProfile)?.setOnClickListener(null)
             }
             if (::drawerLayout.isInitialized) {

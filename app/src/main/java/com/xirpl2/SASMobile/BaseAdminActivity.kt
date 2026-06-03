@@ -110,13 +110,15 @@ abstract class BaseAdminActivity : BaseActivity() {
         val isAdmin = role.contains("admin")
         val isGuru = role == "guru"
 
+        // Feature deprecated: hide Kenaikan Kelas for all roles
+        sidebarView.findViewById<View>(R.id.menuKenaikanKelas)?.visibility = View.GONE
+
         if (!isAdmin) {
             // Non-admin: hide admin-only items
             sidebarView.findViewById<View>(R.id.menuKelolaKelas)?.visibility = View.GONE
             sidebarView.findViewById<View>(R.id.menuKelolaGuru)?.visibility = View.GONE
             sidebarView.findViewById<View>(R.id.menuQRCode)?.visibility = View.GONE
             sidebarView.findViewById<View>(R.id.menuManajemenPerangkat)?.visibility = View.GONE
-            sidebarView.findViewById<View>(R.id.menuKenaikanKelas)?.visibility = View.GONE
 
             if (isWali) {
                 // Wali Kelas: Dashboard, Jadwal, Kelola Siswa, Presensi, Pengajuan Izin, Laporan, Siswa Belum Terdaftar

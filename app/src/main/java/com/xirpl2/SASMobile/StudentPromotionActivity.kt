@@ -10,6 +10,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
@@ -46,6 +47,7 @@ class StudentPromotionActivity : BaseAdminActivity() {
 
     private lateinit var adapter: StudentTransitionAdapter
 
+    private lateinit var swipeRefresh: SwipeRefreshLayout
     private var allTransitions = listOf<StudentTransition>()
     private var filteredTransitions = listOf<StudentTransition>()
     private var kelasOptions = listOf<String>()
@@ -70,6 +72,9 @@ class StudentPromotionActivity : BaseAdminActivity() {
         setupMenuIcon()
         setupRecyclerView()
         setupListeners()
+
+        swipeRefresh = findViewById(R.id.swipeRefresh)
+        swipeRefresh.setOnRefreshListener { loadTransitions() }
 
         loadTransitions()
     }
@@ -139,6 +144,7 @@ class StudentPromotionActivity : BaseAdminActivity() {
                 }
 
                 progressLoading.visibility = View.GONE
+                if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
 
                 if (response.isSuccessful) {
                     allTransitions = response.body()?.data ?: emptyList()
@@ -159,6 +165,7 @@ class StudentPromotionActivity : BaseAdminActivity() {
                     showEmptyState(errorMsg)
                 }
             } catch (e: Exception) {
+                if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                 progressLoading.visibility = View.GONE
                 showEmptyState("Error: ${e.message}")
             }

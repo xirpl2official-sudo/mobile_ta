@@ -32,6 +32,14 @@ class EditGuruActivity : BaseActivity() {
         setContentView(R.layout.activity_edit_guru)
 
         window.statusBarColor = androidx.core.content.ContextCompat.getColor(this, R.color.blue_theme)
+        androidx.core.view.WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightStatusBars = false
+
+        val topBar = findViewById<android.view.View>(R.id.topBar)
+        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(topBar) { v, insets ->
+            val statusBars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.statusBars())
+            v.setPadding(v.paddingLeft, statusBars.top, v.paddingRight, v.paddingBottom)
+            insets
+        }
 
         initViews()
         loadIntentData()

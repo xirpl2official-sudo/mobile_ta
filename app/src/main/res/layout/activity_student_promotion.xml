@@ -386,15 +386,22 @@
                 app:layout_constraintEnd_toEndOf="parent" />
 
             <!-- Student List -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerStudents"
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/swipeRefresh"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginTop="8dp"
                 app:layout_constraintTop_toBottomOf="@id/tvStudentCount"
                 app:layout_constraintBottom_toTopOf="@id/btnBulkProgression"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerStudents"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
             <!-- Loading -->
             <ProgressBar

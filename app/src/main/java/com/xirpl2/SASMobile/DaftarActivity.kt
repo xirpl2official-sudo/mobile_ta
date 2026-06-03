@@ -1,8 +1,12 @@
 package com.xirpl2.SASMobile
 
+import android.content.Context
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Patterns
 import android.view.Gravity
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -55,14 +59,82 @@ class DaftarActivity : BaseActivity() {
         confirmPasswordLayout = findViewById(R.id.confirmPasswordLayout)
 
         setHintTextColors()
+        setupRealTimeValidation()
 
         btnDaftar.setOnClickListener {
             registerUser()
         }
 
         textMasuk.setOnClickListener {
-            finish() 
+            finish()
         }
+
+        etConfirmPassword.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE) {
+                registerUser()
+                true
+            } else false
+        }
+    }
+
+    private fun setupRealTimeValidation() {
+        etPassword.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                val password = s?.toString() ?: ""
+                if (password.isNotEmpty() && !isPasswordValid(password)) {
+                    passwordLayout2.error = "Harus ada huruf dan angka. Contoh: Sandi123"
+                } else {
+                    passwordLayout2.error = null
+                }
+                // Re-validate confirm password if it has text
+                val confirm = etConfirmPassword.text.toString()
+                if (confirm.isNotEmpty()) {
+                    if (confirm != password) {
+                        confirmPasswordLayout.error = "Kata sandi tidak cocok"
+                    } else {
+                        confirmPasswordLayout.error = null
+                    }
+                }
+            }
+        })
+
+        etConfirmPassword.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                val confirm = s?.toString() ?: ""
+                val password = etPassword.text.toString()
+                if (confirm.isNotEmpty() && confirm != password) {
+                    confirmPasswordLayout.error = "Kata sandi tidak cocok"
+                } else {
+                    confirmPasswordLayout.error = null
+                }
+            }
+        })
+    }
+
+    private fun isPasswordValid(password: String): Boolean {
+        if (password.length < 8) return false
+        val hasLetter = password.any { it.isLetter() }
+        val hasDigit = password.any { it.isDigit() }
+        return hasLetter && hasDigit
+    }
+
+    private fun dismissKeyboard() {
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val currentFocus = currentFocus
+        if (currentFocus != null) {
+            imm.hideSoftInputFromWindow(currentFocus.windowToken, 0)
+        }
+    }
+
+    private fun clearFieldErrors() {
+        nisLayout.error = null
+        emailLayout.error = null
+        passwordLayout2.error = null
+        confirmPasswordLayout.error = null
     }
 
     private fun setHintTextColors() {
@@ -74,65 +146,50 @@ class DaftarActivity : BaseActivity() {
     }
 
     private fun registerUser() {
+        clearFieldErrors()
+
         val nis = etNis.text.toString().trim()
         val password = etPassword.text.toString()
         val confirmPassword = etConfirmPassword.text.toString()
         val email = etEmail.text.toString().trim()
 
-
-        if (nis.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() || email.isEmpty()) {
-            MotionToast.createColorToast(
-                this,
-                "Peringatan",
-                "Semua field harus diisi!",
-                MotionToastStyle.WARNING,
-                Gravity.CENTER,
-                MotionToast.LONG_DURATION,
-                null
-            )
+        if (nis.isEmpty()) {
+            nisLayout.error = "NIS wajib diisi"
+            etNis.requestFocus()
             return
         }
-
+        if (email.isEmpty()) {
+            emailLayout.error = "Email wajib diisi"
+            etEmail.requestFocus()
+            return
+        }
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            MotionToast.createColorToast(
-                this,
-                "Peringatan",
-                "Format email tidak valid!",
-                MotionToastStyle.WARNING,
-                Gravity.CENTER,
-                MotionToast.LONG_DURATION,
-                null
-            )
+            emailLayout.error = "Format email tidak valid"
+            etEmail.requestFocus()
             return
         }
-
+        if (password.isEmpty()) {
+            passwordLayout2.error = "Password wajib diisi"
+            etPassword.requestFocus()
+            return
+        }
+        if (!isPasswordValid(password)) {
+            passwordLayout2.error = "Harus ada huruf dan angka. Contoh: Sandi123"
+            etPassword.requestFocus()
+            return
+        }
+        if (confirmPassword.isEmpty()) {
+            confirmPasswordLayout.error = "Konfirmasi password wajib diisi"
+            etConfirmPassword.requestFocus()
+            return
+        }
         if (password != confirmPassword) {
-            MotionToast.createColorToast(
-                this,
-                "Peringatan",
-                "Konfirmasi kata sandi tidak cocok!",
-                MotionToastStyle.WARNING,
-                Gravity.CENTER,
-                MotionToast.LONG_DURATION,
-                null
-            )
+            confirmPasswordLayout.error = "Konfirmasi kata sandi tidak cocok"
+            etConfirmPassword.requestFocus()
             return
         }
 
-        if (password.length < 8) {
-            MotionToast.createColorToast(
-                this,
-                "Peringatan",
-                "Kata sandi minimal 8 karakter. Contoh: Sandi123",
-                MotionToastStyle.WARNING,
-                Gravity.CENTER,
-                MotionToast.LONG_DURATION,
-                null
-            )
-            return
-        }
-
-        
+        dismissKeyboard()
         btnDaftar.isEnabled = false
         btnDaftar.text = "Mendaftar..."
 

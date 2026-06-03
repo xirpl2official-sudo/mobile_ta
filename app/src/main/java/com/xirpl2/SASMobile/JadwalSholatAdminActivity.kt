@@ -7,13 +7,16 @@ import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.xirpl2.SASMobile.adapter.PrayerScheduleAdapter
 import com.xirpl2.SASMobile.adapter.PrayerScheduleItem
@@ -41,8 +44,7 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
     private var prayerTypesList: List<PrayerType> = emptyList()
 
     private val daysOptions = listOf("Semua Hari", "Senin", "Selasa", "Rabu", "Kamis", "Jumat")
-    private val allKeahlian = arrayOf("RPL", "TKJ", "TAV", "ANM", "TMT", "BC", "TEI", "DKV")
-    private val jurusanOptions = listOf("Semua Jurusan", "TKJ", "RPL", "DKV", "ANM", "BC", "TAV", "TEI", "TMT")
+    private var jurusanOptions = listOf("Semua Jurusan")
 
     override fun getCurrentMenuItem(): AdminMenuItem = AdminMenuItem.JADWAL_SHOLAT
 override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,6 +57,13 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
     setupDrawerAndSidebar()
 
+        swipeRefresh = findViewById(R.id.swipeRefresh)
+        swipeRefresh.setColorSchemeResources(R.color.blue_theme)
+        swipeRefresh.setOnRefreshListener { refreshAll() }
+
+        progressBar = findViewById(R.id.progressBar)
+        tvEmptyState = findViewById(R.id.tvEmptyState)
+
         rvPrayerSchedules = findViewById(R.id.rvPrayerSchedules)
         rvPrayerSchedules.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
         rvPrayerSchedules.isNestedScrollingEnabled = false
@@ -63,71 +72,28 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
         setupButtons()
 
-        
+        showLoading(true)
         loadJadwalList()
         loadSynchronizedData()
     }
 
     private fun loadSynchronizedData() {
         val token = getAuthToken()
-        if (token.isEmpty()) {
-            android.util.Log.e(TAG, "Token is empty, skipping loadSynchronizedData")
-            return
-        }
-
-        android.util.Log.d(TAG, "Loading synchronized data...")
+        if (token.isEmpty()) return
 
         lifecycleScope.launch {
             repository.getJadwalDhuhaKeahlian(token).fold(
                 onSuccess = { list ->
-                    android.util.Log.d(TAG, "Dhuha Keahlian loaded successfully: ${list.size} items")
+                    if (isFinishing || isDestroyed) return@fold
                     dhuhaKeahlianList = list
-                    safeRunOnUiThread {
-                        updateJadwalUI()
-                    }
+                    safeRunOnUiThread { updateJadwalUI() }
                 },
                 onFailure = { error ->
-                    android.util.Log.e(TAG, "Failed to load Dhuha Keahlian: ${error.message}")
-                    safeRunOnUiThread {
-                        Toast.makeText(this@JadwalSholatAdminActivity, "Gagal memuat jadwal dhuha: ${error.message}", Toast.LENGTH_LONG).show()
-                    }
+                    if (isFinishing || isDestroyed) return@fold
+                    safeRunOnUiThread { showErrorWithRetry("Gagal memuat jadwal dhuha") }
                 }
             )
 
-            // Load Dhuha Detail Card - COMMENTED OUT: Phantom API method (not in backend)
-            /*
-            repository.getSholatDhuhaDetail(token).onSuccess { detail ->
-                android.util.Log.d(TAG, "Sholat Dhuha detail loaded")
-                safeRunOnUiThread {
-                    findViewById<TextView>(R.id.tvWaktuDhuha)?.text = "Waktu: ${detail.waktuMulai} - ${detail.waktuSelesai}"
-                    findViewById<TextView>(R.id.tvHariDhuha)?.text = detail.hari
-                    findViewById<TextView>(R.id.tvKelasDhuha)?.text = "Kelas: ${detail.kelas}"
-                    
-                    // Store ID for editing
-                    findViewById<ImageView>(R.id.btnEditWaktuDhuha)?.tag = detail.id
-                }
-            }.onFailure { error ->
-                android.util.Log.e(TAG, "Failed to load Sholat Dhuha detail: ${error.message}")
-            }
-            */
-
-            // Load Dzuhur Detail Card - COMMENTED OUT: Phantom API method (not in backend)
-            /*
-            repository.getSholatDzuhurDetail(token).onSuccess { detail ->
-                android.util.Log.d(TAG, "Sholat Dzuhur detail loaded")
-                safeRunOnUiThread {
-                    findViewById<TextView>(R.id.tvWaktuZuhur)?.text = "Waktu: ${detail.waktuMulai} - ${detail.waktuSelesai}"
-                    findViewById<TextView>(R.id.tvHariZuhur)?.text = detail.hari
-                    findViewById<TextView>(R.id.tvKelasZuhur)?.text = "Kelas: ${detail.kelas}"
-                    findViewById<TextView>(R.id.tvJurusanZuhur)?.text = "Jurusan: ${detail.jurusan}"
-                    
-                    // Store ID for editing
-                    findViewById<ImageView>(R.id.btnEditZuhur)?.tag = detail.id
-                }
-            }.onFailure { error ->
-                android.util.Log.e(TAG, "Failed to load Sholat Dzuhur detail: ${error.message}")
-            }
-            */
         }
     }
 
@@ -136,14 +102,15 @@ override fun onCreate(savedInstanceState: Bundle?) {
         if (token.isEmpty()) return
 
         lifecycleScope.launch {
-            // Fetch all 3 sources, then update UI once
+            var hasError = false
+
             repository.getJadwalSholat(token).fold(
                 onSuccess = { list ->
                     if (isFinishing || isDestroyed) return@fold
                     jadwalList = list
                 },
                 onFailure = { error ->
-                    android.util.Log.w(TAG, "Failed to load jadwal list: ${error.message}")
+                    hasError = true
                 }
             )
 
@@ -153,7 +120,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
                     prayerTimesList = times
                 },
                 onFailure = { error ->
-                    android.util.Log.w(TAG, "Failed to load prayer times: ${error.message}")
+                    hasError = true
                 }
             )
 
@@ -163,13 +130,29 @@ override fun onCreate(savedInstanceState: Bundle?) {
                     prayerTypesList = types
                 },
                 onFailure = { error ->
-                    android.util.Log.w(TAG, "Failed to load prayer types: ${error.message}")
+                    hasError = true
                 }
             )
 
-            // Single UI update after all data is loaded
+            // Load jurusan list from API
+            repository.getJadwalDhuhaKeahlian(token).fold(
+                onSuccess = { list ->
+                    if (isFinishing || isDestroyed) return@fold
+                    dhuhaKeahlianList = list
+                    val allJurusan = list.flatMap { listOfNotNull(it.jurusan1, it.jurusan2) }.map { it.nama_jurusan }.distinct().sorted()
+                    jurusanOptions = listOf("Semua Jurusan") + allJurusan
+                },
+                onFailure = { /* keep default */ }
+            )
+
             if (!isFinishing && !isDestroyed) {
+                showLoading(false)
+                swipeRefresh.isRefreshing = false
                 updateJadwalUI()
+
+                if (hasError && jadwalList.isEmpty()) {
+                    showErrorWithRetry("Gagal memuat jadwal sholat")
+                }
             }
         }
     }
@@ -316,6 +299,8 @@ override fun onCreate(savedInstanceState: Bundle?) {
             }
         }
 
+        showEmptyState(items.isEmpty())
+
         if (prayerAdapter == null) {
             prayerAdapter = PrayerScheduleAdapter(
                 items = items,
@@ -332,6 +317,30 @@ override fun onCreate(savedInstanceState: Bundle?) {
         } else {
             prayerAdapter?.updateItems(items)
         }
+    }
+
+    private fun showLoading(show: Boolean) {
+        progressBar.visibility = if (show) View.VISIBLE else View.GONE
+        rvPrayerSchedules.visibility = if (show) View.GONE else View.VISIBLE
+    }
+
+    private fun showEmptyState(show: Boolean) {
+        tvEmptyState.visibility = if (show) View.VISIBLE else View.GONE
+        rvPrayerSchedules.visibility = if (show) View.GONE else View.VISIBLE
+    }
+
+    private fun refreshAll() {
+        loadJadwalList()
+        loadSynchronizedData()
+        swipeRefresh.isRefreshing = false
+    }
+
+    private fun showErrorWithRetry(message: String) {
+        if (isFinishing || isDestroyed) return
+        Snackbar.make(findViewById(R.id.main), message, Snackbar.LENGTH_INDEFINITE)
+            .setAction("Coba Lagi") { refreshAll() }
+            .setActionTextColor(getColor(R.color.blue_theme))
+            .show()
     }
 
     private fun canUserEdit(): Boolean {
@@ -368,6 +377,9 @@ override fun onCreate(savedInstanceState: Bundle?) {
     }
 
     private lateinit var rvPrayerSchedules: androidx.recyclerview.widget.RecyclerView
+    private lateinit var swipeRefresh: SwipeRefreshLayout
+    private lateinit var progressBar: ProgressBar
+    private lateinit var tvEmptyState: TextView
     private var prayerAdapter: PrayerScheduleAdapter? = null
 
     private fun handleSwap(row1: Int, col1: Int, row2: Int, col2: Int) {
@@ -442,22 +454,24 @@ override fun onCreate(savedInstanceState: Bundle?) {
         val token = getAuthToken()
         if (token.isEmpty()) return
 
-        Toast.makeText(this, "Menghapus jadwal...", Toast.LENGTH_SHORT).show()
+        showLoading(true)
 
         lifecycleScope.launch {
             repository.deleteJadwalSholat(token, jadwal.id).fold(
                 onSuccess = {
                     if (!isFinishing && !isDestroyed) {
                         safeRunOnUiThread {
-                            Toast.makeText(this@JadwalSholatAdminActivity, "Jadwal Sholat ${jadwal.jenis_sholat} berhasil dihapus", Toast.LENGTH_SHORT).show()
+                            showLoading(false)
+                            Toast.makeText(this@JadwalSholatAdminActivity, "Jadwal ${jadwal.jenis_sholat} berhasil dihapus", Toast.LENGTH_SHORT).show()
                             loadJadwalList()
                         }
                     }
                 },
-                onFailure = { error ->
+                onFailure = {
                     if (!isFinishing && !isDestroyed) {
                         safeRunOnUiThread {
-                            Toast.makeText(this@JadwalSholatAdminActivity, "Gagal menghapus: ${error.message}", Toast.LENGTH_LONG).show()
+                            showLoading(false)
+                            Toast.makeText(this@JadwalSholatAdminActivity, "Gagal menghapus jadwal", Toast.LENGTH_LONG).show()
                         }
                     }
                 }
@@ -503,7 +517,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
                         if (isFinishing || isDestroyed) return@fold
                         safeRunOnUiThread {
                             if (!isFinishing && !isDestroyed) {
-                                Toast.makeText(this@JadwalSholatAdminActivity, "Gagal memuat jadwal: ${error.message}", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this@JadwalSholatAdminActivity, "Gagal memuat jadwal", Toast.LENGTH_SHORT).show()
                             }
                         }
                     }
@@ -583,13 +597,13 @@ override fun onCreate(savedInstanceState: Bundle?) {
                     
                     ivValidationIcon.setImageResource(android.R.drawable.ic_dialog_alert)
                     ivValidationIcon.setColorFilter(ContextCompat.getColor(this, R.color.status_warning))
-                    tvValidationStatus.text = "⚠️ Jurusan $selectedJurusan sudah ada di hari $duplicateDay!"
+                    tvValidationStatus.text = "Jurusan $selectedJurusan sudah ada di hari $duplicateDay!"
                     tvValidationStatus.setTextColor(ContextCompat.getColor(this, R.color.status_warning))
                 } else {
 
                     ivValidationIcon.setImageResource(android.R.drawable.ic_menu_send)
                     ivValidationIcon.setColorFilter(ContextCompat.getColor(this, R.color.status_success))
-                    tvValidationStatus.text = "✅ Jurusan tersedia"
+                    tvValidationStatus.text = "Jurusan tersedia"
                     tvValidationStatus.setTextColor(ContextCompat.getColor(this, R.color.status_success))
                 }
             } else {
@@ -700,12 +714,16 @@ override fun onCreate(savedInstanceState: Bundle?) {
             )
         }
 
-        
+        etJamMulai.setOnClickListener { showTimePicker(etJamMulai) }
+        etJamSelesai.setOnClickListener { showTimePicker(etJamSelesai) }
+        etJamMulai.isFocusable = false
+        etJamSelesai.isFocusable = false
+
         btnCancel.setOnClickListener {
             dialog.dismiss()
         }
 
-        
+
         btnSave.setOnClickListener {
             val updatedNama = namaSholat
             val updatedJamMulai = etJamMulai.text.toString().trim()
@@ -740,6 +758,9 @@ override fun onCreate(savedInstanceState: Bundle?) {
             }
 
             
+            btnSave.isEnabled = false
+            btnSave.text = "MENYIMPAN..."
+
             val duplicateDay = if (namaSholat.equals("Dhuha", ignoreCase = true) && updatedJurusan.isNotEmpty()) {
                 checkDuplicateJurusan(updatedJurusan, updatedHari, currentJadwalId)
             } else null
@@ -765,6 +786,10 @@ override fun onCreate(savedInstanceState: Bundle?) {
                         updatedJurusan = if (namaSholat.equals("Dhuha", ignoreCase = true)) "Semua Jurusan" else updatedJurusan,
                         updatedKelas = updatedKelas
                     )
+                },
+                onCancel = {
+                    btnSave.isEnabled = true
+                    btnSave.text = "SIMPAN"
                 }
             )
         }
@@ -781,7 +806,8 @@ override fun onCreate(savedInstanceState: Bundle?) {
         originalWaktu: String,
         newWaktu: String,
         duplicateDay: String?,
-        onConfirm: () -> Unit
+        onConfirm: () -> Unit,
+        onCancel: (() -> Unit)? = null
     ) {
         val changes = StringBuilder()
 
@@ -799,7 +825,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
             "Tidak ada perubahan yang terdeteksi.\nApakah Anda tetap ingin menyimpan?"
         } else {
             val warningText = if (duplicateDay != null) {
-                "\n⚠️ Peringatan: Jurusan $newJurusan sudah ada di hari $duplicateDay.\nLanjutkan menyimpan?"
+                "\nPeringatan: Jurusan $newJurusan sudah ada di hari $duplicateDay.\nLanjutkan menyimpan?"
             } else ""
 
             "Anda akan mengubah jadwal:\n\n$changes$warningText"
@@ -809,7 +835,10 @@ override fun onCreate(savedInstanceState: Bundle?) {
             .setTitle("Konfirmasi Perubahan")
             .setMessage(message)
             .setPositiveButton("Ya, Simpan") { _, _ -> onConfirm() }
-            .setNegativeButton("Batal", null)
+            .setNegativeButton("Batal") { dialog, _ ->
+                onCancel?.invoke()
+                dialog.dismiss()
+            }
             .show()
     }
 
@@ -825,7 +854,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
         updatedKelas: String
     ) {
         
-        Toast.makeText(this, "Menyimpan perubahan...", Toast.LENGTH_SHORT).show()
+        showLoading(true)
 
         if (updatedHari == "Semua Hari" || updatedJurusan == "Semua Jurusan") {
             
@@ -867,10 +896,11 @@ override fun onCreate(savedInstanceState: Bundle?) {
                 if (!isFinishing && !isDestroyed) {
                     safeRunOnUiThread {
                         if (!isFinishing && !isDestroyed) {
+                            showLoading(false)
                             if (failCount == 0) {
-                                Toast.makeText(this@JadwalSholatAdminActivity, "✅ Berhasil memperbarui $successCount jadwal", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this@JadwalSholatAdminActivity, "Berhasil memperbarui $successCount jadwal", Toast.LENGTH_SHORT).show()
                             } else {
-                                Toast.makeText(this@JadwalSholatAdminActivity, "⚠️ $successCount berhasil, $failCount gagal", Toast.LENGTH_LONG).show()
+                                Toast.makeText(this@JadwalSholatAdminActivity, "$successCount berhasil, $failCount gagal", Toast.LENGTH_LONG).show()
                             }
                             dialog.dismiss()
                             loadJadwalList()
@@ -895,7 +925,8 @@ override fun onCreate(savedInstanceState: Bundle?) {
                         if (!isFinishing && !isDestroyed) {
                             safeRunOnUiThread {
                                 if (!isFinishing && !isDestroyed) {
-                                    Toast.makeText(this@JadwalSholatAdminActivity, "✅ Jadwal berhasil diperbarui", Toast.LENGTH_SHORT).show()
+                                    showLoading(false)
+                                    Toast.makeText(this@JadwalSholatAdminActivity, "Jadwal berhasil diperbarui", Toast.LENGTH_SHORT).show()
                                     dialog.dismiss()
                                     loadJadwalList()
                                 }
@@ -906,8 +937,8 @@ override fun onCreate(savedInstanceState: Bundle?) {
                         if (!isFinishing && !isDestroyed) {
                             safeRunOnUiThread {
                                 if (!isFinishing && !isDestroyed) {
-                                    val errorMessage = "❌ Gagal menyimpan: ${error.message}"
-                                    Toast.makeText(this@JadwalSholatAdminActivity, errorMessage, Toast.LENGTH_LONG).show()
+                                    showLoading(false)
+                                    Toast.makeText(this@JadwalSholatAdminActivity, "Gagal menyimpan jadwal", Toast.LENGTH_LONG).show()
                                 }
                             }
                         }
@@ -915,6 +946,17 @@ override fun onCreate(savedInstanceState: Bundle?) {
                 )
             }
         }
+    }
+
+    private fun showTimePicker(target: com.google.android.material.textfield.TextInputEditText) {
+        val currentText = target.text.toString()
+        val parts = currentText.split(":")
+        val hour = parts.getOrNull(0)?.toIntOrNull() ?: 12
+        val minute = parts.getOrNull(1)?.toIntOrNull() ?: 0
+
+        android.app.TimePickerDialog(this, { _, h, m ->
+            target.setText(String.format("%02d:%02d", h, m))
+        }, hour, minute, true).show()
     }
 
     private fun isValidTimeFormat(time: String): Boolean {
@@ -951,7 +993,11 @@ override fun onCreate(savedInstanceState: Bundle?) {
         actvHari.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, daysOptions))
         actvJurusan.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, jurusanOptions))
 
-        
+        etJamMulai.setOnClickListener { showTimePicker(etJamMulai) }
+        etJamSelesai.setOnClickListener { showTimePicker(etJamSelesai) }
+        etJamMulai.isFocusable = false
+        etJamSelesai.isFocusable = false
+
         val dialog = AlertDialog.Builder(this)
             .setView(dialogView)
             .setCancelable(false)
@@ -959,6 +1005,11 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
         btnClose.setOnClickListener { dialog.dismiss() }
         btnBatal.setOnClickListener { dialog.dismiss() }
+
+        etJamMulai.setOnClickListener { showTimePicker(etJamMulai) }
+        etJamSelesai.setOnClickListener { showTimePicker(etJamSelesai) }
+        etJamMulai.isFocusable = false
+        etJamSelesai.isFocusable = false
 
         btnSimpan.setOnClickListener {
             val jenisSholat = actvJenisSholat.text.toString().trim()
@@ -976,15 +1027,19 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
             
             if (jenisSholat.isEmpty()) {
-                Toast.makeText(this, "Pilih jenis sholat", Toast.LENGTH_SHORT).show()
+                actvJenisSholat.error = "Pilih jenis sholat"
                 return@setOnClickListener
             }
             if (hari.isEmpty() || hari == "Semua Hari") {
-                Toast.makeText(this, "Pilih hari yang spesifik", Toast.LENGTH_SHORT).show()
+                actvHari.error = "Pilih hari yang spesifik"
                 return@setOnClickListener
             }
-            if (jamMulai.isEmpty() || jamSelesai.isEmpty()) {
-                Toast.makeText(this, "Isi jam mulai dan selesai", Toast.LENGTH_SHORT).show()
+            if (jamMulai.isEmpty()) {
+                etJamMulai.error = "Isi jam mulai"
+                return@setOnClickListener
+            }
+            if (jamSelesai.isEmpty()) {
+                etJamSelesai.error = "Isi jam selesai"
                 return@setOnClickListener
             }
             if (kelasStr.isEmpty()) {
@@ -1022,7 +1077,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
                     },
                     onFailure = { error ->
                         safeRunOnUiThread {
-                            Toast.makeText(this@JadwalSholatAdminActivity, "Gagal: ${error.message}", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@JadwalSholatAdminActivity, "Gagal menyimpan data", Toast.LENGTH_SHORT).show()
                             btnSimpan.isEnabled = true
                             btnSimpan.text = "SIMPAN JADWAL"
                         }
@@ -1113,20 +1168,6 @@ override fun onCreate(savedInstanceState: Bundle?) {
         dialog.show()
     }
 
-    private fun showEditSholatDzuhurCardDialog(id: Int) {
-        // COMMENTED OUT: Phantom API method (not in backend)
-        /*
-        lifecycleScope.launch {
-            val token = getAuthToken()
-            repository.getSholatDzuhurDetail(token).onSuccess { detail ->
-                safeRunOnUiThread {
-                    showEditSholatCardDialog(detail.id, "Dzuhur", detail.hari, detail.waktuMulai, detail.waktuSelesai, detail.kelas, detail.jurusan)
-                }
-            }
-        }
-        */
-    }
-
     private fun showEditSholatCardDialog(
         id: Int,
         jenis: String,
@@ -1208,7 +1249,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
                     },
                     onFailure = { error ->
                         safeRunOnUiThread {
-                            Toast.makeText(this@JadwalSholatAdminActivity, "Gagal: ${error.message}", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@JadwalSholatAdminActivity, "Gagal menyimpan data", Toast.LENGTH_SHORT).show()
                         }
                     }
                 )

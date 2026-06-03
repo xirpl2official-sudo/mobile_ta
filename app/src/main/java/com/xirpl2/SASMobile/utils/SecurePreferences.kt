@@ -26,6 +26,11 @@ object SecurePreferences {
         return getEncrypted(context, "password_reset")
     }
 
+    /** Brute force protection state (failed attempts, cooldown timestamp). */
+    fun getBruteForceData(context: Context): SharedPreferences {
+        return getEncrypted(context, "login_brute_force")
+    }
+
     fun clearPasswordResetData(context: Context) {
         getPasswordResetData(context).edit().clear().commit()
     }
