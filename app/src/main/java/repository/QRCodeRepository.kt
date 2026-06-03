@@ -97,10 +97,9 @@ class QRCodeRepository {
     private fun parseErrorMessage(response: Response<*>): String? {
         return try {
             val errorBody = response.errorBody()?.string()
-            
-            if (errorBody != null && errorBody.contains("message")) {
-                val regex = "\"message\"\\s*:\\s*\"([^\"]+)\"".toRegex()
-                regex.find(errorBody)?.groupValues?.get(1)
+            if (!errorBody.isNullOrEmpty()) {
+                val map = gson.fromJson(errorBody, Map::class.java)
+                map?.get("message") as? String
             } else {
                 null
             }

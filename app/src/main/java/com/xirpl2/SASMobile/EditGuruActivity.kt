@@ -42,8 +42,9 @@ class EditGuruActivity : BaseActivity() {
         }
 
         initViews()
-        loadIntentData()
-        setupListeners()
+        if (loadIntentData()) {
+            setupListeners()
+        }
     }
 
     private fun initViews() {
@@ -54,26 +55,24 @@ class EditGuruActivity : BaseActivity() {
         progressLoading = findViewById(R.id.progressLoading)
     }
 
-    private fun loadIntentData() {
+    private fun loadIntentData(): Boolean {
         guruId = intent.getIntExtra("guru_id", -1)
 
         if (guruId == -1) {
             Toast.makeText(this, "Data guru tidak valid", Toast.LENGTH_SHORT).show()
             finish()
-            return
+            return false
         }
 
-        // Show intent data immediately as placeholder, but block saving
         etNama.setText(intent.getStringExtra("guru_nama") ?: "")
         etNip.setText(intent.getStringExtra("guru_nip") ?: "")
         etEmail.setText(intent.getStringExtra("guru_email") ?: "")
 
-        // Disable save until fresh data loads successfully
         dataLoaded = false
         btnSimpan.isEnabled = false
 
-        // Fetch fresh data from API
         fetchGuruDetail()
+        return true
     }
 
     private fun fetchGuruDetail() {
@@ -143,6 +142,11 @@ class EditGuruActivity : BaseActivity() {
 
         if (email.isEmpty()) {
             Toast.makeText(this, "Email wajib diisi", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            Toast.makeText(this, "Format email tidak valid", Toast.LENGTH_SHORT).show()
             return
         }
 

@@ -105,7 +105,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0"
-                        android:textColor="#1565C0"
+                            android:textColor="@color/stat_blue_text"
                         android:textSize="28sp"
                         android:textStyle="bold" />
                     <TextView
@@ -115,7 +115,7 @@
                         android:maxLines="1"
                         android:scrollHorizontally="true"
                         android:text="Izin"
-                        android:textColor="#1565C0"
+                            android:textColor="@color/stat_blue_text"
                         android:textSize="12sp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>

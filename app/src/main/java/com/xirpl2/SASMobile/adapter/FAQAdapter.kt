@@ -11,6 +11,8 @@ import com.xirpl2.SASMobile.model.FAQItem
 
 class FAQAdapter(private val faqList: List<FAQItem>) : RecyclerView.Adapter<FAQAdapter.FAQViewHolder>() {
 
+    private val expandedPositions = mutableSetOf<Int>()
+
     class FAQViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvQuestion: TextView = view.findViewById(R.id.tvQuestion)
         val tvAnswer: TextView = view.findViewById(R.id.tvAnswer)
@@ -28,12 +30,14 @@ class FAQAdapter(private val faqList: List<FAQItem>) : RecyclerView.Adapter<FAQA
         holder.tvQuestion.text = item.question
         holder.tvAnswer.text = item.answer
 
+        val isExpanded = expandedPositions.contains(position)
+
         // Toggle visibility
-        holder.tvAnswer.visibility = if (item.isExpanded) View.VISIBLE else View.GONE
-        holder.ivArrow.rotation = if (item.isExpanded) 90f else 0f
+        holder.tvAnswer.visibility = if (isExpanded) View.VISIBLE else View.GONE
+        holder.ivArrow.rotation = if (isExpanded) 90f else 0f
 
         holder.layoutQuestion.setOnClickListener {
-            item.isExpanded = !item.isExpanded
+            if (isExpanded) expandedPositions.remove(position) else expandedPositions.add(position)
             notifyItemChanged(position)
         }
     }

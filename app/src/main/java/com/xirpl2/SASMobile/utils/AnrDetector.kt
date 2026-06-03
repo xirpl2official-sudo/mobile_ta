@@ -16,6 +16,8 @@ object AnrDetector {
     @Volatile
     private var lastUiInteraction = System.currentTimeMillis()
 
+    private var anrRecoveryInProgress = false
+
     /**
      * Records a successful UI interaction (touch, key press).
      */
@@ -35,27 +37,27 @@ object AnrDetector {
      * Handles potential ANR by attempting a graceful restart of the application.
      */
     fun handlePotentialAnr(context: Context) {
-        if (isPotentialAnr()) {
+        if (isPotentialAnr() && !anrRecoveryInProgress) {
             Log.w(TAG, "Potential ANR detected (idle for > ${ANR_THRESHOLD}ms). Initiating graceful recovery.")
+            anrRecoveryInProgress = true
             
             try {
-                // Prepare safe restart intent
                 val intent = Intent(context, MasukActivity::class.java).apply {
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 }
                 context.startActivity(intent)
                 
-                // Kill process after a short delay to allow intent delivery
-                Thread {
+                // Give system time to deliver the intent before killing
+                android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
                     try {
-                        Thread.sleep(1000)
                         android.os.Process.killProcess(android.os.Process.myPid())
                     } catch (e: Exception) {
-                        // Ignore sleep interruptions
+                        // Ignore
                     }
-                }.start()
+                }, 1000)
             } catch (e: Exception) {
                 Log.e(TAG, "ANR recovery failed: ${e.message}")
+                anrRecoveryInProgress = false
             }
         }
     }

@@ -58,7 +58,8 @@ class RiwayatIzinAdapter :
             return try {
                 val input = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                 val output = SimpleDateFormat("dd MMM yyyy", Locale("id"))
-                output.format(input.parse(dateStr)!!)
+                val parsed = input.parse(dateStr)
+                if (parsed != null) output.format(parsed) else dateStr
             } catch (_: Exception) {
                 dateStr
             }

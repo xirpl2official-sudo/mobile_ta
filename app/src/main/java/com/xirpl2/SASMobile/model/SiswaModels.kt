@@ -26,7 +26,7 @@ data class SiswaItem(
     @SerializedName("status_akademik")
     val statusAkademik: String? = null,
     val agama: String? = null,
-    var isSelected: Boolean = false
+    val isSelected: Boolean = false
 ) : Serializable
 
 data class SiswaPaginationInfo(
@@ -113,4 +113,8 @@ data class StudentDetailResponse(
     val createdAt: String? = null,
     @SerializedName("updated_at")
     val updatedAt: String? = null
-) : Serializable
+) : Serializable {
+    companion object {
+        private const val serialVersionUID: Long = 1L
+    }
+}

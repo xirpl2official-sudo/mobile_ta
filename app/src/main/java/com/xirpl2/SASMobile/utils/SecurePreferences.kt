@@ -13,6 +13,8 @@ object SecurePreferences {
 
     private const val ENC_PREFIX = "enc_"
 
+    private val masterKeyCache = java.util.concurrent.ConcurrentHashMap<String, MasterKey>()
+
     fun getUserSession(context: Context): SharedPreferences {
         return getEncrypted(context, "user_session")
     }
@@ -38,9 +40,11 @@ object SecurePreferences {
     private fun getEncrypted(context: Context, plainFileName: String): SharedPreferences {
         val encFileName = ENC_PREFIX + plainFileName
 
-        val masterKey = MasterKey.Builder(context)
-            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-            .build()
+        val masterKey = masterKeyCache.getOrPut(encFileName) {
+            MasterKey.Builder(context.applicationContext)
+                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                .build()
+        }
 
         val encryptedPrefs = EncryptedSharedPreferences.create(
             context,

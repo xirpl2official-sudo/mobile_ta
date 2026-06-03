@@ -26,8 +26,13 @@ object UpdateChecker {
 
     suspend fun checkForUpdate(context: Context): UpdateInfo? = withContext(Dispatchers.IO) {
         try {
-            val currentVersionCode = context.packageManager
-                .getPackageInfo(context.packageName, 0).longVersionCode.toInt()
+            val currentVersionCode = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+                context.packageManager
+                    .getPackageInfo(context.packageName, 0).longVersionCode.toInt()
+            } else {
+                @Suppress("DEPRECATION")
+                context.packageManager.getPackageInfo(context.packageName, 0).versionCode
+            }
 
             val url = URL("https://api.github.com/repos/$GITHUB_OWNER/$GITHUB_REPO/releases/latest")
             val conn = url.openConnection() as HttpURLConnection
@@ -38,6 +43,7 @@ object UpdateChecker {
 
             if (conn.responseCode != 200) {
                 Log.e(TAG, "GitHub API returned ${conn.responseCode}")
+                conn.disconnect()
                 return@withContext null
             }
 

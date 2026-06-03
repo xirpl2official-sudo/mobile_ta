@@ -113,7 +113,7 @@
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="@dimen/spacing_small"
                 app:cardElevation="4dp"
-                app:cardBackgroundColor="#F76E13"
+                app:cardBackgroundColor="@color/card_waktu_absensi"
                 app:cardUseCompatPadding="true"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -174,7 +174,7 @@
                         android:textSize="@dimen/text_small"
                         android:paddingHorizontal="@dimen/spacing_medium"
                         android:paddingVertical="@dimen/spacing_text"
-                        android:textColor="#F76E13"
+                        android:textColor="@color/card_waktu_absensi"
                         app:backgroundTint="#FFFFFF"
                         app:cornerRadius="8dp"
                         app:rippleColor="#E0E0E0"
@@ -232,14 +232,14 @@
                             app:layout_constraintHeight_percent="0.35"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
-                            app:tint="#1565C0" />
+                            app:tint="@color/stat_blue_icon_tint" />
 
                         <TextView
                             android:id="@+id/tvTotalAbsensiLabel"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:text="Total Absensi"
-                            android:textColor="#1565C0"
+                            android:textColor="@color/stat_blue_text"
                             android:textSize="@dimen/text_button"
                             android:textStyle="bold"
                             android:ellipsize="end"
@@ -254,7 +254,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:text="@string/PlaceholderDash"
-                            android:textColor="#1565C0"
+                            android:textColor="@color/stat_blue_text"
                             android:textSize="@dimen/text_title"
                             android:textStyle="bold"
                             android:gravity="center"
@@ -299,14 +299,14 @@
                             app:layout_constraintHeight_percent="0.35"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
-                            app:tint="#C62828" />
+                            app:tint="@color/stat_red_icon_tint" />
 
                         <TextView
                             android:id="@+id/tvTotalAlphaLabel"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:text="Total Alpha"
-                            android:textColor="#C62828"
+                            android:textColor="@color/stat_red_text"
                             android:textSize="@dimen/text_button"
                             android:textStyle="bold"
                             android:ellipsize="end"
@@ -321,7 +321,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:text="@string/PlaceholderDash"
-                            android:textColor="#C62828"
+                            android:textColor="@color/stat_red_text"
                             android:textSize="@dimen/text_title"
                             android:textStyle="bold"
                             android:gravity="center"
@@ -366,14 +366,14 @@
                             app:layout_constraintHeight_percent="0.35"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
-                            app:tint="#E65100" />
+                            app:tint="@color/stat_orange_icon_tint" />
 
                         <TextView
                             android:id="@+id/tvIzinSakitLabel"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:text="Izin/Sakit"
-                            android:textColor="#E65100"
+                            android:textColor="@color/stat_orange_text"
                             android:textSize="@dimen/text_button"
                             android:textStyle="bold"
                             android:ellipsize="end"
@@ -388,7 +388,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:text="@string/PlaceholderDash"
-                            android:textColor="#E65100"
+                            android:textColor="@color/stat_orange_text"
                             android:textSize="@dimen/text_title"
                             android:textStyle="bold"
                             android:gravity="center"
@@ -509,7 +509,8 @@
                         app:layout_constraintDimensionRatio="1:1"
                         app:layout_constraintTop_toTopOf="@id/tvRiwayatLabel"
                         app:layout_constraintBottom_toBottomOf="@id/tvRiwayatLabel"
-                        app:layout_constraintStart_toStartOf="parent" />
+                        app:layout_constraintStart_toStartOf="parent"
+                        android:layout_marginEnd="0dp" />
 
                     <TextView
                         android:id="@+id/tvRiwayatLabel"
@@ -531,14 +532,14 @@
                         android:layout_height="36dp"
                         android:text="@string/Unduh"
                         android:textSize="11sp"
-                        android:textColor="#1565C0"
+                        android:textColor="@color/outline_button_blue"
                         app:icon="@drawable/ic_download"
                         app:iconSize="16dp"
-                        app:iconTint="#1565C0"
-                        app:strokeColor="#1565C0"
+                        app:iconTint="@color/outline_button_blue"
+                        app:strokeColor="@color/outline_button_blue"
                         app:cornerRadius="8dp"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/tvRiwayatLabel"
                         app:layout_constraintBottom_toBottomOf="@id/tvRiwayatLabel" />
 
                     

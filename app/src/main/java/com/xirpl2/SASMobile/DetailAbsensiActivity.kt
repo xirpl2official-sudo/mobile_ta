@@ -106,11 +106,11 @@ class DetailAbsensiActivity : BaseActivity() {
         if (isFriday) {
             itemDzuhur?.visibility = View.GONE
             itemJumat?.visibility = View.VISIBLE
-            setupPrayerItem(itemJumat!!, "Sholat Jumat", "11:00 - 13:00")
+            itemJumat?.let { setupPrayerItem(it, "Sholat Jumat", "11:00 - 13:00") }
         } else {
             itemDzuhur?.visibility = View.VISIBLE
             itemJumat?.visibility = View.GONE
-            setupPrayerItem(itemDzuhur!!, "Sholat Dzuhur", "11:30 - 13:00")
+            itemDzuhur?.let { setupPrayerItem(it, "Sholat Dzuhur", "11:30 - 13:00") }
         }
 
         checkDhuhaVisibility(itemDhuha)
@@ -140,7 +140,7 @@ class DetailAbsensiActivity : BaseActivity() {
                             itemDhuha?.visibility = View.VISIBLE
                             val dhuhaJadwal = jadwals.find { it.jenis_sholat.equals("Dhuha", true) }
                             val time = if (dhuhaJadwal != null) "${dhuhaJadwal.jam_mulai} - ${dhuhaJadwal.jam_selesai}" else "06:30 - 09:00"
-                            setupPrayerItem(itemDhuha!!, "Sholat Dhuha", time)
+                            itemDhuha?.let { setupPrayerItem(it, "Sholat Dhuha", time) }
                         } else {
                             itemDhuha?.visibility = View.GONE
                         }
@@ -216,7 +216,7 @@ class DetailAbsensiActivity : BaseActivity() {
         return sharedPref.getString("auth_token", "") ?: ""
     }
 
-    private inner class DateStripAdapter(private val dates: List<Date>) : 
+    private class DateStripAdapter(private val dates: List<Date>) : 
         RecyclerView.Adapter<DateStripAdapter.ViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -235,18 +235,18 @@ class DetailAbsensiActivity : BaseActivity() {
             val isToday = SimpleDateFormat("yyyyMMdd").format(date) == SimpleDateFormat("yyyyMMdd").format(Date())
             if (isToday) {
                 holder.itemView.findViewById<View>(R.id.dateContent).setBackgroundResource(R.drawable.bg_date_selected)
-                holder.tvDayName.setTextColor(resources.getColor(android.R.color.white))
-                holder.tvDateNumber.setTextColor(resources.getColor(android.R.color.white))
+                holder.tvDayName.setTextColor(holder.itemView.resources.getColor(android.R.color.white))
+                holder.tvDateNumber.setTextColor(holder.itemView.resources.getColor(android.R.color.white))
             } else {
                 holder.itemView.findViewById<View>(R.id.dateContent).background = null
-                holder.tvDayName.setTextColor(resources.getColor(R.color.slate_400))
-                holder.tvDateNumber.setTextColor(resources.getColor(R.color.on_background))
+                holder.tvDayName.setTextColor(holder.itemView.resources.getColor(R.color.slate_400))
+                holder.tvDateNumber.setTextColor(holder.itemView.resources.getColor(R.color.on_background))
             }
         }
 
         override fun getItemCount(): Int = dates.size
 
-        inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val tvDayName: TextView = view.findViewById(R.id.tvDayName)
             val tvDateNumber: TextView = view.findViewById(R.id.tvDateNumber)
         }

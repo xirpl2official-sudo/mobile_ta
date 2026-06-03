@@ -13,8 +13,10 @@ import com.xirpl2.SASMobile.adapter.SiswaAdapter
 import com.xirpl2.SASMobile.model.SiswaItem
 import com.xirpl2.SASMobile.network.RetrofitClient
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
 
@@ -132,9 +134,48 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
 
     private fun executeNotifyBulk() {
         val selected = adapter.getSelectedItems()
-        Toast.makeText(this, "Berhasil mengirim pengingat ke ${selected.size} siswa", Toast.LENGTH_SHORT).show()
-        adapter.selectAll(false)
-        cbSelectAll.isChecked = false
+        if (selected.isEmpty()) return
+
+        val token = getAuthToken()
+        if (token.isEmpty()) {
+            Toast.makeText(this, "Sesi tidak valid", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        progressBar.visibility = View.VISIBLE
+        btnNotifyBulk.isEnabled = false
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val request = com.xirpl2.SASMobile.model.NotifyWaliKelasRequest(
+                    nisList = selected.map { it.nis },
+                    message = "Silakan segera mendaftarkan perangkat Anda"
+                )
+                val response = RetrofitClient.apiService.notifyWaliKelas("Bearer $token", request)
+
+                withContext(Dispatchers.Main) {
+                    progressBar.visibility = View.GONE
+                    btnNotifyBulk.isEnabled = true
+                    if (response.isSuccessful) {
+                        Toast.makeText(this@SiswaBelumTerdaftarAdminActivity, "Berhasil mengirim pengingat ke ${selected.size} siswa", Toast.LENGTH_SHORT).show()
+                        adapter.selectAll(false)
+                        cbSelectAll.isChecked = false
+                    } else {
+                        Toast.makeText(this@SiswaBelumTerdaftarAdminActivity, "Gagal mengirim pengingat (${response.code()})", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    progressBar.visibility = View.GONE
+                    btnNotifyBulk.isEnabled = true
+                    if (e is java.net.UnknownHostException) {
+                        Toast.makeText(this@SiswaBelumTerdaftarAdminActivity, "Tidak dapat terhubung ke server", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this@SiswaBelumTerdaftarAdminActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
     }
 
     private fun initForcedClass() {

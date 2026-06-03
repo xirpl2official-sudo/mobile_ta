@@ -457,12 +457,7 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
 
                     siswaAdapter.setFullList(allStudentList.toList())
 
-                    // Auto-fetch remaining pages if more data exists
-                    if (!isLastPage && totalPages > currentPage) {
-                        isLoading = false
-                        loadMoreData()
-                        return@fold
-                    }
+                    // Load on-demand (user scrolls), not auto-fetch all pages
 
                     if (allStudentList.isEmpty()) {
                         tvEmptyState.text = "Tidak ada data siswa"

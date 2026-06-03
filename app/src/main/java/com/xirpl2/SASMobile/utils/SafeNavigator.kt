@@ -33,7 +33,12 @@ object SafeNavigator {
         }
 
         val intent = Intent(currentActivity, targetClass)
-        intentModifier?.invoke(intent)
+        try {
+            intentModifier?.invoke(intent)
+        } catch (e: Exception) {
+            Log.e(TAG, "Intent modifier failed: ${e.message}")
+            return
+        }
         
         // Ensure atomic transition by using specific flags
         if (intent.flags == 0) {

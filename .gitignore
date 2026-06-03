@@ -71,4 +71,4 @@ __pycache__/
 *.tar.bz2
 *.tar.xz
 *.tar.zst
-```
+```*.apk

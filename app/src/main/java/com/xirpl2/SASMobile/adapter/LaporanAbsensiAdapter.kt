@@ -63,7 +63,7 @@ class LaporanAbsensiAdapter(
         holder.tvKelas.text = kelasDisplay
         holder.tvSholat.text = item.jenis_sholat?.replaceFirstChar { it.uppercase() } ?: "-"
 
-        val status = item.status.lowercase()
+        val status = (item.status ?: "alpha").lowercase()
         holder.tvStatus.text = status.replaceFirstChar { it.uppercase() }
 
         val backgroundRes = when (status) {

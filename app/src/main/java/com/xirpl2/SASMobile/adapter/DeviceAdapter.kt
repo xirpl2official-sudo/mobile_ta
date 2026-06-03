@@ -63,7 +63,9 @@ class DeviceAdapter(
             is DeviceListItem.ChangeRequest -> {
                 val r = item.item
                 holder.tvDeviceName.text = "Permintaan Ganti Perangkat"
-                holder.tvHardwareId.text = "NIS: ${r.user_id} | Dari: ${r.hardware_id_lama.take(8)}... Ke: ${r.hardware_id_baru.take(8)}..."
+                val lama = r.hardware_id_lama?.take(8) ?: "???"
+                val baru = r.hardware_id_baru?.take(8) ?: "???"
+                holder.tvHardwareId.text = "NIS: ${r.user_id} | Dari: $lama... Ke: $baru..."
                 holder.tvExtraInfo.text = "Alasan: ${r.reason ?: "-"}\nDiajukan: ${r.created_at}"
                 holder.tvStatus.text = r.status.uppercase()
 

@@ -7,6 +7,7 @@ import android.os.Looper
 import android.util.Log
 import android.view.KeyEvent
 import android.view.MotionEvent
+import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.xirpl2.SASMobile.utils.AnrDetector
@@ -16,6 +17,7 @@ import com.xirpl2.SASMobile.update.UpdateDialog
 import com.xirpl2.SASMobile.update.UpdateDownloader
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -136,14 +138,26 @@ abstract class BaseActivity : AppCompatActivity() {
         return super.dispatchKeyEvent(event)
     }
 
-    override fun onDestroy() {
-        transitionHandler.removeCallbacksAndMessages(null)
-        Log.d(TAG, "onDestroy: ${this::class.java.simpleName}")
-        super.onDestroy()
+    /**
+     * Prevents rapid double-clicks by tracking last click time per view hash.
+     * Use on submit/save/delete buttons. Minimum interval: 600ms.
+     */
+    private val clickTimestamps = ConcurrentHashMap<Int, Long>()
+
+    protected fun View.setSafeOnClickListener(minInterval: Long = 600L, action: () -> Unit) {
+        setOnClickListener {
+            val now = System.currentTimeMillis()
+            val lastClick = clickTimestamps[this.hashCode()] ?: 0L
+            if (now - lastClick < minInterval) return@setOnClickListener
+            clickTimestamps[this.hashCode()] = now
+            action()
+        }
     }
 
-    override fun finish() {
-        super.finish()
-        overridePendingTransition(0, 0)
+    override fun onDestroy() {
+        transitionHandler.removeCallbacksAndMessages(null)
+        clickTimestamps.clear()
+        Log.d(TAG, "onDestroy: ${this::class.java.simpleName}")
+        super.onDestroy()
     }
 }

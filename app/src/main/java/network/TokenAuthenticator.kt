@@ -26,7 +26,8 @@ class TokenAuthenticator(private val context: Context) : Authenticator {
 
     override fun authenticate(route: Route?, response: Response): Request? {
         // Don't retry the refresh endpoint itself to avoid infinite loops
-        if (response.request.url.encodedPath.contains("tokens/refresh")) {
+        val path = response.request.url.encodedPath
+        if (path == "/api/v2/tokens/refresh" || path.endsWith("/tokens/refresh")) {
             return null
         }
 
@@ -80,12 +81,18 @@ class TokenAuthenticator(private val context: Context) : Authenticator {
                         if (!newRefreshToken.isNullOrEmpty()) {
                             putString("refresh_token", newRefreshToken)
                         }
-                        apply()
+                        commit()
                     }
 
                     // Store 2: keep "UserData" in sync (some activities read auth_token from here)
                     val userDataPrefs = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(context)
-                    userDataPrefs.edit().putString("auth_token", newToken).apply()
+                    with(userDataPrefs.edit()) {
+                        putString("auth_token", newToken)
+                        if (!newRefreshToken.isNullOrEmpty()) {
+                            putString("refresh_token", newRefreshToken)
+                        }
+                        apply()
+                    }
 
                     Log.d(TAG, "Token refreshed successfully, retrying request")
                     response.request.newBuilder()

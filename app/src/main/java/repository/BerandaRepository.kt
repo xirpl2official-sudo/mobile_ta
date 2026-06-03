@@ -79,56 +79,61 @@ class BerandaRepository {
     }
 
     suspend fun getJadwalDhuhaKeahlian(token: String): Result<List<com.xirpl2.SASMobile.model.JadwalDhuhaKeahlian>> {
-        return try {
-            // Same endpoint as desktop: GET /v2/jurusan/dhuha-schedules
-            val response = apiService.getJurusanDhuhaSchedules("Bearer $token")
-            if (response.isSuccessful) {
-                val jurusans = response.body()?.data ?: emptyList()
-                val days = listOf("Senin", "Selasa", "Rabu", "Kamis")
-                val grouped = jurusans
-                    .filter { !it.hari_dhuha.isNullOrBlank() }
-                    .groupBy { it.hari_dhuha!! }
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.getJurusanDhuhaSchedules("Bearer $token")
+                if (response.isSuccessful) {
+                    val jurusans = response.body()?.data ?: emptyList()
+                    val days = listOf("Senin", "Selasa", "Rabu", "Kamis")
+                    val grouped = jurusans
+                        .filter { !it.hari_dhuha.isNullOrBlank() }
+                        .groupBy { it.hari_dhuha ?: "" }
 
-                val resultList = days.map { day ->
-                    val onDay = grouped[day] ?: emptyList()
-                    com.xirpl2.SASMobile.model.JadwalDhuhaKeahlian(
-                        hari = day,
-                        jurusan1 = onDay.getOrNull(0),
-                        jurusan2 = onDay.getOrNull(1)
-                    )
+                    val resultList = days.map { day ->
+                        val onDay = grouped[day] ?: emptyList()
+                        com.xirpl2.SASMobile.model.JadwalDhuhaKeahlian(
+                            hari = day,
+                            jurusan1 = onDay.getOrNull(0),
+                            jurusan2 = onDay.getOrNull(1)
+                        )
+                    }
+                    Result.success(resultList)
+                } else {
+                    Result.failure(Exception(response.message()))
                 }
-                Result.success(resultList)
-            } else {
-                Result.failure(Exception(response.message()))
+            } catch (e: Exception) {
+                Result.failure(e)
             }
-        } catch (e: Exception) {
-            Result.failure(e)
         }
     }
 
     suspend fun updateJurusanDhuhaDay(token: String, id: Int, hari: String): Result<Boolean> {
-        return try {
-            val response = apiService.updateJurusanDhuhaDay("Bearer $token", id, com.xirpl2.SASMobile.model.DhuhaDayRequest(hari_dhuha = hari))
-            if (response.isSuccessful) {
-                Result.success(true)
-            } else {
-                Result.failure(Exception(response.message()))
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.updateJurusanDhuhaDay("Bearer $token", id, com.xirpl2.SASMobile.model.DhuhaDayRequest(hari_dhuha = hari))
+                if (response.isSuccessful) {
+                    Result.success(true)
+                } else {
+                    Result.failure(Exception(response.message()))
+                }
+            } catch (e: Exception) {
+                Result.failure(e)
             }
-        } catch (e: Exception) {
-            Result.failure(e)
         }
     }
 
     suspend fun updateJadwalDhuhaTime(token: String, idJurusan: Int, request: com.xirpl2.SASMobile.model.JadwalDhuhaTimeUpdateRequest): Result<Boolean> {
-        return try {
-            val response = apiService.updateJadwalDhuhaTime("Bearer $token", idJurusan, request)
-            if (response.isSuccessful) {
-                Result.success(true)
-            } else {
-                Result.failure(Exception(response.message()))
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.updateJadwalDhuhaTime("Bearer $token", idJurusan, request)
+                if (response.isSuccessful) {
+                    Result.success(true)
+                } else {
+                    Result.failure(Exception(response.message()))
+                }
+            } catch (e: Exception) {
+                Result.failure(e)
             }
-        } catch (e: Exception) {
-            Result.failure(e)
         }
     }
 

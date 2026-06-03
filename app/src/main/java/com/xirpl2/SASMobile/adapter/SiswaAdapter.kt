@@ -150,7 +150,8 @@ class SiswaAdapter(
             }
 
             // FIX-012: Visual distinction for old NIS format
-            if (siswa.nis.contains("/") || siswa.nis.contains(".")) {
+            val safeNis = siswa.nis ?: ""
+            if (safeNis.contains("/") || safeNis.contains(".")) {
                 tvNis.setTextColor(androidx.core.content.ContextCompat.getColor(itemView.context, R.color.slate_400))
                 tvNis.setTypeface(null, android.graphics.Typeface.ITALIC)
             } else {

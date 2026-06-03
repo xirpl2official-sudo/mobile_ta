@@ -70,11 +70,11 @@ class PengajuanIzinAdminAdapter(
             setupLeaveTypeBadge(item.jenisIzin)
 
             tvPeriod.text = "${item.tanggalAwal} s/d ${item.tanggalAkhir}"
-            tvReason.text = item.keterangan
+            tvReason.text = item.keterangan ?: ""
 
             // Expand Reason Logic
             tvReason.maxLines = 2
-            btnExpandReason.visibility = if (item.keterangan.length > 60) View.VISIBLE else View.GONE
+            btnExpandReason.visibility = if ((item.keterangan?.length ?: 0) > 60) View.VISIBLE else View.GONE
             btnExpandReason.setOnClickListener {
                 if (tvReason.maxLines == 2) {
                     tvReason.maxLines = Int.MAX_VALUE

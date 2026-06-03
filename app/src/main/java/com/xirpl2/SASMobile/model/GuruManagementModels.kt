@@ -21,14 +21,23 @@ data class GuruDetailResponse(
 )
 
 data class GuruItem(
+    @SerializedName("id_staff")
     val id_staff: Int,
+    @SerializedName("id_account")
     val id_account: Int,
+    @SerializedName("nama")
     val nama: String,
+    @SerializedName("nip")
     val nip: String = "",
+    @SerializedName("email")
     val email: String = "",
+    @SerializedName("wali_kelas")
     val wali_kelas: String = "",
+    @SerializedName("id_kelas_wali")
     val id_kelas_wali: Int? = null,
+    @SerializedName("label_kelas")
     val label_kelas: String = "",
+    @SerializedName("berlaku_mulai")
     val berlaku_mulai: String? = null
 )
 

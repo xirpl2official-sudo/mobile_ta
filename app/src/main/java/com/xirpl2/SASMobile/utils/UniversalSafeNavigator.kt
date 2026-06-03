@@ -20,11 +20,14 @@ object UniversalSafeNavigator {
     
     @Volatile
     private var lastNavigationTime = 0L
+    private val navigationLock = Any()
     private const val NAVIGATION_THRESHOLD = 1000L // 1 second spam protection
     private const val DEFAULT_TRANSITION_DELAY = 50L // Reduced for instant feel with disabled animations
     private const val NAVIGATION_TIMEOUT = 2000L // 2 seconds safety timeout
 
-    private val navigationExecutor = Executors.newSingleThreadExecutor()
+    private val navigationExecutor = Executors.newSingleThreadExecutor { r ->
+        Thread(r, "SafeNavigator").apply { isDaemon = true }
+    }
 
     /**
      * Executes a safe navigation to a target activity with built-in timeout 
@@ -38,11 +41,13 @@ object UniversalSafeNavigator {
         onFailed: (() -> Unit)? = null
     ) {
         val currentTime = System.currentTimeMillis()
-        if (currentTime - lastNavigationTime < NAVIGATION_THRESHOLD) {
-            Log.w(TAG, "Navigation suppressed: Spam protection active")
-            return
+        synchronized(navigationLock) {
+            if (currentTime - lastNavigationTime < NAVIGATION_THRESHOLD) {
+                Log.w(TAG, "Navigation suppressed: Spam protection active")
+                return
+            }
+            lastNavigationTime = currentTime
         }
-        lastNavigationTime = currentTime
 
         // Execute in background to prevent UI blocking in case of system service delays
         navigationExecutor.execute {

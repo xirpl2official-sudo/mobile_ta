@@ -42,30 +42,36 @@ object UpdateDownloader {
                     Thread.sleep(500)
                     val query = DownloadManager.Query().setFilterById(downloadId)
                     val cursor = dm.query(query)
-                    if (cursor != null && cursor.moveToFirst()) {
-                        val totalIdx = cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES)
-                        val downloadedIdx = cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR)
-                        val statusIdx = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)
+                    if (cursor != null) {
+                        try {
+                            if (cursor.moveToFirst()) {
+                                val totalIdx = cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES)
+                                val downloadedIdx = cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR)
+                                val statusIdx = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)
 
-                        val total = cursor.getLong(totalIdx)
-                        val downloaded = cursor.getLong(downloadedIdx)
-                        val status = cursor.getInt(statusIdx)
+                                val total = cursor.getLong(totalIdx)
+                                val downloaded = cursor.getLong(downloadedIdx)
+                                val status = cursor.getInt(statusIdx)
 
-                        if (total > 0) {
-                            val progress = ((downloaded * 100) / total).toInt()
-                            onProgress?.invoke(progress)
+                                if (total > 0) {
+                                    val progress = ((downloaded * 100) / total).toInt()
+                                    onProgress?.invoke(progress)
+                                }
+
+                                if (status == DownloadManager.STATUS_SUCCESSFUL || status == DownloadManager.STATUS_FAILED) {
+                                    downloading = false
+                                }
+                            }
+                        } finally {
+                            cursor.close()
                         }
-
-                        if (status == DownloadManager.STATUS_SUCCESSFUL || status == DownloadManager.STATUS_FAILED) {
-                            downloading = false
-                        }
-                        cursor.close()
                     }
                 } catch (_: Exception) {
                     downloading = false
                 }
             }
         }
+        progressThread.isDaemon = true
         progressThread.start()
 
         // Register receiver for download complete
@@ -87,6 +93,11 @@ object UpdateDownloader {
     }
 
     private fun installApk(context: Context, file: File) {
+        if (!file.exists()) {
+            android.widget.Toast.makeText(context, "File APK tidak ditemukan. Silakan coba lagi.", android.widget.Toast.LENGTH_SHORT).show()
+            return
+        }
+        
         val intent = Intent(Intent.ACTION_VIEW)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
@@ -98,7 +109,11 @@ object UpdateDownloader {
             intent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive")
         }
 
-        context.startActivity(intent)
+        try {
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            android.widget.Toast.makeText(context, "Gagal membuka installer", android.widget.Toast.LENGTH_SHORT).show()
+        }
     }
 
     fun unregisterReceiver(context: Context) {

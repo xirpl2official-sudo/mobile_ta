@@ -14,7 +14,7 @@ object RetrofitClient {
     // - Production: https://absensholat-api.vercel.app/api/
     private const val BASE_URL = "https://absensholat-api.vercel.app/api/"
 
-    private lateinit var appContext: Context
+    private var appContext: Context? = null
 
     /**
      * Must be called from SASMobileApp.onCreate() before any API calls are made.
@@ -25,14 +25,20 @@ object RetrofitClient {
     }
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
-        level = HttpLoggingInterceptor.Level.NONE
+        level = if (com.xirpl2.SASMobile.BuildConfig.DEBUG)
+            HttpLoggingInterceptor.Level.BODY
+        else
+            HttpLoggingInterceptor.Level.NONE
     }
 
     private val okHttpClient by lazy {
+        val ctx = appContext ?: throw IllegalStateException(
+            "RetrofitClient.init(context) must be called before any API call"
+        )
         OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
-            .authenticator(TokenAuthenticator(appContext))
-            .connectTimeout(30, TimeUnit.SECONDS)
+            .authenticator(TokenAuthenticator(ctx))
+            .connectTimeout(15, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)
             .build()

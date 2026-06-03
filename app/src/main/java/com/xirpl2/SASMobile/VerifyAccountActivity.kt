@@ -157,30 +157,32 @@ class VerifyAccountActivity : BaseActivity() {
         val token = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this)
             .getString("auth_token", "") ?: ""
 
-        lifecycleScope.launch {
+        lifecycleScope.launch(Dispatchers.IO) {
             try {
                 if (token.isNotEmpty()) {
                     RetrofitClient.apiService.logout("Bearer $token")
                 }
             } catch (_: Exception) { }
 
-            with(com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this@VerifyAccountActivity).edit()) {
-                clear()
-                apply()
-            }
-            with(com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this@VerifyAccountActivity).edit()) {
-                clear()
-                apply()
-            }
-            with(getSharedPreferences("NotificationData", Context.MODE_PRIVATE).edit()) {
-                clear()
-                apply()
-            }
+            withContext(Dispatchers.Main) {
+                with(com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this@VerifyAccountActivity).edit()) {
+                    clear()
+                    apply()
+                }
+                with(com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this@VerifyAccountActivity).edit()) {
+                    clear()
+                    apply()
+                }
+                with(getSharedPreferences("NotificationData", Context.MODE_PRIVATE).edit()) {
+                    clear()
+                    apply()
+                }
 
-            val intent = Intent(this@VerifyAccountActivity, MasukActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
-            finish()
+                val intent = Intent(this@VerifyAccountActivity, MasukActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                finish()
+            }
         }
     }
 }

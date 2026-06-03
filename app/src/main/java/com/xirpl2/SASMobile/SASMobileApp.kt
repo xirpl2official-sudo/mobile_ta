@@ -11,8 +11,6 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import com.xirpl2.SASMobile.utils.AnrDetector
 import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.system.exitProcess
-
 /**
  * SASMobileApp is the central application class that manages global error handling,
  * app state tracking, ANR prevention, and cross-platform optimizations.
@@ -133,8 +131,17 @@ class SASMobileApp : Application() {
     }
 
     private fun clearTransitionCaches() {
-        // Clear global animation state if any custom trackers are used
-        // Standard ValueAnimator.clearAllAnimations() is not public/available on all APIs
+        // Release bitmap caches and animation resources under memory pressure
+        try {
+            android.widget.ImageView::class.java.getDeclaredMethod("clearAllImageCaches")?.let {
+                it.isAccessible = true
+                it.invoke(null)
+            }
+        } catch (_: Exception) {}
+        // Clear any ValueAnimator frame callbacks
+        ValueAnimator.setFrameDelay(ValueAnimator.getFrameDelay())
+        // Request garbage collection for caches
+        System.gc()
     }
 
     /**
@@ -159,15 +166,16 @@ class SASMobileApp : Application() {
             if (intent != null) {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                 startActivity(intent)
-                
-                // Immediate kill to prevent pending callbacks from causing further crashes
-                android.os.Process.killProcess(android.os.Process.myPid())
+                // Give the system a moment to start the new activity before killing
+                android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                    android.os.Process.killProcess(android.os.Process.myPid())
+                }, 500)
             } else {
-                exitProcess(1)
+                android.os.Process.killProcess(android.os.Process.myPid())
             }
         } catch (e: Exception) {
             Log.e(TAG, "App restart failed: ${e.message}")
-            exitProcess(1)
+            android.os.Process.killProcess(android.os.Process.myPid())
         }
     }
 }

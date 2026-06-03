@@ -22,9 +22,9 @@ data class JadwalSholatFilters(
 data class JadwalSholatData(
     @SerializedName("id_jadwal")
     val id: Int,
-    var hari: String? = null, 
-    var jurusan: String? = null, 
-    var kelas: String? = null,
+    val hari: String? = null, 
+    val jurusan: String? = null, 
+    val kelas: String? = null,
     @SerializedName("waktu_sholat")
     val waktuSholat: WaktuSholatData? = null,
     @SerializedName("jurusans")

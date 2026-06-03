@@ -1,13 +1,13 @@
 package com.xirpl2.SASMobile.update
 
 import android.content.Context
-import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 object UpdateDialog {
@@ -23,13 +23,13 @@ object UpdateDialog {
         val versionText = TextView(context).apply {
             text = "Versi ${updateInfo.versionName} tersedia"
             textSize = 16f
-            setTextColor(Color.parseColor("#1B1B1F"))
+            setTextColor(ContextCompat.getColor(context, android.R.color.primary_text_light))
         }
 
         val descText = TextView(context).apply {
             text = if (updateInfo.body.isNotBlank()) updateInfo.body else "Pembaruan tersedia untuk aplikasi SAS Mobile."
             textSize = 14f
-            setTextColor(Color.parseColor("#49454F"))
+            setTextColor(ContextCompat.getColor(context, android.R.color.secondary_text_light))
             setPadding(0, (8 * context.resources.displayMetrics.density).toInt(), 0, 0)
         }
 
