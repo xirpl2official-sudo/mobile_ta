@@ -642,7 +642,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
                 withContext(Dispatchers.Main) {
                     if (isFinishing || isDestroyed) return@withContext
                     btn.isEnabled = true
-                    Toast.makeText(this@LaporanAdminActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@LaporanAdminActivity, "Kesalahan: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }
         }

@@ -41,7 +41,7 @@
                     android:layout_height="24dp"
                     android:layout_alignParentEnd="true"
                     android:src="@drawable/ic_close"
-                    android:contentDescription="Close"
+                    android:contentDescription="Tutup"
                     app:tint="@color/slate_400" />
             </RelativeLayout>
 
@@ -81,7 +81,8 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerHistory"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
+                android:layout_height="wrap_content"
+                android:minHeight="120dp"
                 android:clipToPadding="false"
                 android:paddingBottom="4dp" />
 

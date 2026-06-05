@@ -97,7 +97,7 @@
                 android:id="@+id/tvSelectedSiswa"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="No student selected"
+                android:text="Belum ada siswa dipilih"
                 android:textColor="#F48C25"
                 android:textSize="11sp"
                 android:visibility="gone"

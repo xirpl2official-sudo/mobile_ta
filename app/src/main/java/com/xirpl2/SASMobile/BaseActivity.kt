@@ -35,6 +35,7 @@ abstract class BaseActivity : AppCompatActivity() {
     companion object {
         private const val TAG = "BaseActivity"
         private var updateCheckedThisSession = false
+        private var notificationsCheckedThisSession = false
         private var notifiedRequestedThisSession = false
     }
 
@@ -76,8 +77,14 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     private fun checkNotificationsImmediate() {
+        if (notificationsCheckedThisSession) return
         lifecycleScope.launch {
             try {
+                val userData = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this@BaseActivity)
+                val token = userData.getString("auth_token", "") ?: ""
+                if (token.isEmpty()) return@launch
+                if (notificationsCheckedThisSession) return@launch
+                notificationsCheckedThisSession = true
                 NotificationHelper.pollAndShowNotifications(this@BaseActivity)
             } catch (e: Exception) {
                 Log.w(TAG, "Immediate notification check failed: ${e.message}")

@@ -10,6 +10,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.xirpl2.SASMobile.adapter.JurusanGroupAdapter
 import com.xirpl2.SASMobile.adapter.JurusanGroup
 import com.xirpl2.SASMobile.model.KelasManagementItem
@@ -19,14 +20,15 @@ import com.xirpl2.SASMobile.repository.BerandaRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.concurrent.atomic.AtomicBoolean
 
 class KelolaKelasActivity : BaseAdminActivity() {
 
     private val repository = BerandaRepository()
     private lateinit var kelasAdapter: JurusanGroupAdapter
-    
+
     private lateinit var etSearch: EditText
-    private lateinit var spinnerJurusan: AutoCompleteTextView
+    private lateinit var actvJurusan: AutoCompleteTextView
     private lateinit var progressLoading: ProgressBar
     private lateinit var tvEmptyState: TextView
     private lateinit var emptyStateContainer: View
@@ -35,11 +37,12 @@ class KelolaKelasActivity : BaseAdminActivity() {
     private var allKelasList = mutableListOf<KelasManagementItem>()
     private var staffList = listOf<StaffInfo>()
     private var majorsList = mutableListOf("Semua Jurusan")
-    
+
     private var selectedJurusan = "Semua Jurusan"
     private var searchQuery = ""
     private lateinit var swipeRefresh: SwipeRefreshLayout
     private var searchJob: Job? = null
+    private val isWaliUpdating = AtomicBoolean(false)
 
     override fun getCurrentMenuItem(): AdminMenuItem = AdminMenuItem.KELOLA_KELAS
 
@@ -71,7 +74,7 @@ class KelolaKelasActivity : BaseAdminActivity() {
 
     private fun initializeViews() {
         etSearch = findViewById(R.id.etSearch)
-        spinnerJurusan = findViewById(R.id.spinnerJurusan)
+        actvJurusan = findViewById(R.id.actvJurusan)
         progressLoading = findViewById(R.id.progressLoading)
         tvEmptyState = findViewById(R.id.tvEmptyState)
         emptyStateContainer = findViewById(R.id.emptyState)
@@ -110,7 +113,7 @@ class KelolaKelasActivity : BaseAdminActivity() {
             override fun afterTextChanged(s: Editable?) {}
         })
 
-        spinnerJurusan.setOnItemClickListener { parent, _, position, _ ->
+        actvJurusan.setOnItemClickListener { parent, _, position, _ ->
             selectedJurusan = parent.getItemAtPosition(position).toString()
             applyFilters()
         }
@@ -130,18 +133,24 @@ class KelolaKelasActivity : BaseAdminActivity() {
                     if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                     allKelasList.clear()
                     allKelasList.addAll(list)
-                    
+
                     val majors = list.mapNotNull { it.jurusan }.distinct().sorted()
                     setupJurusanDropdown(majors)
 
                     applyFilters()
-
                     progressLoading.visibility = View.GONE
                 },
                 onFailure = { error ->
                     if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                     progressLoading.visibility = View.GONE
-                    Toast.makeText(this@KelolaKelasActivity, "Gagal memuat data: ${error.message}", Toast.LENGTH_SHORT).show()
+                    emptyStateContainer.visibility = View.VISIBLE
+                    tvEmptyState.text = "Gagal memuat data"
+                    recyclerKelas.visibility = View.GONE
+
+                    Snackbar.make(findViewById(R.id.main), "Gagal: ${error.message}", Snackbar.LENGTH_INDEFINITE)
+                        .setAction("Coba Lagi") { loadData() }
+                        .setActionTextColor(getColor(R.color.blue_theme))
+                        .show()
                 }
             )
         }
@@ -153,8 +162,8 @@ class KelolaKelasActivity : BaseAdminActivity() {
         majorsList.addAll(majors)
 
         val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, majorsList)
-        spinnerJurusan.setAdapter(adapter)
-        spinnerJurusan.setText(majorsList[0], false)
+        actvJurusan.setAdapter(adapter)
+        actvJurusan.setText(majorsList[0], false)
     }
 
     private fun loadStaffList() {
@@ -162,9 +171,12 @@ class KelolaKelasActivity : BaseAdminActivity() {
         if (token.isEmpty()) return
 
         lifecycleScope.launch {
-            repository.getStaffGuruLookup(token).onSuccess { list ->
-                staffList = list
-            }
+            repository.getStaffGuruLookup(token).fold(
+                onSuccess = { list -> staffList = list },
+                onFailure = { error ->
+                    Toast.makeText(this@KelolaKelasActivity, "Gagal memuat data guru: ${error.message}", Toast.LENGTH_SHORT).show()
+                }
+            )
         }
     }
 
@@ -180,20 +192,9 @@ class KelolaKelasActivity : BaseAdminActivity() {
             .groupBy { it.jurusan }
             .toSortedMap()
             .map { (jurusan, kelasList) ->
-                val logoRes = when (jurusan.uppercase()) {
-                    "RPL" -> R.drawable.logo_rpl
-                    "TKJ" -> R.drawable.logo_tkj
-                    "DKV" -> R.drawable.logo_dkv
-                    "TEI" -> R.drawable.logo_tei
-                    "BC", "BROADCASTING" -> R.drawable.logo_bc
-                    "TMT", "MEKATRONIKA" -> R.drawable.logo_mt
-                    "TAV" -> R.drawable.logo_tav
-                    "ANM", "ANIMASI" -> R.drawable.logo_animasi
-                    else -> R.drawable.ic_class
-                }
                 JurusanGroup(
                     jurusan = jurusan,
-                    logoRes = logoRes,
+                    logoRes = getJurusanLogo(jurusan),
                     kelas = kelasList.sortedWith(compareBy { it.label })
                 )
             }
@@ -202,6 +203,21 @@ class KelolaKelasActivity : BaseAdminActivity() {
 
         emptyStateContainer.visibility = if (groups.isEmpty()) View.VISIBLE else View.GONE
         recyclerKelas.visibility = if (groups.isNotEmpty()) View.VISIBLE else View.GONE
+    }
+
+    private fun getJurusanLogo(jurusan: String?): Int {
+        if (jurusan == null) return R.drawable.ic_class
+        return when (jurusan.uppercase()) {
+            "RPL" -> R.drawable.logo_rpl
+            "TKJ" -> R.drawable.logo_tkj
+            "DKV" -> R.drawable.logo_dkv
+            "TEI" -> R.drawable.logo_tei
+            "BC", "BROADCASTING" -> R.drawable.logo_bc
+            "TMT", "MEKATRONIKA" -> R.drawable.logo_mt
+            "TAV" -> R.drawable.logo_tav
+            "ANM", "ANIMASI" -> R.drawable.logo_animasi
+            else -> R.drawable.ic_class
+        }
     }
 
     private fun loadStudentsInClass(idKelas: Int, callback: (List<SiswaItem>) -> Unit) {
@@ -213,7 +229,7 @@ class KelolaKelasActivity : BaseAdminActivity() {
         lifecycleScope.launch {
             repository.getAdminManagementKelasDetail(token, idKelas).fold(
                 onSuccess = { detail -> callback(detail.students) },
-                onFailure = { error -> 
+                onFailure = { error ->
                     Toast.makeText(this@KelolaKelasActivity, "Gagal memuat siswa: ${error.message}", Toast.LENGTH_SHORT).show()
                     callback(emptyList())
                 }
@@ -223,7 +239,7 @@ class KelolaKelasActivity : BaseAdminActivity() {
 
     private fun showUbahWaliDialog(kelas: KelasManagementItem) {
         if (staffList.isEmpty()) {
-            Toast.makeText(this, "Data guru belum tersedia", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Data guru belum tersedia. Tarik ke bawah untuk memuat ulang.", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -238,7 +254,7 @@ class KelolaKelasActivity : BaseAdminActivity() {
             .setPositiveButton("Simpan") { dialog, _ ->
                 if (selectedStaffIndex != -1) {
                     val selectedStaff = staffList[selectedStaffIndex]
-                    updateWaliKelas(kelas.id_kelas, selectedStaff.id_staff)
+                    updateWaliKelas(kelas, selectedStaff.id_staff)
                 }
                 dialog.dismiss()
             }
@@ -246,19 +262,29 @@ class KelolaKelasActivity : BaseAdminActivity() {
             .show()
     }
 
-    private fun updateWaliKelas(idKelas: Int, idStaff: Int) {
+    private fun updateWaliKelas(kelas: KelasManagementItem, idStaff: Int) {
+        if (!isWaliUpdating.compareAndSet(false, true)) {
+            Toast.makeText(this, "Sedang memperbarui...", Toast.LENGTH_SHORT).show()
+            return
+        }
         val token = getAuthToken()
-        if (token.isEmpty()) return
+        if (token.isEmpty()) { isWaliUpdating.set(false); return }
         lifecycleScope.launch {
-            repository.updateWaliKelas(token, idKelas, idStaff).fold(
+            val staffName = staffList.find { it.id_staff == idStaff }?.nama ?: ""
+            repository.updateWaliKelas(token, kelas.id_kelas, idStaff).fold(
                 onSuccess = { message ->
+                    val index = allKelasList.indexOfFirst { it.id_kelas == kelas.id_kelas }
+                    if (index >= 0) {
+                        allKelasList[index] = allKelasList[index].copy(wali_kelas = staffName, id_staff_wali = idStaff)
+                        applyFilters()
+                    }
                     Toast.makeText(this@KelolaKelasActivity, message, Toast.LENGTH_SHORT).show()
-                    loadData() // Refresh
                 },
                 onFailure = { error ->
                     Toast.makeText(this@KelolaKelasActivity, "Gagal update: ${error.message}", Toast.LENGTH_SHORT).show()
                 }
             )
+            isWaliUpdating.set(false)
         }
     }
 
@@ -266,5 +292,4 @@ class KelolaKelasActivity : BaseAdminActivity() {
         val dialog = SiswaDetailDialogFragment.newInstance(siswa)
         dialog.show(supportFragmentManager, "SiswaDetailDialog")
     }
-
 }

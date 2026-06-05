@@ -183,7 +183,7 @@ class InputIzinDialogFragment : DialogFragment() {
                 
             if (token.isEmpty()) return@launch
 
-            repository.getSiswaList(token, page = 1, pageSize = 20, search = query, kelas = forcedClass).fold(
+            repository.getSiswaList(token, page = 1, pageSize = 20, search = query, tingkatan = forcedClass?.toIntOrNull()).fold(
                 onSuccess = { response ->
                     lastSearchResults = response.data
                     val suggestions = response.data.map { "${it.nama_siswa} (${it.nis})" }

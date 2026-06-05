@@ -659,7 +659,7 @@
                         android:textColor="@color/text_hint"
                         android:textSize="@dimen/text_small"
                         android:gravity="center"
-                        android:paddingVertical="48dp"
+                        android:paddingVertical="24dp"
                         android:visibility="gone"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -691,7 +691,7 @@
     <include
         android:id="@+id/navigationView"
         layout="@layout/sidebar_siswa"
-        android:layout_width="280dp"
+        android:layout_width="@dimen/sidebar_width"
         android:layout_height="match_parent"
         android:layout_gravity="start" />
 

@@ -37,8 +37,8 @@ android {
         applicationId = "com.xirpl2.SASMobile"
         minSdk = 23
         targetSdk = 36
-        versionCode = 6
-        versionName = "1.0.7"
+        versionCode = 7
+        versionName = "1.0.8"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -108,4 +108,8 @@ dependencies {
 
     // WorkManager for periodic notification polling
     implementation(libs.androidx.work.runtime.ktx)
+
+    // Navigation Component for bottom navigation
+    implementation("androidx.navigation:navigation-fragment-ktx:2.8.9")
+    implementation("androidx.navigation:navigation-ui-ktx:2.8.9")
 }

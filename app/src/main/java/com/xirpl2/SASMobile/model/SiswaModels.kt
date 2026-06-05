@@ -18,9 +18,9 @@ data class SiswaItem(
     val nama_siswa: String = "",
     @SerializedName(value = "jk", alternate = ["jenis_kelamin", "jenisKelamin", "gender"])
     val jenis_kelamin: String = "",
-    @SerializedName(value = "kelas", alternate = ["kelas", "class"])
+    @SerializedName(value = "kelas", alternate = ["class"])
     val kelas: String = "",
-    @SerializedName(value = "jurusan", alternate = ["jurusan", "major"])
+    @SerializedName(value = "jurusan", alternate = ["major"])
     val jurusan: String = "",
     @SerializedName(value = "device_status", alternate = ["deviceStatus"])
     val deviceStatus: String? = null,
@@ -30,7 +30,7 @@ data class SiswaItem(
     val waliKelasName: String? = null,
     @SerializedName(value = "status_akademik", alternate = ["statusAkademik", "status"])
     val statusAkademik: String? = null,
-    @SerializedName(value = "agama", alternate = ["agama", "religion"])
+    @SerializedName(value = "agama", alternate = ["religion"])
     val agama: String? = null,
     val isSelected: Boolean = false
 ) : Serializable

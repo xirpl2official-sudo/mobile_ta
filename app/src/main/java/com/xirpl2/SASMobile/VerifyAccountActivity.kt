@@ -121,7 +121,7 @@ class VerifyAccountActivity : BaseActivity() {
                         when (role) {
                             "guru", "wali_kelas" -> startActivity(Intent(this@VerifyAccountActivity, BerandaGuruActivity::class.java))
                             "admin" -> startActivity(Intent(this@VerifyAccountActivity, BerandaAdminActivity::class.java))
-                            else -> startActivity(Intent(this@VerifyAccountActivity, BerandaActivity::class.java))
+                            else -> startActivity(Intent(this@VerifyAccountActivity, StudentMainActivity::class.java))
                         }
                         finish()
                     } else {

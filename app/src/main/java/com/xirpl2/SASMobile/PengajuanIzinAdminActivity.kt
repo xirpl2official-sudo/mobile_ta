@@ -31,7 +31,6 @@ class PengajuanIzinAdminActivity : BaseAdminActivity() {
     private lateinit var progressBar: ProgressBar
     private lateinit var emptyState: View
     private lateinit var btnLoadMore: Button
-    private lateinit var btnClose: ImageView
     private lateinit var fabHelp: View
 
     private val repository = PengajuanIzinRepository()
@@ -85,7 +84,6 @@ class PengajuanIzinAdminActivity : BaseAdminActivity() {
         progressBar = findViewById(R.id.progressBar)
         emptyState = findViewById(R.id.emptyState)
         btnLoadMore = findViewById(R.id.btnLoadMore)
-        btnClose = findViewById(R.id.btnClose)
         fabHelp = findViewById(R.id.fabHelp)
     }
 
@@ -163,10 +161,6 @@ class PengajuanIzinAdminActivity : BaseAdminActivity() {
     }
 
     private fun setupActions() {
-        btnClose.setOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
-        }
-
         btnLoadMore.setOnClickListener {
             currentPage++
             loadData(reset = false)
@@ -253,7 +247,7 @@ class PengajuanIzinAdminActivity : BaseAdminActivity() {
                 },
                 onFailure = { error ->
                     if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
-                    Toast.makeText(this@PengajuanIzinAdminActivity, "Error: ${error.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@PengajuanIzinAdminActivity, "Kesalahan: ${error.message}", Toast.LENGTH_SHORT).show()
                     setLoading(false)
                 }
             )

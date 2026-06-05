@@ -266,7 +266,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Manajemen data siswa: tambah, edit, import, dan export."
+                            android:text="Manajemen data siswa: tambah, edit, impor, dan ekspor."
                             android:textSize="12sp"
                             android:textColor="@color/slate_400"
                             android:paddingStart="16dp"
@@ -306,7 +306,7 @@
                                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                                     android:layout_width="wrap_content"
                                     android:layout_height="36dp"
-                                    android:text="Import"
+                                    android:text="Impor"
                                     android:textAllCaps="false"
                                     android:textSize="12sp"
                                     app:icon="@drawable/ic_upload"
@@ -734,7 +734,7 @@
     <include
         android:id="@+id/navigationView"
         layout="@layout/sidebar_admin"
-        android:layout_width="280dp"
+        android:layout_width="@dimen/sidebar_width"
         android:layout_height="match_parent"
         android:layout_gravity="start" />
 

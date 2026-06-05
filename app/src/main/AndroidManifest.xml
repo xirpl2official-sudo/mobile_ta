@@ -68,6 +68,10 @@
         <activity
             android:launchMode="singleTop"
             android:name=".BerandaActivity"
+            android:exported="false" />
+        <activity
+            android:launchMode="singleTop"
+            android:name=".StudentMainActivity"
             android:exported="false" /> 
         <activity
             android:launchMode="singleTop"

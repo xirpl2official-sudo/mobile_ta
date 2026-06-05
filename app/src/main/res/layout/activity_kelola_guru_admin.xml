@@ -14,71 +14,76 @@
         android:theme="@style/Theme.SAS_Mobile.WhiteBackground"
         tools:context=".KelolaGuruAdminActivity">
 
-        <!-- Top Bar -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/topBarContent"
-            android:minHeight="90dp"
-            android:background="@color/blue_theme"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:minHeight="90dp"
+            android:background="@color/blue_theme"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
             android:paddingBottom="4dp"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintEnd_toEndOf="parent">
 
-            <ImageView
-                android:id="@+id/iconMenu"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:contentDescription="@string/Menu"
-                android:src="@drawable/menu"
-                app:layout_constraintBottom_toBottomOf="parent"
+            <FrameLayout
+                android:id="@+id/iconMenuContainer"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:tint="@android:color/white" />
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <ImageView
+                    android:id="@+id/iconMenu"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/menu"
+                    android:contentDescription="@string/Menu"
+                    app:tint="@android:color/white" />
+
+            </FrameLayout>
 
             <ImageView
                 android:id="@+id/logoSekolah"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:layout_marginStart="8dp"
-                android:contentDescription="Logo SMKN 2"
                 android:src="@drawable/logo_smk"
+                android:contentDescription="Logo SMKN 2"
+                app:layout_constraintStart_toEndOf="@id/iconMenuContainer"
+                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/iconMenu"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:layout_marginStart="8dp" />
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/tvPageTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Kelola Guru"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toEndOf="@id/logoSekolah"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/textNamaSekolah"
+                app:layout_constraintVertical_chainStyle="packed"
+                android:layout_marginStart="8dp" />
+
+            <TextView
+                android:id="@+id/textNamaSekolah"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:orientation="vertical"
+                android:text="SMK Negeri 2 Singosari"
+                android:textColor="@android:color/white"
+                android:textSize="12sp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                app:layout_constraintStart_toStartOf="@id/tvPageTitle"
+                app:layout_constraintTop_toBottomOf="@id/tvPageTitle"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/logoSekolah"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <TextView
-                    android:id="@+id/tvPageTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Kelola Guru"
-                    android:textColor="#FFFFFF"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/textNamaSekolah"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="end"
-                    android:maxLines="1"
-                    android:text="SMK Negeri 2 Singosari"
-                    android:textColor="#FFFFFF"
-                    android:textSize="12sp" />
-            </LinearLayout>
+                app:layout_constraintEnd_toEndOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -140,7 +145,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:clipToPadding="false"
-                android:paddingBottom="100dp" />
+                android:paddingBottom="80dp" />
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
@@ -149,7 +154,7 @@
             android:id="@+id/progressLoading"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_marginTop="64dp"
+            android:layout_marginTop="40dp"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -160,7 +165,7 @@
             android:id="@+id/tvEmptyState"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="80dp"
+            android:layout_marginTop="48dp"
             android:gravity="center"
             android:orientation="vertical"
             android:visibility="gone"
@@ -212,7 +217,7 @@
     <include
         android:id="@+id/navigationView"
         layout="@layout/sidebar_admin"
-        android:layout_width="280dp"
+        android:layout_width="@dimen/sidebar_width"
         android:layout_height="match_parent"
         android:layout_gravity="start" />
 

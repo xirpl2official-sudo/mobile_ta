@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -15,7 +16,11 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.cardview.widget.CardView
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.button.MaterialButton
 import com.xirpl2.SASMobile.model.ChangePasswordRequest
 import com.xirpl2.SASMobile.model.DeviceChangeRequestBody
@@ -64,12 +69,13 @@ class PengaturanAkunActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pengaturan_akun)
 
-        window.statusBarColor = androidx.core.content.ContextCompat.getColor(this, R.color.blue_theme)
-        androidx.core.view.WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightStatusBars = false
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        window.statusBarColor = Color.TRANSPARENT
+        WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightStatusBars = false
 
-        val headerContent = findViewById<android.view.View>(R.id.headerContent)
-        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(headerContent) { v, insets ->
-            val statusBars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.statusBars())
+        val topBar = findViewById<View>(R.id.topBarContent)
+        ViewCompat.setOnApplyWindowInsetsListener(topBar) { v, insets ->
+            val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
             v.setPadding(v.paddingLeft, statusBars.top, v.paddingRight, v.paddingBottom)
             insets
         }
@@ -81,8 +87,13 @@ class PengaturanAkunActivity : BaseActivity() {
         applyRoleBasedVisibility()
 
         loadUserDataFromAPI()
-        
-        
+
+        val swipeRefresh = findViewById<SwipeRefreshLayout>(R.id.swipeRefresh)
+        swipeRefresh.setOnRefreshListener {
+            loadUserDataFromAPI()
+            swipeRefresh.isRefreshing = false
+        }
+
         setupListeners()
     }
 
@@ -225,7 +236,7 @@ class PengaturanAkunActivity : BaseActivity() {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
                         this@PengaturanAkunActivity,
-                        "Error: ${e.message}",
+                        "Kesalahan: ${e.message}",
                         Toast.LENGTH_SHORT
                     ).show()
                     
@@ -552,7 +563,7 @@ class PengaturanAkunActivity : BaseActivity() {
                 } catch (e: Exception) {
                     withContext(Dispatchers.Main) {
                         it.isEnabled = true
-                        Toast.makeText(this@PengaturanAkunActivity, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this@PengaturanAkunActivity, "Kesalahan: ${e.message}", Toast.LENGTH_LONG).show()
                     }
                 }
             }
@@ -596,7 +607,7 @@ class PengaturanAkunActivity : BaseActivity() {
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(this@PengaturanAkunActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@PengaturanAkunActivity, "Kesalahan: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }
         }

@@ -36,6 +36,8 @@ import com.xirpl2.SASMobile.model.SholatDhuhaDetail
 import com.xirpl2.SASMobile.model.SholatDzuhurDetail
 import com.xirpl2.SASMobile.model.WaktuSholatData
 import com.xirpl2.SASMobile.repository.BerandaRepository
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
@@ -81,27 +83,6 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
         showLoading(true)
         loadJadwalList()
-        loadSynchronizedData()
-    }
-
-    private fun loadSynchronizedData() {
-        val token = getAuthToken()
-        if (token.isEmpty()) return
-
-        lifecycleScope.launch {
-            repository.getJadwalDhuhaKeahlian(token).fold(
-                onSuccess = { list ->
-                    if (isFinishing || isDestroyed) return@fold
-                    dhuhaKeahlianList = list
-                    safeRunOnUiThread { updateJadwalUI() }
-                },
-                onFailure = { error ->
-                    if (isFinishing || isDestroyed) return@fold
-                    safeRunOnUiThread { showErrorWithRetry("Gagal memuat jadwal dhuha") }
-                }
-            )
-
-        }
     }
 
     private fun loadJadwalList() {
@@ -111,43 +92,31 @@ override fun onCreate(savedInstanceState: Bundle?) {
         lifecycleScope.launch {
             var hasError = false
 
-            repository.getJadwalSholat(token).fold(
+            val deferredJadwal = async { repository.getJadwalSholat(token) }
+            val deferredTimes = async { repository.getPrayerTimes(token) }
+            val deferredTypes = async { repository.getPrayerTypes(token) }
+            val deferredDhuha = async { repository.getJadwalDhuhaKeahlian(token) }
+            val deferredJurusan = async { repository.getJurusanLookup(token) }
+
+            deferredJadwal.await().fold(
+                onSuccess = { list -> jadwalList = list },
+                onFailure = { hasError = true }
+            )
+            deferredTimes.await().fold(
+                onSuccess = { times -> prayerTimesList = times },
+                onFailure = { hasError = true }
+            )
+            deferredTypes.await().fold(
+                onSuccess = { types -> prayerTypesList = types },
+                onFailure = { hasError = true }
+            )
+            deferredDhuha.await().fold(
+                onSuccess = { list -> dhuhaKeahlianList = list },
+                onFailure = { hasError = true }
+            )
+            deferredJurusan.await().fold(
                 onSuccess = { list ->
-                    if (isFinishing || isDestroyed) return@fold
-                    jadwalList = list
-                },
-                onFailure = { error ->
-                    hasError = true
-                }
-            )
-
-            repository.getPrayerTimes(token).fold(
-                onSuccess = { times ->
-                    if (isFinishing || isDestroyed) return@fold
-                    prayerTimesList = times
-                },
-                onFailure = { error ->
-                    hasError = true
-                }
-            )
-
-            repository.getPrayerTypes(token).fold(
-                onSuccess = { types ->
-                    if (isFinishing || isDestroyed) return@fold
-                    prayerTypesList = types
-                },
-                onFailure = { error ->
-                    hasError = true
-                }
-            )
-
-            // Load jurusan list from API
-            repository.getJadwalDhuhaKeahlian(token).fold(
-                onSuccess = { list ->
-                    if (isFinishing || isDestroyed) return@fold
-                    dhuhaKeahlianList = list
-                    val allJurusan = list.flatMap { listOfNotNull(it.jurusan1, it.jurusan2) }.map { it.nama_jurusan }.distinct().sorted()
-                    jurusanOptions = listOf("Semua Jurusan") + allJurusan
+                    jurusanOptions = listOf("Semua Jurusan") + list.map { it.nama }.sorted()
                 },
                 onFailure = { /* keep default */ }
             )
@@ -338,7 +307,6 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
     private fun refreshAll() {
         loadJadwalList()
-        loadSynchronizedData()
         swipeRefresh.isRefreshing = false
     }
 
@@ -378,7 +346,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
                 } else {
                     Toast.makeText(this@JadwalSholatAdminActivity, "Jadwal Dhuha berhasil disimpan", Toast.LENGTH_SHORT).show()
                 }
-                loadSynchronizedData()
+                loadJadwalList()
             }
         }
     }
@@ -1209,7 +1177,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
                     } else {
                         Toast.makeText(this@JadwalSholatAdminActivity, "Waktu Dhuha berhasil diperbarui", Toast.LENGTH_SHORT).show()
                         dialog.dismiss()
-                        loadSynchronizedData()
+                        loadJadwalList()
                     }
                     btnSave.isEnabled = true
                     btnSave.text = "SIMPAN JADWAL"

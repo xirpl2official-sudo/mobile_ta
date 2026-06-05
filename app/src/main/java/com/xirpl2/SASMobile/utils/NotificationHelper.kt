@@ -29,6 +29,9 @@ object NotificationHelper {
     private const val CHANNEL_DESC = "Notifikasi dari sistem absensi sholat"
     private const val TAG = "NotificationHelper"
 
+    // In-memory set of notification API IDs already shown this session
+    internal val shownNotificationIds = mutableSetOf<Int>()
+
     fun createNotificationChannel(context: Context) {
         val channel = NotificationChannel(
             CHANNEL_ID,
@@ -127,7 +130,7 @@ object NotificationHelper {
             Log.d(TAG, "Immediate poll skipped (rate limited)")
             return
         }
-        prefs.edit().putLong("last_immediate_poll", now).apply()
+        prefs.edit().putLong("last_immediate_poll", now).commit()
 
         try {
             val response = RetrofitClient.apiService.getNotifications("Bearer $token", page = 1, limit = 20)
@@ -137,25 +140,27 @@ object NotificationHelper {
             }
 
             val notifications = response.body()?.data ?: emptyList()
-            val lastSeenId = prefs.getInt("last_seen_notif_id", 0)
 
-            // Show ALL unread notifications as system/native notifications
+            // Cross-session dedup: only show notifications with id > last seen
+            val lastSeenId = prefs.getInt("last_seen_notif_id", 0)
             val newNotifs = notifications
                 .filter {
                     !it.isRead &&
-                    it.id > lastSeenId
+                    it.id > lastSeenId &&
+                    it.id !in shownNotificationIds
                 }
                 .sortedByDescending { it.id }
-                .take(10) // Limit to 10 notifications at once to avoid spam
+                .take(10)
 
             for ((index, notif) in newNotifs.withIndex()) {
                 showNotification(context, notif.id, notif.title, notif.message, index)
+                shownNotificationIds.add(notif.id)
             }
 
-            // Always update last_seen to max API ID to prevent re-showing
+            // Persist the highest seen ID synchronously
             val apiMaxId = notifications.maxOfOrNull { it.id } ?: 0
             if (apiMaxId > lastSeenId) {
-                prefs.edit().putInt("last_seen_notif_id", apiMaxId).apply()
+                prefs.edit().putInt("last_seen_notif_id", apiMaxId).commit()
             }
 
             val unreadCount = notifications.count { !it.isRead }

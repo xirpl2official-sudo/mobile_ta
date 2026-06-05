@@ -204,7 +204,7 @@ class GantiKataSandi : BaseActivity() {
                 
                 MotionToast.createColorToast(
                     this@GantiKataSandi,
-                    "Error",
+                    "Kesalahan",
                     errorMsg,
                     MotionToastStyle.ERROR,
                     Gravity.CENTER,

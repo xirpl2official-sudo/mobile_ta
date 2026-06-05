@@ -31,7 +31,7 @@
         android:src="@drawable/ic_tombolback"
         android:clickable="true"
         android:focusable="true"
-        android:contentDescription="Back"
+        android:contentDescription="Kembali"
         android:layout_marginStart="@dimen/spacing_medium"
         app:layout_constraintTop_toTopOf="@id/header"
         app:layout_constraintBottom_toBottomOf="@id/header"
@@ -230,7 +230,7 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:src="@drawable/centang"
-                android:contentDescription="Success"
+                android:contentDescription="Berhasil"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"/>
@@ -382,7 +382,7 @@
     <include
         android:id="@+id/navigationView"
         layout="@layout/sidebar_siswa"
-        android:layout_width="280dp"
+        android:layout_width="@dimen/sidebar_width"
         android:layout_height="match_parent"
         android:layout_gravity="start" />
 

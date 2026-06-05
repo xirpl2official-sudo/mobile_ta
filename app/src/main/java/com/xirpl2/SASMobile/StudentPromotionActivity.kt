@@ -322,7 +322,7 @@ class StudentPromotionActivity : BaseAdminActivity() {
                 updateButtonState()
                 showResultDialog(
                     success = false,
-                    title = "Error",
+                    title = "Kesalahan",
                     message = "Terjadi kesalahan: ${e.message}"
                 )
             }

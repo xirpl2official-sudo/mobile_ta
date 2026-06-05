@@ -129,7 +129,7 @@ class BuatSandiBaruActivity : BaseActivity() {
         if (userNis.isEmpty() || userOtp.isEmpty()) {
             MotionToast.createColorToast(
                 this,
-                "Error",
+                "Kesalahan",
                 "Data tidak lengkap. Silakan ulangi proses reset password",
                 MotionToastStyle.ERROR,
                 Gravity.CENTER,
@@ -212,7 +212,7 @@ class BuatSandiBaruActivity : BaseActivity() {
                 
                 MotionToast.createColorToast(
                     this@BuatSandiBaruActivity,
-                    "Error",
+                    "Kesalahan",
                     "Terjadi kesalahan jaringan. Periksa koneksi Anda",
                     MotionToastStyle.ERROR,
                     Gravity.CENTER,

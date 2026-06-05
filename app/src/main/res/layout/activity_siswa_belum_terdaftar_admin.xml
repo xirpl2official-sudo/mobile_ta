@@ -224,7 +224,7 @@
                 android:layout_marginTop="12dp"
                 android:fillViewport="true"
                 app:layout_constraintTop_toBottomOf="@id/tvCountInfo"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/btnLoadMore"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 
@@ -324,6 +324,21 @@
 
             </HorizontalScrollView>
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnLoadMore"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:text="Muat Lebih"
+                android:textColor="@color/blue_theme"
+                app:strokeColor="@color/blue_theme"
+                app:cornerRadius="8dp"
+                android:visibility="gone"
+                android:layout_marginTop="12dp"
+                app:layout_constraintTop_toBottomOf="@id/tableHorizontalScrollView"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
             <LinearLayout
                 android:id="@+id/layoutEmpty"
                 android:layout_width="0dp"
@@ -332,7 +347,7 @@
                 android:gravity="center"
                 android:paddingVertical="48dp"
                 android:visibility="gone"
-                app:layout_constraintTop_toBottomOf="@id/tableHorizontalScrollView"
+                app:layout_constraintTop_toBottomOf="@id/tvCountInfo"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
@@ -362,7 +377,7 @@
     <include
         android:id="@+id/navigationView"
         layout="@layout/sidebar_admin"
-        android:layout_width="280dp"
+        android:layout_width="@dimen/sidebar_width"
         android:layout_height="match_parent"
         android:layout_gravity="start" />
 

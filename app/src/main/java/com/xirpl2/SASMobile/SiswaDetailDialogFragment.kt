@@ -18,10 +18,10 @@ class SiswaDetailDialogFragment : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         student = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-            arguments?.getSerializable("student", SiswaItem::class.java)!!
+            arguments?.getSerializable("student", SiswaItem::class.java) ?: SiswaItem()
         } else {
             @Suppress("DEPRECATION")
-            arguments?.getSerializable("student") as SiswaItem
+            (arguments?.getSerializable("student") as? SiswaItem) ?: SiswaItem()
         }
     }
 

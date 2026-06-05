@@ -68,7 +68,7 @@
                 android:layout_width="@dimen/popup_icon_size"
                 android:layout_height="@dimen/popup_icon_size"
                 android:src="@drawable/ic_perizinan"
-                android:contentDescription="Pengajuan Izin Icon"
+                android:contentDescription="Ikon Pengajuan Izin"
                 android:layout_marginEnd="@dimen/popup_icon_margin_end"
                 app:tint="#616161"/>
 
@@ -98,7 +98,7 @@
                 android:layout_width="@dimen/popup_icon_size"
                 android:layout_height="@dimen/popup_icon_size"
                 android:src="@drawable/gear"
-                android:contentDescription="Settings Icon"
+                android:contentDescription="Ikon Pengaturan"
                 android:layout_marginEnd="@dimen/popup_icon_margin_end"
                 app:tint="#616161"/>
 
@@ -135,7 +135,7 @@
                 android:layout_width="@dimen/popup_icon_size"
                 android:layout_height="@dimen/popup_icon_size"
                 android:src="@drawable/keluar"
-                android:contentDescription="Logout Icon"
+                android:contentDescription="Ikon Keluar"
                 android:layout_marginEnd="@dimen/popup_icon_margin_end"
                 app:tint="#F44336"/>
 

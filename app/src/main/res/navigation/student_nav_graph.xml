@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/student_nav_graph"
+    app:startDestination="@id/navigation_beranda">
+
+    <fragment
+        android:id="@+id/navigation_beranda"
+        android:name="com.xirpl2.SASMobile.fragment.BerandaFragment"
+        android:label="Beranda"
+        tools:layout="@layout/fragment_beranda" />
+
+    <fragment
+        android:id="@+id/navigation_perizinan"
+        android:name="com.xirpl2.SASMobile.fragment.PengajuanIzinFragment"
+        android:label="Perizinan"
+        tools:layout="@layout/fragment_pengajuan_izin" />
+
+    <fragment
+        android:id="@+id/navigation_scan_qr"
+        android:name="com.xirpl2.SASMobile.fragment.ScanQrFragment"
+        android:label="Scan QR"
+        tools:layout="@layout/fragment_scan_qr" />
+
+    <fragment
+        android:id="@+id/navigation_profil"
+        android:name="com.xirpl2.SASMobile.fragment.ProfilFragment"
+        android:label="Profil"
+        tools:layout="@layout/fragment_profil" />
+</navigation>

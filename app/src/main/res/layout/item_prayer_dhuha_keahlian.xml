@@ -42,7 +42,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_edit"
-            android:contentDescription="Edit"
+            android:contentDescription="Ubah"
             app:tint="@color/blue_theme"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -51,7 +51,7 @@
             android:id="@+id/btnSaveDhuha"
             android:layout_width="wrap_content"
             android:layout_height="32dp"
-            android:text="Save"
+            android:text="Simpan"
             android:textColor="@android:color/white"
             android:textSize="12sp"
             android:visibility="gone"

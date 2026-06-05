@@ -13,13 +13,12 @@
         android:background="@color/background"
         android:theme="@style/Theme.SAS_Mobile.WhiteBackground">
 
-        <!-- Top Bar Content -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/topBarContent"
-            android:minHeight="90dp"
-            android:background="@color/blue_theme"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:minHeight="90dp"
+            android:background="@color/blue_theme"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
             android:paddingBottom="4dp"
@@ -57,185 +56,164 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:layout_marginStart="8dp" />
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/tvPageTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Kelola Kelas"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toEndOf="@id/logoSekolah"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/textNamaSekolah"
+                app:layout_constraintVertical_chainStyle="packed"
+                android:layout_marginStart="8dp" />
+
+            <TextView
+                android:id="@+id/textNamaSekolah"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginStart="8dp"
-                app:layout_constraintStart_toEndOf="@id/logoSekolah"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent">
-
-                <TextView
-                    android:id="@+id/tvPageTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Kelola Kelas"
-                    android:textColor="#FFFFFF"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/textSubtitleHeader"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="SMK Negeri 2 Singosari"
-                    android:textColor="#FFFFFF"
-                    android:textSize="12sp"
-                    android:ellipsize="end"
-                    android:maxLines="1" />
-            </LinearLayout>
+                android:text="SMK Negeri 2 Singosari"
+                android:textColor="@android:color/white"
+                android:textSize="12sp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                app:layout_constraintStart_toStartOf="@id/tvPageTitle"
+                app:layout_constraintTop_toBottomOf="@id/tvPageTitle"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!-- Scrollable Content Area -->
+        <LinearLayout
+            android:id="@+id/headerSection"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="16dp"
+            app:layout_constraintTop_toBottomOf="@id/topBarContent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Manajemen Kelas"
+                android:textColor="@color/on_background"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etSearch"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_search_input"
+                android:drawableStart="@drawable/ic_search"
+                android:drawablePadding="12dp"
+                android:hint="Cari kelas atau wali..."
+                android:inputType="text"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:textSize="14sp" />
+
+            <AutoCompleteTextView
+                android:id="@+id/actvJurusan"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/bg_dropdown"
+                android:drawableEnd="@drawable/ic_chevron_right"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="12dp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:hint="Pilih Jurusan"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                android:inputType="none" />
+
+        </LinearLayout>
+
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/swipeRefresh"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintTop_toBottomOf="@id/topBarContent"
+            app:layout_constraintTop_toBottomOf="@id/headerSection"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
-            <androidx.core.widget.NestedScrollView
-                android:id="@+id/scrollContent"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerKelas"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:clipToPadding="false">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <!-- Header Row -->
-                <LinearLayout
-                    android:id="@+id/headerRow"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Manajemen Kelas"
-                        android:textColor="@color/on_background"
-                        android:textSize="20sp"
-                        android:textStyle="bold" />
-
-                </LinearLayout>
-
-                <!-- Search input -->
-                <EditText
-                    android:id="@+id/etSearch"
-                    android:layout_width="match_parent"
-                    android:layout_height="44dp"
-                    android:layout_marginTop="12dp"
-                    android:background="@drawable/bg_search_input"
-                    android:drawableStart="@drawable/ic_search"
-                    android:drawablePadding="12dp"
-                    android:hint="Cari kelas atau wali..."
-                    android:inputType="text"
-                    android:paddingStart="12dp"
-                    android:paddingEnd="12dp"
-                    android:textSize="14sp" />
-
-                <!-- Filters -->
-                <LinearLayout
-                    android:id="@+id/filtersRow"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:orientation="horizontal">
-
-                    <AutoCompleteTextView
-                        android:id="@+id/spinnerJurusan"
-                        android:layout_width="match_parent"
-                        android:layout_height="40dp"
-                        android:background="@drawable/bg_dropdown"
-                        android:drawableEnd="@drawable/ic_chevron_right"
-                        android:gravity="center_vertical"
-                        android:paddingHorizontal="12dp"
-                        android:maxLines="1"
-                        android:ellipsize="end"
-                        android:hint="Pilih Jurusan"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="12sp"
-                        android:inputType="none" />
-
-                </LinearLayout>
-
-                <!-- RecyclerView list -->
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerKelas"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:nestedScrollingEnabled="false" />
-
-                <!-- Loading -->
-                <ProgressBar
-                    android:id="@+id/progressLoading"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="32dp"
-                    android:visibility="gone" />
-
-                <!-- Empty State -->
-                <LinearLayout
-                    android:id="@+id/emptyState"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:paddingVertical="48dp"
-                    android:visibility="gone">
-
-                    <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:src="@drawable/ic_class"
-                        android:alpha="0.5"
-                        android:contentDescription="Tidak ada kelas" />
-
-                    <TextView
-                        android:id="@+id/tvEmptyState"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:text="Tidak ada kelas ditemukan."
-                        android:textColor="@color/on_background"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="Coba ubah filter jurusan atau kata kunci pencarian"
-                        android:textColor="@color/slate_400"
-                        android:textSize="13sp" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            </androidx.core.widget.NestedScrollView>
+                android:clipToPadding="false"
+                android:paddingHorizontal="16dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="16dp" />
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <ProgressBar
+            android:id="@+id/progressLoading"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/headerSection"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/emptyState"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingVertical="48dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/headerSection"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@drawable/ic_class"
+                android:alpha="0.5"
+                android:contentDescription="Tidak ada kelas" />
+
+            <TextView
+                android:id="@+id/tvEmptyState"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Tidak ada kelas ditemukan."
+                android:textColor="@color/on_background"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Coba ubah filter jurusan atau kata kunci pencarian"
+                android:textColor="@color/slate_400"
+                android:textSize="13sp" />
+
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <include
         android:id="@+id/navigationView"
         layout="@layout/sidebar_admin"
-        android:layout_width="280dp"
+        android:layout_width="@dimen/sidebar_width"
         android:layout_height="match_parent"
         android:layout_gravity="start" />
 

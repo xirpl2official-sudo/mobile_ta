@@ -238,7 +238,7 @@ class VerifikasiOtpActivity : BaseActivity() {
 
                 MotionToast.createColorToast(
                     this@VerifikasiOtpActivity,
-                    "Error",
+                    "Kesalahan",
                     "Terjadi kesalahan jaringan. Periksa koneksi Anda",
                     MotionToastStyle.ERROR,
                     Gravity.CENTER,
@@ -319,7 +319,7 @@ class VerifikasiOtpActivity : BaseActivity() {
         if (userNis.isEmpty() || userEmail.isEmpty()) {
             MotionToast.createColorToast(
                 this,
-                "Error",
+                "Kesalahan",
                 "Data tidak lengkap. Silakan kembali dan coba lagi",
                 MotionToastStyle.ERROR,
                 Gravity.CENTER,
@@ -358,7 +358,7 @@ class VerifikasiOtpActivity : BaseActivity() {
             } catch (e: Exception) {
                 MotionToast.createColorToast(
                     this@VerifikasiOtpActivity,
-                    "Error",
+                    "Kesalahan",
                     "Terjadi kesalahan jaringan",
                     MotionToastStyle.ERROR,
                     Gravity.CENTER,

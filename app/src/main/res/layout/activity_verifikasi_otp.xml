@@ -10,36 +10,11 @@
 
         
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guidelineInorasi"
+            android:id="@+id/guidelineTopBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.36" />
-
-        
-        <ImageView
-            android:id="@+id/BagroundInorasi2"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:contentDescription="@string/LatarBelakangIno"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/guidelineInorasi"
-            app:srcCompat="@drawable/inorasi_baground" />
-
-        
-        <ImageView
-            android:id="@+id/VectorAtasO"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:contentDescription="@string/DekorasiOrange"
-            android:scaleType="centerCrop"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent="0.38"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/gelombangorange" />
+            app:layout_constraintGuide_percent="0.38" />
 
         
         <androidx.cardview.widget.CardView
@@ -49,7 +24,7 @@
             app:cardBackgroundColor="@android:color/transparent"
             app:cardCornerRadius="200dp"
             app:cardElevation="10dp"
-            app:layout_constraintBottom_toBottomOf="@id/VectorAtasO"
+            app:layout_constraintBottom_toBottomOf="@id/guidelineTopBar"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHeight_percent="0.13"
@@ -128,7 +103,7 @@
             app:cardBackgroundColor="@color/surface"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/VectorAtasO"
+            app:layout_constraintTop_toBottomOf="@id/guidelineTopBar"
             app:layout_constraintWidth_percent="0.85">
 
             <androidx.constraintlayout.widget.ConstraintLayout

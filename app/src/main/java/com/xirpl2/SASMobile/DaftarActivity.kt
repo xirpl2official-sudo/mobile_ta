@@ -243,7 +243,7 @@ class DaftarActivity : BaseActivity() {
                     btnDaftar.text = "Buat Akun"
                     MotionToast.createColorToast(
                         this@DaftarActivity,
-                        "Error",
+                        "Kesalahan",
                         if (e is java.net.UnknownHostException || e is java.net.SocketTimeoutException)
                             "Tidak dapat terhubung ke server"
                         else "Terjadi kesalahan, coba lagi",

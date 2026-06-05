@@ -3,9 +3,10 @@ package com.xirpl2.SASMobile.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.CheckBox
+import com.google.android.material.button.MaterialButton
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -30,6 +31,8 @@ class SiswaAdapter(
     fun setFullList(list: List<SiswaItem>) {
         fullList = list
         currentPage = 0
+        selectedNis.clear()
+        onSelectionChanged?.invoke(0)
         refreshPage()
     }
 
@@ -123,6 +126,7 @@ class SiswaAdapter(
         private val tvWaliKelas: TextView? = itemView.findViewById(R.id.tvWaliKelas)
         private val tvStatusAkademik: TextView? = itemView.findViewById(R.id.tvStatusAkademik)
         private val btnMoreMenu: ImageView? = itemView.findViewById(R.id.btnMoreMenu)
+        private val btnDetail: MaterialButton? = itemView.findViewById(R.id.btnDetail)
         private val ivDeviceStatus: ImageView? = itemView.findViewById(R.id.ivDeviceStatus)
         private val cbRow: CheckBox? = itemView.findViewById(R.id.cbRow)
 
@@ -193,9 +197,10 @@ class SiswaAdapter(
             }
 
             tvKelas.text = siswa.kelas
-            tvJenisKelamin?.text = if (siswa.jenis_kelamin == "L") "L" else "P"
             tvJurusan?.text = siswa.jurusan
             tvWaliKelas?.text = siswa.waliKelasName?.ifEmpty { "-" } ?: "-"
+
+            btnDetail?.setOnClickListener { onDetailClick(siswa) }
 
             // More menu button (3-dot)
             if (isReadOnly || selectionMode) {

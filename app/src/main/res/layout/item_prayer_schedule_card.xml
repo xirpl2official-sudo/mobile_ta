@@ -64,7 +64,7 @@
             android:layout_height="48dp"
             android:padding="12dp"
             android:src="@drawable/ic_edit"
-            android:contentDescription="Edit"
+            android:contentDescription="Ubah"
             app:tint="@color/blue_theme"
             app:layout_constraintEnd_toStartOf="@id/btnDeletePrayer"
             app:layout_constraintTop_toTopOf="parent"

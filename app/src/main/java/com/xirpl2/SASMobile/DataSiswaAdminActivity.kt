@@ -433,7 +433,7 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
                 page = currentPage,
                 pageSize = pageSize,
                 jurusan = if (selectedJurusan == "Semua Jurusan") null else selectedJurusan,
-                kelas = if (selectedKelas == "Semua Kelas") null else selectedKelas,
+                tingkatan = if (selectedKelas == "Semua Kelas") null else selectedKelas.toIntOrNull(),
                 jk = getGenderApiValue(selectedGender),
                 search = if (searchQuery.isNotEmpty()) searchQuery else null
             ).fold(
@@ -541,13 +541,13 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
 
     private fun showExportSiswaDialog() {
         MaterialAlertDialogBuilder(this)
-            .setTitle("Export Data Siswa")
+            .setTitle("Ekspor Data Siswa")
             .setMessage("Filter aktif saat ini:\n" +
                     "- Kelas: $selectedKelas\n" +
                     "- Jurusan: $selectedJurusan\n" +
                     "- Jenis Kelamin: $selectedGender\n\n" +
                     "Data akan diekspor ke format CSV (.csv)")
-            .setPositiveButton("Export") { dialog, _ ->
+            .setPositiveButton("Ekspor") { dialog, _ ->
                 dialog.dismiss()
                 exportToCsv()
             }
@@ -652,7 +652,7 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
 
     private fun showImportSiswaDialog() {
         MaterialAlertDialogBuilder(this)
-            .setTitle("Import Data Siswa")
+            .setTitle("Impor Data Siswa")
             .setMessage("Silakan unggah file CSV berisi data siswa.\n\n" +
                     "Header kolom yang WAJIB ada:\n" +
                     "- nis (Nomor Induk Siswa)\n" +
@@ -717,7 +717,7 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
                     result.fold(
                         onSuccess = { response ->
                             AlertDialog.Builder(this@DataSiswaAdminActivity)
-                                .setTitle("Import Selesai")
+                                .setTitle("Impor Selesai")
                                 .setMessage(response.message ?: "Data siswa berhasil diimpor!")
                                 .setPositiveButton("OK") { _, _ ->
                                     loadStudentData(reset = true)
@@ -832,7 +832,7 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
                         runOnUiThread {
                             Toast.makeText(this@DataSiswaAdminActivity, "Gagal: ${error.message}", Toast.LENGTH_SHORT).show()
                             btnSimpan.isEnabled = true
-                            btnSimpan.text = "Update"
+btnSimpan.text = "Perbarui"
                         }
                     }
                 )
@@ -877,7 +877,7 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
     private fun showRowPopupMenu(anchor: View, siswa: SiswaItem) {
         val popup = androidx.appcompat.widget.PopupMenu(this, anchor)
         popup.menu.add(0, 1, 0, "Detail")
-        popup.menu.add(0, 2, 1, "Edit")
+        popup.menu.add(0, 2, 1, "Ubah")
         popup.menu.add(0, 3, 2, "Hapus")
 
         // Force show icons
@@ -944,7 +944,8 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
         // Update count info
         val start = (currentPage - 1) * 20 + 1
         val end = minOf(currentPage * 20, allStudentList.size)
-        tvCountInfo.text = "Menampilkan $start-$end dari ${allStudentList.size} data"
+        val shown = end - start + 1
+        tvCountInfo.text = "Menampilkan $shown dari $totalItems data"
     }
 
     private fun showStudentDetailDialog(siswa: SiswaItem) {

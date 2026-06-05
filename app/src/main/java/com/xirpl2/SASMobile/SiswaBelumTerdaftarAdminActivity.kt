@@ -30,12 +30,19 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
     private lateinit var cbSelectAll: CheckBox
     private lateinit var tvCountInfo: TextView
     private lateinit var btnNotifyBulk: com.google.android.material.button.MaterialButton
+    private lateinit var tableHorizontalScrollView: HorizontalScrollView
+    private lateinit var btnLoadMore: com.google.android.material.button.MaterialButton
     
     private lateinit var adapter: SiswaAdapter
     
     private var searchQuery: String = ""
     private var selectedJurusanId: Int? = null
     private var selectedWaliStaffId: Int? = null
+    private var currentApiPage = 1
+    private var hasMorePages = false
+    private var totalItemsCount = 0
+    private val allStudents = mutableListOf<SiswaItem>()
+    private val apiPageSize = 100
 
     // ForcedClass: for wali_kelas, auto-filter to their assigned class
     private var forcedClass: String? = null
@@ -85,9 +92,19 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
         cbSelectAll = findViewById(R.id.cbSelectAll)
         tvCountInfo = findViewById(R.id.tvCountInfo)
         btnNotifyBulk = findViewById(R.id.btnNotifyBulk)
+        tableHorizontalScrollView = findViewById(R.id.tableHorizontalScrollView)
+        btnLoadMore = findViewById(R.id.btnLoadMore)
 
         swipeRefresh.setOnRefreshListener {
-            loadUnregisteredStudents()
+            currentApiPage = 1
+            allStudents.clear()
+            loadUnregisteredStudents(reset = true)
+        }
+
+        btnLoadMore.setOnClickListener {
+            if (!hasMorePages) return@setOnClickListener
+            currentApiPage++
+            loadUnregisteredStudents(reset = false)
         }
 
         btnNotifyBulk.setOnClickListener {
@@ -162,7 +179,7 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
                 onFailure = { e ->
                     progressBar.visibility = View.GONE
                     btnNotifyBulk.isEnabled = true
-                    val msg = if (e is java.net.UnknownHostException) "Tidak dapat terhubung ke server" else "Error: ${e.message}"
+                    val msg = if (e is java.net.UnknownHostException) "Tidak dapat terhubung ke server" else "Kesalahan: ${e.message}"
                     Toast.makeText(this@SiswaBelumTerdaftarAdminActivity, msg, Toast.LENGTH_SHORT).show()
                 }
             )
@@ -196,7 +213,7 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
                     val newQuery = s?.toString()?.trim() ?: ""
                     if (newQuery != searchQuery) {
                         searchQuery = newQuery
-                        loadUnregisteredStudents()
+                        loadUnregisteredStudents(reset = true)
                     }
                 }
                 searchHandler.postDelayed(searchRunnable!!, searchDebounceMs)
@@ -213,7 +230,7 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
                         acJurusan.setText(options[0], false)
                         acJurusan.setOnItemClickListener { _, _, position, _ ->
                             selectedJurusanId = if (position == 0) null else list[position - 1].id
-                            loadUnregisteredStudents()
+                            loadUnregisteredStudents(reset = true)
                         }
                     },
                     onFailure = { }
@@ -229,7 +246,7 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
                         acWaliKelas.setText(options[0], false)
                         acWaliKelas.setOnItemClickListener { _, _, position, _ ->
                             selectedWaliStaffId = if (position == 0) null else list[position - 1].id_staff
-                            loadUnregisteredStudents()
+                            loadUnregisteredStudents(reset = true)
                         }
                     },
                     onFailure = { }
@@ -238,9 +255,14 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
         }
     }
 
-    private fun loadUnregisteredStudents() {
+    private fun loadUnregisteredStudents(reset: Boolean = true) {
         val token = getAuthToken()
         if (token.isEmpty()) return
+
+        if (reset) {
+            currentApiPage = 1
+            allStudents.clear()
+        }
 
         showLoading(true)
         loadingJob?.cancel()
@@ -258,24 +280,40 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
 
             repository.getUnregisteredStudents(
                 token = token,
-                page = 1,
-                pageSize = 100,
+                page = currentApiPage,
+                pageSize = apiPageSize,
                 search = if (searchQuery.isNotEmpty()) searchQuery else null,
-                jurusan = selectedJurusanId?.toString(),
-                waliKelas = selectedWaliStaffId?.toString(),
+                jurusan = selectedJurusanId,
+                waliKelas = selectedWaliStaffId,
                 idKelas = forcedClassId
             ).fold(
                 onSuccess = { body ->
                     showLoading(false)
                     val students = body.data ?: emptyList()
-                    adapter.setFullList(students)
-                    val total = body.pagination?.total_items ?: students.size
-                    tvCountInfo.text = "Menampilkan ${students.size} dari $total data"
-                    layoutEmpty.visibility = if (students.isEmpty()) View.VISIBLE else View.GONE
+                    totalItemsCount = body.pagination?.total_items ?: students.size
+                    val totalPages = body.pagination?.total_pages ?: 1
+                    hasMorePages = currentApiPage < totalPages
+
+                    if (reset) {
+                        allStudents.clear()
+                        allStudents.addAll(students)
+                    } else {
+                        allStudents.addAll(students)
+                    }
+
+                    adapter.setFullList(allStudents.toList())
+                    adapter.selectAll(false)
+                    cbSelectAll.isChecked = false
+                    tvCountInfo.text = "Menampilkan ${allStudents.size} dari $totalItemsCount data"
+                    val empty = allStudents.isEmpty()
+                    tableHorizontalScrollView.visibility = if (empty) View.GONE else View.VISIBLE
+                    layoutEmpty.visibility = if (empty) View.VISIBLE else View.GONE
+                    btnLoadMore.visibility = if (hasMorePages) View.VISIBLE else View.GONE
                 },
                 onFailure = { e ->
                     showLoading(false)
-                    Toast.makeText(this@SiswaBelumTerdaftarAdminActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                    if (!reset) currentApiPage--
+                    Toast.makeText(this@SiswaBelumTerdaftarAdminActivity, "Kesalahan: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             )
         }

@@ -132,12 +132,12 @@ class PengajuanIzinAdminAdapter(
                     statusBadge.setTextColor(ContextCompat.getColor(context, R.color.badge_pending_text))
                 }
                 "disetujui", "approved" -> {
-                    statusBadge.text = "APPROVED"
+                    statusBadge.text = "DISETUJUI"
                     statusBadge.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.badge_approved_bg))
                     statusBadge.setTextColor(ContextCompat.getColor(context, R.color.badge_approved_text))
                 }
                 "ditolak", "rejected" -> {
-                    statusBadge.text = "REJECTED"
+                    statusBadge.text = "DITOLAK"
                     statusBadge.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.badge_rejected_bg))
                     statusBadge.setTextColor(ContextCompat.getColor(context, R.color.badge_rejected_text))
                 }

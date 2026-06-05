@@ -409,7 +409,7 @@ class BerandaRepository {
         page: Int = 1,
         pageSize: Int = 100,
         search: String? = null,
-        kelas: String? = null,
+        tingkatan: Int? = null,
         jurusan: String? = null,
         jk: String? = null
     ): Result<SiswaListPaginatedResponse> {
@@ -421,7 +421,7 @@ class BerandaRepository {
                         page,
                         pageSize,
                         search,
-                        kelas,
+                        tingkatan,
                         jurusan,
                         jk
                     )
@@ -954,8 +954,8 @@ class BerandaRepository {
         page: Int? = 1,
         pageSize: Int? = 100,
         search: String? = null,
-        jurusan: String? = null,
-        waliKelas: String? = null,
+        jurusan: Int? = null,
+        waliKelas: Int? = null,
         idKelas: Int? = null
     ): Result<SiswaListPaginatedResponse> {
         return withContext(Dispatchers.IO) {

@@ -61,7 +61,7 @@
                 android:background="@drawable/bg_status_approved"
                 android:paddingHorizontal="8dp"
                 android:paddingVertical="4dp"
-                android:text="Verified"
+                android:text="Terverifikasi"
                 android:textColor="@color/white"
                 android:textSize="10sp" />
 

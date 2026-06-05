@@ -48,16 +48,17 @@ class NotificationPollWorker(
             if (response.isSuccessful) {
                 val notifications = response.body()?.data ?: emptyList()
                 val prefs = applicationContext.getSharedPreferences("NotificationData", Context.MODE_PRIVATE)
-                val lastSeenId = prefs.getInt("last_seen_notif_id", 0)
 
-                // Show ALL unread notifications as system/native notifications
+                // Cross-session dedup: only show notifications with id > last seen
+                val lastSeenId = prefs.getInt("last_seen_notif_id", 0)
                 val newNotifs = notifications
                     .filter {
                         !it.isRead &&
-                        it.id > lastSeenId
+                        it.id > lastSeenId &&
+                        it.id !in NotificationHelper.shownNotificationIds
                     }
                     .sortedByDescending { it.id }
-                    .take(10) // Limit to 10 at once to avoid spam on first run
+                    .take(10)
 
                 for ((index, notif) in newNotifs.withIndex()) {
                     NotificationHelper.showNotification(
@@ -67,12 +68,12 @@ class NotificationPollWorker(
                         notif.message,
                         index
                     )
+                    NotificationHelper.shownNotificationIds.add(notif.id)
                 }
 
-                // Always update last_seen to max API ID to prevent re-showing
                 val apiMaxId = notifications.maxOfOrNull { it.id } ?: 0
                 if (apiMaxId > lastSeenId) {
-                    prefs.edit().putInt("last_seen_notif_id", apiMaxId).apply()
+                    prefs.edit().putInt("last_seen_notif_id", apiMaxId).commit()
                 }
 
                 val unreadCount = notifications.count { !it.isRead }

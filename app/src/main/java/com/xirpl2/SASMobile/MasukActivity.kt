@@ -289,7 +289,7 @@ class MasukActivity : BaseActivity() {
                 withContext(Dispatchers.Main) {
                     if (isFinishing || isDestroyed) return@withContext
                     onLoginFailed()
-                    showToast("Error", "Terjadi kesalahan jaringan. Periksa koneksi Anda.", MotionToastStyle.ERROR)
+                    showToast("Kesalahan", "Terjadi kesalahan jaringan. Periksa koneksi Anda.", MotionToastStyle.ERROR)
                 }
             }
         }
@@ -385,7 +385,7 @@ class MasukActivity : BaseActivity() {
                             when (roleLower) {
                                 "guru", "wali_kelas", "wali kelas" -> BerandaGuruActivity::class.java
                                 "admin" -> BerandaAdminActivity::class.java
-                                else -> BerandaActivity::class.java
+                                else -> StudentMainActivity::class.java
                             }
                         }
                         
@@ -417,7 +417,7 @@ class MasukActivity : BaseActivity() {
         val targetActivity = when (roleLower) {
             "guru", "wali_kelas", "wali kelas" -> BerandaGuruActivity::class.java
             "admin" -> BerandaAdminActivity::class.java
-            else -> BerandaActivity::class.java
+            else -> StudentMainActivity::class.java
         }
         
         val intent = Intent(this, targetActivity)

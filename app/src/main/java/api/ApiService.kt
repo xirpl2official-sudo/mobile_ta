@@ -197,9 +197,9 @@ interface ApiService {
     suspend fun getStudents(
         @Header("Authorization") token: String,
         @Query("page") page: Int? = null,
-        @Query("limit") limit: Int? = null,
+        @Query("page_size") limit: Int? = null,
         @Query("search") search: String? = null,
-        @Query("kelas") kelas: String? = null,
+        @Query("tingkatan") tingkatan: Int? = null,
         @Query("jurusan") jurusan: String? = null,
         @Query("jk") jk: String? = null
     ): Response<SiswaListPaginatedResponse>
@@ -248,8 +248,8 @@ interface ApiService {
         @Query("page") page: Int? = null,
         @Query("page_size") pageSize: Int? = null,
         @Query("search") search: String? = null,
-        @Query("jurusan") jurusan: String? = null,
-        @Query("wali_kelas") waliKelas: String? = null,
+        @Query("jurusan") jurusan: Int? = null,
+        @Query("wali_kelas") waliKelas: Int? = null,
         @Query("id_kelas") idKelas: Int? = null
     ): Response<SiswaListPaginatedResponse>
 
