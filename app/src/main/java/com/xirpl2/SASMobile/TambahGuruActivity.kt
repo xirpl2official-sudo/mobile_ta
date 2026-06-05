@@ -9,11 +9,10 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xirpl2.SASMobile.model.CreateGuruRequest
-import com.xirpl2.SASMobile.network.RetrofitClient
-import kotlinx.coroutines.Dispatchers
+import com.xirpl2.SASMobile.repository.BerandaRepository
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class TambahGuruActivity : BaseActivity() {
 
@@ -23,6 +22,7 @@ class TambahGuruActivity : BaseActivity() {
     private lateinit var etPassword: EditText
     private lateinit var btnSimpan: Button
     private lateinit var progressLoading: ProgressBar
+    private val repository = BerandaRepository()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,12 +72,24 @@ class TambahGuruActivity : BaseActivity() {
             return
         }
 
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            Toast.makeText(this, "Format email tidak valid", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         if (password.length < 6) {
             Toast.makeText(this, "Password minimal 6 karakter", Toast.LENGTH_SHORT).show()
             return
         }
 
-        submitData(nama, if (nip.isEmpty()) null else nip, email, password)
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Tambah Guru")
+            .setMessage("Apakah Anda yakin ingin menambahkan guru baru?")
+            .setPositiveButton("Simpan") { _, _ ->
+                submitData(nama, if (nip.isEmpty()) null else nip, email, password)
+            }
+            .setNegativeButton("Batal", null)
+            .show()
     }
 
     private fun submitData(nama: String, nip: String?, email: String, password: String) {
@@ -86,38 +98,19 @@ class TambahGuruActivity : BaseActivity() {
 
         setLoadingState(true)
 
-        lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                val request = CreateGuruRequest(
-                    email = email,
-                    password = password,
-                    nama = nama,
-                    nip = nip
-                )
-
-                val response = RetrofitClient.apiService.createGuru("Bearer $token", request)
-                
-                withContext(Dispatchers.Main) {
+        lifecycleScope.launch {
+            val request = CreateGuruRequest(email = email, password = password, nama = nama, nip = nip)
+            repository.createGuru(token, request).fold(
+                onSuccess = {
                     setLoadingState(false)
-                    if (response.isSuccessful) {
-                        Toast.makeText(this@TambahGuruActivity, "Berhasil menambahkan guru", Toast.LENGTH_SHORT).show()
-                        finish() // Return to previous screen
-                    } else {
-                        val errorBody = response.errorBody()?.string()
-                        val errorMsg = if (!errorBody.isNullOrEmpty()) {
-                            try { org.json.JSONObject(errorBody).getString("message") } catch (_: Exception) { errorBody }
-                        } else {
-                            "Gagal menambahkan guru"
-                        }
-                        Toast.makeText(this@TambahGuruActivity, "Gagal: $errorMsg", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@TambahGuruActivity, "Berhasil menambahkan guru", Toast.LENGTH_SHORT).show()
+                    finish()
+                },
+                onFailure = { e ->
                     setLoadingState(false)
-                    Toast.makeText(this@TambahGuruActivity, "Terjadi kesalahan koneksi", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@TambahGuruActivity, "Gagal: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
-            }
+            )
         }
     }
 

@@ -25,7 +25,6 @@
             android:paddingBottom="20dp"
             android:background="@android:color/transparent">
 
-            
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -56,11 +55,10 @@
                     app:tint="#64748B" />
             </RelativeLayout>
 
-            
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Jenis Sholat"
+                android:text="Nama Sholat"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="#334155"
@@ -69,186 +67,28 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:hintEnabled="false"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 app:boxCornerRadiusTopStart="8dp"
                 app:boxCornerRadiusTopEnd="8dp"
                 app:boxCornerRadiusBottomStart="8dp"
                 app:boxCornerRadiusBottomEnd="8dp"
-                app:boxStrokeWidth="0dp"
-                app:boxStrokeWidthFocused="0dp"
-                android:layout_marginBottom="16dp">
-
-                <AutoCompleteTextView
-                    android:id="@+id/actvJenisSholat"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/bg_input_rounded"
-                    android:hint="Pilih Jenis Sholat"
-                    android:textColorHint="#94A3B8"
-                    android:textSize="13sp"
-                    android:paddingHorizontal="16dp"
-                    android:paddingVertical="12dp"
-                    android:inputType="none"
-                    android:cursorVisible="false" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Hari"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="#334155"
-                android:layout_marginBottom="8dp" />
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:hintEnabled="false"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                app:boxCornerRadiusTopStart="8dp"
-                app:boxCornerRadiusTopEnd="8dp"
-                app:boxCornerRadiusBottomStart="8dp"
-                app:boxCornerRadiusBottomEnd="8dp"
-                app:boxStrokeWidth="0dp"
-                app:boxStrokeWidthFocused="0dp"
-                android:layout_marginBottom="16dp">
-
-                <AutoCompleteTextView
-                    android:id="@+id/actvHari"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/bg_input_rounded"
-                    android:hint="Pilih Hari"
-                    android:textColorHint="#94A3B8"
-                    android:textSize="13sp"
-                    android:paddingHorizontal="16dp"
-                    android:paddingVertical="12dp"
-                    android:inputType="none"
-                    android:cursorVisible="false" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Jurusan"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="#334155"
-                android:layout_marginBottom="8dp" />
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:hintEnabled="false"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                app:boxCornerRadiusTopStart="8dp"
-                app:boxCornerRadiusTopEnd="8dp"
-                app:boxCornerRadiusBottomStart="8dp"
-                app:boxCornerRadiusBottomEnd="8dp"
-                app:boxStrokeWidth="0dp"
-                app:boxStrokeWidthFocused="0dp"
-                android:layout_marginBottom="16dp">
-
-                <AutoCompleteTextView
-                    android:id="@+id/actvJurusan"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/bg_input_rounded"
-                    android:hint="Pilih Jurusan"
-                    android:textColorHint="#94A3B8"
-                    android:textSize="13sp"
-                    android:paddingHorizontal="16dp"
-                    android:paddingVertical="12dp"
-                    android:inputType="none"
-                    android:cursorVisible="false" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Pilih Kelas"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="#334155"
-                android:layout_marginBottom="8dp" />
-
-            <GridLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:columnCount="3"
-                android:layout_marginBottom="16dp">
-
-                <CheckBox
-                    android:id="@+id/cbKelas10"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="10"
-                    android:textColor="#334155" />
-
-                <CheckBox
-                    android:id="@+id/cbKelas11"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="11"
-                    android:textColor="#334155"
-                    android:layout_marginStart="16dp" />
-
-                <CheckBox
-                    android:id="@+id/cbKelas12"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="12"
-                    android:textColor="#334155"
-                    android:layout_marginStart="16dp" />
-            </GridLayout>
-
-            
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Jam Mulai"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="#334155"
-                android:layout_marginBottom="8dp" />
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:hintEnabled="false"
-                app:boxBackgroundMode="outline"
-                app:boxCornerRadiusTopStart="8dp"
-                app:boxCornerRadiusTopEnd="8dp"
-                app:boxCornerRadiusBottomStart="8dp"
-                app:boxCornerRadiusBottomEnd="8dp"
-                app:boxStrokeWidth="0dp"
-                app:boxStrokeWidthFocused="0dp"
                 android:layout_marginBottom="16dp">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etJamMulai"
+                    android:id="@+id/etNamaSholat"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_input_rounded"
-                    android:hint="Contoh: 06:30"
-                    android:textColorHint="#94A3B8"
-                    android:textSize="13sp"
+                    android:hint="Contoh: Sholat Dzuhur"
+                    android:textSize="14sp"
                     android:paddingHorizontal="16dp"
                     android:paddingVertical="12dp"
-                    android:inputType="time"
-                    android:maxLines="1" />
+                    android:inputType="text" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Jam Selesai"
+                android:text="Waktu Mulai"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="#334155"
@@ -257,38 +97,60 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:hintEnabled="false"
-                app:boxBackgroundMode="outline"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 app:boxCornerRadiusTopStart="8dp"
                 app:boxCornerRadiusTopEnd="8dp"
                 app:boxCornerRadiusBottomStart="8dp"
                 app:boxCornerRadiusBottomEnd="8dp"
-                app:boxStrokeWidth="0dp"
-                app:boxStrokeWidthFocused="0dp"
-                android:layout_marginBottom="32dp">
+                android:layout_marginBottom="16dp">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etJamSelesai"
+                    android:id="@+id/etWaktuMulai"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_input_rounded"
-                    android:hint="Contoh: 09:00"
-                    android:textColorHint="#94A3B8"
-                    android:textSize="13sp"
+                    android:hint="Contoh: 12:00"
+                    android:textSize="14sp"
                     android:paddingHorizontal="16dp"
                     android:paddingVertical="12dp"
                     android:inputType="time"
-                    android:maxLines="1" />
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:cursorVisible="false" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/slate_200"
-                android:layout_marginBottom="24dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Waktu Selesai"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#334155"
+                android:layout_marginBottom="8dp" />
 
-            
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                app:boxCornerRadiusTopStart="8dp"
+                app:boxCornerRadiusTopEnd="8dp"
+                app:boxCornerRadiusBottomStart="8dp"
+                app:boxCornerRadiusBottomEnd="8dp"
+                android:layout_marginBottom="24dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etWaktuSelesai"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Contoh: 13:00"
+                    android:textSize="14sp"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="12dp"
+                    android:inputType="time"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:cursorVisible="false" />
+            </com.google.android.material.textfield.TextInputLayout>
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSimpan"
                 android:layout_width="match_parent"

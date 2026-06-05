@@ -177,6 +177,9 @@ class VerifyAccountActivity : BaseActivity() {
                     clear()
                     apply()
                 }
+                com.xirpl2.SASMobile.utils.NotificationCounterManager.clearCounter(this@VerifyAccountActivity)
+                androidx.work.WorkManager.getInstance(this@VerifyAccountActivity)
+                    .cancelUniqueWork(com.xirpl2.SASMobile.utils.NotificationPollWorker.WORK_NAME)
 
                 val intent = Intent(this@VerifyAccountActivity, MasukActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

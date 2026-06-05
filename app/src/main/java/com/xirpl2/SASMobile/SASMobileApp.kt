@@ -56,6 +56,9 @@ class SASMobileApp : Application() {
         // Create notification channel for system notifications
         com.xirpl2.SASMobile.utils.NotificationHelper.createNotificationChannel(this)
 
+        // Start periodic notification polling (every 15 min via WorkManager)
+        com.xirpl2.SASMobile.utils.NotificationPollWorker.schedulePeriodicPoll(this)
+
         setupGlobalExceptionHandler()
         setupTransitionTimeouts()
     }

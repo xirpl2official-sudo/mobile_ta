@@ -188,7 +188,7 @@ data class PrayerType(
 
 data class PrayerTypeRequest(
     val nama_jenis: String,
-    val urutan: Int
+    val butuh_giliran: Boolean = false
 )
 
 // --- FASE 3.12: Prayer Times Models ---
@@ -217,9 +217,11 @@ data class PrayerTime(
 )
 
 data class PrayerTimeRequest(
+    @SerializedName("id_jenis")
     val id_jenis_sholat: Int,
     val waktu_mulai: String,
-    val waktu_selesai: String
+    val waktu_selesai: String,
+    val berlaku_mulai: String
 )
 
 // --- FASE 3.13: Dhuha & Jurusan Models ---

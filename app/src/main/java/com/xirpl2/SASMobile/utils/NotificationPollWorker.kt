@@ -47,36 +47,39 @@ class NotificationPollWorker(
             val response = RetrofitClient.apiService.getNotifications("Bearer $token", page = 1, limit = 20)
             if (response.isSuccessful) {
                 val notifications = response.body()?.data ?: emptyList()
-                val lastSeenId = applicationContext
-                    .getSharedPreferences("NotificationData", Context.MODE_PRIVATE)
-                    .getInt("last_seen_notif_id", 0)
+                val prefs = applicationContext.getSharedPreferences("NotificationData", Context.MODE_PRIVATE)
+                val lastSeenId = prefs.getInt("last_seen_notif_id", 0)
 
+                // Show ALL unread notifications as system/native notifications
                 val newNotifs = notifications
-                    .filter { !it.isRead && it.id > lastSeenId }
+                    .filter {
+                        !it.isRead &&
+                        it.id > lastSeenId
+                    }
                     .sortedByDescending { it.id }
+                    .take(10) // Limit to 10 at once to avoid spam on first run
 
-                for (notif in newNotifs) {
+                for ((index, notif) in newNotifs.withIndex()) {
                     NotificationHelper.showNotification(
                         applicationContext,
                         notif.id,
                         notif.title,
-                        notif.message
+                        notif.message,
+                        index
                     )
                 }
 
-                if (newNotifs.isNotEmpty()) {
-                    val newMaxId = newNotifs.maxOf { it.id }
-                    applicationContext.getSharedPreferences("NotificationData", Context.MODE_PRIVATE)
-                        .edit().putInt("last_seen_notif_id", newMaxId).apply()
-
-                    val unreadCount = notifications.count { !it.isRead }
-                    applicationContext.getSharedPreferences("NotificationData", Context.MODE_PRIVATE)
-                        .edit().putInt("notification_count", unreadCount).apply()
-                    NotificationCounterManager.setCounter(unreadCount)
-
+                // Always update last_seen to max API ID to prevent re-showing
+                val apiMaxId = notifications.maxOfOrNull { it.id } ?: 0
+                if (apiMaxId > lastSeenId) {
+                    prefs.edit().putInt("last_seen_notif_id", apiMaxId).apply()
                 }
 
-                Log.d(TAG, "Polled ${notifications.size} notifications, ${newNotifs.size} new")
+                val unreadCount = notifications.count { !it.isRead }
+                prefs.edit().putInt("notification_count", unreadCount).apply()
+                NotificationCounterManager.setCounter(unreadCount)
+
+                Log.d(TAG, "Polled ${notifications.size} notifications, ${newNotifs.size} new shown")
             }
             Result.success()
         } catch (e: Exception) {

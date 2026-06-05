@@ -10,21 +10,27 @@ data class SiswaListResponse(
 )
 
 data class SiswaItem(
+    @SerializedName(value = "id_siswa", alternate = ["idSiswa"])
     val id_siswa: Int = 0,
+    @SerializedName(value = "nis", alternate = ["NIS"])
     val nis: String = "",
+    @SerializedName(value = "nama_siswa", alternate = ["namaSiswa", "name", "nama"])
     val nama_siswa: String = "",
-    @SerializedName("jk")
+    @SerializedName(value = "jk", alternate = ["jenis_kelamin", "jenisKelamin", "gender"])
     val jenis_kelamin: String = "",
+    @SerializedName(value = "kelas", alternate = ["kelas", "class"])
     val kelas: String = "",
+    @SerializedName(value = "jurusan", alternate = ["jurusan", "major"])
     val jurusan: String = "",
-    @SerializedName("device_status")
+    @SerializedName(value = "device_status", alternate = ["deviceStatus"])
     val deviceStatus: String? = null,
-    @SerializedName("hardware_id")
+    @SerializedName(value = "hardware_id", alternate = ["hardwareId"])
     val hardwareId: String? = null,
-    @SerializedName("wali_kelas_name")
+    @SerializedName(value = "wali_kelas_name", alternate = ["waliKelasName", "wali_kelas", "waliKelas"])
     val waliKelasName: String? = null,
-    @SerializedName("status_akademik")
+    @SerializedName(value = "status_akademik", alternate = ["statusAkademik", "status"])
     val statusAkademik: String? = null,
+    @SerializedName(value = "agama", alternate = ["agama", "religion"])
     val agama: String? = null,
     val isSelected: Boolean = false
 ) : Serializable
@@ -69,8 +75,7 @@ data class SiswaListPaginatedResponse(
     val message: String? = null,
     val data: List<SiswaItem> = emptyList(),
     @SerializedName(value = "pagination", alternate = ["meta"])
-    val pagination: SiswaPaginationInfo? = null,
-    val filters: Map<String, Any>? = null
+    val pagination: SiswaPaginationInfo? = null
 )
 
 data class StudentDetailResponse(

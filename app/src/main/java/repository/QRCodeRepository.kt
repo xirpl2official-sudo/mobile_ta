@@ -94,6 +94,22 @@ class QRCodeRepository {
         }
     }
 
+    suspend fun generateAttendanceCode(token: String): Result<AttendanceCodeData> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.generateAttendanceCode("Bearer $token")
+                if (!response.isSuccessful) {
+                    return@withContext Result.failure(Exception("HTTP Error: ${response.code()}"))
+                }
+                val body = response.body() ?: return@withContext Result.failure(Exception("Response body kosong"))
+                val data = body.data ?: return@withContext Result.failure(Exception("Data kode kosong"))
+                Result.success(data)
+            } catch (e: Exception) {
+                Result.failure(Exception("Gagal terhubung ke server: ${e.message}"))
+            }
+        }
+    }
+
     private fun parseErrorMessage(response: Response<*>): String? {
         return try {
             val errorBody = response.errorBody()?.string()

@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:text="Selesai"
             android:textSize="@dimen/text_status_badge"
-            android:textColor="#FFFFFF"
+            android:textColor="@android:color/white"
             android:background="@drawable/bg_status_gray"
             android:paddingHorizontal="@dimen/status_padding_horizontal"
             android:paddingVertical="@dimen/status_padding_vertical"

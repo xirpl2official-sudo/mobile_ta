@@ -3,6 +3,7 @@ package com.xirpl2.SASMobile.update
 import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
+import com.xirpl2.SASMobile.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
@@ -38,6 +39,9 @@ object UpdateChecker {
             val conn = url.openConnection() as HttpURLConnection
             conn.setRequestProperty("Accept", "application/vnd.github.v3+json")
             conn.setRequestProperty("User-Agent", "SASMobile")
+            if (BuildConfig.GITHUB_TOKEN.isNotEmpty()) {
+                conn.setRequestProperty("Authorization", "Bearer ${BuildConfig.GITHUB_TOKEN}")
+            }
             conn.connectTimeout = 10000
             conn.readTimeout = 10000
 

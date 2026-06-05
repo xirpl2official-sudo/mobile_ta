@@ -16,18 +16,17 @@ object UpdateDownloader {
     private var downloadId: Long = -1
     private var onCompleteReceiver: BroadcastReceiver? = null
 
-    fun downloadAndInstall(context: Context, updateInfo: UpdateInfo, onProgress: ((Int) -> Unit)? = null) {
+    fun downloadAndInstall(context: Context, updateInfo: UpdateInfo, onProgress: ((Int) -> Unit)? = null, onComplete: (() -> Unit)? = null) {
         val fileName = "SASMobile-v${updateInfo.versionName}.apk"
         val file = File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), fileName)
 
-        // Delete old file if exists
         if (file.exists()) file.delete()
 
         val request = DownloadManager.Request(Uri.parse(updateInfo.downloadUrl))
             .setTitle("SAS Mobile Update")
             .setDescription("Mengunduh versi ${updateInfo.versionName}...")
             .setDestinationUri(Uri.fromFile(file))
-            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
             .setAllowedOverMetered(true)
             .setAllowedOverRoaming(true)
 
@@ -81,6 +80,7 @@ object UpdateDownloader {
                 val id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
                 if (id == downloadId) {
                     unregisterReceiver(ctx)
+                    onComplete?.invoke()
                     installApk(ctx, file)
                 }
             }

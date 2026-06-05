@@ -14,8 +14,11 @@ import androidx.cardview.widget.CardView
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
+import androidx.work.WorkManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xirpl2.SASMobile.network.RetrofitClient
+import com.xirpl2.SASMobile.utils.NotificationCounterManager
+import com.xirpl2.SASMobile.utils.NotificationPollWorker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -406,6 +409,9 @@ abstract class BaseAdminActivity : BaseActivity() {
                             .edit().clear().apply()
                         getSharedPreferences("NotificationData", Context.MODE_PRIVATE)
                             .edit().clear().apply()
+                        NotificationCounterManager.clearCounter(this@BaseAdminActivity)
+                        WorkManager.getInstance(this@BaseAdminActivity)
+                            .cancelUniqueWork(NotificationPollWorker.WORK_NAME)
 
                         Toast.makeText(this@BaseAdminActivity, "Logout berhasil", Toast.LENGTH_SHORT).show()
 

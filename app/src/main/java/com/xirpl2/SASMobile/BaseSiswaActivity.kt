@@ -13,8 +13,11 @@ import androidx.activity.OnBackPressedCallback
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
+import androidx.work.WorkManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xirpl2.SASMobile.network.RetrofitClient
+import com.xirpl2.SASMobile.utils.NotificationCounterManager
+import com.xirpl2.SASMobile.utils.NotificationPollWorker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -119,13 +122,33 @@ abstract class BaseSiswaActivity : BaseActivity() {
             navigateTo(BerandaActivity::class.java)
         }
 
+        setupMenuItem(R.id.menuPengajuanIzin, SiswaMenuItem.PENGAJUAN_IZIN, currentItem) {
+            navigateTo(PengajuanIzinActivity::class.java)
+        }
+
         setupMenuItem(R.id.menuQRCode, SiswaMenuItem.QR_CODE, currentItem) {
             navigateTo(ScanQrActivity::class.java)
         }
 
-        setupMenuItem(R.id.menuPengajuanIzin, SiswaMenuItem.PENGAJUAN_IZIN, currentItem) {
-            navigateTo(PengajuanIzinActivity::class.java)
+        // Bottom menu items (non-highlighted)
+        setupBottomMenuItem(R.id.menuFAQ) {
+            startActivity(Intent(this, FAQActivity::class.java))
+            closeSidebar()
         }
+
+        setupBottomMenuItem(R.id.menuPengaturan) {
+            startActivity(Intent(this, PengaturanActivity::class.java))
+            closeSidebar()
+        }
+
+        setupBottomMenuItem(R.id.menuLogout) {
+            handleLogout()
+        }
+    }
+
+    private fun setupBottomMenuItem(menuId: Int, onClick: () -> Unit) {
+        val menuView = sidebarView.findViewById<LinearLayout>(menuId) ?: return
+        menuView.setOnClickListener { onClick() }
     }
 
     private fun setupMenuItem(
@@ -201,6 +224,9 @@ abstract class BaseSiswaActivity : BaseActivity() {
                 sidebarView.findViewById<LinearLayout>(R.id.menuBeranda)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuPengajuanIzin)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuQRCode)?.setOnClickListener(null)
+                sidebarView.findViewById<LinearLayout>(R.id.menuFAQ)?.setOnClickListener(null)
+                sidebarView.findViewById<LinearLayout>(R.id.menuPengaturan)?.setOnClickListener(null)
+                sidebarView.findViewById<LinearLayout>(R.id.menuLogout)?.setOnClickListener(null)
                 sidebarView.findViewById<androidx.cardview.widget.CardView>(R.id.cardUserProfile)?.setOnClickListener(null)
             }
             if (::drawerLayout.isInitialized) {
@@ -251,6 +277,9 @@ abstract class BaseSiswaActivity : BaseActivity() {
                             .edit().clear().apply()
                         getSharedPreferences("NotificationData", Context.MODE_PRIVATE)
                             .edit().clear().apply()
+                        NotificationCounterManager.clearCounter(this@BaseSiswaActivity)
+                        WorkManager.getInstance(this@BaseSiswaActivity)
+                            .cancelUniqueWork(NotificationPollWorker.WORK_NAME)
 
                         Toast.makeText(this@BaseSiswaActivity, "Logout berhasil", Toast.LENGTH_SHORT).show()
 

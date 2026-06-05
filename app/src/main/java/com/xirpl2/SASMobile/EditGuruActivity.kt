@@ -10,11 +10,10 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xirpl2.SASMobile.model.UpdateGuruRequest
-import com.xirpl2.SASMobile.network.RetrofitClient
-import kotlinx.coroutines.Dispatchers
+import com.xirpl2.SASMobile.repository.BerandaRepository
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class EditGuruActivity : BaseActivity() {
 
@@ -26,6 +25,7 @@ class EditGuruActivity : BaseActivity() {
 
     private var guruId: Int = -1
     private var dataLoaded: Boolean = false
+    private val repository = BerandaRepository()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,31 +81,21 @@ class EditGuruActivity : BaseActivity() {
 
         setLoadingState(true)
 
-        lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                val response = RetrofitClient.apiService.getGuruDetail("Bearer $token", guruId)
-
-                withContext(Dispatchers.Main) {
+        lifecycleScope.launch {
+            repository.getGuruDetail(token, guruId).fold(
+                onSuccess = { guru ->
                     setLoadingState(false)
-                    if (response.isSuccessful) {
-                        val guru = response.body()?.data
-                        if (guru != null) {
-                            etNama.setText(guru.nama)
-                            etNip.setText(guru.nip)
-                            etEmail.setText(guru.email)
-                        }
-                        dataLoaded = true
-                        btnSimpan.isEnabled = true
-                    } else {
-                        showFetchRetry("Gagal memuat data guru")
-                    }
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
+                    etNama.setText(guru.nama)
+                    etNip.setText(guru.nip)
+                    etEmail.setText(guru.email)
+                    dataLoaded = true
+                    btnSimpan.isEnabled = true
+                },
+                onFailure = {
                     setLoadingState(false)
-                    showFetchRetry("Terjadi kesalahan koneksi")
+                    showFetchRetry("Gagal memuat data guru")
                 }
-            }
+            )
         }
     }
 
@@ -150,7 +140,14 @@ class EditGuruActivity : BaseActivity() {
             return
         }
 
-        submitData(nama, if (nip.isEmpty()) null else nip, email)
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Simpan Perubahan")
+            .setMessage("Apakah Anda yakin ingin menyimpan perubahan data guru ini?")
+            .setPositiveButton("Simpan") { _, _ ->
+                submitData(nama, if (nip.isEmpty()) null else nip, email)
+            }
+            .setNegativeButton("Batal", null)
+            .show()
     }
 
     private fun submitData(nama: String, nip: String?, email: String) {
@@ -159,37 +156,19 @@ class EditGuruActivity : BaseActivity() {
 
         setLoadingState(true)
 
-        lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                val request = UpdateGuruRequest(
-                    email = email,
-                    nama = nama,
-                    nip = nip
-                )
-
-                val response = RetrofitClient.apiService.updateGuru("Bearer $token", guruId, request)
-
-                withContext(Dispatchers.Main) {
+        lifecycleScope.launch {
+            val request = UpdateGuruRequest(email = email, nama = nama, nip = nip)
+            repository.updateGuru(token, guruId, request).fold(
+                onSuccess = {
                     setLoadingState(false)
-                    if (response.isSuccessful) {
-                        Toast.makeText(this@EditGuruActivity, "Berhasil memperbarui data guru", Toast.LENGTH_SHORT).show()
-                        finish()
-                    } else {
-                        val errorBody = response.errorBody()?.string()
-                        val errorMsg = if (!errorBody.isNullOrEmpty()) {
-                            try { org.json.JSONObject(errorBody).getString("message") } catch (_: Exception) { errorBody }
-                        } else {
-                            "Gagal memperbarui data guru"
-                        }
-                        Toast.makeText(this@EditGuruActivity, "Gagal: $errorMsg", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@EditGuruActivity, "Berhasil memperbarui data guru", Toast.LENGTH_SHORT).show()
+                    finish()
+                },
+                onFailure = { e ->
                     setLoadingState(false)
-                    Toast.makeText(this@EditGuruActivity, "Terjadi kesalahan koneksi", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@EditGuruActivity, "Gagal: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
-            }
+            )
         }
     }
 

@@ -46,7 +46,7 @@ data class JurusanResponse(
 )
 
 data class JadwalSholatDetailResponse(
-    val message: String,
+    val message: String? = null,
     val data: JadwalSholatDetail? = null
 )
 
@@ -93,25 +93,23 @@ data class ClosestPrayerData(
 )
 
 data class JadwalSholatUpdateRequest(
-    val jenis_sholat: String? = null,
-    @SerializedName("waktu_mulai")
-    val jam_mulai: String? = null,
-    @SerializedName("waktu_selesai")
-    val jam_selesai: String? = null,
     val hari: String? = null,
-    val jurusan: String? = null,
-    val kelas: String? = null
+    @SerializedName("id_waktu")
+    val id_waktu: Int? = null,
+    @SerializedName("waktu_mulai")
+    val waktu_mulai: String? = null,
+    @SerializedName("waktu_selesai")
+    val waktu_selesai: String? = null,
+    @SerializedName("jurusan_ids")
+    val jurusan_ids: List<Int>? = null
 )
 
 data class JadwalSholatCreateRequest(
-    val jenis_sholat: String,
-    @SerializedName("waktu_mulai")
-    val jam_mulai: String,
-    @SerializedName("waktu_selesai")
-    val jam_selesai: String,
-    val hari: String? = null,
-    val jurusan: String? = null,
-    val kelas: String? = null
+    val hari: String,
+    @SerializedName("id_waktu")
+    val id_waktu: Int,
+    @SerializedName("jurusan_ids")
+    val jurusan_ids: List<Int>? = null
 )
 
 

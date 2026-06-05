@@ -24,10 +24,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xirpl2.SASMobile.model.JadwalSholat
+import com.xirpl2.SASMobile.model.StatusSholat
 import com.xirpl2.SASMobile.model.RiwayatAbsensi
 import com.xirpl2.SASMobile.model.StatusAbsensi
 import com.xirpl2.SASMobile.network.RetrofitClient
 import com.xirpl2.SASMobile.repository.BerandaRepository
+import com.xirpl2.SASMobile.utils.NotificationCounterManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -41,6 +43,9 @@ class BerandaActivity : BaseSiswaActivity() {
     private lateinit var tvIzinSakitValue: TextView
     private lateinit var tvJadwalError: TextView
     private lateinit var tvRiwayatError: TextView
+    private lateinit var cardWaktuAbsensi: androidx.cardview.widget.CardView
+    private lateinit var notificationBellContainer: android.widget.FrameLayout
+    private lateinit var tvNotificationBadge: TextView
 
     private lateinit var swipeRefresh: SwipeRefreshLayout
     private lateinit var jadwalAdapter: JadwalSholatAdapter
@@ -102,6 +107,21 @@ class BerandaActivity : BaseSiswaActivity() {
         tvIzinSakitValue = findViewById(R.id.tvIzinSakitValue)
         tvJadwalError = findViewById(R.id.tvJadwalError)
         tvRiwayatError = findViewById(R.id.tvRiwayatError)
+        cardWaktuAbsensi = findViewById(R.id.cardWaktuAbsensi)
+        notificationBellContainer = findViewById(R.id.notificationBellContainer)
+        tvNotificationBadge = findViewById(R.id.tvNotificationBadge)
+
+        notificationBellContainer.setOnClickListener {
+            startActivity(Intent(this, NotificationCenterActivity::class.java))
+        }
+        NotificationCounterManager.counter.observe(this) { count ->
+            if (count > 0) {
+                tvNotificationBadge.text = if (count > 99) "99+" else count.toString()
+                tvNotificationBadge.visibility = android.view.View.VISIBLE
+            } else {
+                tvNotificationBadge.visibility = android.view.View.GONE
+            }
+        }
     }
 
 
@@ -174,13 +194,13 @@ class BerandaActivity : BaseSiswaActivity() {
                         contentResolver.openOutputStream(uri)?.use { outputStream ->
                             outputStream.write(csv.toByteArray())
                         }
-                        withContext(Dispatchers.Main) {
+                        lifecycleScope.launch(Dispatchers.Main) {
                             if (!isFinishing && !isDestroyed) {
                                 Toast.makeText(this@BerandaActivity, "Tersimpan di Downloads/$fileName", Toast.LENGTH_LONG).show()
                             }
                         }
                     } else {
-                        withContext(Dispatchers.Main) {
+                        lifecycleScope.launch(Dispatchers.Main) {
                             if (!isFinishing && !isDestroyed) {
                                 Toast.makeText(this@BerandaActivity, "Gagal membuat file", Toast.LENGTH_SHORT).show()
                             }
@@ -192,7 +212,7 @@ class BerandaActivity : BaseSiswaActivity() {
                     val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                     val file = java.io.File(downloadsDir, fileName)
                     file.writeText(csv)
-                    withContext(Dispatchers.Main) {
+                    lifecycleScope.launch(Dispatchers.Main) {
                         if (!isFinishing && !isDestroyed) {
                             Toast.makeText(this@BerandaActivity, "Tersimpan di Downloads/$fileName", Toast.LENGTH_LONG).show()
                         }
@@ -200,7 +220,7 @@ class BerandaActivity : BaseSiswaActivity() {
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Gagal mengunduh riwayat: ${e.message}")
-                withContext(Dispatchers.Main) {
+                lifecycleScope.launch(Dispatchers.Main) {
                     if (!isFinishing && !isDestroyed) {
                         Toast.makeText(this@BerandaActivity, "Gagal mengunduh: ${e.message}", Toast.LENGTH_SHORT).show()
                     }
@@ -220,12 +240,19 @@ class BerandaActivity : BaseSiswaActivity() {
         }
     }
     
+    private fun getJurusanFromStorage(): String {
+        val sharedPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this)
+        return sharedPref.getString("user_jurusan", "") ?: ""
+    }
+
     private suspend fun loadJadwalSholatFromAPI(token: String) {
         // Server /today returns ALL prayers for the day (Subuh, Dzuhur, Ashar, Maghrib, Isya, Dhuha, Jumat).
         // Client-side gender filter: on Friday, male sees Jumat (not Dzuhur), female sees Dzuhur (not Jumat).
+        // Client-side jurusan filter: only show schedules for student's own jurusan or global (null).
         // Status (AKAN_DATANG/SEDANG_BERLANGSUNG/SELESAI) is computed client-side — server doesn't provide it.
         val jenisKelamin = getJenisKelaminFromStorage()
         val allowedByGender = JadwalSholatHelper.getJadwalSholatByGender(jenisKelamin)
+        val studentJurusan = getJurusanFromStorage()
 
         repository.getJadwalSholatToday(token).fold(
                 onSuccess = { jadwalDataList ->
@@ -234,6 +261,19 @@ class BerandaActivity : BaseSiswaActivity() {
                 val jadwalList = jadwalDataList
                     .filter { data ->
                         allowedByGender.any { it.equals(data.jenis_sholat, ignoreCase = true) }
+                    }
+                    .filter { data ->
+                        val scheduleJurusan = data.jurusan
+                        val scheduleJurusans = data.jurusans
+                        if (studentJurusan.isEmpty()) {
+                            true
+                        } else if (!scheduleJurusans.isNullOrEmpty()) {
+                            scheduleJurusans.any { it.nama.equals(studentJurusan, ignoreCase = true) }
+                        } else if (!scheduleJurusan.isNullOrBlank()) {
+                            scheduleJurusan.equals(studentJurusan, ignoreCase = true)
+                        } else {
+                            true
+                        }
                     }
                     .map { data ->
                     val status = JadwalSholatHelper.getStatusSholat(data.jam_mulai, data.jam_selesai)
@@ -247,21 +287,31 @@ class BerandaActivity : BaseSiswaActivity() {
                 }
                 
                 
-                runOnUiThread {
+                lifecycleScope.launch(Dispatchers.Main) {
                     if (!::jadwalAdapter.isInitialized) {
                         jadwalAdapter = JadwalSholatAdapter()
                         rvJadwalSholat.adapter = jadwalAdapter
                     }
-                    tvJadwalError.visibility = android.view.View.GONE
-                    rvJadwalSholat.visibility = android.view.View.VISIBLE
-                    jadwalAdapter.submitList(jadwalList)
+                    if (jadwalList.isNotEmpty()) {
+                        tvJadwalError.visibility = android.view.View.GONE
+                        rvJadwalSholat.visibility = android.view.View.VISIBLE
+                        jadwalAdapter.submitList(jadwalList)
+                    } else {
+                        rvJadwalSholat.visibility = android.view.View.GONE
+                        tvJadwalError.text = getString(R.string.JadwalKosong)
+                        tvJadwalError.visibility = android.view.View.VISIBLE
+                        jadwalAdapter.submitList(emptyList())
+                    }
+                    val hasActiveSchedule = jadwalList.any { it.status == StatusSholat.SEDANG_BERLANGSUNG || it.status == StatusSholat.AKAN_DATANG }
+                    cardWaktuAbsensi.visibility = if (hasActiveSchedule) android.view.View.VISIBLE else android.view.View.GONE
                 }
             },
             onFailure = { error ->
                 Log.w(TAG, "Failed to load jadwal sholat: ${error.message}")
-                runOnUiThread {
+                lifecycleScope.launch(Dispatchers.Main) {
                     rvJadwalSholat.visibility = android.view.View.GONE
                     tvJadwalError.visibility = android.view.View.VISIBLE
+                    cardWaktuAbsensi.visibility = android.view.View.GONE
                 }
                 if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
             }
@@ -271,29 +321,10 @@ class BerandaActivity : BaseSiswaActivity() {
     
     private fun formatTanggal(tanggal: String): String {
         return try {
-            val parts = tanggal.split("-")
-            if (parts.size == 3) {
-                val tahun = parts[0]
-                val bulan = when (parts[1]) {
-                    "01" -> "JAN"
-                    "02" -> "FEB"
-                    "03" -> "MAR"
-                    "04" -> "APR"
-                    "05" -> "MEI"
-                    "06" -> "JUN"
-                    "07" -> "JUL"
-                    "08" -> "AGU"
-                    "09" -> "SEP"
-                    "10" -> "OKT"
-                    "11" -> "NOV"
-                    "12" -> "DES"
-                    else -> parts[1]
-                }
-                val hari = parts[2].toIntOrNull()?.toString() ?: parts[2]
-                "$hari $bulan $tahun"
-            } else {
-                tanggal
-            }
+            val inputFormat = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale("id", "ID"))
+            val outputFormat = java.text.SimpleDateFormat("d MMM yyyy", java.util.Locale("id", "ID"))
+            val date = inputFormat.parse(tanggal)
+            if (date != null) outputFormat.format(date).uppercase() else tanggal
         } catch (e: Exception) {
             tanggal
         }
@@ -346,7 +377,7 @@ class BerandaActivity : BaseSiswaActivity() {
                     // statsData = historyWrapper.statistik from getStudentAttendanceHistory)
                     val stats = historyData.statistik
                     if (stats != null) {
-                        runOnUiThread {
+                        lifecycleScope.launch(Dispatchers.Main) {
                             tvTotalValue.text = stats.total_absensi.toString()
                             tvAlphaValue.text = stats.total_alpha.toString()
                             tvIzinSakitValue.text = (stats.total_izin + stats.total_sakit).toString()
@@ -367,7 +398,7 @@ class BerandaActivity : BaseSiswaActivity() {
                         )
                     }
 
-                    runOnUiThread {
+                    lifecycleScope.launch(Dispatchers.Main) {
                         if (riwayatList.isNotEmpty()) {
                             if (!::riwayatAdapter.isInitialized) {
                                 riwayatAdapter = RiwayatAbsensiAdapter()
@@ -390,7 +421,7 @@ class BerandaActivity : BaseSiswaActivity() {
                 onFailure = { error ->
                     Log.w(TAG, "Failed to load riwayat absensi: ${error.message}")
                     if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
-                    runOnUiThread {
+                    lifecycleScope.launch(Dispatchers.Main) {
                         rvRiwayatAbsensi.visibility = android.view.View.GONE
                         findViewById<LinearLayout>(R.id.riwayatHeader).visibility = android.view.View.GONE
                         findViewById<android.view.View>(R.id.dividerHeader).visibility = android.view.View.GONE
@@ -403,6 +434,8 @@ class BerandaActivity : BaseSiswaActivity() {
     
     override fun onResume() {
         super.onResume()
+
+        NotificationCounterManager.syncFromPreferences(this)
 
         val token = getAuthToken()
         if (token.isNotEmpty() && !isDataLoaded) {

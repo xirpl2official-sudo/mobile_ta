@@ -78,6 +78,52 @@ class BerandaRepository {
         }
     }
 
+    suspend fun createPrayerType(
+        token: String,
+        request: PrayerTypeRequest
+    ): Result<PrayerType> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.createPrayerType("Bearer $token", request)
+                if (!response.isSuccessful) {
+                    return@withContext Result.failure(
+                        Exception("HTTP Error: ${response.code()} - ${response.message()}")
+                    )
+                }
+                val body = response.body()
+                if (body?.data == null) {
+                    return@withContext Result.failure(Exception("Data tidak tersedia"))
+                }
+                return@withContext Result.success(body.data)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun createPrayerTime(
+        token: String,
+        request: PrayerTimeRequest
+    ): Result<PrayerTime> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.createPrayerTime("Bearer $token", request)
+                if (!response.isSuccessful) {
+                    return@withContext Result.failure(
+                        Exception("HTTP Error: ${response.code()} - ${response.message()}")
+                    )
+                }
+                val body = response.body()
+                if (body?.data == null) {
+                    return@withContext Result.failure(Exception("Data tidak tersedia"))
+                }
+                return@withContext Result.success(body.data)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
     suspend fun getJadwalDhuhaKeahlian(token: String): Result<List<com.xirpl2.SASMobile.model.JadwalDhuhaKeahlian>> {
         return withContext(Dispatchers.IO) {
             try {
@@ -869,6 +915,75 @@ class BerandaRepository {
                     return@withContext Result.failure(Exception(msg))
                 }
                 Result.success(response.body()?.message ?: "Roll over berhasil")
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    // --- Lookups ---
+
+    suspend fun getJurusanLookup(token: String): Result<List<JurusanItem>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.getJurusanLookup("Bearer $token")
+                if (!response.isSuccessful) return@withContext Result.failure(Exception("HTTP Error: ${response.code()}"))
+                Result.success(response.body()?.data ?: emptyList())
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun getKelasLookup(token: String): Result<List<KelasItem>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.getKelasLookup("Bearer $token")
+                if (!response.isSuccessful) return@withContext Result.failure(Exception("HTTP Error: ${response.code()}"))
+                Result.success(response.body()?.data ?: emptyList())
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    // --- Unregistered Students ---
+
+    suspend fun getUnregisteredStudents(
+        token: String,
+        page: Int? = 1,
+        pageSize: Int? = 100,
+        search: String? = null,
+        jurusan: String? = null,
+        waliKelas: String? = null,
+        idKelas: Int? = null
+    ): Result<SiswaListPaginatedResponse> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.getUnregisteredStudents(
+                    "Bearer $token", page, pageSize, search, jurusan, waliKelas, idKelas
+                )
+                if (!response.isSuccessful) return@withContext Result.failure(Exception("HTTP Error: ${response.code()}"))
+                val body = response.body() ?: return@withContext Result.failure(Exception("Response body kosong"))
+                Result.success(body)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun notifyWaliKelas(token: String, request: NotifyWaliKelasRequest): Result<String> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.notifyWaliKelas("Bearer $token", request)
+                if (!response.isSuccessful) {
+                    val errorBody = response.errorBody()?.string()
+                    val msg = if (!errorBody.isNullOrEmpty()) {
+                        try { org.json.JSONObject(errorBody).getString("message") } catch (e: Exception) { errorBody }
+                    } else response.message()
+                    return@withContext Result.failure(Exception(msg))
+                }
+                Result.success(response.body()?.message ?: "Berhasil")
             } catch (e: Exception) {
                 Result.failure(e)
             }

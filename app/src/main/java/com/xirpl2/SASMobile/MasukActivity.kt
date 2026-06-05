@@ -461,5 +461,8 @@ class MasukActivity : BaseActivity() {
             .edit().clear().apply()
         getSharedPreferences("NotificationData", Context.MODE_PRIVATE)
             .edit().clear().apply()
+        com.xirpl2.SASMobile.utils.NotificationCounterManager.clearCounter(this)
+        androidx.work.WorkManager.getInstance(this)
+            .cancelUniqueWork(com.xirpl2.SASMobile.utils.NotificationPollWorker.WORK_NAME)
     }
 }

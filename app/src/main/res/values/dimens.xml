@@ -8,8 +8,8 @@
     <dimen name="text_input_hint">15sp</dimen>
     <dimen name="text_button">16sp</dimen>
     <dimen name="text_small">14sp</dimen>
-    <dimen name="text_waktu">13sp</dimen>
-    <dimen name="text_bawah_waktu">10sp</dimen>
+    <dimen name="text_waktu">16sp</dimen>
+    <dimen name="text_bawah_waktu">13sp</dimen>
     <dimen name="text_email">13sp</dimen>
     <dimen name="text_masukOTP">13sp</dimen>
     <dimen name="text_kelola">12sp</dimen>

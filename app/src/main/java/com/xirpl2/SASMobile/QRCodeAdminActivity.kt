@@ -16,7 +16,7 @@ import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.button.MaterialButton
-import com.xirpl2.SASMobile.network.RetrofitClient
+import com.xirpl2.SASMobile.repository.QRCodeRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -50,6 +50,7 @@ class QRCodeAdminActivity : BaseAdminActivity() {
     private var currentBitmap: Bitmap? = null
 
     private lateinit var swipeRefresh: SwipeRefreshLayout
+    private val qrRepository = QRCodeRepository()
 
     private val QR_REFRESH_INTERVAL = 30_000L  // 30 seconds (match desktop)
     private val CODE_REFRESH_INTERVAL = 20_000L // 20 seconds (match desktop)
@@ -134,45 +135,29 @@ class QRCodeAdminActivity : BaseAdminActivity() {
             return
         }
 
-        // Only show loading on first load, not on auto-refresh
         if (currentBitmap == null) {
             showLoading()
         }
 
         lifecycleScope.launch {
-            try {
-                val response = RetrofitClient.apiService.getCurrentQRCode("Bearer $token")
-                if (response.isSuccessful) {
-                    val data = response.body()?.data
-                    if (data != null) {
-                        runOnUiThread {
-                            displayQRCode(data.qr_code, data.jenis_sholat, data.expires_at)
-                            showQRCode()
-                        }
-                    }
-                } else {
-                    runOnUiThread {
-                        when (response.code()) {
-                            404 -> showNoSchedule("Tidak ada jadwal sholat aktif saat ini")
-                            401 -> showError("Sesi telah berakhir, silakan login kembali")
-                            else -> {
-                                if (currentBitmap == null) {
-                                    showError("Gagal memuat QR code (${response.code()})")
-                                }
-                            }
-                        }
+            qrRepository.generateQRCode(token).fold(
+                onSuccess = { data ->
+                    displayQRCode(data.qr_code, data.jenis_sholat, data.expires_at)
+                    showQRCode()
+                    if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
+                },
+                onFailure = { e ->
+                    if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
+                    val msg = e.message ?: "Gagal memuat QR code"
+                    if (msg.contains("tidak ada jadwal", ignoreCase = true) || msg.contains("404")) {
+                        showNoSchedule("Tidak ada jadwal sholat aktif saat ini")
+                    } else if (msg.contains("sesi", ignoreCase = true) || msg.contains("401")) {
+                        showError("Sesi telah berakhir, silakan login kembali")
+                    } else if (currentBitmap == null) {
+                        showError(msg)
                     }
                 }
-                if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
-            } catch (e: Exception) {
-                if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
-                // Silent fail on auto-refresh to avoid spamming user
-                if (currentBitmap == null) {
-                    runOnUiThread {
-                        showError("Gagal memuat QR code: ${e.message}")
-                    }
-                }
-            }
+            )
         }
     }
 
@@ -181,25 +166,16 @@ class QRCodeAdminActivity : BaseAdminActivity() {
         if (token.isEmpty()) return
 
         lifecycleScope.launch {
-            try {
-                val response = RetrofitClient.apiService.generateAttendanceCode("Bearer $token")
-                if (response.isSuccessful) {
-                    val data = response.body()?.data
-                    if (data != null) {
-                        runOnUiThread {
-                            displayAttendanceCode(data.code, data.expiresIn)
-                        }
-                    }
-                } else {
-                    runOnUiThread {
-                        cardManualCode.visibility = View.GONE
-                    }
+            qrRepository.generateAttendanceCode(token).fold(
+                onSuccess = { data ->
+                    displayAttendanceCode(data.code, data.expiresIn)
+                    if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
+                },
+                onFailure = {
+                    if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
+                    cardManualCode.visibility = View.GONE
                 }
-                if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
-            } catch (e: Exception) {
-                if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
-                // Silent fail on auto-refresh
-            }
+            )
         }
     }
 

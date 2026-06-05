@@ -137,12 +137,13 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Navigation Items -->
+    <!-- Navigation Items (scrollable) -->
     <ScrollView
+        android:id="@+id/scrollNavItems"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottomSection"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/sidebarHeader">
@@ -198,5 +199,66 @@
 
         </LinearLayout>
     </ScrollView>
+
+    <!-- Bottom Section (fixed at bottom) -->
+    <LinearLayout
+        android:id="@+id/bottomSection"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="16dp"
+        android:paddingBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/divider"
+            android:layout_marginVertical="8dp" />
+
+        <!-- Item Pusat Bantuan -->
+        <LinearLayout
+            android:id="@+id/menuFAQ"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="16dp"
+            android:layout_marginBottom="4dp"
+            android:background="@drawable/bg_sidebar_item_selector">
+            <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_info" android:contentDescription="Pusat Bantuan" app:tint="@color/slate_500" />
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Pusat Bantuan" android:textColor="@color/slate_700" android:textSize="15sp" />
+        </LinearLayout>
+
+        <!-- Item Pengaturan -->
+        <LinearLayout
+            android:id="@+id/menuPengaturan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="16dp"
+            android:layout_marginBottom="4dp"
+            android:background="@drawable/bg_sidebar_item_selector">
+            <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/gear" android:contentDescription="Pengaturan" app:tint="@color/slate_500" />
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Pengaturan" android:textColor="@color/slate_700" android:textSize="15sp" />
+        </LinearLayout>
+
+        <!-- Item Keluar -->
+        <LinearLayout
+            android:id="@+id/menuLogout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="16dp"
+            android:background="@drawable/bg_sidebar_item_selector">
+            <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_logout" android:contentDescription="Keluar" app:tint="@color/error_color" />
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Keluar" android:textColor="@color/error_color" android:textSize="15sp" />
+        </LinearLayout>
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -23,6 +23,7 @@ lib/
 # Keystore (sensitive - do not commit)
 *.jks
 *.keystore
+keystore.properties
 local.properties
 
 # Editors
@@ -71,4 +72,4 @@ __pycache__/
 *.tar.bz2
 *.tar.xz
 *.tar.zst
-```*.apk
+*.apk

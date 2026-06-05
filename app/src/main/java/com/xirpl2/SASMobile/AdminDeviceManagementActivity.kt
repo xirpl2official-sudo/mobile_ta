@@ -15,6 +15,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout
 import com.xirpl2.SASMobile.adapter.DeviceAdapter
 import com.xirpl2.SASMobile.adapter.DeviceListItem
@@ -183,6 +184,22 @@ class AdminDeviceManagementActivity : BaseAdminActivity() {
     }
 
     private fun processRequest(id: Int, action: String) {
+        val actionLabel = when (action) {
+            "approve" -> "menyetujui"
+            "reject" -> "menolak"
+            else -> action
+        }
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Konfirmasi")
+            .setMessage("Apakah Anda yakin ingin $actionLabel permintaan perubahan perangkat ini?")
+            .setPositiveButton("Ya") { _, _ ->
+                executeProcessRequest(id, action)
+            }
+            .setNegativeButton("Batal", null)
+            .show()
+    }
+
+    private fun executeProcessRequest(id: Int, action: String) {
         val token = getAuthToken()
         showLoading(true)
         lifecycleScope.launch {

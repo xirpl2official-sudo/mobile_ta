@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.*
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -44,8 +45,6 @@ class PengajuanIzinActivity : BaseSiswaActivity() {
     private lateinit var btnSubmit: Button
     private lateinit var btnCancel: Button
     
-    private lateinit var btnBack: ImageView
-
     // Photo upload
     private lateinit var layoutUploadPhoto: FrameLayout
     private lateinit var layoutUploadPlaceholder: LinearLayout
@@ -82,6 +81,11 @@ class PengajuanIzinActivity : BaseSiswaActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pengajuan_izin)
+        setupStatusBar()
+
+        findViewById<android.view.View>(R.id.topBarContent)?.let { topBar ->
+            applyEdgeToEdge(topBar)
+        }
 
         initializeViews()
         setupDrawerAndSidebar()
@@ -89,13 +93,22 @@ class PengajuanIzinActivity : BaseSiswaActivity() {
         setupPermitTypes()
         setupDatePickers()
         setupSubmitButton()
-        setupBackButton()
         setupCancelButton()
         setupPhotoUpload()
         swipeRefresh = findViewById(R.id.swipeRefresh)
         swipeRefresh.setOnRefreshListener { loadRiwayatIzin() }
 
         loadRiwayatIzin()
+
+        // Hardware back press navigates to Beranda
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val intent = Intent(this@PengajuanIzinActivity, BerandaActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                startActivity(intent)
+                finish()
+            }
+        })
     }
 
     private fun initializeViews() {
@@ -110,8 +123,6 @@ class PengajuanIzinActivity : BaseSiswaActivity() {
         etReason = findViewById(R.id.etReason)
         btnSubmit = findViewById(R.id.btnSubmit)
         btnCancel = findViewById(R.id.btnCancel)
-        
-        btnBack = findViewById(R.id.btnBack)
 
         // Photo upload views
         layoutUploadPhoto = findViewById(R.id.layoutUploadPhoto)
@@ -230,15 +241,12 @@ class PengajuanIzinActivity : BaseSiswaActivity() {
         }
     }
 
-    private fun setupBackButton() {
-        btnBack.setOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
-        }
-    }
-
     private fun setupCancelButton() {
         btnCancel.setOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
+            val intent = Intent(this@PengajuanIzinActivity, BerandaActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            startActivity(intent)
+            finish()
         }
     }
 

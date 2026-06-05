@@ -1,10 +1,12 @@
 package com.xirpl2.SASMobile
 
+import android.app.TimePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
@@ -21,16 +23,21 @@ import com.google.android.material.textfield.TextInputEditText
 import com.xirpl2.SASMobile.adapter.PrayerScheduleAdapter
 import com.xirpl2.SASMobile.adapter.PrayerScheduleItem
 import com.xirpl2.SASMobile.model.JadwalDhuhaKeahlian
+import com.xirpl2.SASMobile.model.JadwalSholatCreateRequest
 import com.xirpl2.SASMobile.model.JadwalSholatData
+import com.xirpl2.SASMobile.model.JurusanItem
 import com.xirpl2.SASMobile.model.JadwalSholatUpdateRequest
 import com.xirpl2.SASMobile.model.JenisSholatData
 import com.xirpl2.SASMobile.model.PrayerTime
 import com.xirpl2.SASMobile.model.PrayerType
+import com.xirpl2.SASMobile.model.PrayerTypeRequest
+import com.xirpl2.SASMobile.model.PrayerTimeRequest
 import com.xirpl2.SASMobile.model.SholatDhuhaDetail
 import com.xirpl2.SASMobile.model.SholatDzuhurDetail
 import com.xirpl2.SASMobile.model.WaktuSholatData
 import com.xirpl2.SASMobile.repository.BerandaRepository
 import kotlinx.coroutines.launch
+import java.util.Calendar
 
 class JadwalSholatAdminActivity : BaseAdminActivity() {
 
@@ -879,12 +886,9 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
                 itemsToUpdate.forEach { item ->
                     val request = JadwalSholatUpdateRequest(
-                        jenis_sholat = updatedNama,
-                        jam_mulai = updatedJamMulai,
-                        jam_selesai = updatedJamSelesai,
-                        hari = if (updatedHari == "Semua Hari") item.hari else updatedHari,
-                        jurusan = if (updatedJurusan == "Semua Jurusan") item.jurusan else updatedJurusan.ifEmpty { null },
-                        kelas = updatedKelas.ifEmpty { null }
+                        waktu_mulai = updatedJamMulai,
+                        waktu_selesai = updatedJamSelesai,
+                        hari = if (updatedHari == "Semua Hari") item.hari else updatedHari
                     )
 
                     repository.updateJadwalSholat(token, item.id, request).fold(
@@ -911,12 +915,9 @@ override fun onCreate(savedInstanceState: Bundle?) {
         } else {
             
             val request = JadwalSholatUpdateRequest(
-                jenis_sholat = updatedNama,
-                jam_mulai = updatedJamMulai,
-                jam_selesai = updatedJamSelesai,
-                hari = updatedHari.ifEmpty { null },
-                jurusan = updatedJurusan.ifEmpty { null },
-                kelas = updatedKelas.ifEmpty { null }
+                waktu_mulai = updatedJamMulai,
+                waktu_selesai = updatedJamSelesai,
+                hari = updatedHari.ifEmpty { null }
             )
 
             lifecycleScope.launch {
@@ -974,29 +975,16 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
     private fun showTambahJadwalDialog() {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_tambah_jadwal, null)
-        
-        val actvJenisSholat = dialogView.findViewById<AutoCompleteTextView>(R.id.actvJenisSholat)
-        val actvHari = dialogView.findViewById<AutoCompleteTextView>(R.id.actvHari)
-        val actvJurusan = dialogView.findViewById<AutoCompleteTextView>(R.id.actvJurusan)
-        val cbKelas10 = dialogView.findViewById<android.widget.CheckBox>(R.id.cbKelas10)
-        val cbKelas11 = dialogView.findViewById<android.widget.CheckBox>(R.id.cbKelas11)
-        val cbKelas12 = dialogView.findViewById<android.widget.CheckBox>(R.id.cbKelas12)
-        val etJamMulai = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etJamMulai)
-        val etJamSelesai = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etJamSelesai)
-        val btnBatal = dialogView.findViewById<MaterialButton>(R.id.btnBatal)
+
+        val etNamaSholat = dialogView.findViewById<TextInputEditText>(R.id.etNamaSholat)
+        val etWaktuMulai = dialogView.findViewById<TextInputEditText>(R.id.etWaktuMulai)
+        val etWaktuSelesai = dialogView.findViewById<TextInputEditText>(R.id.etWaktuSelesai)
         val btnSimpan = dialogView.findViewById<MaterialButton>(R.id.btnSimpan)
+        val btnBatal = dialogView.findViewById<MaterialButton>(R.id.btnBatal)
         val btnClose = dialogView.findViewById<ImageView>(R.id.btnClose)
 
-        
-        val jenisSholatOptions = listOf("Dhuha", "Dzuhur", "Jumat")
-        actvJenisSholat.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, jenisSholatOptions))
-        actvHari.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, daysOptions))
-        actvJurusan.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, jurusanOptions))
-
-        etJamMulai.setOnClickListener { showTimePicker(etJamMulai) }
-        etJamSelesai.setOnClickListener { showTimePicker(etJamSelesai) }
-        etJamMulai.isFocusable = false
-        etJamSelesai.isFocusable = false
+        etWaktuMulai.setOnClickListener { showTimePicker { time -> etWaktuMulai.setText(time) } }
+        etWaktuSelesai.setOnClickListener { showTimePicker { time -> etWaktuSelesai.setText(time) } }
 
         val dialog = AlertDialog.Builder(this)
             .setView(dialogView)
@@ -1006,88 +994,154 @@ override fun onCreate(savedInstanceState: Bundle?) {
         btnClose.setOnClickListener { dialog.dismiss() }
         btnBatal.setOnClickListener { dialog.dismiss() }
 
-        etJamMulai.setOnClickListener { showTimePicker(etJamMulai) }
-        etJamSelesai.setOnClickListener { showTimePicker(etJamSelesai) }
-        etJamMulai.isFocusable = false
-        etJamSelesai.isFocusable = false
-
         btnSimpan.setOnClickListener {
-            val jenisSholat = actvJenisSholat.text.toString().trim()
-            val hari = actvHari.text.toString().trim()
-            val jurusan = actvJurusan.text.toString().trim()
-            val jamMulai = etJamMulai.text.toString().trim()
-            val jamSelesai = etJamSelesai.text.toString().trim()
+            val namaSholat = etNamaSholat.text.toString().trim()
+            val waktuMulai = etWaktuMulai.text.toString().trim()
+            val waktuSelesai = etWaktuSelesai.text.toString().trim()
 
-            
-            val selectedKelas = mutableListOf<String>()
-            if (cbKelas10.isChecked) selectedKelas.add("10")
-            if (cbKelas11.isChecked) selectedKelas.add("11")
-            if (cbKelas12.isChecked) selectedKelas.add("12")
-            val kelasStr = selectedKelas.joinToString(", ")
+            if (namaSholat.isEmpty()) { etNamaSholat.error = "Nama sholat wajib diisi"; return@setOnClickListener }
+            if (waktuMulai.isEmpty()) { etWaktuMulai.error = "Waktu mulai wajib diisi"; return@setOnClickListener }
+            if (waktuSelesai.isEmpty()) { etWaktuSelesai.error = "Waktu selesai wajib diisi"; return@setOnClickListener }
 
-            
-            if (jenisSholat.isEmpty()) {
-                actvJenisSholat.error = "Pilih jenis sholat"
-                return@setOnClickListener
-            }
-            if (hari.isEmpty() || hari == "Semua Hari") {
-                actvHari.error = "Pilih hari yang spesifik"
-                return@setOnClickListener
-            }
-            if (jamMulai.isEmpty()) {
-                etJamMulai.error = "Isi jam mulai"
-                return@setOnClickListener
-            }
-            if (jamSelesai.isEmpty()) {
-                etJamSelesai.error = "Isi jam selesai"
-                return@setOnClickListener
-            }
-            if (kelasStr.isEmpty()) {
-                Toast.makeText(this, "Pilih minimal satu kelas", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            if (!isValidTimeFormat(jamMulai) || !isValidTimeFormat(jamSelesai)) {
-                Toast.makeText(this, "Format waktu tidak valid (HH:mm)", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+            val message = "Nama Sholat: $namaSholat\n" +
+                    "Waktu Mulai: $waktuMulai\n" +
+                    "Waktu Selesai: $waktuSelesai\n\n" +
+                    "Jadwal akan dibuat untuk hari Senin s/d Jumat\n" +
+                    "dengan semua jurusan. Lanjutkan?"
 
-            
-            val request = com.xirpl2.SASMobile.model.JadwalSholatCreateRequest(
-                jenis_sholat = jenisSholat,
-                jam_mulai = jamMulai,
-                jam_selesai = jamSelesai,
-                hari = hari,
-                jurusan = if (jurusan == "Semua Jurusan") null else jurusan,
-                kelas = kelasStr
-            )
-
-            
-            btnSimpan.isEnabled = false
-            btnSimpan.text = "MENYIMPAN..."
-
-            val token = getAuthToken()
-            lifecycleScope.launch {
-                repository.createJadwalSholat(token, request).fold(
-                    onSuccess = {
-                        safeRunOnUiThread {
-                            Toast.makeText(this@JadwalSholatAdminActivity, "Jadwal berhasil ditambahkan!", Toast.LENGTH_SHORT).show()
-                            dialog.dismiss()
-                            loadJadwalList()
-                        }
-                    },
-                    onFailure = { error ->
-                        safeRunOnUiThread {
-                            Toast.makeText(this@JadwalSholatAdminActivity, "Gagal menyimpan data", Toast.LENGTH_SHORT).show()
-                            btnSimpan.isEnabled = true
-                            btnSimpan.text = "SIMPAN JADWAL"
-                        }
-                    }
-                )
-            }
+            AlertDialog.Builder(this)
+                .setTitle("Konfirmasi")
+                .setMessage(message)
+                .setPositiveButton("Ya, Simpan") { _, _ ->
+                    executeCreateSequence(dialog, btnSimpan, namaSholat, waktuMulai, waktuSelesai)
+                }
+                .setNegativeButton("Batal", null)
+                .show()
         }
 
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
         dialog.show()
+    }
+
+    private fun showTimePicker(onTimeSet: (String) -> Unit) {
+        val cal = Calendar.getInstance()
+        TimePickerDialog(this, { _, hour, minute ->
+            onTimeSet(String.format("%02d:%02d", hour, minute))
+        }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), true).show()
+    }
+
+    private fun executeCreateSequence(
+        dialog: AlertDialog,
+        btnSimpan: MaterialButton,
+        namaSholat: String,
+        waktuMulai: String,
+        waktuSelesai: String
+    ) {
+        btnSimpan.isEnabled = false
+        btnSimpan.text = "MEMPROSES..."
+        val token = getAuthToken()
+
+        lifecycleScope.launch {
+            val result = runCatching {
+                
+                val prayerTypesResult = repository.getPrayerTypes(token)
+                val existingType = prayerTypesResult.getOrNull()?.find { it.nama_jenis == namaSholat }
+                val jenisId = if (existingType != null) {
+                    existingType.id
+                } else {
+                    val createResult = repository.createPrayerType(
+                        token, PrayerTypeRequest(nama_jenis = namaSholat)
+                    )
+                    createResult.getOrThrow().id
+                }
+
+                
+                val berlakuMulai = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(java.util.Date())
+                val waktuResult = repository.createPrayerTime(
+                    token, PrayerTimeRequest(
+                        id_jenis_sholat = jenisId,
+                        waktu_mulai = waktuMulai,
+                        waktu_selesai = waktuSelesai,
+                        berlaku_mulai = berlakuMulai
+                    )
+                )
+                val idWaktu = waktuResult.getOrThrow().id
+
+                
+                val jurusanResult = repository.getJurusanLookup(token)
+                val allJurusanIds = jurusanResult.getOrNull()?.map { it.id } ?: emptyList()
+
+                
+                val days = listOf("Senin", "Selasa", "Rabu", "Kamis", "Jumat")
+                var lastError: Throwable? = null
+                for (hari in days) {
+                    val req = JadwalSholatCreateRequest(
+                        hari = hari,
+                        id_waktu = idWaktu,
+                        jurusan_ids = allJurusanIds.ifEmpty { null }
+                    )
+                    val scheduleResult = repository.createJadwalSholat(token, req)
+                    if (scheduleResult.isFailure) {
+                        lastError = scheduleResult.exceptionOrNull()
+                    }
+                }
+                lastError?.let { throw it }
+            }
+
+            safeRunOnUiThread {
+                result.fold(
+                    onSuccess = {
+                        Toast.makeText(this@JadwalSholatAdminActivity, "Jadwal berhasil ditambahkan!", Toast.LENGTH_SHORT).show()
+                        dialog.dismiss()
+                        loadJadwalList()
+                    },
+                    onFailure = { error ->
+                        val msg = error.message ?: "Gagal menyimpan data"
+                        Toast.makeText(this@JadwalSholatAdminActivity, msg, Toast.LENGTH_LONG).show()
+                        btnSimpan.isEnabled = true
+                        btnSimpan.text = "SIMPAN JADWAL"
+                    }
+                )
+            }
+        }
+    }
+
+    private fun executeCreate(
+        dialog: AlertDialog,
+        btnSimpan: MaterialButton,
+        token: String,
+        hari: String,
+        idWaktu: Int,
+        jurusanIds: List<Int>?
+    ) {
+        btnSimpan.isEnabled = false
+        btnSimpan.text = "MENYIMPAN..."
+
+        val request = JadwalSholatCreateRequest(
+            hari = hari,
+            id_waktu = idWaktu,
+            jurusan_ids = jurusanIds
+        )
+
+        lifecycleScope.launch {
+            repository.createJadwalSholat(token, request).fold(
+                onSuccess = {
+                    safeRunOnUiThread {
+                        Toast.makeText(this@JadwalSholatAdminActivity, "Jadwal berhasil ditambahkan!", Toast.LENGTH_SHORT).show()
+                        dialog.dismiss()
+                        loadJadwalList()
+                    }
+                },
+                onFailure = { error ->
+                    safeRunOnUiThread {
+                        val msg = error.message ?: "Gagal menyimpan data"
+                        Toast.makeText(this@JadwalSholatAdminActivity, msg, Toast.LENGTH_LONG).show()
+                        btnSimpan.isEnabled = true
+                        btnSimpan.text = "SIMPAN JADWAL"
+                    }
+                }
+            )
+        }
     }
 
 
@@ -1229,12 +1283,9 @@ override fun onCreate(savedInstanceState: Bundle?) {
             val updatedKelas = selectedKelas.joinToString(", ")
 
             val request = JadwalSholatUpdateRequest(
-                jenis_sholat = jenis,
-                jam_mulai = updatedMulai,
-                jam_selesai = updatedSelesai,
-                hari = updatedHari.ifEmpty { null },
-                jurusan = if (jurusan != null) actvJurusan.text.toString().ifEmpty { null } else null,
-                kelas = updatedKelas.ifEmpty { null }
+                waktu_mulai = updatedMulai,
+                waktu_selesai = updatedSelesai,
+                hari = updatedHari.ifEmpty { null }
             )
 
             lifecycleScope.launch {

@@ -1,6 +1,9 @@
 package com.xirpl2.SASMobile
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -10,7 +13,10 @@ import android.view.MotionEvent
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.xirpl2.SASMobile.utils.AnrDetector
+import com.xirpl2.SASMobile.utils.NotificationHelper
 import com.xirpl2.SASMobile.utils.UniversalSafeNavigator
 import com.xirpl2.SASMobile.update.UpdateChecker
 import com.xirpl2.SASMobile.update.UpdateDialog
@@ -29,6 +35,7 @@ abstract class BaseActivity : AppCompatActivity() {
     companion object {
         private const val TAG = "BaseActivity"
         private var updateCheckedThisSession = false
+        private var notifiedRequestedThisSession = false
     }
 
     protected val isTransitioning = AtomicBoolean(false)
@@ -63,7 +70,33 @@ abstract class BaseActivity : AppCompatActivity() {
         SASMobileApp.setIsForegrounded(true)
         AnrDetector.recordUiInteraction()
         Log.d(TAG, "onResume: ${this::class.java.simpleName}")
+        requestNotificationPermission()
         checkForUpdate()
+        checkNotificationsImmediate()
+    }
+
+    private fun checkNotificationsImmediate() {
+        lifecycleScope.launch {
+            try {
+                NotificationHelper.pollAndShowNotifications(this@BaseActivity)
+            } catch (e: Exception) {
+                Log.w(TAG, "Immediate notification check failed: ${e.message}")
+            }
+        }
+    }
+
+    private fun requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return
+        if (notifiedRequestedThisSession) return
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+            == PackageManager.PERMISSION_GRANTED) return
+
+        notifiedRequestedThisSession = true
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+            1001
+        )
     }
 
     private fun checkForUpdate() {
@@ -74,7 +107,11 @@ abstract class BaseActivity : AppCompatActivity() {
                 val updateInfo = UpdateChecker.checkForUpdate(this@BaseActivity)
                 if (updateInfo != null && !isFinishing && !isDestroyed) {
                     UpdateDialog.show(this@BaseActivity, updateInfo) {
-                        UpdateDownloader.downloadAndInstall(this@BaseActivity, updateInfo)
+                        val downloadingDialog = UpdateDialog.showDownloading(this@BaseActivity)
+                        UpdateDownloader.downloadAndInstall(
+                            this@BaseActivity, updateInfo,
+                            onComplete = { downloadingDialog.dismiss() }
+                        )
                     }
                 }
             } catch (e: Exception) {

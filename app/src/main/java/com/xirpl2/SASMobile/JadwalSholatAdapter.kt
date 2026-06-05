@@ -3,8 +3,6 @@ package com.xirpl2.SASMobile
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.graphics.Color
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -43,38 +41,41 @@ class JadwalSholatAdapter(
         when (jadwal.status) {
             StatusSholat.SELESAI -> {
                 
-                holder.cardJadwalItem.setCardBackgroundColor(Color.TRANSPARENT)
+                holder.cardJadwalItem.setCardBackgroundColor(ContextCompat.getColor(holder.itemView.context, android.R.color.transparent))
                 holder.cardJadwalItem.setBackgroundResource(R.drawable.bg_status_gray)
 
-                holder.textStatusSholat.text = "Selesai"
+                holder.textStatusSholat.text = holder.itemView.context.getString(R.string.StatusSelesai)
                 holder.textStatusSholat.setBackgroundResource(R.drawable.bg_badge_selesai)
-                holder.textStatusSholat.setTextColor(Color.WHITE)
+                holder.textStatusSholat.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.white))
             }
             StatusSholat.SEDANG_BERLANGSUNG -> {
                 
-                holder.cardJadwalItem.setCardBackgroundColor(Color.TRANSPARENT)
+                holder.cardJadwalItem.setCardBackgroundColor(ContextCompat.getColor(holder.itemView.context, android.R.color.transparent))
                 
                 holder.cardJadwalItem.setBackgroundResource(R.drawable.bg_status_berlangsung)
 
-                holder.textStatusSholat.text = "Berlangsung"
+                holder.textStatusSholat.text = holder.itemView.context.getString(R.string.StatusBerlangsung)
                 holder.textStatusSholat.setBackgroundResource(R.drawable.bg_badge_berlangsung)
-                holder.textStatusSholat.setTextColor(Color.WHITE)
+                holder.textStatusSholat.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.white))
             }
             StatusSholat.AKAN_DATANG -> {
                 
-                holder.cardJadwalItem.setCardBackgroundColor(Color.TRANSPARENT)
+                holder.cardJadwalItem.setCardBackgroundColor(ContextCompat.getColor(holder.itemView.context, android.R.color.transparent))
                 
                 holder.cardJadwalItem.setBackgroundResource(R.drawable.bg_status_akandatang)
 
                 
-                holder.textStatusSholat.text = "Akan Datang"
+                holder.textStatusSholat.text = holder.itemView.context.getString(R.string.StatusAkanDatang)
                 holder.textStatusSholat.setBackgroundResource(R.drawable.bg_badge_akandatang)
-                holder.textStatusSholat.setTextColor(Color.WHITE)
+                holder.textStatusSholat.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.white))
             }
         }
 
-        holder.btnDelete.setOnClickListener {
-            onDeleteClick?.invoke(jadwal)
+        if (onDeleteClick != null) {
+            holder.btnDelete.visibility = android.view.View.VISIBLE
+            holder.btnDelete.setOnClickListener { onDeleteClick.invoke(jadwal) }
+        } else {
+            holder.btnDelete.visibility = android.view.View.GONE
         }
     }
 }

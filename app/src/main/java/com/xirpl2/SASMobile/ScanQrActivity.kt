@@ -11,6 +11,7 @@ import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.cardview.widget.CardView
@@ -68,6 +69,16 @@ class ScanQrActivity : BaseSiswaActivity() {
         setupClickListeners()
         setupBarcodeScanner()
         checkCameraPermission()
+
+        // Hardware back press navigates to Beranda
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val intent = Intent(this@ScanQrActivity, BerandaActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                startActivity(intent)
+                finish()
+            }
+        })
     }
 
     private fun initializeViews() {
@@ -96,6 +107,9 @@ class ScanQrActivity : BaseSiswaActivity() {
     private fun setupClickListeners() {
         
         findViewById<androidx.appcompat.widget.AppCompatImageView>(R.id.btnBack).setOnClickListener {
+            val intent = Intent(this@ScanQrActivity, BerandaActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            startActivity(intent)
             finish()
         }
 

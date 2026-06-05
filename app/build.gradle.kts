@@ -1,8 +1,20 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     // id("com.google.gms.google-services")
 }
+
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+val keystoreProperties = Properties()
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(keystorePropertiesFile.inputStream())
+}
+
+val githubToken: String = Properties().apply {
+    rootProject.file("local.properties").takeIf { it.exists() }?.inputStream()?.use { load(it) }
+}.getProperty("github.token", "")
 
 android {
     namespace = "com.xirpl2.SASMobile"
@@ -14,10 +26,10 @@ android {
 
     signingConfigs {
         create("release") {
-            storeFile = file("release-keystore.jks")
-            storePassword = "sasmobile2026"
-            keyAlias = "sas-mobile"
-            keyPassword = "sasmobile2026"
+            storeFile = file(keystoreProperties.getProperty("storeFile", "release-keystore.jks"))
+            storePassword = keystoreProperties.getProperty("storePassword", "sasmobile2026")
+            keyAlias = keystoreProperties.getProperty("keyAlias", "sas-mobile")
+            keyPassword = keystoreProperties.getProperty("keyPassword", "sasmobile2026")
         }
     }
 
@@ -25,10 +37,12 @@ android {
         applicationId = "com.xirpl2.SASMobile"
         minSdk = 23
         targetSdk = 36
-        versionCode = 5
-        versionName = "1.0.6"
+        versionCode = 6
+        versionName = "1.0.7"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "GITHUB_TOKEN", "\"$githubToken\"")
     }
 
     buildTypes {

@@ -32,40 +32,35 @@
         
         <ImageView
             android:id="@+id/btnBack"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:src="@drawable/ic_tombolback"
             android:contentDescription="@string/Kembali"
             android:background="?attr/selectableItemBackgroundBorderless"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintHeight_percent="0.55"
-            app:layout_constraintEnd_toStartOf="@id/logoSekolah"
+            android:padding="8dp"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:tint="@android:color/white" />
 
-        
         <ImageView
             android:id="@+id/logoSekolah"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
             android:src="@drawable/logo_smk"
             android:contentDescription="Logo SMKN 2"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintHeight_percent="0.7"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="8dp"
+            app:layout_constraintStart_toEndOf="@id/btnBack"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
-        
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_marginStart="12dp"
-            android:layout_marginEnd="12dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/btnBack"
+            app:layout_constraintStart_toEndOf="@id/logoSekolah"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
 
@@ -124,7 +119,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/KelolaInformasiAkun"
-                android:textColor="#757575"
+                android:textColor="@color/text_secondary"
                 android:textSize="@dimen/text_kelola"
                 android:fontFamily="@font/poppins_medium"
                 android:layout_marginStart="16dp"
@@ -169,7 +164,7 @@
                             android:layout_width="0dp"
                             android:layout_height="0dp"
                             app:cardCornerRadius="100dp"
-                            app:cardBackgroundColor="#BDBDBD"
+                            app:cardBackgroundColor="@color/text_hint"
                             app:cardElevation="0dp"
                             app:layout_constraintDimensionRatio="1:1"
                             app:layout_constraintWidth_percent="@dimen/constraint_profile_photo_width"
@@ -431,7 +426,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:text="Ajukan perubahan perangkat jika Anda mengganti HP"
-                        android:textColor="#757575"
+                        android:textColor="@color/text_secondary"
                         android:textSize="12sp" />
 
                     <com.google.android.material.button.MaterialButton
@@ -439,15 +434,15 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Ajukan Ganti Perangkat"
-                        android:textColor="#FF9800"
+                        android:textColor="@color/orange_warning"
                         android:textSize="14sp"
                         android:textAllCaps="false"
                         app:icon="@drawable/gear"
-                        app:iconTint="#FF9800"
+                        app:iconTint="@color/orange_warning"
                         app:iconGravity="textStart"
                         app:iconPadding="8dp"
                         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                        app:strokeColor="#FF9800"
+                        app:strokeColor="@color/orange_warning"
                         app:strokeWidth="1dp"
                         app:cornerRadius="8dp"
                         android:layout_marginTop="12dp" />

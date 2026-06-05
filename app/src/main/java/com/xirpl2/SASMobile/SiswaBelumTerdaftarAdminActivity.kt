@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.xirpl2.SASMobile.adapter.SiswaAdapter
 import com.xirpl2.SASMobile.model.SiswaItem
-import com.xirpl2.SASMobile.network.RetrofitClient
+import com.xirpl2.SASMobile.repository.BerandaRepository
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -42,6 +42,7 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
     private var forcedClassId: Int? = null
     private var isWaliKelas: Boolean = false
     
+    private val repository = BerandaRepository()
     private val searchHandler = android.os.Handler(android.os.Looper.getMainLooper())
     private var searchRunnable: Runnable? = null
     private val searchDebounceMs = 300L
@@ -145,36 +146,26 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
         progressBar.visibility = View.VISIBLE
         btnNotifyBulk.isEnabled = false
 
-        lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                val request = com.xirpl2.SASMobile.model.NotifyWaliKelasRequest(
-                    nisList = selected.map { it.nis },
-                    message = "Silakan segera mendaftarkan perangkat Anda"
-                )
-                val response = RetrofitClient.apiService.notifyWaliKelas("Bearer $token", request)
-
-                withContext(Dispatchers.Main) {
+        lifecycleScope.launch {
+            val request = com.xirpl2.SASMobile.model.NotifyWaliKelasRequest(
+                nisList = selected.map { it.nis },
+                message = "Silakan segera mendaftarkan perangkat Anda"
+            )
+            repository.notifyWaliKelas(token, request).fold(
+                onSuccess = {
                     progressBar.visibility = View.GONE
                     btnNotifyBulk.isEnabled = true
-                    if (response.isSuccessful) {
-                        Toast.makeText(this@SiswaBelumTerdaftarAdminActivity, "Berhasil mengirim pengingat ke ${selected.size} siswa", Toast.LENGTH_SHORT).show()
-                        adapter.selectAll(false)
-                        cbSelectAll.isChecked = false
-                    } else {
-                        Toast.makeText(this@SiswaBelumTerdaftarAdminActivity, "Gagal mengirim pengingat (${response.code()})", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@SiswaBelumTerdaftarAdminActivity, "Berhasil mengirim pengingat ke ${selected.size} siswa", Toast.LENGTH_SHORT).show()
+                    adapter.selectAll(false)
+                    cbSelectAll.isChecked = false
+                },
+                onFailure = { e ->
                     progressBar.visibility = View.GONE
                     btnNotifyBulk.isEnabled = true
-                    if (e is java.net.UnknownHostException) {
-                        Toast.makeText(this@SiswaBelumTerdaftarAdminActivity, "Tidak dapat terhubung ke server", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(this@SiswaBelumTerdaftarAdminActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-                    }
+                    val msg = if (e is java.net.UnknownHostException) "Tidak dapat terhubung ke server" else "Error: ${e.message}"
+                    Toast.makeText(this@SiswaBelumTerdaftarAdminActivity, msg, Toast.LENGTH_SHORT).show()
                 }
-            }
+            )
         }
     }
 
@@ -214,10 +205,8 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
 
         if (!isWaliKelas) {
             lifecycleScope.launch {
-                try {
-                    val response = RetrofitClient.apiService.getJurusanLookup("Bearer $token")
-                    if (response.isSuccessful) {
-                        val list = response.body()?.data ?: emptyList()
+                repository.getJurusanLookup(token).fold(
+                    onSuccess = { list ->
                         val options = listOf("Semua Jurusan") + list.map { it.nama }
                         val spinnerAdapter = ArrayAdapter(this@SiswaBelumTerdaftarAdminActivity, android.R.layout.simple_dropdown_item_1line, options)
                         acJurusan.setAdapter(spinnerAdapter)
@@ -226,15 +215,14 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
                             selectedJurusanId = if (position == 0) null else list[position - 1].id
                             loadUnregisteredStudents()
                         }
-                    }
-                } catch (e: Exception) { }
+                    },
+                    onFailure = { }
+                )
             }
 
             lifecycleScope.launch {
-                try {
-                    val response = RetrofitClient.apiService.getStaffGuruLookup("Bearer $token")
-                    if (response.isSuccessful) {
-                        val list = response.body()?.data ?: emptyList()
+                repository.getStaffGuruLookup(token).fold(
+                    onSuccess = { list ->
                         val options = listOf("Semua Wali") + list.map { it.nama }
                         val spinnerAdapter = ArrayAdapter(this@SiswaBelumTerdaftarAdminActivity, android.R.layout.simple_dropdown_item_1line, options)
                         acWaliKelas.setAdapter(spinnerAdapter)
@@ -243,8 +231,9 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
                             selectedWaliStaffId = if (position == 0) null else list[position - 1].id_staff
                             loadUnregisteredStudents()
                         }
-                    }
-                } catch (e: Exception) { }
+                    },
+                    onFailure = { }
+                )
             }
         }
     }
@@ -257,49 +246,38 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
         loadingJob?.cancel()
 
         loadingJob = lifecycleScope.launch {
-            try {
-                if (forcedClass != null && forcedClassId == null) {
-                    try {
-                        val kelasResponse = RetrofitClient.apiService.getKelasLookup("Bearer $token")
-                        if (kelasResponse.isSuccessful) {
-                            val kelasList = kelasResponse.body()?.data ?: emptyList()
-                            val match = kelasList.find { "${it.tingkatan}${it.part}" == forcedClass }
-                            forcedClassId = match?.id_kelas
-                        }
-                    } catch (_: Exception) { }
-                }
-
-                val response = RetrofitClient.apiService.getUnregisteredStudents(
-                    token = "Bearer $token",
-                    page = 1,
-                    pageSize = 100,
-                    search = if (searchQuery.isNotEmpty()) searchQuery else null,
-                    jurusan = selectedJurusanId?.toString(),
-                    waliKelas = selectedWaliStaffId?.toString(),
-                    idKelas = forcedClassId
+            if (forcedClass != null && forcedClassId == null) {
+                repository.getKelasLookup(token).fold(
+                    onSuccess = { kelasList ->
+                        val match = kelasList.find { "${it.tingkatan}${it.part}" == forcedClass }
+                        forcedClassId = match?.id_kelas
+                    },
+                    onFailure = { }
                 )
+            }
 
-                runOnUiThread {
+            repository.getUnregisteredStudents(
+                token = token,
+                page = 1,
+                pageSize = 100,
+                search = if (searchQuery.isNotEmpty()) searchQuery else null,
+                jurusan = selectedJurusanId?.toString(),
+                waliKelas = selectedWaliStaffId?.toString(),
+                idKelas = forcedClassId
+            ).fold(
+                onSuccess = { body ->
                     showLoading(false)
-                    if (response.isSuccessful) {
-                        val body = response.body()
-                        val students = body?.data ?: emptyList()
-                        adapter.setFullList(students)
-
-                        val total = body?.pagination?.total_items ?: students.size
-                        tvCountInfo.text = "Menampilkan ${students.size} dari $total data"
-
-                        layoutEmpty.visibility = if (students.isEmpty()) View.VISIBLE else View.GONE
-                    } else {
-                        Toast.makeText(this@SiswaBelumTerdaftarAdminActivity, "Gagal mengambil data", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            } catch (e: Exception) {
-                runOnUiThread {
+                    val students = body.data ?: emptyList()
+                    adapter.setFullList(students)
+                    val total = body.pagination?.total_items ?: students.size
+                    tvCountInfo.text = "Menampilkan ${students.size} dari $total data"
+                    layoutEmpty.visibility = if (students.isEmpty()) View.VISIBLE else View.GONE
+                },
+                onFailure = { e ->
                     showLoading(false)
                     Toast.makeText(this@SiswaBelumTerdaftarAdminActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
-            }
+            )
         }
     }
 

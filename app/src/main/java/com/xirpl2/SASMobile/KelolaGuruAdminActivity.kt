@@ -16,8 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xirpl2.SASMobile.adapter.KelolaGuruAdminAdapter
 import com.xirpl2.SASMobile.model.GuruItem
-import com.xirpl2.SASMobile.network.RetrofitClient
-import kotlinx.coroutines.Dispatchers
+import com.xirpl2.SASMobile.repository.BerandaRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -35,6 +34,7 @@ class KelolaGuruAdminActivity : BaseAdminActivity() {
     private lateinit var swipeRefresh: SwipeRefreshLayout
     private var guruList = mutableListOf<GuruItem>()
     private var searchJob: Job? = null
+    private val repository = BerandaRepository()
 
     override fun getCurrentMenuItem(): AdminMenuItem = AdminMenuItem.KELOLA_GURU
 
@@ -120,49 +120,31 @@ class KelolaGuruAdminActivity : BaseAdminActivity() {
         recyclerGuru.visibility = View.GONE
         tvEmptyState.visibility = View.GONE
 
-        lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                val response = RetrofitClient.apiService.getAdminGuruList(
-                    token = "Bearer $token",
-                    search = searchQuery,
-                    limit = 100 // Fetch up to 100 or implement pagination later
-                )
-                
-                withContext(Dispatchers.Main) {
+        lifecycleScope.launch {
+            repository.getGuruList(token, limit = 100, search = searchQuery).fold(
+                onSuccess = { response ->
                     if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                     progressLoading.visibility = View.GONE
-                    if (response.isSuccessful) {
-                        val body = response.body()
-                        val list = body?.data ?: emptyList()
-                        guruList.clear()
-                        guruList.addAll(list)
-                        adapter.submitList(guruList)
-                        tvCountInfo.text = "Menampilkan ${list.size} Guru"
+                    val list = response.data ?: emptyList()
+                    guruList.clear()
+                    guruList.addAll(list)
+                    adapter.submitList(guruList)
+                    tvCountInfo.text = "Menampilkan ${list.size} Guru"
 
-                        if (list.isEmpty()) {
-                            tvEmptyState.visibility = View.VISIBLE
-                            recyclerGuru.visibility = View.GONE
-                        } else {
-                            tvEmptyState.visibility = View.GONE
-                            recyclerGuru.visibility = View.VISIBLE
-                        }
+                    if (list.isEmpty()) {
+                        tvEmptyState.visibility = View.VISIBLE
+                        recyclerGuru.visibility = View.GONE
                     } else {
-                        val errorBody = response.errorBody()?.string()
-                        val errorMsg = if (!errorBody.isNullOrEmpty()) {
-                            try { org.json.JSONObject(errorBody).getString("message") } catch (_: Exception) { errorBody }
-                        } else {
-                            "Gagal memuat data"
-                        }
-                        Toast.makeText(this@KelolaGuruAdminActivity, errorMsg, Toast.LENGTH_SHORT).show()
+                        tvEmptyState.visibility = View.GONE
+                        recyclerGuru.visibility = View.VISIBLE
                     }
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
+                },
+                onFailure = { e ->
                     if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                     progressLoading.visibility = View.GONE
-                    Toast.makeText(this@KelolaGuruAdminActivity, "Terjadi kesalahan: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@KelolaGuruAdminActivity, e.message ?: "Gagal memuat data", Toast.LENGTH_SHORT).show()
                 }
-            }
+            )
         }
     }
 
@@ -183,30 +165,18 @@ class KelolaGuruAdminActivity : BaseAdminActivity() {
 
         progressLoading.visibility = View.VISIBLE
 
-        lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                val response = RetrofitClient.apiService.removeGuruWaliKelas("Bearer $token", idStaff)
-                withContext(Dispatchers.Main) {
+        lifecycleScope.launch {
+            repository.removeGuruWaliKelas(token, idStaff).fold(
+                onSuccess = {
                     progressLoading.visibility = View.GONE
-                    if (response.isSuccessful) {
-                        Toast.makeText(this@KelolaGuruAdminActivity, "Berhasil melepaskan wali kelas", Toast.LENGTH_SHORT).show()
-                        loadDataGuru(etSearch.text.toString())
-                    } else {
-                        val errorBody = response.errorBody()?.string()
-                        val errorMsg = if (!errorBody.isNullOrEmpty()) {
-                            try { org.json.JSONObject(errorBody).getString("message") } catch (_: Exception) { errorBody }
-                        } else {
-                            "Gagal melepaskan wali kelas"
-                        }
-                        Toast.makeText(this@KelolaGuruAdminActivity, errorMsg, Toast.LENGTH_SHORT).show()
-                    }
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@KelolaGuruAdminActivity, "Berhasil melepaskan wali kelas", Toast.LENGTH_SHORT).show()
+                    loadDataGuru(etSearch.text.toString())
+                },
+                onFailure = { e ->
                     progressLoading.visibility = View.GONE
-                    Toast.makeText(this@KelolaGuruAdminActivity, "Terjadi kesalahan: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@KelolaGuruAdminActivity, e.message ?: "Gagal melepaskan wali kelas", Toast.LENGTH_SHORT).show()
                 }
-            }
+            )
         }
     }
 
@@ -227,30 +197,18 @@ class KelolaGuruAdminActivity : BaseAdminActivity() {
 
         progressLoading.visibility = View.VISIBLE
 
-        lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                val response = RetrofitClient.apiService.deleteGuru("Bearer $token", idStaff)
-                withContext(Dispatchers.Main) {
+        lifecycleScope.launch {
+            repository.deleteGuru(token, idStaff).fold(
+                onSuccess = { msg ->
                     progressLoading.visibility = View.GONE
-                    if (response.isSuccessful) {
-                        Toast.makeText(this@KelolaGuruAdminActivity, response.body()?.message ?: "Berhasil menghapus data guru", Toast.LENGTH_SHORT).show()
-                        loadDataGuru(etSearch.text.toString())
-                    } else {
-                        val errorBody = response.errorBody()?.string()
-                        val errorMsg = if (!errorBody.isNullOrEmpty()) {
-                            try { org.json.JSONObject(errorBody).getString("message") } catch (e: Exception) { errorBody }
-                        } else {
-                            "Gagal menghapus data guru"
-                        }
-                        Toast.makeText(this@KelolaGuruAdminActivity, errorMsg, Toast.LENGTH_SHORT).show()
-                    }
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@KelolaGuruAdminActivity, msg, Toast.LENGTH_SHORT).show()
+                    loadDataGuru(etSearch.text.toString())
+                },
+                onFailure = { e ->
                     progressLoading.visibility = View.GONE
-                    Toast.makeText(this@KelolaGuruAdminActivity, "Terjadi kesalahan: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@KelolaGuruAdminActivity, e.message ?: "Gagal menghapus data guru", Toast.LENGTH_SHORT).show()
                 }
-            }
+            )
         }
     }
 }

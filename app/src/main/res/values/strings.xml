@@ -52,6 +52,10 @@
     <string name="Valid">Valid</string>
     <string name="JadwalHariIni">Jadwal Hari Ini</string>
     <string name="Jadwal">Jadwal</string>
+    <string name="JadwalKosong">Tidak ada jadwal sholat hari ini</string>
+    <string name="StatusSelesai">Selesai</string>
+    <string name="StatusBerlangsung">Berlangsung</string>
+    <string name="StatusAkanDatang">Akan Datang</string>
     <string name="Riwayat">Riwayat</string>
     <string name="Tanggal">Tanggal</string>
     <string name="Sholat">Sholat</string>
@@ -195,11 +199,11 @@
     <string name="PlaceholderNol">0</string>
 
     
-    <string name="PlaceholderInisial">K</string>
-    <string name="PlaceholderNIS">778310383063</string>
-    <string name="PlaceholderNama">Kenf J Luffy</string>
-    <string name="PlaceholderJK">Laki - laki</string>
-    <string name="PlaceholderEmail">Kenfjluffy@gmail.com</string>
+    <string name="PlaceholderInisial">-</string>
+    <string name="PlaceholderNIS">-</string>
+    <string name="PlaceholderNama">-</string>
+    <string name="PlaceholderJK">-</string>
+    <string name="PlaceholderEmail">-</string>
 
     
     <string name="beranda">Beranda</string>

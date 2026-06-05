@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.xirpl2.SASMobile.model.DhuhaJurusanData
 import com.xirpl2.SASMobile.repository.BerandaRepository
 import com.xirpl2.SASMobile.network.RetrofitClient
+import com.xirpl2.SASMobile.utils.NotificationCounterManager
 import kotlinx.coroutines.launch
 
 class BerandaGuruActivity : BaseAdminActivity() {
@@ -31,6 +32,8 @@ class BerandaGuruActivity : BaseAdminActivity() {
     private lateinit var btnQRCode: View
     private lateinit var cardJadwalDhuha: View
     private lateinit var rvDhuhaSchedule: RecyclerView
+    private lateinit var notificationBellContainer: android.widget.FrameLayout
+    private lateinit var tvNotificationBadge: TextView
     private lateinit var rvJurusan: RecyclerView
 
     private lateinit var swipeRefresh: SwipeRefreshLayout
@@ -97,6 +100,20 @@ class BerandaGuruActivity : BaseAdminActivity() {
 
         btnQRCode.setOnClickListener {
             startActivity(Intent(this, QRCodeAdminActivity::class.java))
+        }
+
+        notificationBellContainer = findViewById(R.id.notificationBellContainer)
+        tvNotificationBadge = findViewById(R.id.tvNotificationBadge)
+        notificationBellContainer.setOnClickListener {
+            startActivity(Intent(this, NotificationCenterActivity::class.java))
+        }
+        NotificationCounterManager.counter.observe(this) { count ->
+            if (count > 0) {
+                tvNotificationBadge.text = if (count > 99) "99+" else count.toString()
+                tvNotificationBadge.visibility = View.VISIBLE
+            } else {
+                tvNotificationBadge.visibility = View.GONE
+            }
         }
     }
     
@@ -212,6 +229,9 @@ class BerandaGuruActivity : BaseAdminActivity() {
     
     override fun onResume() {
         super.onResume()
+
+        NotificationCounterManager.syncFromPreferences(this)
+
         loadStatistik()
         setupJadwalSholat()
         setupJurusanList()
