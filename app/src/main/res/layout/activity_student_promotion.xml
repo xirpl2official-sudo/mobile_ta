@@ -1,0 +1,483 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawerLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background">
+
+        <!-- Top Bar Content -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/topBarContent"
+            android:minHeight="64dp"
+            android:background="@color/blue_theme"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="4dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <FrameLayout
+                android:id="@+id/iconMenuContainer"
+                android:layout_width="48dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <ImageView
+                    android:id="@+id/iconMenu"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/menu"
+                    android:contentDescription="@string/Menu"
+                    app:tint="@android:color/white" />
+            </FrameLayout>
+
+            <ImageView
+                android:id="@+id/logoSekolah"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/logo_smk"
+                android:contentDescription="Logo SMKN 2"
+                app:layout_constraintStart_toEndOf="@id/iconMenuContainer"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginStart="8dp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginStart="8dp"
+                app:layout_constraintStart_toEndOf="@id/logoSekolah"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <TextView
+                    android:id="@+id/tvPageTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Promosi Siswa"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textSubtitleHeader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="SMK Negeri 2 Singosari"
+                    android:textColor="#FFFFFF"
+                    android:textSize="12sp"
+                    android:ellipsize="end"
+                    android:maxLines="1" />
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- Content Area -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/contentArea"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/topBarContent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:padding="16dp">
+
+            <!-- Simulate Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSimulasi"
+                android:layout_width="0dp"
+                android:layout_height="46dp"
+                android:text="Simulasi Kenaikan"
+                android:textAllCaps="false"
+                android:textSize="14sp"
+                app:cornerRadius="8dp"
+                app:backgroundTint="@color/blue_theme"
+                app:icon="@drawable/ic_eye"
+                app:iconGravity="textStart"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                style="@style/Widget.MaterialComponents.Button.UnelevatedButton" />
+
+            <!-- Simulation Progress -->
+            <ProgressBar
+                android:id="@+id/progressSimulasi"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@id/btnSimulasi"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="8dp" />
+
+            <!-- Simulation Error -->
+            <TextView
+                android:id="@+id/tvSimulasiError"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:textColor="@color/status_error"
+                android:textSize="13sp"
+                android:gravity="center"
+                app:layout_constraintTop_toBottomOf="@id/btnSimulasi"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="8dp" />
+
+            <!-- Simulation Results Container -->
+            <LinearLayout
+                android:id="@+id/layoutSimulasiResults"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@id/btnSimulasi"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="8dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Hasil Simulasi"
+                    android:textColor="@color/slate_700"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="6dp" />
+
+                <!-- Row 1: Naik + Lulus -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="6dp">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="4dp"
+                        app:cardCornerRadius="8dp"
+                        app:cardElevation="1dp"
+                        app:strokeWidth="0dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="10dp"
+                            android:background="@color/blue_theme_light">
+
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Naik Kelas" android:textColor="@color/slate_500" android:textSize="11sp" />
+                            <TextView android:id="@+id/tvSimPromoted" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="@color/blue_theme" android:textSize="18sp" android:textStyle="bold" android:layout_marginTop="2dp" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="siswa" android:textColor="@color/slate_400" android:textSize="10sp" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="4dp"
+                        app:cardCornerRadius="8dp"
+                        app:cardElevation="1dp"
+                        app:strokeWidth="0dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="10dp"
+                            android:background="@color/green_100">
+
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Lulus (Kls 12)" android:textColor="@color/slate_500" android:textSize="11sp" />
+                            <TextView android:id="@+id/tvSimGraduated" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="@color/green_700" android:textSize="18sp" android:textStyle="bold" android:layout_marginTop="2dp" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="siswa" android:textColor="@color/slate_400" android:textSize="10sp" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+
+                <!-- Row 2: Mutasi + Keluar + Tetap -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="4dp"
+                        app:cardCornerRadius="8dp"
+                        app:cardElevation="1dp"
+                        app:strokeWidth="0dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="10dp"
+                            android:background="@color/status_warning_bg">
+
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Mutasi" android:textColor="@color/slate_500" android:textSize="11sp" />
+                            <TextView android:id="@+id/tvSimMutasi" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="#D97706" android:textSize="18sp" android:textStyle="bold" android:layout_marginTop="2dp" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginHorizontal="4dp"
+                        app:cardCornerRadius="8dp"
+                        app:cardElevation="1dp"
+                        app:strokeWidth="0dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="10dp"
+                            android:background="@color/status_error_bg">
+
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Keluar" android:textColor="@color/slate_500" android:textSize="11sp" />
+                            <TextView android:id="@+id/tvSimKeluar" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="@color/status_error" android:textSize="18sp" android:textStyle="bold" android:layout_marginTop="2dp" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="4dp"
+                        app:cardCornerRadius="8dp"
+                        app:cardElevation="1dp"
+                        app:strokeWidth="0dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="10dp"
+                            android:background="@color/slate_100">
+
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Tinggal" android:textColor="@color/slate_500" android:textSize="11sp" />
+                            <TextView android:id="@+id/tvSimTetap" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="@color/slate_700" android:textSize="18sp" android:textStyle="bold" android:layout_marginTop="2dp" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="* Preview saja. Data belum diubah."
+                    android:textColor="@color/slate_400"
+                    android:textSize="10sp"
+                    android:fontStyle="italic"
+                    android:layout_marginTop="6dp" />
+            </LinearLayout>
+
+            <!-- Title -->
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Kenaikan Kelas Massal"
+                android:textColor="@color/on_background"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_marginTop="16dp"
+                app:layout_constraintTop_toBottomOf="@id/layoutSimulasiResults"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <!-- Dari Kelas Spinner -->
+            <TextView
+                android:id="@+id/tvLabelDariKelas"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Dari Kelas"
+                android:textColor="@color/slate_700"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintTop_toBottomOf="@id/tvTitle"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <AutoCompleteTextView
+                android:id="@+id/spinnerDariKelas"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/bg_dropdown"
+                android:drawableEnd="@drawable/ic_chevron_right"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="12dp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:hint="Pilih kelas asal"
+                android:textColor="@color/slate_800"
+                android:textSize="14sp"
+                android:inputType="none"
+                app:layout_constraintTop_toBottomOf="@id/tvLabelDariKelas"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <!-- Ke Kelas Spinner -->
+            <TextView
+                android:id="@+id/tvLabelKeKelas"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Ke Kelas"
+                android:textColor="@color/slate_700"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintTop_toBottomOf="@id/spinnerDariKelas"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <AutoCompleteTextView
+                android:id="@+id/spinnerKeKelas"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/bg_dropdown"
+                android:drawableEnd="@drawable/ic_chevron_right"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="12dp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:hint="Pilih kelas tujuan"
+                android:textColor="@color/slate_800"
+                android:textSize="14sp"
+                android:inputType="none"
+                app:layout_constraintTop_toBottomOf="@id/tvLabelKeKelas"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <!-- Student count info -->
+            <TextView
+                android:id="@+id/tvStudentCount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Pilih kelas asal untuk melihat daftar siswa"
+                android:textColor="@color/slate_500"
+                android:textSize="13sp"
+                app:layout_constraintTop_toBottomOf="@id/spinnerKeKelas"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <!-- Student List -->
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/swipeRefresh"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintTop_toBottomOf="@id/tvStudentCount"
+                app:layout_constraintBottom_toTopOf="@id/btnBulkProgression"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerStudents"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+            <!-- Loading -->
+            <ProgressBar
+                android:id="@+id/progressLoading"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:visibility="gone"
+                app:layout_constraintTop_toTopOf="@id/swipeRefresh"
+                app:layout_constraintBottom_toBottomOf="@id/swipeRefresh"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <!-- Empty State -->
+            <LinearLayout
+                android:id="@+id/emptyState"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:visibility="gone"
+                app:layout_constraintTop_toTopOf="@id/swipeRefresh"
+                app:layout_constraintBottom_toBottomOf="@id/swipeRefresh"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <ImageView
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:src="@drawable/users"
+                    android:alpha="0.5"
+                    android:contentDescription="Tidak ada siswa" />
+
+                <TextView
+                    android:id="@+id/tvEmptyState"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Tidak ada siswa ditemukan"
+                    android:textColor="@color/slate_700"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Pilih kelas asal yang berbeda"
+                    android:textColor="@color/slate_400"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <!-- Bulk Progression Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBulkProgression"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Promosikan Semua Siswa"
+                android:textAllCaps="false"
+                android:textSize="15sp"
+                android:enabled="false"
+                app:cornerRadius="8dp"
+                app:backgroundTint="@color/blue_theme"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <include
+        android:id="@+id/navigationView"
+        layout="@layout/sidebar_admin"
+        android:layout_width="@dimen/sidebar_width"
+        android:layout_height="match_parent"
+        android:layout_gravity="start" />
+
+</androidx.drawerlayout.widget.DrawerLayout>

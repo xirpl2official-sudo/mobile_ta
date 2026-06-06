@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="@color/surface"
+    android:layout_marginTop="16dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/iconJadwalDhuha"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/clipboard"
+            android:contentDescription="Jadwal"
+            app:tint="@color/blue_theme"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvJadwalDhuhaTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/PlaceholderJadwalSholatDhuha"
+            android:textColor="@color/on_background"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:layout_marginStart="8dp"
+            app:layout_constraintStart_toEndOf="@id/iconJadwalDhuha"
+            app:layout_constraintTop_toTopOf="@id/iconJadwalDhuha"
+            app:layout_constraintBottom_toBottomOf="@id/iconJadwalDhuha"
+            app:layout_constraintEnd_toStartOf="@id/btnEditDhuha" />
+
+        <ImageView
+            android:id="@+id/btnEditDhuha"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_edit"
+            android:contentDescription="Ubah"
+            app:tint="@color/blue_theme"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSaveDhuha"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:text="Simpan"
+            android:textColor="@android:color/white"
+            android:textSize="12sp"
+            android:visibility="gone"
+            app:backgroundTint="#4CAF50"
+            app:cornerRadius="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/iconJadwalDhuha" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvDhuhaSchedule"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@id/iconJadwalDhuha"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="6dp"
+    app:cardBackgroundColor="@color/surface"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="3dp">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal" android:padding="16dp">
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+            <TextView android:id="@+id/tvDeviceName" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/on_background" android:textSize="16sp" android:textStyle="bold" />
+            <TextView android:id="@+id/tvDeviceModel" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:textColor="@color/text_secondary" android:textSize="13sp" />
+            <TextView android:id="@+id/tvAccountInfo" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:textColor="@color/text_secondary" android:textSize="12sp" />
+            <TextView android:id="@+id/tvStatus" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:textColor="#3B82F6" android:textSize="12sp" />
+        </LinearLayout>
+        <ImageView android:id="@+id/btnDelete" android:layout_width="36dp" android:layout_height="36dp" android:contentDescription="Hapus perangkat" android:background="?attr/selectableItemBackgroundBorderless" android:padding="6dp" android:src="@drawable/ic_delete" app:tint="#EF4444" />
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

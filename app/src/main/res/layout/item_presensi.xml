@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="48dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:background="@color/background">
+
+    <!-- No -->
+    <TextView
+        android:id="@+id/tvNo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.08"
+        android:minWidth="32dp"
+        android:text="1"
+        android:textColor="@color/on_background"
+        android:textSize="12sp"
+        android:gravity="center"
+        android:paddingHorizontal="4dp" />
+
+    <!-- NIS -->
+    <TextView
+        android:id="@+id/tvNis"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.14"
+        android:minWidth="56dp"
+        android:text="20228PL001"
+        android:textColor="@color/on_background"
+        android:textSize="12sp"
+        android:gravity="start"
+        android:paddingHorizontal="8dp" />
+
+    <!-- Nama Siswa -->
+    <TextView
+        android:id="@+id/tvNama"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.22"
+        android:minWidth="80dp"
+        android:text="Siswa RPL 1"
+        android:textColor="@color/on_background"
+        android:textSize="12sp"
+        android:gravity="start"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:paddingHorizontal="8dp" />
+
+    <!-- Kelas -->
+    <TextView
+        android:id="@+id/tvKelas"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.10"
+        android:minWidth="40dp"
+        android:text="10 RPL"
+        android:textColor="@color/on_background"
+        android:textSize="12sp"
+        android:gravity="center"
+        android:paddingHorizontal="4dp" />
+
+    <!-- Jenis Sholat -->
+    <TextView
+        android:id="@+id/tvJenisSholat"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.14"
+        android:minWidth="60dp"
+        android:text="Dhuha"
+        android:textColor="@color/on_background"
+        android:textSize="12sp"
+        android:gravity="center"
+        android:paddingHorizontal="4dp" />
+
+    <!-- Status -->
+    <TextView
+        android:id="@+id/tvStatus"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.14"
+        android:minWidth="56dp"
+        android:text="Hadir"
+        android:textColor="@android:color/white"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:background="@drawable/bg_status_hadir"
+        android:paddingVertical="4dp"
+        android:paddingHorizontal="6dp"
+        android:layout_marginHorizontal="4dp" />
+
+    <!-- Detail Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnDetail"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.12"
+        android:minWidth="48dp"
+        android:text="Detail"
+        android:textSize="11sp"
+        android:textColor="@color/blue_theme"
+        android:padding="0dp"
+        android:minHeight="0dp" />
+
+</LinearLayout>

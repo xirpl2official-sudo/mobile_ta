@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="@dimen/popup_width"
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="@color/surface"
+    app:cardCornerRadius="@dimen/popup_corner_radius"
+    app:cardElevation="@dimen/popup_elevation"
+    app:cardUseCompatPadding="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/popup_padding">
+
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/popup_header_bottom_padding">
+
+            <TextView
+                android:id="@+id/tvStudentName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nama Siswa"
+                android:textColor="@color/on_background"
+                android:textSize="@dimen/popup_student_name_size"
+                android:textStyle="bold"
+                android:maxLines="1"
+                android:ellipsize="end"/>
+
+            <TextView
+                android:id="@+id/tvStudentNIS"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="8329093892"
+                android:textColor="@color/text_hint"
+                android:textSize="@dimen/popup_student_nis_size"
+                android:layout_marginTop="2dp"/>
+
+        </LinearLayout>
+
+        
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/popup_divider_height"
+            android:background="@color/divider"
+            android:layout_marginBottom="@dimen/popup_header_bottom_padding"/>
+
+        
+        <LinearLayout
+            android:id="@+id/btnPengajuanIzin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="@dimen/popup_menu_item_padding"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="@dimen/popup_icon_size"
+                android:layout_height="@dimen/popup_icon_size"
+                android:src="@drawable/ic_perizinan"
+                android:contentDescription="Ikon Pengajuan Izin"
+                android:layout_marginEnd="@dimen/popup_icon_margin_end"
+                app:tint="#616161"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pengajuan Izin"
+                android:textColor="#424242"
+                android:textSize="@dimen/popup_menu_text_size"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+
+        
+        <LinearLayout
+            android:id="@+id/btnSettings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="@dimen/popup_menu_item_padding"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="@dimen/popup_icon_size"
+                android:layout_height="@dimen/popup_icon_size"
+                android:src="@drawable/gear"
+                android:contentDescription="Ikon Pengaturan"
+                android:layout_marginEnd="@dimen/popup_icon_margin_end"
+                app:tint="#616161"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pengaturan"
+                android:textColor="#424242"
+                android:textSize="@dimen/popup_menu_text_size"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/popup_divider_height"
+            android:background="@color/divider"
+            android:layout_marginVertical="4dp"/>
+
+
+        <LinearLayout
+            android:id="@+id/btnLogout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="@dimen/popup_menu_item_padding"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="@dimen/popup_icon_size"
+                android:layout_height="@dimen/popup_icon_size"
+                android:src="@drawable/keluar"
+                android:contentDescription="Ikon Keluar"
+                android:layout_marginEnd="@dimen/popup_icon_margin_end"
+                app:tint="#F44336"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Keluar"
+                android:textColor="#F44336"
+                android:textSize="@dimen/popup_menu_text_size"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

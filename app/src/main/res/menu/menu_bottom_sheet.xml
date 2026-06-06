@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_beranda"
+            android:icon="@drawable/ic_home"
+            android:title="@string/beranda" />
+        <item
+            android:id="@+id/nav_presensi"
+            android:icon="@drawable/ic_presensi"
+            android:title="@string/presensi" />
+        <item
+            android:id="@+id/nav_pengajuan_izin"
+            android:icon="@drawable/ic_izin"
+            android:title="@string/pengajuan_izin" />
+    </group>
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/ic_profile"
+            android:title="@string/pengaturan" />
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/ic_logout"
+            android:title="@string/logout" />
+    </group>
+
+</menu>

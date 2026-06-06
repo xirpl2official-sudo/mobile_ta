@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="@color/outline"
+    app:cardBackgroundColor="@color/surface">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="12dp">
+
+        <!-- Baris atas: Nama sholat + tombol aksi -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tvPrayerName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Sholat"
+                android:textColor="@color/on_background"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:ellipsize="end"
+                android:maxLines="1" />
+
+            <ImageView
+                android:id="@+id/btnEditPrayer"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:padding="4dp"
+                android:src="@drawable/ic_edit"
+                android:contentDescription="Ubah"
+                app:tint="@color/blue_theme"
+                android:background="?attr/selectableItemBackgroundBorderless" />
+
+            <ImageView
+                android:id="@+id/btnDeletePrayer"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:padding="4dp"
+                android:src="@drawable/ic_delete"
+                android:contentDescription="Hapus"
+                app:tint="#E53935"
+                android:layout_marginStart="4dp"
+                android:background="?attr/selectableItemBackgroundBorderless" />
+
+        </LinearLayout>
+
+        <!-- Hari -->
+        <TextView
+            android:id="@+id/tvPrayerDay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="-"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp"
+            android:layout_marginTop="2dp"
+            android:visibility="gone" />
+
+        <!-- Waktu -->
+        <TextView
+            android:id="@+id/tvPrayerTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Waktu: 07:00 - 08:00"
+            android:textColor="@color/on_background"
+            android:textSize="13sp"
+            android:layout_marginTop="4dp" />
+
+        <!-- Jurusan -->
+        <TextView
+            android:id="@+id/tvPrayerJurusan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/on_background"
+            android:textSize="13sp"
+            android:layout_marginTop="2dp"
+            android:visibility="gone" />
+
+        <!-- Kelas -->
+        <TextView
+            android:id="@+id/tvPrayerClass"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Semua Kelas"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp"
+            android:layout_marginTop="2dp"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

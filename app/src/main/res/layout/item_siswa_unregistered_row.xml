@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingVertical="8dp"
+    android:background="@color/background">
+
+    <!-- NIS -->
+    <TextView
+        android:id="@+id/tvNis"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.17"
+        android:minWidth="44dp"
+        android:gravity="center"
+        android:paddingHorizontal="4dp"
+        android:textColor="@color/on_background"
+        android:textSize="12sp"
+        android:ellipsize="end"
+        android:maxLines="1" />
+
+    <!-- Nama -->
+    <TextView
+        android:id="@+id/tvNama"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.22"
+        android:minWidth="60dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:paddingHorizontal="4dp"
+        android:textColor="@color/on_background"
+        android:textSize="12sp" />
+
+    <!-- Kelas -->
+    <TextView
+        android:id="@+id/tvKelas"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.12"
+        android:minWidth="32dp"
+        android:gravity="center"
+        android:paddingHorizontal="2dp"
+        android:textColor="@color/on_background"
+        android:textSize="12sp" />
+
+    <!-- Jurusan -->
+    <TextView
+        android:id="@+id/tvJurusan"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.15"
+        android:minWidth="40dp"
+        android:gravity="center"
+        android:paddingHorizontal="4dp"
+        android:paddingVertical="4dp"
+        android:textColor="@color/blue_theme"
+        android:textSize="11sp"
+        android:ellipsize="end"
+        android:maxLines="1" />
+
+    <!-- Wali Kelas -->
+    <TextView
+        android:id="@+id/tvWaliKelas"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.20"
+        android:minWidth="60dp"
+        android:gravity="center"
+        android:paddingHorizontal="4dp"
+        android:textColor="@color/on_background"
+        android:textSize="12sp"
+        android:ellipsize="end"
+        android:maxLines="1" />
+
+    <!-- Aksi -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.14"
+        android:minWidth="40dp"
+        android:gravity="center"
+        android:paddingHorizontal="4dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnDetail"
+            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="28dp"
+            android:text="@string/detail"
+            android:textAllCaps="false"
+            android:textSize="10sp"
+            android:textColor="@android:color/white"
+            app:backgroundTint="#4CAF50"
+            app:cornerRadius="8dp"
+            android:padding="0dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp" />
+
+    </LinearLayout>
+
+</LinearLayout>

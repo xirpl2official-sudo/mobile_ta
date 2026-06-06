@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fillViewport="true">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <!-- Title -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Manajemen Massal Siswa"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@color/on_surface" />
+
+    <TextView
+        android:id="@+id/tvDialogSubtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Terapkan aksi serentak untuk siswa terpilih."
+        android:textSize="13sp"
+        android:textColor="@color/slate_500"
+        android:layout_marginTop="4dp" />
+
+    <!-- Action Type Selector -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Jenis Aksi Massal"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:textColor="@color/on_surface"
+        android:layout_marginTop="16dp" />
+
+    <TextView
+        android:id="@+id/spinnerActionType"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:background="@drawable/bg_dropdown"
+        android:drawableEnd="@drawable/ic_chevron_right"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="12dp"
+        android:text="Mutasi / Pindah Kelas Spesifik"
+        android:textColor="@color/on_surface"
+        android:textSize="13sp"
+        android:layout_marginTop="6dp" />
+
+    <!-- Conditional: Mutasi Form -->
+    <LinearLayout
+        android:id="@+id/layoutMutasiForm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/bg_dropdown"
+        android:padding="12dp"
+        android:layout_marginTop="10dp"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Jurusan Tujuan"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="@color/on_surface" />
+
+        <TextView
+            android:id="@+id/spinnerMutasiJurusan"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_dropdown"
+            android:drawableEnd="@drawable/ic_chevron_right"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="10dp"
+            android:text="Pilih Jurusan"
+            android:textColor="@color/slate_500"
+            android:textSize="12sp"
+            android:layout_marginTop="4dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Kelas Tujuan"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="@color/on_surface"
+            android:layout_marginTop="8dp" />
+
+        <TextView
+            android:id="@+id/spinnerMutasiKelas"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_dropdown"
+            android:drawableEnd="@drawable/ic_chevron_right"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="10dp"
+            android:text="Pilih Kelas"
+            android:textColor="@color/slate_500"
+            android:textSize="12sp"
+            android:layout_marginTop="4dp" />
+
+    </LinearLayout>
+
+    <!-- Conditional: Status Akademik Form -->
+    <LinearLayout
+        android:id="@+id/layoutStatusForm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/bg_dropdown"
+        android:padding="12dp"
+        android:layout_marginTop="10dp"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Status Akademik Baru"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="@color/on_surface" />
+
+        <TextView
+            android:id="@+id/spinnerStatusAkademik"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_dropdown"
+            android:drawableEnd="@drawable/ic_chevron_right"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="10dp"
+            android:text="Pilih Status"
+            android:textColor="@color/slate_500"
+            android:textSize="12sp"
+            android:layout_marginTop="4dp" />
+
+    </LinearLayout>
+
+    <!-- Conditional: Info Box (for naik kelas, tinggal kelas, lulus) -->
+    <LinearLayout
+        android:id="@+id/layoutInfoBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/bg_dropdown"
+        android:padding="12dp"
+        android:layout_marginTop="10dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tvInfoBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="13sp"
+            android:textColor="@color/on_surface" />
+
+    </LinearLayout>
+
+    <!-- Conditional: Warning Box (for hapus) -->
+    <LinearLayout
+        android:id="@+id/layoutWarningBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp"
+        android:layout_marginTop="10dp"
+        android:visibility="gone"
+        android:background="@drawable/bg_bulk_warning">
+
+        <TextView
+            android:id="@+id/tvWarningBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="13sp"
+            android:textColor="@color/red" />
+
+    </LinearLayout>
+
+    <!-- Daftar Siswa Terdampak -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:textColor="@color/on_surface"
+        android:layout_marginTop="14dp">
+        Daftar Siswa Terdampak (<span android:id="@+id/tvAffectedCount">0</span>)
+    </TextView>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerAffectedSiswa"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:maxHeight="220dp"
+        android:nestedScrollingEnabled="true" />
+
+    <!-- Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:layout_marginTop="16dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCancelBulk"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="Batal"
+            android:textAllCaps="false"
+            android:textColor="@color/slate_600" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnConfirmBulk"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="Konfirmasi &amp; Terapkan"
+            android:textAllCaps="false"
+            app:cornerRadius="8dp"
+            app:backgroundTint="@color/blue_theme"
+            android:textColor="@android:color/white"
+            android:layout_marginStart="8dp" />
+
+    </LinearLayout>
+
+</LinearLayout>
+
+</ScrollView>

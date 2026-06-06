@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingVertical="10dp"
+    android:background="@color/background">
+
+    <!-- No -->
+    <TextView
+        android:id="@+id/tvNo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.07"
+        android:minWidth="28dp"
+        android:text="1"
+        android:textColor="@color/text_secondary"
+        android:textSize="11sp"
+        android:paddingHorizontal="4dp"
+        android:gravity="center" />
+
+    <!-- Tanggal -->
+    <TextView
+        android:id="@+id/tvTanggal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.11"
+        android:minWidth="40dp"
+        android:text="01/01/2025"
+        android:textColor="@color/on_background"
+        android:textSize="11sp"
+        android:paddingHorizontal="4dp"
+        android:gravity="center" />
+
+    <!-- NIS -->
+    <TextView
+        android:id="@+id/tvNis"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.14"
+        android:minWidth="52dp"
+        android:text="20238RP1001"
+        android:textColor="@color/on_background"
+        android:textSize="11sp"
+        android:paddingHorizontal="4dp"
+        android:gravity="center" />
+
+    <!-- Nama -->
+    <TextView
+        android:id="@+id/tvNama"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.22"
+        android:minWidth="80dp"
+        android:text="Siswa RPL 5"
+        android:textColor="@color/on_background"
+        android:textSize="11sp"
+        android:paddingHorizontal="4dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:gravity="start" />
+
+    <!-- Kelas -->
+    <TextView
+        android:id="@+id/tvKelas"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.11"
+        android:minWidth="40dp"
+        android:text="11 RPL"
+        android:textColor="@color/on_background"
+        android:textSize="11sp"
+        android:paddingHorizontal="4dp"
+        android:gravity="center" />
+
+    <!-- Sholat -->
+    <TextView
+        android:id="@+id/tvSholat"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.11"
+        android:minWidth="40dp"
+        android:text="Dhuha"
+        android:textColor="@color/on_background"
+        android:textSize="11sp"
+        android:paddingHorizontal="4dp"
+        android:gravity="center" />
+
+    <!-- Status -->
+    <TextView
+        android:id="@+id/tvStatus"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.12"
+        android:minWidth="44dp"
+        android:text="Hadir"
+        android:textColor="@android:color/white"
+        android:textSize="10sp"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="3dp"
+        android:gravity="center"
+        android:background="@drawable/bg_status_hadir" />
+
+</LinearLayout>

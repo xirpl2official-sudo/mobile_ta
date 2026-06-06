@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardJadwalItem"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="@dimen/card_margin_vertical"
+    app:cardCornerRadius="@dimen/card_corner_radius"
+    app:cardElevation="@dimen/card_elevation"
+    app:cardBackgroundColor="@color/surface">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/card_padding"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/textStatusSholat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Selesai"
+            android:textSize="@dimen/text_status_badge"
+            android:textColor="@android:color/white"
+            android:background="@drawable/bg_status_gray"
+            android:paddingHorizontal="@dimen/status_padding_horizontal"
+            android:paddingVertical="@dimen/status_padding_vertical"
+            android:gravity="center"
+            android:layout_marginEnd="@dimen/spacing_small" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvNamaSholat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dhuha"
+                android:textColor="@color/on_background"
+                android:textSize="@dimen/text_nama_sholat"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvJamSholat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="07:00 - 08:00"
+                android:textColor="@color/text_secondary"
+                android:textSize="@dimen/text_jam_sholat"
+                android:layout_marginTop="@dimen/spacing_tiny" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/btnDelete"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:padding="6dp"
+            android:src="@drawable/ic_delete"
+            android:contentDescription="Hapus"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_marginStart="8dp"
+            app:tint="@color/error_color" />
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

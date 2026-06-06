@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingVertical="8dp"
+    android:background="@color/background">
+
+    <!-- CheckBox -->
+    <CheckBox
+        android:id="@+id/cbRow"
+        android:layout_width="36dp"
+        android:layout_height="wrap_content"
+        android:padding="0dp"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:layout_marginStart="8dp" />
+
+    <!-- NIS -->
+    <TextView
+        android:id="@+id/tvNis"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.12"
+        android:minWidth="48dp"
+        android:gravity="center"
+        android:paddingHorizontal="4dp"
+        android:textColor="@color/on_background"
+        android:textSize="12sp"
+        android:ellipsize="end"
+        android:maxLines="1" />
+
+    <!-- Nama + device indicator -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.28"
+        android:minWidth="100dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="4dp">
+
+        <TextView
+            android:id="@+id/tvNama"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/on_background"
+            android:textSize="12sp" />
+
+        <ImageView
+            android:id="@+id/ivDeviceStatus"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginStart="4dp"
+            android:contentDescription="Status perangkat"
+            android:src="@drawable/bg_circle_indicator"
+            android:visibility="gone"
+            app:tint="@color/gray" />
+
+    </LinearLayout>
+
+    <!-- JK -->
+    <TextView
+        android:id="@+id/tvJenisKelamin"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.06"
+        android:minWidth="24dp"
+        android:gravity="center"
+        android:paddingHorizontal="2dp"
+        android:textColor="@color/on_background"
+        android:textSize="12sp" />
+
+    <!-- Kelas -->
+    <TextView
+        android:id="@+id/tvKelas"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.09"
+        android:minWidth="32dp"
+        android:gravity="center"
+        android:paddingHorizontal="2dp"
+        android:textColor="@color/on_background"
+        android:textSize="12sp" />
+
+    <!-- Jurusan -->
+    <TextView
+        android:id="@+id/tvJurusan"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.12"
+        android:minWidth="40dp"
+        android:gravity="center"
+        android:paddingHorizontal="4dp"
+        android:paddingVertical="4dp"
+        android:background="@drawable/bg_badge_jurusan"
+        android:textColor="@color/blue_theme"
+        android:textSize="11sp"
+        android:ellipsize="end"
+        android:maxLines="1" />
+
+    <!-- Keterangan (Status Akademik) -->
+    <TextView
+        android:id="@+id/tvStatusAkademik"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.11"
+        android:minWidth="36dp"
+        android:layout_marginStart="8dp"
+        android:gravity="center"
+        android:paddingHorizontal="4dp"
+        android:paddingVertical="3dp"
+        android:background="@drawable/bg_status_gray"
+        android:textColor="@android:color/white"
+        android:textSize="10sp"
+        android:text="AKTIF"
+        android:ellipsize="end"
+        android:maxLines="1" />
+
+    <!-- More menu -->
+    <ImageView
+        android:id="@+id/btnMoreMenu"
+        android:layout_width="36dp"
+        android:layout_height="wrap_content"
+        android:minHeight="36dp"
+        android:gravity="center"
+        android:src="@drawable/ic_more_vert"
+        android:scaleType="centerInside"
+        android:contentDescription="Menu lainnya"
+        app:tint="@color/slate_500" />
+
+</LinearLayout>

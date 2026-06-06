@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#1976D2</color>
+    <color name="primary_dark">#1565C0</color>
+    <color name="primary_light">#64B5F6</color>
+    <color name="background">#F7F9FB</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="surface_container">#F8FAFC</color>
+    <color name="on_background">#191C1E</color>
+    <color name="on_surface">#191C1E</color>
+    <color name="on_primary">#FFFFFF</color>
+    <color name="outline">#E2E8F0</color>
+    <color name="outline_variant">#E5E8EB</color>
+    <color name="green">#10B981</color>
+    <color name="red">#EF4444</color>
+    <color name="orange">#F59E0B</color>
+    <color name="blue">#3B82F6</color>
+    <color name="gray">#64748B</color>
+    <color name="gray_light">#94A3B8</color>
+    <color name="secondary">#0051D5</color>
+    <color name="secondary_light">#E0F2FE</color>
+    <color name="green_100">#DCFCE7</color>
+    <color name="green_700">#15803D</color>
+    <color name="orange_400">#FB923C</color>
+    <color name="blue_500">#3B82F6</color>
+    <color name="blue_700">#1E3A8A</color>
+    <color name="blue_primary">#1976D2</color>
+    <color name="orange_warning">#F59E0B</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="background_gray">#F5F5F5</color>
+    <color name="text_secondary">#64748B</color>
+    <color name="text_hint">#94A3B8</color>
+    <color name="divider">#E2E8F0</color>
+    <color name="orange_theme">#E58133</color>
+    <color name="blue_theme">#2886D6</color>
+    <color name="blue_theme_dark">#1E6BB1</color>
+    <color name="blue_theme_light">#EFF6FF</color>
+    <color name="text_sidebar_inactive">#6B7280</color>
+    <color name="icon_sidebar_inactive">#9CA3AF</color>
+    <color name="text_sidebar_active">#FFFFFF</color>
+    <color name="bg_sidebar">#FFFFFF</color>
+    <color name="bg_profile_card">#EFF6FF</color>
+    <color name="text_danger">#EF4444</color>
+    <color name="error_color">#EF4444</color>
+    <color name="status_error">#EF4444</color>
+    <color name="status_error_bg">#FFCDD2</color>
+    <color name="status_warning">#F59E0B</color>
+    <color name="status_warning_bg">#FEF3C7</color>
+    <color name="status_success">#10B981</color>
+    <color name="status_success_bg">#D1FAE5</color>
+    <color name="slate_50">#F8FAFC</color>
+    <color name="slate_100">#F1F5F9</color>
+    <color name="slate_200">#E2E8F0</color>
+    <color name="slate_300">#CBD5E1</color>
+    <color name="slate_400">#94A3B8</color>
+    <color name="slate_500">#64748B</color>
+    <color name="slate_600">#475569</color>
+    <color name="slate_700">#334155</color>
+    <color name="slate_800">#1E293B</color>
+    <color name="slate_900">#0F172A</color>
+    <color name="qr_primary">#1e40af</color>
+    <color name="qr_background">#f3f4f6</color>
+    <color name="qr_surface">#ffffff</color>
+    <color name="qr_text_primary">#1f2937</color>
+    <color name="qr_text_secondary">#6b7280</color>
+    <color name="sidebar_bg">#1e40af</color>
+    <color name="sidebar_active">#1d4ed8</color>
+    <color name="sidebar_text">#ffffff</color>
+    <color name="sidebar_text_secondary">#bfdbfe</color>
+
+    <!-- Semantic background colors for cards -->
+    <color name="bg_card_green">#E8F5E9</color>
+    <color name="bg_card_blue">#E3F2FD</color>
+    <color name="bg_card_orange">#FFF3E0</color>
+    <color name="bg_card_yellow">#FEFCE8</color>
+    <color name="bg_card_sky">#E0F2FE</color>
+    <color name="bg_card_gray">#F1F5F9</color>
+
+    <!-- Stat card colors -->
+    <color name="stat_blue_text">#1565C0</color>
+    <color name="stat_blue_icon_tint">#1565C0</color>
+    <color name="stat_red_text">#C62828</color>
+    <color name="stat_red_icon_tint">#C62828</color>
+    <color name="stat_orange_text">#E65100</color>
+    <color name="stat_orange_icon_tint">#E65100</color>
+    <color name="stat_icon_bg_blue">#E3F2FD</color>
+    <color name="stat_icon_bg_red">#FFEBEE</color>
+    <color name="stat_icon_bg_amber">#FFF8E1</color>
+    
+    <!-- Status badge -->
+    <color name="status_badge_gray_bg">#F3F4F6</color>
+    
+    <!-- Sidebar pressed -->
+    <color name="sidebar_item_pressed">#E5E7EB</color>
+    
+    <!-- Card waktu absensi orange -->
+    <color name="card_waktu_absensi">#F76E13</color>
+    
+    <!-- Outline button blue -->
+    <color name="outline_button_blue">#1565C0</color>
+    
+    <!-- Badge colors -->
+    <color name="badge_pending_bg">#FEF3C7</color>
+    <color name="badge_pending_text">#92400E</color>
+    <color name="badge_approved_bg">#D1FAE5</color>
+    <color name="badge_approved_text">#065F46</color>
+    <color name="badge_rejected_bg">#FFCDD2</color>
+    <color name="badge_rejected_text">#991B1B</color>
+    <color name="badge_sakit_bg">#DBEAFE</color>
+    <color name="badge_sakit_text">#1E40AF</color>
+    <color name="badge_izin_bg">#FEF3C7</color>
+    <color name="badge_izin_text">#92400E</color>
+    <color name="badge_other_bg">#F3E8FF</color>
+    <color name="badge_other_text">#6B21A8</color>
+</resources>

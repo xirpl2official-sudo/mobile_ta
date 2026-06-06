@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigation_beranda"
+        android:icon="@drawable/ic_home"
+        android:title="Beranda" />
+    <item
+        android:id="@+id/navigation_perizinan"
+        android:icon="@drawable/ic_perizinan"
+        android:title="Perizinan" />
+    <item
+        android:id="@+id/navigation_scan_qr"
+        android:icon="@drawable/ic_qr_code"
+        android:title="Scan QR" />
+    <item
+        android:id="@+id/navigation_profil"
+        android:icon="@drawable/ic_user_profile"
+        android:title="Profil" />
+</menu>

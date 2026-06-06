@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background"
+        tools:context=".VerifikasiOtpActivity">
+
+        
+        <ImageView
+            android:id="@+id/vectorAtasOrange"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:contentDescription="@string/DekorasiOrange"
+            android:scaleType="fitXY"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.38"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/gelombangorange" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineTopBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.38" />
+
+        
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardLogo"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:cardBackgroundColor="@android:color/transparent"
+            app:cardCornerRadius="200dp"
+            app:cardElevation="10dp"
+            app:layout_constraintBottom_toBottomOf="@id/guidelineTopBar"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.13"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.22">
+
+            <ImageView
+                android:id="@+id/LogoInorasi2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/LogoSMKN2"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/logo_smk" />
+
+        </androidx.cardview.widget.CardView>
+
+        
+        <TextView
+            android:id="@+id/textHalaman2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:fontFamily="@font/poppins_medium"
+            android:shadowColor="#80000000"
+            android:shadowDx="0"
+            android:shadowDy="6"
+            android:shadowRadius="4"
+            android:text="@string/SMK"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_title"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cardLogo" />
+
+        
+        <TextView
+            android:id="@+id/textDaftar2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins_medium"
+            android:shadowColor="#40000000"
+            android:shadowDx="0"
+            android:shadowDy="4"
+            android:shadowRadius="4"
+            android:text="@string/VerivikasiOTP"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_bawah_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textHalaman2" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.45" />
+
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineInputOTP"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.39" />
+
+        
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardOtp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="8dp"
+            app:cardBackgroundColor="@color/surface"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/guidelineInputOTP"
+            app:layout_constraintWidth_percent="0.85">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="20dp"
+                android:paddingTop="@dimen/spacing_medium"
+                android:paddingBottom="28dp">
+
+                
+                <TextView
+                    android:id="@+id/tvTitleOtp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_medium"
+                    android:gravity="start"
+                    android:text="@string/VerivikasiOTP"
+                    android:textColor="@color/on_background"
+                    android:textSize="@dimen/text_bawah_title"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                
+                <TextView
+                    android:id="@+id/tvEmailInfo"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/poppins_medium"
+                    android:gravity="start"
+                    android:text="@string/contohEmail"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="@dimen/text_email"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvTitleOtp" />
+
+                
+                <TextView
+                    android:id="@+id/tvLabelOtp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="35dp"
+                    android:fontFamily="@font/poppins_medium"
+                    android:gravity="start"
+                    android:text="@string/MasukkanOTP"
+                    android:textColor="@color/on_background"
+                    android:textSize="@dimen/text_masukOTP"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvEmailInfo" />
+
+                
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/otpContainer"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvLabelOtp">
+
+                    <EditText
+                        android:id="@+id/otpBox1"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/otp_box_height"
+                        android:layout_margin="@dimen/otp_box_margin"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_otp_box"
+                        android:gravity="center"
+                        android:inputType="numberDecimal"
+                        android:imeOptions="actionNext"
+                        android:maxLength="1"
+                        android:minWidth="@dimen/otp_box_min_width"
+                        android:maxWidth="@dimen/otp_box_max_width"
+                        android:textAlignment="center"
+                        android:textColor="@color/on_background"
+                        android:textSize="@dimen/otp_text_size"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/otpBox2"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/otp_box_height"
+                        android:layout_margin="@dimen/otp_box_margin"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_otp_box"
+                        android:gravity="center"
+                        android:inputType="numberDecimal"
+                        android:imeOptions="actionNext"
+                        android:maxLength="1"
+                        android:minWidth="@dimen/otp_box_min_width"
+                        android:maxWidth="@dimen/otp_box_max_width"
+                        android:textAlignment="center"
+                        android:textColor="@color/on_background"
+                        android:textSize="@dimen/otp_text_size"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/otpBox3"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/otp_box_height"
+                        android:layout_margin="@dimen/otp_box_margin"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_otp_box"
+                        android:gravity="center"
+                        android:inputType="numberDecimal"
+                        android:imeOptions="actionNext"
+                        android:maxLength="1"
+                        android:minWidth="@dimen/otp_box_min_width"
+                        android:maxWidth="@dimen/otp_box_max_width"
+                        android:textAlignment="center"
+                        android:textColor="@color/on_background"
+                        android:textSize="@dimen/otp_text_size"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/otpBox4"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/otp_box_height"
+                        android:layout_margin="@dimen/otp_box_margin"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_otp_box"
+                        android:gravity="center"
+                        android:inputType="numberDecimal"
+                        android:imeOptions="actionNext"
+                        android:maxLength="1"
+                        android:minWidth="@dimen/otp_box_min_width"
+                        android:maxWidth="@dimen/otp_box_max_width"
+                        android:textAlignment="center"
+                        android:textColor="@color/on_background"
+                        android:textSize="@dimen/otp_text_size"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/otpBox5"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/otp_box_height"
+                        android:layout_margin="@dimen/otp_box_margin"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_otp_box"
+                        android:gravity="center"
+                        android:inputType="numberDecimal"
+                        android:imeOptions="actionNext"
+                        android:maxLength="1"
+                        android:minWidth="@dimen/otp_box_min_width"
+                        android:maxWidth="@dimen/otp_box_max_width"
+                        android:textAlignment="center"
+                        android:textColor="@color/on_background"
+                        android:textSize="@dimen/otp_text_size"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/otpBox6"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/otp_box_height"
+                        android:layout_margin="@dimen/otp_box_margin"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_otp_box"
+                        android:gravity="center"
+                        android:inputType="numberDecimal"
+                        android:imeOptions="actionDone"
+                        android:maxLength="1"
+                        android:minWidth="@dimen/otp_box_min_width"
+                        android:maxWidth="@dimen/otp_box_max_width"
+                        android:textAlignment="center"
+                        android:textColor="@color/on_background"
+                        android:textSize="@dimen/otp_text_size"
+                        android:textStyle="bold" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                
+                <TextView
+                    android:id="@+id/btnKirimUlang"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:fontFamily="@font/poppins_medium"
+                    android:gravity="center"
+                    android:text="@string/KirimUlgKode"
+                    android:textColor="#E58133"
+                    android:textSize="@dimen/text_masukOTP"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/otpContainer" />
+
+                
+                <Button
+                    android:id="@+id/btnVerifikasi"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="20dp"
+                    android:backgroundTint="#E58133"
+                    android:text="@string/Verifikasi"
+                    android:textColor="#FFFFFF"
+                    android:textSize="@dimen/text_button"
+                    android:fontFamily="@font/poppins_medium"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/btnKirimUlang" />
+
+                
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/btnVerifikasi" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.cardview.widget.CardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>

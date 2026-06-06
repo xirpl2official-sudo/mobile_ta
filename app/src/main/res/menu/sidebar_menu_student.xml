@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_beranda"
+        android:icon="@drawable/ic_home"
+        android:title="Beranda" />
+
+    <item
+        android:id="@+id/nav_jadwal_sholat"
+        android:icon="@drawable/ic_jadwal"
+        android:title="Jadwal Sholat" />
+
+    <item
+        android:id="@+id/nav_presensi"
+        android:icon="@drawable/clipboard"
+        android:title="Presensi" />
+
+    <item
+        android:id="@+id/nav_pengajuan_izin"
+        android:icon="@drawable/ic_event_available"
+        android:title="Pengajuan Izin" />
+
+    <item
+        android:id="@+id/nav_laporan"
+        android:icon="@drawable/bar"
+        android:title="Laporan" />
+
+    <item
+        android:id="@+id/nav_pengaturan"
+        android:icon="@drawable/settings"
+        android:title="Pengaturan" />
+
+    <item
+        android:id="@+id/nav_logout"
+        android:icon="@drawable/ic_logout"
+        android:title="Keluar" />
+
+</menu>

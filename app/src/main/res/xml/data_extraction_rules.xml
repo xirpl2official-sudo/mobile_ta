@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cloud-backup>
+    <exclude domain="sharedpref" path="user_session.xml" />
+    <exclude domain="sharedpref" path="UserData.xml" />
+    <exclude domain="sharedpref" path="password_reset.xml" />
+    <exclude domain="sharedpref" path="login_brute_force.xml" />
+    <exclude domain="sharedpref" path="enc_user_session.xml" />
+    <exclude domain="sharedpref" path="enc_UserData.xml" />
+    <exclude domain="sharedpref" path="enc_password_reset.xml" />
+    <exclude domain="sharedpref" path="enc_login_brute_force.xml" />
+</cloud-backup>
