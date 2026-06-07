@@ -132,18 +132,21 @@
                         android:orientation="vertical"
                         android:padding="24dp">
 
-                        <!-- SECTION 1: Data Pribadi -->
-                        <TextView
-                            android:layout_width="wrap_content"
+                        <!-- NIS -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/Widget.App.FormField"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Data Pribadi"
-                            android:textColor="@color/primary"
-                            android:textSize="14sp"
-                            android:textStyle="bold"
-                            android:drawableStart="@drawable/ic_profile"
-                            android:drawablePadding="8dp"
-                            android:layout_marginBottom="12dp"
-                            android:layout_marginTop="8dp" />
+                            android:hint="NIS"
+                            android:layout_marginBottom="16dp">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etNisSiswa"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="number"
+                                android:textSize="14sp" />
+                        </com.google.android.material.textfield.TextInputLayout>
 
                         <!-- NAMA SISWA -->
                         <com.google.android.material.textfield.TextInputLayout
@@ -157,116 +160,15 @@
                                 android:id="@+id/etNamaSiswa"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:inputType="textPersonName"
+                                android:inputType="textPersonName|textCapWords"
                                 android:textSize="14sp" />
                         </com.google.android.material.textfield.TextInputLayout>
 
-                        <!-- NIS SISWA -->
-                        <com.google.android.material.textfield.TextInputLayout
-                            style="@style/Widget.App.FormField"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="NIS Siswa"
-                            android:layout_marginBottom="16dp">
-
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/etNisSiswa"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:inputType="number"
-                                android:textSize="14sp" />
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                        <!-- Jenis Kelamin -->
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Jenis Kelamin"
-                            android:textColor="@color/slate_700"
-                            android:textSize="14sp"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="8dp" />
-
-                        <RadioGroup
-                            android:id="@+id/rgJenisKelamin"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:layout_marginBottom="8dp"
-                            android:orientation="horizontal">
-
-                            <RadioButton
-                                android:id="@+id/rbLakiLaki"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:layout_marginEnd="12dp"
-                                android:background="@drawable/bg_radio_card_selector"
-                                android:button="@null"
-                                android:checked="true"
-                                android:gravity="center"
-                                android:paddingVertical="16dp"
-                                android:text="Laki-Laki"
-                                android:textColor="@color/slate_700"
-                                android:textStyle="bold"
-                                android:contentDescription="Laki-laki" />
-
-                            <RadioButton
-                                android:id="@+id/rbPerempuan"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:background="@drawable/bg_radio_card_selector"
-                                android:button="@null"
-                                android:gravity="center"
-                                android:paddingVertical="16dp"
-                                android:text="Perempuan"
-                                android:textColor="@color/slate_700"
-                                android:textStyle="bold"
-                                android:contentDescription="Perempuan" />
-                        </RadioGroup>
-
-                        <!-- Divider -->
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/outline_variant"
-                            android:layout_marginVertical="16dp" />
-
-                        <!-- SECTION 2: Data Akademik -->
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Data Akademik"
-                            android:textColor="@color/primary"
-                            android:textSize="14sp"
-                            android:textStyle="bold"
-                            android:drawableStart="@drawable/ic_class"
-                            android:drawablePadding="8dp"
-                            android:layout_marginBottom="12dp"
-                            android:layout_marginTop="8dp" />
-
-                        <!-- Tahun Masuk -->
-                        <com.google.android.material.textfield.TextInputLayout
-                            style="@style/Widget.App.FormField.Dropdown"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Tahun Masuk"
-                            android:layout_marginBottom="16dp">
-
-                            <AutoCompleteTextView
-                                android:id="@+id/actvTahunMasuk"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:inputType="none"
-                                android:textSize="14sp" />
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                        <!-- Kelas & Jurusan -->
+                        <!-- Jurusan & Kelas (side by side) -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="24dp"
+                            android:layout_marginBottom="16dp"
                             android:baselineAligned="false"
                             android:orientation="horizontal">
 
@@ -275,11 +177,11 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:hint="Kelas"
+                                android:hint="Konsentrasi Keahlian"
                                 android:layout_marginEnd="8dp">
 
                                 <AutoCompleteTextView
-                                    android:id="@+id/actvKelas"
+                                    android:id="@+id/actvJurusan"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:inputType="none"
@@ -291,17 +193,114 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:hint="Jurusan"
+                                android:hint="Kelas"
                                 android:layout_marginStart="8dp">
 
                                 <AutoCompleteTextView
-                                    android:id="@+id/actvJurusan"
+                                    android:id="@+id/actvKelas"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:inputType="none"
                                     android:textSize="14sp" />
                             </com.google.android.material.textfield.TextInputLayout>
                         </LinearLayout>
+
+                        <!-- Tahun Masuk & Jenis Kelamin (side by side) -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            android:baselineAligned="false"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                style="@style/Widget.App.FormField.Dropdown"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:hint="Tahun Masuk"
+                                android:layout_marginEnd="8dp">
+
+                                <AutoCompleteTextView
+                                    android:id="@+id/actvTahunMasuk"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:inputType="none"
+                                    android:textSize="14sp" />
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="8dp"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Jenis Kelamin"
+                                    android:textColor="@color/slate_700"
+                                    android:textSize="12sp"
+                                    android:layout_marginBottom="4dp" />
+
+                                <RadioGroup
+                                    android:id="@+id/rgJenisKelamin"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+
+                                    <RadioButton
+                                        android:id="@+id/rbLakiLaki"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:layout_marginEnd="6dp"
+                                        android:background="@drawable/bg_radio_card_selector"
+                                        android:button="@null"
+                                        android:checked="true"
+                                        android:gravity="center"
+                                        android:paddingVertical="12dp"
+                                        android:text="Laki-Laki"
+                                        android:textColor="@color/slate_700"
+                                        android:textSize="12sp"
+                                        android:textStyle="bold"
+                                        android:contentDescription="Laki-laki" />
+
+                                    <RadioButton
+                                        android:id="@+id/rbPerempuan"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:layout_marginStart="6dp"
+                                        android:background="@drawable/bg_radio_card_selector"
+                                        android:button="@null"
+                                        android:gravity="center"
+                                        android:paddingVertical="12dp"
+                                        android:text="Perempuan"
+                                        android:textColor="@color/slate_700"
+                                        android:textSize="12sp"
+                                        android:textStyle="bold"
+                                        android:contentDescription="Perempuan" />
+                                </RadioGroup>
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <!-- Agama -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/Widget.App.FormField.Dropdown"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Agama"
+                            android:layout_marginBottom="24dp">
+
+                            <AutoCompleteTextView
+                                android:id="@+id/actvAgama"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="none"
+                                android:textSize="14sp" />
+                        </com.google.android.material.textfield.TextInputLayout>
 
                         <!-- KIRIM Button -->
                         <com.google.android.material.button.MaterialButton
@@ -310,7 +309,7 @@
                             android:layout_height="wrap_content"
                             android:minHeight="48dp"
                             android:backgroundTint="@color/primary"
-                            android:text="KIRIM"
+                            android:text="Simpan"
                             android:textColor="@color/on_primary"
                             android:textSize="16sp"
                             android:textStyle="bold"

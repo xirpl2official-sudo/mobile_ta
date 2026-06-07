@@ -3,14 +3,20 @@ package com.xirpl2.SASMobile
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.graphics.Paint
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.print.PrintAttributes
+import android.print.PrintDocumentAdapter
+import android.print.PrintManager
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ProgressBar
@@ -535,7 +541,7 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
         }
 
         findViewById<View>(R.id.btnCetakData)?.setOnClickListener {
-            Toast.makeText(this, "Fitur cetak akan segera tersedia", Toast.LENGTH_SHORT).show()
+            printDataSiswa()
         }
     }
 
@@ -602,6 +608,110 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
                     progressDialog.dismiss()
                     Toast.makeText(this@DataSiswaAdminActivity, "Gagal export: ${e.message}", Toast.LENGTH_LONG).show()
                 }
+            }
+        }
+    }
+
+    private fun printDataSiswa() {
+        if (allStudentList.isEmpty()) {
+            Toast.makeText(this, "Tidak ada data untuk dicetak", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val timestamp = SimpleDateFormat("dd MMMM yyyy HH:mm", Locale("id", "ID")).format(Date())
+        val filters = mutableListOf<String>()
+        if (selectedKelas != "Semua Kelas") filters.add("Kelas: $selectedKelas")
+        if (selectedJurusan != "Semua Jurusan") filters.add("Jurusan: $selectedJurusan")
+        if (selectedGender != "Semua JK") filters.add("JK: $selectedGender")
+        if (selectedAgama != "Semua Agama") filters.add("Agama: $selectedAgama")
+        val filterText = if (filters.isNotEmpty()) filters.joinToString(" | ") else "Semua Data"
+
+        val rowsHtml = buildString {
+            allStudentList.forEachIndexed { index, siswa ->
+                val jkDisplay = if (siswa.jenis_kelamin.equals("L", ignoreCase = true)) "L" else "P"
+                val wali = siswa.waliKelasName ?: "-"
+                append("""
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${siswa.nis}</td>
+                        <td>${siswa.nama_siswa}</td>
+                        <td>$jkDisplay</td>
+                        <td>${siswa.kelas}</td>
+                        <td>${siswa.jurusan}</td>
+                        <td>$wali</td>
+                    </tr>
+                """.trimIndent())
+            }
+        }
+
+        val html = """
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="utf-8">
+                <style>
+                    @page { size: A4 landscape; margin: 10mm; }
+                    * { margin: 0; padding: 0; box-sizing: border-box; }
+                    body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 10px; color: #1a1a1a; padding: 12px; }
+                    .header { text-align: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #1976D2; }
+                    .header h1 { font-size: 16px; color: #1976D2; margin-bottom: 2px; }
+                    .header h2 { font-size: 13px; color: #333; font-weight: normal; }
+                    .header .meta { font-size: 9px; color: #666; margin-top: 4px; }
+                    .info-bar { display: flex; justify-content: space-between; font-size: 9px; color: #555; margin-bottom: 8px; padding: 4px 8px; background: #f5f5f5; border-radius: 4px; }
+                    table { width: 100%; border-collapse: collapse; }
+                    th { background: #1976D2; color: white; padding: 5px 6px; font-size: 9px; text-align: left; }
+                    td { padding: 4px 6px; border-bottom: 1px solid #e0e0e0; font-size: 9px; }
+                    tr:nth-child(even) { background: #f8f9fa; }
+                    tr:hover { background: #e3f2fd; }
+                    .footer { margin-top: 12px; text-align: center; font-size: 8px; color: #999; border-top: 1px solid #e0e0e0; padding-top: 6px; }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <h1>SMK NEGERI 2 SINGOSARI</h1>
+                    <h2>Data Siswa</h2>
+                    <div class="meta">Dicetak: $timestamp</div>
+                </div>
+                <div class="info-bar">
+                    <span>Filter: $filterText</span>
+                    <span>Total: ${allStudentList.size} siswa</span>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width:30px">No</th>
+                            <th style="width:80px">NIS</th>
+                            <th style="width:180px">Nama Siswa</th>
+                            <th style="width:30px">JK</th>
+                            <th style="width:45px">Kelas</th>
+                            <th style="width:55px">Jurusan</th>
+                            <th>Wali Kelas</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        $rowsHtml
+                    </tbody>
+                </table>
+                <div class="footer">
+                    SMK Negeri 2 Singosari &mdash; Sistem Absensi Sholat &mdash; Halaman cetak
+                </div>
+            </body>
+            </html>
+        """.trimIndent()
+
+        val webView = WebView(this).apply {
+            webViewClient = WebViewClient()
+            settings.javaScriptEnabled = false
+        }
+
+        webView.loadDataWithBaseURL(null, html, "text/HTML", "UTF-8", null)
+
+        webView.webViewClient = object : WebViewClient() {
+            override fun onPageFinished(view: WebView?, url: String?) {
+                val printManager = getSystemService(Context.PRINT_SERVICE) as PrintManager
+                val jobName = "DataSiswa_${SimpleDateFormat("yyyyMMdd_HHmm", Locale.getDefault()).format(Date())}"
+                val printAdapter: PrintDocumentAdapter = view?.createPrintDocumentAdapter(jobName) ?: return
+                printManager.print(jobName, printAdapter, PrintAttributes.Builder().build())
             }
         }
     }
