@@ -190,18 +190,24 @@ override fun onCreate(savedInstanceState: Bundle?) {
     }
 
     private fun findJadwalIdByJenis(jenisSholat: String): Int? {
-        
         var jadwal = jadwalList.find {
             it.jenis_sholat.equals(jenisSholat, ignoreCase = true) && it.jurusan.isNullOrEmpty()
         }
-
-        
         if (jadwal == null) {
             jadwal = jadwalList.find {
                 it.jenis_sholat.equals(jenisSholat, ignoreCase = true)
             }
         }
-
+        if (jadwal == null) {
+            val matchingType = prayerTypesList.find { it.nama_jenis.equals(jenisSholat, ignoreCase = true) }
+            if (matchingType != null) {
+                jadwal = jadwalList.find {
+                    it.idWaktu != null && prayerTimesList.any { pt ->
+                        pt.id == it.idWaktu && pt.id_jenis_sholat == matchingType.id
+                    }
+                }
+            }
+        }
         return jadwal?.id
     }
 
@@ -234,7 +240,6 @@ override fun onCreate(savedInstanceState: Bundle?) {
         items.add(PrayerScheduleItem.DhuhaKeahlian(dhuhaKeahlianList))
 
         val genericPrayers = jadwalList.filter { it.jurusan.isNullOrEmpty() }
-        val jadwalByType = genericPrayers.associateBy { it.jenis_sholat.lowercase() }
 
         // 2. Prayer times map: id_jenis -> PrayerTime (for time enrichment)
         val timeByTypeId = prayerTimesList.associateBy { it.id_jenis_sholat }
@@ -246,31 +251,46 @@ override fun onCreate(savedInstanceState: Bundle?) {
         val displayOrder = listOf("dhuha", "dzuhur", "jumat")
         val addedTypes = mutableSetOf<String>()
 
+        fun matchesTypeKey(namaJenis: String, typeKey: String): Boolean {
+            val lower = namaJenis.lowercase()
+            return when (typeKey) {
+                "dhuha" -> lower == "dhuha" || lower == "duha"
+                "dzuhur" -> lower == "dzuhur" || lower == "zuhur"
+                else -> lower == typeKey
+            }
+        }
+
         // Build cards for ALL prayer types (matching desktop behavior)
         for (typeKey in displayOrder) {
-            val existingJadwal = jadwalByType[typeKey]
+            val existingJadwal = jadwalList.find {
+                matchesTypeKey(it.jenis_sholat, typeKey) && it.jurusan.isNullOrEmpty()
+            }
             if (existingJadwal != null) {
-                // Has a jadwal_sholat entry — use it directly
                 items.add(PrayerScheduleItem.PrayerCard(existingJadwal))
-                addedTypes.add(typeKey)
+                addedTypes.add(existingJadwal.jenis_sholat.lowercase())
             } else {
-                // No jadwal_sholat entry — create placeholder from prayer_times + prayer_types
-                val matchingType = typeById.values.find { it.nama_jenis.lowercase() == typeKey }
+                val matchingType = typeById.values.find { matchesTypeKey(it.nama_jenis, typeKey) }
                 if (matchingType != null) {
                     val pt = timeByTypeId[matchingType.id]
+                    val fallbackWaktu = if (pt == null) {
+                        jadwalList.find {
+                            it.jenis_sholat.equals(matchingType.nama_jenis, ignoreCase = true) &&
+                                it.waktuSholat?.waktuMulai?.isNotEmpty() == true
+                        }?.waktuSholat
+                    } else null
                     val placeholder = JadwalSholatData(
                         id = 0,
                         hari = null,
                         jurusan = null,
                         kelas = null,
                         waktuSholat = WaktuSholatData(
-                            waktuMulai = pt?.waktu_mulai ?: "",
-                            waktuSelesai = pt?.waktu_selesai ?: "",
+                            waktuMulai = pt?.waktu_mulai ?: fallbackWaktu?.waktuMulai ?: "",
+                            waktuSelesai = pt?.waktu_selesai ?: fallbackWaktu?.waktuSelesai ?: "",
                             jenisSholat = JenisSholatData(namaJenis = matchingType.nama_jenis)
                         )
                     )
                     items.add(PrayerScheduleItem.PrayerCard(placeholder))
-                    addedTypes.add(typeKey)
+                    addedTypes.add(matchingType.nama_jenis.lowercase())
                 }
             }
         }
@@ -287,11 +307,17 @@ override fun onCreate(savedInstanceState: Bundle?) {
             val key = type.nama_jenis.lowercase()
             if (key !in addedTypes) {
                 val pt = timeByTypeId[type.id]
+                val fallbackWaktu = if (pt == null) {
+                    jadwalList.find {
+                        it.jenis_sholat.equals(type.nama_jenis, ignoreCase = true) &&
+                            it.waktuSholat?.waktuMulai?.isNotEmpty() == true
+                    }?.waktuSholat
+                } else null
                 val placeholder = JadwalSholatData(
                     id = 0,
                     waktuSholat = WaktuSholatData(
-                        waktuMulai = pt?.waktu_mulai ?: "",
-                        waktuSelesai = pt?.waktu_selesai ?: "",
+                        waktuMulai = pt?.waktu_mulai ?: fallbackWaktu?.waktuMulai ?: "",
+                        waktuSelesai = pt?.waktu_selesai ?: fallbackWaktu?.waktuSelesai ?: "",
                         jenisSholat = JenisSholatData(namaJenis = type.nama_jenis)
                     )
                 )
@@ -555,44 +581,12 @@ override fun onCreate(savedInstanceState: Bundle?) {
         if (jadwalId != null) {
             showEditDialog(jadwalId, jenisSholat)
         } else {
-            
-            Toast.makeText(this, "Mencari jadwal $jenisSholat...", Toast.LENGTH_SHORT).show()
-            lifecycleScope.launch {
-                val token = getAuthToken()
-                if (token.isEmpty()) {
-                    if (!isFinishing && !isDestroyed) {
-                        safeRunOnUiThread {
-                            Toast.makeText(this@JadwalSholatAdminActivity, "Sesi telah berakhir", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                    return@launch
-                }
-
-                repository.getJadwalSholat(token).fold(
-                    onSuccess = { list ->
-                        if (isFinishing || isDestroyed) return@fold
-                        jadwalList = list
-                        updateJadwalUI()
-                        val id = list.find { it.jenis_sholat.equals(jenisSholat, ignoreCase = true) }?.id
-                        safeRunOnUiThread {
-                            if (!isFinishing && !isDestroyed) {
-                                if (id != null) {
-                                    showEditDialog(id, jenisSholat)
-                                } else {
-                                    Toast.makeText(this@JadwalSholatAdminActivity, "Jadwal $jenisSholat tidak ditemukan", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                        }
-                    },
-                    onFailure = { error ->
-                        if (isFinishing || isDestroyed) return@fold
-                        safeRunOnUiThread {
-                            if (!isFinishing && !isDestroyed) {
-                                Toast.makeText(this@JadwalSholatAdminActivity, "Gagal memuat jadwal", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                    }
-                )
+            val matchingType = prayerTypesList.find { it.nama_jenis.equals(jenisSholat, ignoreCase = true) }
+            val pt = matchingType?.let { t -> prayerTimesList.find { it.id_jenis_sholat == t.id } }
+            if (pt != null) {
+                showEditDialog(pt.id, jenisSholat)
+            } else {
+                Toast.makeText(this, "Jadwal $jenisSholat tidak ditemukan", Toast.LENGTH_SHORT).show()
             }
         }
     }

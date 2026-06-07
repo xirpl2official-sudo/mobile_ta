@@ -126,13 +126,14 @@ class LaporanAdminActivity : BaseAdminActivity() {
         setupButtons()
         setupPagination()
 
-        updateDateDisplay()
-        loadData()
         swipeRefresh = findViewById(R.id.swipeRefresh)
         swipeRefresh.setOnRefreshListener {
             loadData()
             fetchChartData()
         }
+
+        updateDateDisplay()
+        loadData()
 
         fetchChartData()
     }

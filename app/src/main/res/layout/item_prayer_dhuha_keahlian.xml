@@ -35,7 +35,7 @@
             app:layout_constraintStart_toEndOf="@id/iconJadwalDhuha"
             app:layout_constraintTop_toTopOf="@id/iconJadwalDhuha"
             app:layout_constraintBottom_toBottomOf="@id/iconJadwalDhuha"
-            app:layout_constraintEnd_toStartOf="@id/btnEditDhuha" />
+            app:layout_constraintEnd_toStartOf="@id/barrierButtons" />
 
         <ImageView
             android:id="@+id/btnEditDhuha"
@@ -60,6 +60,13 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="@id/iconJadwalDhuha" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrierButtons"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="start"
+            app:constraint_referenced_ids="btnEditDhuha,btnSaveDhuha" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvDhuhaSchedule"
