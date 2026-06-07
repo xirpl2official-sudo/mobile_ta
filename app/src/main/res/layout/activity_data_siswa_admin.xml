@@ -297,8 +297,9 @@
                                     app:icon="@drawable/ic_add"
                                     app:iconSize="16dp"
                                     app:cornerRadius="8dp"
-                                    app:strokeColor="@color/blue_theme"
-                                    android:textColor="@color/blue_theme"
+                                    app:strokeColor="@color/slate_300"
+                                    android:textColor="@color/slate_700"
+                                    app:iconTint="@color/slate_700"
                                     android:layout_marginEnd="8dp" />
 
                                 <com.google.android.material.button.MaterialButton
@@ -596,6 +597,7 @@
                                         android:padding="0dp"
                                         android:minWidth="0dp"
                                         android:minHeight="0dp"
+                                        android:layout_marginStart="8dp"
                                         android:gravity="center" />
 
                                     <TextView

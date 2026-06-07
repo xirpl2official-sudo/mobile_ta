@@ -16,7 +16,8 @@ import com.xirpl2.SASMobile.model.SiswaItem
 class SiswaAdapter(
     private val onDetailClick: (SiswaItem) -> Unit,
     private val onMoreMenuClick: (View, SiswaItem) -> Unit = { _, _ -> },
-    private val isReadOnly: Boolean = false
+    private val isReadOnly: Boolean = false,
+    private val isUnregistered: Boolean = false
 ) : ListAdapter<SiswaItem, RecyclerView.ViewHolder>(SiswaDiffCallback()) {
 
     private val selectedNis = mutableSetOf<String>()
@@ -88,7 +89,7 @@ class SiswaAdapter(
     fun getSelectedCount(): Int = selectedNis.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val layoutId = if (isReadOnly) R.layout.item_siswa_unregistered_row else R.layout.item_siswa
+        val layoutId = if (isUnregistered) R.layout.item_siswa_unregistered_row else R.layout.item_siswa
         val view = LayoutInflater.from(parent.context)
             .inflate(layoutId, parent, false)
         return SiswaViewHolder(view)
@@ -114,6 +115,8 @@ class SiswaAdapter(
         private val btnDetail: MaterialButton? = itemView.findViewById(R.id.btnDetail)
         private val btnMoreMenu: ImageView? = itemView.findViewById(R.id.btnMoreMenu)
         private val cbRow: CheckBox? = itemView.findViewById(R.id.cbRow)
+        private val tvJenisKelamin: TextView? = itemView.findViewById(R.id.tvJenisKelamin)
+        private val tvStatusAkademik: TextView? = itemView.findViewById(R.id.tvStatusAkademik)
 
         fun bind(
             siswa: SiswaItem,
@@ -139,9 +142,11 @@ class SiswaAdapter(
             tvKelas.text = siswa.kelas
             tvJurusan?.text = siswa.jurusan
             tvWaliKelas?.text = siswa.waliKelasName?.ifEmpty { "-" } ?: "-"
+            tvJenisKelamin?.text = siswa.jenis_kelamin
+            tvStatusAkademik?.text = siswa.statusAkademik?.uppercase() ?: "AKTIF"
 
             cbRow?.let {
-                it.visibility = if (selectionMode) View.VISIBLE else View.GONE
+                it.visibility = if (selectionMode) View.VISIBLE else View.INVISIBLE
                 it.isChecked = isSelected
                 it.setOnClickListener { onToggleSelection() }
             }

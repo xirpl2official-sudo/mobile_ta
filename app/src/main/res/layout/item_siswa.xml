@@ -21,10 +21,8 @@
     <!-- NIS -->
     <TextView
         android:id="@+id/tvNis"
-        android:layout_width="0dp"
+        android:layout_width="90dp"
         android:layout_height="wrap_content"
-        android:layout_weight="0.12"
-        android:minWidth="48dp"
         android:gravity="center"
         android:paddingHorizontal="4dp"
         android:textColor="@color/on_background"
@@ -34,10 +32,8 @@
 
     <!-- Nama + device indicator -->
     <LinearLayout
-        android:layout_width="0dp"
+        android:layout_width="220dp"
         android:layout_height="wrap_content"
-        android:layout_weight="0.28"
-        android:minWidth="100dp"
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:paddingHorizontal="4dp">
@@ -67,10 +63,8 @@
     <!-- JK -->
     <TextView
         android:id="@+id/tvJenisKelamin"
-        android:layout_width="0dp"
+        android:layout_width="40dp"
         android:layout_height="wrap_content"
-        android:layout_weight="0.06"
-        android:minWidth="24dp"
         android:gravity="center"
         android:paddingHorizontal="2dp"
         android:textColor="@color/on_background"
@@ -79,10 +73,8 @@
     <!-- Kelas -->
     <TextView
         android:id="@+id/tvKelas"
-        android:layout_width="0dp"
+        android:layout_width="60dp"
         android:layout_height="wrap_content"
-        android:layout_weight="0.09"
-        android:minWidth="32dp"
         android:gravity="center"
         android:paddingHorizontal="2dp"
         android:textColor="@color/on_background"
@@ -91,10 +83,8 @@
     <!-- Jurusan -->
     <TextView
         android:id="@+id/tvJurusan"
-        android:layout_width="0dp"
+        android:layout_width="80dp"
         android:layout_height="wrap_content"
-        android:layout_weight="0.12"
-        android:minWidth="40dp"
         android:gravity="center"
         android:paddingHorizontal="4dp"
         android:paddingVertical="4dp"
@@ -107,11 +97,8 @@
     <!-- Keterangan (Status Akademik) -->
     <TextView
         android:id="@+id/tvStatusAkademik"
-        android:layout_width="0dp"
+        android:layout_width="70dp"
         android:layout_height="wrap_content"
-        android:layout_weight="0.11"
-        android:minWidth="36dp"
-        android:layout_marginStart="8dp"
         android:gravity="center"
         android:paddingHorizontal="4dp"
         android:paddingVertical="3dp"
@@ -125,7 +112,7 @@
     <!-- More menu -->
     <ImageView
         android:id="@+id/btnMoreMenu"
-        android:layout_width="36dp"
+        android:layout_width="40dp"
         android:layout_height="wrap_content"
         android:minHeight="36dp"
         android:gravity="center"

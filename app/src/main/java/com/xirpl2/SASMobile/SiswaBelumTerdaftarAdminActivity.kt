@@ -114,7 +114,8 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
                 val dialog = SiswaDetailDialogFragment.newInstance(siswa)
                 dialog.show(supportFragmentManager, "SiswaDetail")
             },
-            isReadOnly = true
+            isReadOnly = true,
+            isUnregistered = true
         )
 
         rvSiswaBaru.layoutManager = LinearLayoutManager(this)

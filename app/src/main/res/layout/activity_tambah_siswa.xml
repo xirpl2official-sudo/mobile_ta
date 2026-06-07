@@ -7,51 +7,86 @@
     android:background="@color/background"
     tools:context=".TambahSiswaActivity">
 
-    <!-- Top AppBar -->
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/surface"
-        android:elevation="0dp"
+    <!-- Top AppBar - Custom Blue Header -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/topBarContent"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:minHeight="90dp"
+        android:background="@color/blue_theme"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="4dp"
         app:layout_constraintTop_toTopOf="parent"
-        app:title="DATA SISWA"
-        app:titleCentered="false"
-        app:titleTextColor="@color/slate_900">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical|end"
-            android:paddingEnd="16dp">
+        <FrameLayout
+            android:id="@+id/iconBackContainer"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnBatal"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="BATAL"
-                android:textColor="@color/red"
-                app:icon="@drawable/ic_close"
-                app:iconGravity="end"
-                app:iconTint="@color/red" />
-        </LinearLayout>
-    </com.google.android.material.appbar.MaterialToolbar>
+            <ImageView
+                android:id="@+id/iconBack"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_back"
+                android:contentDescription="Kembali"
+                app:tint="@android:color/white" />
+        </FrameLayout>
 
-    <View
-        android:id="@+id/toolbarDivider"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/outline_variant"
-        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+        <ImageView
+            android:id="@+id/logoSekolah"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/logo_smk"
+            android:contentDescription="Logo SMKN 2"
+            app:layout_constraintStart_toEndOf="@id/iconBackContainer"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginStart="8dp" />
+
+        <TextView
+            android:id="@+id/tvPageTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tambah Siswa"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/logoSekolah"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/textNamaSekolah"
+            app:layout_constraintVertical_chainStyle="packed"
+            android:layout_marginStart="8dp" />
+
+        <TextView
+            android:id="@+id/textNamaSekolah"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="SMK Negeri 2 Singosari"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            app:layout_constraintStart_toStartOf="@id/tvPageTitle"
+            app:layout_constraintTop_toBottomOf="@id/tvPageTitle"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="8dp" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Main Content -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:fillViewport="true"
-        app:layout_constraintBottom_toTopOf="@id/footer"
-        app:layout_constraintTop_toBottomOf="@id/toolbarDivider">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topBarContent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -63,8 +98,9 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="8dp"
+                app:cardBackgroundColor="@color/surface"
                 app:strokeColor="@color/outline_variant"
                 app:strokeWidth="1dp">
 
@@ -96,21 +132,25 @@
                         android:orientation="vertical"
                         android:padding="24dp">
 
+                        <!-- SECTION 1: Data Pribadi -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Data Pribadi"
+                            android:textColor="@color/primary"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:drawableStart="@drawable/ic_profile"
+                            android:drawablePadding="8dp"
+                            android:layout_marginBottom="12dp"
+                            android:layout_marginTop="8dp" />
+
                         <!-- NAMA SISWA -->
                         <com.google.android.material.textfield.TextInputLayout
-                            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                            style="@style/Widget.App.FormField"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="Nama Siswa"
-                            app:boxBackgroundColor="@color/surface"
-                            app:hintTextColor="@color/hint_and_floating"
-                            app:boxStrokeColor="@color/stroke_orange_always"
-                            app:boxStrokeWidth="1dp"
-                            app:boxStrokeWidthFocused="1dp"
-                            app:boxCornerRadiusTopStart="12dp"
-                            app:boxCornerRadiusTopEnd="12dp"
-                            app:boxCornerRadiusBottomStart="12dp"
-                            app:boxCornerRadiusBottomEnd="12dp"
                             android:layout_marginBottom="16dp">
 
                             <com.google.android.material.textfield.TextInputEditText
@@ -123,19 +163,10 @@
 
                         <!-- NIS SISWA -->
                         <com.google.android.material.textfield.TextInputLayout
-                            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                            style="@style/Widget.App.FormField"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="NIS Siswa"
-                            app:boxBackgroundColor="@color/surface"
-                            app:hintTextColor="@color/hint_and_floating"
-                            app:boxStrokeColor="@color/stroke_orange_always"
-                            app:boxStrokeWidth="1dp"
-                            app:boxStrokeWidthFocused="1dp"
-                            app:boxCornerRadiusTopStart="12dp"
-                            app:boxCornerRadiusTopEnd="12dp"
-                            app:boxCornerRadiusBottomStart="12dp"
-                            app:boxCornerRadiusBottomEnd="12dp"
                             android:layout_marginBottom="16dp">
 
                             <com.google.android.material.textfield.TextInputEditText
@@ -143,197 +174,6 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:inputType="number"
-                                android:textSize="14sp" />
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                        <!-- Tahun Masuk -->
-                        <com.google.android.material.textfield.TextInputLayout
-                            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Tahun Masuk"
-                            app:boxBackgroundColor="@color/surface"
-                            app:hintTextColor="@color/hint_and_floating"
-                            app:boxStrokeColor="@color/stroke_orange_always"
-                            app:boxStrokeWidth="1dp"
-                            app:boxStrokeWidthFocused="1dp"
-                            app:boxCornerRadiusTopStart="12dp"
-                            app:boxCornerRadiusTopEnd="12dp"
-                            app:boxCornerRadiusBottomStart="12dp"
-                            app:boxCornerRadiusBottomEnd="12dp"
-                            android:layout_marginBottom="16dp">
-
-                            <AutoCompleteTextView
-                                android:id="@+id/actvTahunMasuk"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:inputType="none"
-                                android:textSize="14sp" />
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                        <!-- Tahun Ajaran -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="16dp"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
-
-                            <com.google.android.material.textfield.TextInputLayout
-                                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:hint="Mulai (YYYY)"
-                                app:boxBackgroundColor="@color/surface"
-                                app:hintTextColor="@color/hint_and_floating"
-                                app:boxStrokeColor="@color/stroke_orange_always"
-                                app:boxStrokeWidth="1dp"
-                                app:boxStrokeWidthFocused="1dp"
-                                app:boxCornerRadiusTopStart="12dp"
-                                app:boxCornerRadiusTopEnd="12dp"
-                                app:boxCornerRadiusBottomStart="12dp"
-                                app:boxCornerRadiusBottomEnd="12dp">
-
-                                <com.google.android.material.textfield.TextInputEditText
-                                    android:id="@+id/etTahunAjaranMulai"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:gravity="center"
-                                    android:inputType="number"
-                                    android:textSize="14sp" />
-                            </com.google.android.material.textfield.TextInputLayout>
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginHorizontal="12dp"
-                                android:text="/"
-                                android:textColor="@color/slate_500"
-                                android:textSize="18sp"
-                                android:textStyle="bold" />
-
-                            <com.google.android.material.textfield.TextInputLayout
-                                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:hint="Selesai (YYYY)"
-                                app:boxBackgroundColor="@color/surface"
-                                app:hintTextColor="@color/hint_and_floating"
-                                app:boxStrokeColor="@color/stroke_orange_always"
-                                app:boxStrokeWidth="1dp"
-                                app:boxStrokeWidthFocused="1dp"
-                                app:boxCornerRadiusTopStart="12dp"
-                                app:boxCornerRadiusTopEnd="12dp"
-                                app:boxCornerRadiusBottomStart="12dp"
-                                app:boxCornerRadiusBottomEnd="12dp">
-
-                                <com.google.android.material.textfield.TextInputEditText
-                                    android:id="@+id/etTahunAjaranSelesai"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:gravity="center"
-                                    android:inputType="number"
-                                    android:textSize="14sp" />
-                            </com.google.android.material.textfield.TextInputLayout>
-                        </LinearLayout>
-
-                        <!-- Kelas & Jurusan -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="16dp"
-                            android:baselineAligned="false"
-                            android:orientation="horizontal">
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
-
-                                <com.google.android.material.textfield.TextInputLayout
-                                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:hint="Kelas"
-                                    app:boxBackgroundColor="@color/surface"
-                                    app:hintTextColor="@color/hint_and_floating"
-                                    app:boxStrokeColor="@color/stroke_orange_always"
-                                    app:boxStrokeWidth="1dp"
-                                    app:boxStrokeWidthFocused="1dp"
-                                    app:boxCornerRadiusTopStart="12dp"
-                                    app:boxCornerRadiusTopEnd="12dp"
-                                    app:boxCornerRadiusBottomStart="12dp"
-                                    app:boxCornerRadiusBottomEnd="12dp">
-
-                                    <AutoCompleteTextView
-                                        android:id="@+id/actvKelas"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:inputType="none"
-                                        android:textSize="14sp" />
-                                </com.google.android.material.textfield.TextInputLayout>
-                            </LinearLayout>
-
-                            <View
-                                android:layout_width="12dp"
-                                android:layout_height="1dp" />
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
-
-                                <com.google.android.material.textfield.TextInputLayout
-                                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:hint="Jurusan"
-                                    app:boxBackgroundColor="@color/surface"
-                                    app:hintTextColor="@color/hint_and_floating"
-                                    app:boxStrokeColor="@color/stroke_orange_always"
-                                    app:boxStrokeWidth="1dp"
-                                    app:boxStrokeWidthFocused="1dp"
-                                    app:boxCornerRadiusTopStart="12dp"
-                                    app:boxCornerRadiusTopEnd="12dp"
-                                    app:boxCornerRadiusBottomStart="12dp"
-                                    app:boxCornerRadiusBottomEnd="12dp">
-
-                                    <AutoCompleteTextView
-                                        android:id="@+id/actvJurusan"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:inputType="none"
-                                        android:textSize="14sp" />
-                                </com.google.android.material.textfield.TextInputLayout>
-                            </LinearLayout>
-                        </LinearLayout>
-
-                        <!-- Part -->
-                        <com.google.android.material.textfield.TextInputLayout
-                            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Part"
-                            app:boxBackgroundColor="@color/surface"
-                            app:hintTextColor="@color/hint_and_floating"
-                            app:boxStrokeColor="@color/stroke_orange_always"
-                            app:boxStrokeWidth="1dp"
-                            app:boxStrokeWidthFocused="1dp"
-                            app:boxCornerRadiusTopStart="12dp"
-                            app:boxCornerRadiusTopEnd="12dp"
-                            app:boxCornerRadiusBottomStart="12dp"
-                            app:boxCornerRadiusBottomEnd="12dp"
-                            android:layout_marginBottom="16dp">
-
-                            <AutoCompleteTextView
-                                android:id="@+id/actvPart"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:inputType="none"
                                 android:textSize="14sp" />
                         </com.google.android.material.textfield.TextInputLayout>
 
@@ -351,8 +191,8 @@
                             android:id="@+id/rgJenisKelamin"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:layout_marginBottom="24dp"
+                            android:layout_marginTop="4dp"
+                            android:layout_marginBottom="8dp"
                             android:orientation="horizontal">
 
                             <RadioButton
@@ -360,30 +200,108 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:layout_marginEnd="6dp"
+                                android:layout_marginEnd="12dp"
                                 android:background="@drawable/bg_radio_card_selector"
                                 android:button="@null"
                                 android:checked="true"
                                 android:gravity="center"
-                                android:paddingVertical="12dp"
+                                android:paddingVertical="16dp"
                                 android:text="Laki-Laki"
                                 android:textColor="@color/slate_700"
-                                android:textStyle="bold" />
+                                android:textStyle="bold"
+                                android:contentDescription="Laki-laki" />
 
                             <RadioButton
                                 android:id="@+id/rbPerempuan"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:layout_marginStart="6dp"
                                 android:background="@drawable/bg_radio_card_selector"
                                 android:button="@null"
                                 android:gravity="center"
-                                android:paddingVertical="12dp"
+                                android:paddingVertical="16dp"
                                 android:text="Perempuan"
                                 android:textColor="@color/slate_700"
-                                android:textStyle="bold" />
+                                android:textStyle="bold"
+                                android:contentDescription="Perempuan" />
                         </RadioGroup>
+
+                        <!-- Divider -->
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/outline_variant"
+                            android:layout_marginVertical="16dp" />
+
+                        <!-- SECTION 2: Data Akademik -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Data Akademik"
+                            android:textColor="@color/primary"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:drawableStart="@drawable/ic_class"
+                            android:drawablePadding="8dp"
+                            android:layout_marginBottom="12dp"
+                            android:layout_marginTop="8dp" />
+
+                        <!-- Tahun Masuk -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/Widget.App.FormField.Dropdown"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Tahun Masuk"
+                            android:layout_marginBottom="16dp">
+
+                            <AutoCompleteTextView
+                                android:id="@+id/actvTahunMasuk"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="none"
+                                android:textSize="14sp" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <!-- Kelas & Jurusan -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="24dp"
+                            android:baselineAligned="false"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                style="@style/Widget.App.FormField.Dropdown"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:hint="Kelas"
+                                android:layout_marginEnd="8dp">
+
+                                <AutoCompleteTextView
+                                    android:id="@+id/actvKelas"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:inputType="none"
+                                    android:textSize="14sp" />
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                style="@style/Widget.App.FormField.Dropdown"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:hint="Jurusan"
+                                android:layout_marginStart="8dp">
+
+                                <AutoCompleteTextView
+                                    android:id="@+id/actvJurusan"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:inputType="none"
+                                    android:textSize="14sp" />
+                            </com.google.android.material.textfield.TextInputLayout>
+                        </LinearLayout>
 
                         <!-- KIRIM Button -->
                         <com.google.android.material.button.MaterialButton
@@ -406,29 +324,36 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Footer -->
-    <LinearLayout
-        android:id="@+id/footer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/surface"
-        android:orientation="vertical"
-        android:padding="24dp"
-        app:layout_constraintBottom_toBottomOf="parent">
+    <!-- Full Screen Loading Overlay -->
+    <FrameLayout
+        android:id="@+id/loadingOverlay"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#80FFFFFF"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginBottom="16dp"
-            android:background="@color/outline_variant" />
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            app:indicatorColor="@color/primary"
+            app:trackCornerRadius="2dp" />
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="© 2024 Presensi Sholat.\nSistem Manajemen Kehadiran Terpadu."
-            android:textColor="@color/slate_500"
-            android:textSize="12sp" />
-    </LinearLayout>
+            android:layout_gravity="center"
+            android:layout_marginTop="56dp"
+            android:text="Menyimpan data..."
+            android:textColor="@color/on_background"
+            android:textSize="14sp" />
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
