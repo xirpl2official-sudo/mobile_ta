@@ -41,8 +41,8 @@ android {
         applicationId = "com.xirpl2.SASMobile"
         minSdk = 23
         targetSdk = 36
-        versionCode = 8
-        versionName = "1.0.9"
+        versionCode = 9
+        versionName = "1.0.10"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 

@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit
 object RetrofitClient {
 
     // 1. URL Production Langsung (Hardcoded)
-    private const val BASE_URL = "http://localhost:3000/api/"
+    private const val BASE_URL = "https://absensholat-api.vercel.app/api/"
 
     // 2. Variabel Context untuk Autentikasi
     private var appContext: Context? = null
