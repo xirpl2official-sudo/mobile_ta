@@ -146,7 +146,7 @@ class SiswaAdapter(
             tvStatusAkademik?.text = siswa.statusAkademik?.uppercase() ?: "AKTIF"
 
             cbRow?.let {
-                it.visibility = if (selectionMode) View.VISIBLE else View.INVISIBLE
+                it.visibility = View.VISIBLE
                 it.isChecked = isSelected
                 it.setOnClickListener { onToggleSelection() }
             }
