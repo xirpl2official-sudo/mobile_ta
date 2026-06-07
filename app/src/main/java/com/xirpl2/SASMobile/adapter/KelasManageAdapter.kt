@@ -69,7 +69,8 @@ class JurusanGroupAdapter(
             kelasAdapter.submitList(group.kelas)
 
             jurusanHeader.setOnClickListener {
-                if (isExpanded) {
+                val currentlyExpanded = expandedGroups.contains(group.jurusan)
+                if (currentlyExpanded) {
                     expandedGroups.remove(group.jurusan)
                     layoutExpandableGroup.visibility = View.GONE
                     ivExpandGroup.animate().rotation(0f).setDuration(200).start()
@@ -167,7 +168,8 @@ class KelasInGroupAdapter(
             ivExpandKelas.rotation = if (isExpanded) 90f else 0f
 
             kelasHeader.setOnClickListener {
-                if (isExpanded) {
+                val currentlyExpanded = expandedKelasIds.contains(kelas.id_kelas)
+                if (currentlyExpanded) {
                     expandedKelasIds.remove(kelas.id_kelas)
                     layoutExpandableKelas.visibility = View.GONE
                     ivExpandKelas.animate().rotation(0f).setDuration(200).start()
