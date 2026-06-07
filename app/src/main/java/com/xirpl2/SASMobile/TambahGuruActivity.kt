@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Toast
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputLayout
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xirpl2.SASMobile.model.CreateGuruRequest
@@ -43,6 +44,13 @@ class TambahGuruActivity : BaseActivity() {
         setupListeners()
     }
 
+    private lateinit var tilPassword: com.google.android.material.textfield.TextInputLayout
+
+    private fun generateDefaultPassword(): String {
+        val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#"
+        return (1..12).map { chars.random() }.joinToString("")
+    }
+
     private fun initViews() {
         etNama = findViewById(R.id.etNama)
         etNip = findViewById(R.id.etNip)
@@ -50,6 +58,11 @@ class TambahGuruActivity : BaseActivity() {
         etPassword = findViewById(R.id.etPassword)
         btnSimpan = findViewById(R.id.btnSimpan)
         progressLoading = findViewById(R.id.progressLoading)
+        tilPassword = findViewById(R.id.tilPassword)
+
+        val defaultPassword = generateDefaultPassword()
+        etPassword.setText(defaultPassword)
+        tilPassword.helperText = "Password default sudah di-generate. Bagikan ke guru setelah akun dibuat."
     }
 
     private fun setupListeners() {
@@ -68,8 +81,8 @@ class TambahGuruActivity : BaseActivity() {
         val email = etEmail.text.toString().trim()
         val password = etPassword.text.toString().trim()
 
-        if (nama.isEmpty() || email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Nama, Email, dan Password wajib diisi", Toast.LENGTH_SHORT).show()
+        if (nama.isEmpty() || nip.isEmpty() || email.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Nama, NIP, Email, dan Password wajib diisi", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -87,7 +100,7 @@ class TambahGuruActivity : BaseActivity() {
             .setTitle("Tambah Guru")
             .setMessage("Apakah Anda yakin ingin menambahkan guru baru?")
             .setPositiveButton("Simpan") { _, _ ->
-                submitData(nama, if (nip.isEmpty()) null else nip, email, password)
+                submitData(nama, nip, email, password)
             }
             .setNegativeButton("Batal", null)
             .show()

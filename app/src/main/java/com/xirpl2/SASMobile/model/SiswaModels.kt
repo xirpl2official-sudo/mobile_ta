@@ -73,6 +73,19 @@ data class UpdateSiswaRequest(
     val status_akademik: String? = null
 )
 
+data class UpdateSiswaByNISRequest(
+    val nis: String,
+    val nama_siswa: String? = null,
+    @SerializedName("jk")
+    val jenis_kelamin: String? = null,
+    val id_kelas: Int? = null,
+    val id_jurusan: Int? = null,
+    val id_tahun_masuk: Int? = null,
+    val agama: String? = null,
+    val class_status: String? = null,
+    val status_akademik: String? = null
+)
+
 data class SiswaListPaginatedResponse(
     val message: String? = null,
     val data: List<SiswaItem> = emptyList(),

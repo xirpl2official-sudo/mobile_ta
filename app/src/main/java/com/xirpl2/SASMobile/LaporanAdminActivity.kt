@@ -4,8 +4,14 @@ import android.app.DatePickerDialog
 import android.content.ContentValues
 import android.os.Build
 import android.os.Bundle
+import android.graphics.Color
 import android.os.Environment
+import androidx.core.content.ContextCompat
 import android.provider.MediaStore
+import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -340,7 +346,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
                 val statsResponse = RetrofitClient.apiService.getAttendanceAnalytics("Bearer $token", startDate = startDate, endDate = endDate)
                 if (statsResponse.isSuccessful) {
                     val stats = statsResponse.body()?.data
-                    if (stats != null) {
+                    if (stats != null && ::progressDonutKehadiran.isInitialized) {
                         val hadir = stats.total_kehadiran_hari_ini
                         val izin = stats.total_izin_hari_ini
                         val sakit = stats.total_sakit_hari_ini
@@ -354,6 +360,65 @@ class LaporanAdminActivity : BaseAdminActivity() {
                         tvLegendIzin.text = izin.toString()
                         tvLegendSakit.text = sakit.toString()
                         tvLegendAlpha.text = alpha.toString()
+
+                        val entries = listOf(
+                            Entry(0f, hadir.toFloat()),
+                            Entry(1f, izin.toFloat()),
+                            Entry(2f, sakit.toFloat()),
+                            Entry(3f, alpha.toFloat())
+                        )
+                        val labels = listOf("Hadir", "Izin", "Sakit", "Alpha")
+                        val colors = listOf(
+                            ContextCompat.getColor(this@LaporanAdminActivity, R.color.green),
+                            ContextCompat.getColor(this@LaporanAdminActivity, R.color.orange_warning),
+                            ContextCompat.getColor(this@LaporanAdminActivity, R.color.blue),
+                            ContextCompat.getColor(this@LaporanAdminActivity, R.color.red)
+                        )
+
+                        val lineDataSet = LineDataSet(entries, "Kehadiran").apply {
+                            this.colors = colors
+                            setCircleColors(colors)
+                            lineWidth = 2f
+                            circleRadius = 4f
+                            setDrawValues(true)
+                            valueTextSize = 11f
+                            valueTextColor = ContextCompat.getColor(this@LaporanAdminActivity, R.color.on_background)
+                            mode = LineDataSet.Mode.CUBIC_BEZIER
+                            setDrawFilled(true)
+                            fillColor = ContextCompat.getColor(this@LaporanAdminActivity, R.color.stat_blue_text)
+                            fillAlpha = 30
+                        }
+
+                        lineChartTrend.apply {
+                            data = LineData(lineDataSet)
+                            description.isEnabled = false
+                            legend.isEnabled = true
+                            legend.textColor = ContextCompat.getColor(this@LaporanAdminActivity, R.color.on_background)
+                            xAxis.apply {
+                                position = XAxis.XAxisPosition.BOTTOM
+                                valueFormatter = object : com.github.mikephil.charting.formatter.IndexAxisValueFormatter(labels) {
+                                    override fun getFormattedValue(value: Float): String {
+                                        return labels.getOrNull(value.toInt()) ?: ""
+                                    }
+                                }
+                                textColor = ContextCompat.getColor(this@LaporanAdminActivity, R.color.on_background)
+                                setDrawGridLines(false)
+                                granularity = 1f
+                            }
+                            axisLeft.apply {
+                                textColor = ContextCompat.getColor(this@LaporanAdminActivity, R.color.on_background)
+                                axisMinimum = 0f
+                                granularity = 1f
+                            }
+                            axisRight.isEnabled = false
+                            setTouchEnabled(true)
+                            isDragEnabled = true
+                            setScaleEnabled(false)
+                            setPinchZoom(false)
+                            setBackgroundColor(Color.TRANSPARENT)
+                            animateX(500)
+                            invalidate()
+                        }
                     }
                 }
             } catch (e: Exception) { android.util.Log.w("LaporanAdmin", "Attendance chart error", e) }

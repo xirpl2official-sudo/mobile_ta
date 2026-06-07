@@ -25,7 +25,6 @@
             android:paddingBottom="20dp"
             android:background="@android:color/transparent">
 
-            
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -36,7 +35,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:text="Tambah Presensi Siswa"
+                    android:text="Input Presensi Manual"
                     android:textSize="20sp"
                     android:textStyle="bold"
                     android:textColor="@color/on_surface" />
@@ -56,55 +55,74 @@
                     app:tint="@color/text_secondary" />
             </RelativeLayout>
 
-            
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Cari Siswa"
+                android:text="Data Siswa"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="@color/slate_700"
                 android:layout_marginBottom="8dp" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilSearchSiswa"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:hintEnabled="false"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                app:boxCornerRadiusTopStart="8dp"
-                app:boxCornerRadiusTopEnd="8dp"
-                app:boxCornerRadiusBottomStart="8dp"
-                app:boxCornerRadiusBottomEnd="8dp"
-                app:boxStrokeWidth="0dp"
-                app:boxStrokeWidthFocused="0dp"
-                android:layout_marginBottom="4dp">
-
-                <AutoCompleteTextView
-                    android:id="@+id/actvSiswa"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/bg_input_rounded"
-                    android:hint="Ketik Nama atau NIS..."
-                    android:textColorHint="@color/text_hint"
-                    android:textSize="13sp"
-                    android:paddingHorizontal="16dp"
-                    android:paddingVertical="12dp"
-                    android:inputType="text" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <TextView
-                android:id="@+id/tvSelectedSiswa"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Belum ada siswa dipilih"
-                android:textColor="#F48C25"
-                android:textSize="11sp"
-                android:visibility="gone"
+                android:orientation="horizontal"
                 android:layout_marginBottom="16dp"
-                android:layout_marginStart="4dp"/>
+                android:background="@drawable/bg_input_rounded"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="12dp">
 
-            
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="NIS"
+                        android:textSize="11sp"
+                        android:textColor="@color/text_hint" />
+
+                    <TextView
+                        android:id="@+id/tvNis"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="-"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/on_surface" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:orientation="vertical"
+                    android:layout_marginStart="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Nama"
+                        android:textSize="11sp"
+                        android:textColor="@color/text_hint" />
+
+                    <TextView
+                        android:id="@+id/tvNama"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="-"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/on_surface"
+                        android:maxLines="1"
+                        android:ellipsize="end" />
+                </LinearLayout>
+            </LinearLayout>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -143,7 +161,6 @@
                     android:clickable="true" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -180,7 +197,6 @@
                     android:cursorVisible="false" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -259,11 +275,10 @@
                     android:textStyle="bold" />
             </RadioGroup>
 
-            
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Keterangan / Alasan"
+                android:text="Keterangan"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="@color/slate_700"
@@ -297,14 +312,12 @@
                     android:inputType="textMultiLine" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/slate_200"
                 android:layout_marginBottom="24dp"/>
 
-            
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSimpan"
                 android:layout_width="match_parent"

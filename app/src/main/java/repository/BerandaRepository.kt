@@ -480,7 +480,46 @@ class BerandaRepository {
     ): Result<SiswaItem> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.updateStudent("Bearer $token", nis, request)
+                val response = apiService.updateStudent("Bearer $token", nis.replace("/", "%2F"), request)
+
+                if (!response.isSuccessful) {
+                    return@withContext Result.failure(
+                        Exception("HTTP Error: ${response.code()} - ${response.message()}")
+                    )
+                }
+
+                val body = response.body()
+                if (body == null) {
+                    return@withContext Result.failure(Exception("Response body kosong"))
+                }
+
+                val data = body.data ?: return@withContext Result.failure(Exception("Data siswa tidak tersedia"))
+                return@withContext Result.success(data)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun updateSiswaByNIS(
+        token: String,
+        nis: String,
+        request: UpdateSiswaRequest
+    ): Result<SiswaItem> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val byNISRequest = UpdateSiswaByNISRequest(
+                    nis = nis,
+                    nama_siswa = request.nama_siswa,
+                    jenis_kelamin = request.jenis_kelamin,
+                    id_kelas = request.id_kelas,
+                    id_jurusan = request.id_jurusan,
+                    id_tahun_masuk = request.id_tahun_masuk,
+                    agama = request.agama,
+                    class_status = request.class_status,
+                    status_akademik = request.status_akademik
+                )
+                val response = apiService.updateStudentByNIS("Bearer $token", byNISRequest)
 
                 if (!response.isSuccessful) {
                     return@withContext Result.failure(
@@ -504,7 +543,7 @@ class BerandaRepository {
     suspend fun getStudentDetail(token: String, nis: String): Result<StudentDetailResponse> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.getStudentDetail("Bearer $token", nis)
+                val response = apiService.getStudentDetail("Bearer $token", nis.replace("/", "%2F"))
 
                 if (!response.isSuccessful) {
                     return@withContext Result.failure(
@@ -531,7 +570,7 @@ class BerandaRepository {
     ): Result<String> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.deleteStudent("Bearer $token", nis)
+                val response = apiService.deleteStudent("Bearer $token", nis.replace("/", "%2F"))
 
                 if (!response.isSuccessful) {
                     return@withContext Result.failure(
@@ -609,7 +648,7 @@ class BerandaRepository {
     ): Result<String> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.submitAttendance("Bearer $token", nis, request)
+                val response = apiService.submitAttendance("Bearer $token", nis.replace("/", "%2F"), request)
                 if (!response.isSuccessful) {
                     return@withContext Result.failure(
                         Exception("HTTP Error: ${response.code()} - ${response.message()}")
@@ -949,6 +988,18 @@ class BerandaRepository {
         }
     }
 
+    suspend fun createKelas(token: String, request: CreateKelasRequest): Result<KelasItem?> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.createKelas("Bearer $token", request)
+                if (!response.isSuccessful) return@withContext Result.failure(Exception("HTTP Error: ${response.code()}"))
+                Result.success(response.body()?.data)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
     // --- Unregistered Students ---
 
     suspend fun getUnregisteredStudents(
@@ -1168,7 +1219,7 @@ class BerandaRepository {
     suspend fun updateStudentStatus(token: String, nis: String, request: UpdateStatusRequest): Result<Unit> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.updateStudentStatus("Bearer $token", nis, request)
+                val response = apiService.updateStudentStatus("Bearer $token", nis.replace("/", "%2F"), request)
                 if (response.isSuccessful) {
                     Result.success(Unit)
                 } else {

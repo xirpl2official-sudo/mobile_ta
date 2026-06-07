@@ -140,7 +140,7 @@
                     android:textSize="12sp"
                     app:icon="@android:drawable/ic_menu_edit"
                     app:iconTint="@android:color/white"
-                    app:backgroundTint="#FF9800"
+                    app:backgroundTint="@color/orange_warning"
                     app:cornerRadius="8dp" />
 
             </LinearLayout>

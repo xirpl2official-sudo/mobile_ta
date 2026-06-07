@@ -189,9 +189,12 @@ class AdminDeviceManagementActivity : BaseAdminActivity() {
             "reject" -> "menolak"
             else -> action
         }
+        val changeRequestItem = allDeviceItems.filterIsInstance<DeviceListItem.ChangeRequest>()
+            .firstOrNull { it.item.id == id }
+        val reason = changeRequestItem?.item?.reason ?: "-"
         MaterialAlertDialogBuilder(this)
             .setTitle("Konfirmasi")
-            .setMessage("Apakah Anda yakin ingin $actionLabel permintaan perubahan perangkat ini?")
+            .setMessage("Alasan: $reason\n\nApakah Anda yakin ingin $actionLabel permintaan perubahan perangkat ini?")
             .setPositiveButton("Ya") { _, _ ->
                 executeProcessRequest(id, action)
             }

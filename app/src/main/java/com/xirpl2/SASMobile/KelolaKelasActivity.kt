@@ -113,6 +113,9 @@ class KelolaKelasActivity : BaseAdminActivity() {
             override fun afterTextChanged(s: Editable?) {}
         })
 
+        actvJurusan.setOnClickListener {
+            actvJurusan.showDropDown()
+        }
         actvJurusan.setOnItemClickListener { parent, _, position, _ ->
             selectedJurusan = parent.getItemAtPosition(position).toString()
             applyFilters()

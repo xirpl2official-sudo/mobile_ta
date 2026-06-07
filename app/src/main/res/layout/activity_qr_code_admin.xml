@@ -196,6 +196,7 @@
                             android:layout_height="wrap_content"
                             android:text="Unduh"
                             android:enabled="false"
+                            android:visibility="gone"
                             app:icon="@drawable/ic_download"
                             app:cornerRadius="8dp" />
 

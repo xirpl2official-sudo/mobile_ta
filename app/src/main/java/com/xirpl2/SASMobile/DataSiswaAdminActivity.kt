@@ -110,7 +110,7 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
     private val jurusanOptions: List<String> = listOf("Semua Jurusan") + fixedJurusanList
     private val kelasOptions: List<String> = listOf("Semua Kelas", "10", "11", "12")
     private val genderOptions: List<String> = listOf("Semua JK", "Laki-laki", "Perempuan")
-    private val agamaOptions: List<String> = listOf("Semua Agama", "Islam", "Kristen", "Katolik", "Hindu", "Budha", "Khonghucu")
+    private val agamaOptions: List<String> = listOf("Semua Agama", "Islam", "Kristen", "Katolik", "Hindu", "Buddha", "Konghucu")
 
     private fun getGenderApiValue(displayValue: String): String? {
         return when (displayValue) {
@@ -224,9 +224,13 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
 
     private fun showBulkActionMenu() {
         val selectedItems = siswaAdapter.getSelectedItems()
-        val options = arrayOf("Ubah Status Akademik", "Mutasi Massal", "Hapus Semua")
+        val options = arrayOf(
+            "Ubah Status Akademik — Ubah status siswa (Aktif, PKL, KEK, dll)",
+            "Mutasi Massal — Pindahkan siswa ke kelas/jurusan lain",
+            "Hapus Semua — Hapus data siswa terpilih secara permanen"
+        )
         MaterialAlertDialogBuilder(this)
-            .setTitle("Manajemen Massal (${selectedItems.size} siswa)")
+            .setTitle("Aksi untuk ${selectedItems.size} siswa terpilih")
             .setItems(options) { _, which ->
                 when (which) {
                     0 -> showBulkUpdateStatusDialog(selectedItems)
@@ -306,12 +310,32 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
                 kelasResult.fold(
                     onSuccess = { kelasList ->
                         val tingkatanInt = tingkatan.toIntOrNull() ?: return@fold
-                        val targetKelas = kelasList.find {
+                        var targetKelas = kelasList.find {
                             it.tingkatan == tingkatanInt && it.jurusan.equals(jurusan, ignoreCase = true)
                         }
+
                         if (targetKelas == null) {
-                            Toast.makeText(this@DataSiswaAdminActivity, "Kelas $tingkatan $jurusan tidak ditemukan", Toast.LENGTH_SHORT).show()
-                            return@fold
+                            val jurusanResult = repository.getJurusanLookup(token)
+                            val jurusanItem = jurusanResult.getOrNull()?.find {
+                                it.nama.equals(jurusan, ignoreCase = true)
+                            }
+                            if (jurusanItem == null) {
+                                Toast.makeText(this@DataSiswaAdminActivity, "Jurusan $jurusan tidak ditemukan", Toast.LENGTH_SHORT).show()
+                                return@fold
+                            }
+                            val createResult = repository.createKelas(
+                                token,
+                                com.xirpl2.SASMobile.model.CreateKelasRequest(
+                                    tingkatan = tingkatanInt,
+                                    id_jurusan = jurusanItem.id,
+                                    part = "A"
+                                )
+                            )
+                            targetKelas = createResult.getOrNull()
+                            if (targetKelas == null) {
+                                Toast.makeText(this@DataSiswaAdminActivity, "Gagal membuat kelas $tingkatan $jurusan", Toast.LENGTH_SHORT).show()
+                                return@fold
+                            }
                         }
 
                         var successCount = 0
@@ -321,7 +345,7 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
                                 id_jurusan = targetKelas.id_jurusan,
                                 status_akademik = status
                             )
-                            val result = repository.updateSiswa(token, siswa.nis, request)
+                            val result = repository.updateSiswaByNIS(token, siswa.nis, request)
                             if (result.isSuccess) successCount++
                         }
                         Toast.makeText(this@DataSiswaAdminActivity, "Berhasil memutasi $successCount/${items.size} siswa ke ${targetKelas.label}", Toast.LENGTH_SHORT).show()
@@ -492,7 +516,9 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
             allStudentList.clear()
             siswaAdapter.setFullList(emptyList())
             isLastPage = false
-            progressLoading.visibility = View.VISIBLE
+            if (!::swipeRefresh.isInitialized || !swipeRefresh.isRefreshing) {
+                progressLoading.visibility = View.VISIBLE
+            }
             emptyStateContainer.visibility = View.GONE
             recyclerSiswa.visibility = View.GONE
             findViewById<View>(R.id.tableHorizontalScrollView).visibility = View.GONE

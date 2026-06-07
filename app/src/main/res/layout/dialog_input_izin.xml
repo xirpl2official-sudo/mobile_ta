@@ -30,7 +30,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Input Perizinan Siswa"
-                    android:textColor="#1E293B"
+                    android:textColor="@color/on_surface"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:layout_centerVertical="true"/>
@@ -47,7 +47,7 @@
                     android:focusable="true"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
-                    app:tint="#64748B"/>
+                    app:tint="@color/text_secondary"/>
             </RelativeLayout>
 
             
@@ -57,7 +57,7 @@
                 android:text="Cari Siswa (Nama / NIS)"
                 android:textSize="12sp"
                 android:textStyle="bold"
-                android:textColor="#334155"
+                android:textColor="@color/slate_700"
                 android:layout_marginBottom="4dp" />
 
             <com.google.android.material.textfield.TextInputLayout
@@ -80,7 +80,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Min. 2 karakter"
-                    android:textColorHint="#94A3B8"
+                    android:textColorHint="@color/text_hint"
                     android:textSize="14sp"
                     android:paddingVertical="12dp"
                     android:inputType="text" />
@@ -102,7 +102,7 @@
                 android:text="Tanggal"
                 android:textSize="12sp"
                 android:textStyle="bold"
-                android:textColor="#334155"
+                android:textColor="@color/slate_700"
                 android:layout_marginBottom="4dp" />
 
             <com.google.android.material.textfield.TextInputLayout
@@ -138,7 +138,7 @@
                 android:text="Jadwal Sholat"
                 android:textSize="12sp"
                 android:textStyle="bold"
-                android:textColor="#334155"
+                android:textColor="@color/slate_700"
                 android:layout_marginBottom="4dp" />
 
             <com.google.android.material.textfield.TextInputLayout
@@ -172,7 +172,7 @@
                 android:text="Status Kehadiran"
                 android:textSize="12sp"
                 android:textStyle="bold"
-                android:textColor="#334155"
+                android:textColor="@color/slate_700"
                 android:layout_marginBottom="8dp" />
 
             <RadioGroup
@@ -236,7 +236,7 @@
                 android:text="Keterangan / Alasan"
                 android:textSize="12sp"
                 android:textStyle="bold"
-                android:textColor="#334155"
+                android:textColor="@color/slate_700"
                 android:layout_marginBottom="4dp" />
 
             <com.google.android.material.textfield.TextInputLayout
@@ -273,7 +273,7 @@
                 android:textSize="15sp"
                 android:textColor="@android:color/white"
                 android:textStyle="bold"
-                app:backgroundTint="#F48C25"
+                app:backgroundTint="@color/orange_theme"
                 app:cornerRadius="8dp"
                 android:layout_marginBottom="8dp" />
 

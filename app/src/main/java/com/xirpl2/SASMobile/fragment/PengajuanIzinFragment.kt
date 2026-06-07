@@ -199,13 +199,16 @@ class PengajuanIzinFragment : Fragment(R.layout.fragment_pengajuan_izin) {
                     buktiFoto = preparePhotoPart()
                 )
                 deleteTempPhotoFile()
-                withContext(Dispatchers.Main) {
+                    withContext(Dispatchers.Main) {
                     setLoading(false)
                     if (response.isSuccessful && response.body() != null) {
                         Toast.makeText(requireContext(), response.body()?.message ?: "Pengajuan izin berhasil dikirim", Toast.LENGTH_LONG).show()
                         resetForm(); loadRiwayatIzin()
                     } else {
-                        Toast.makeText(requireContext(), "Gagal mengirim: ${response.message()}", Toast.LENGTH_LONG).show()
+                        val errorMsg = try {
+                            response.errorBody()?.string()?.let { org.json.JSONObject(it).optString("message", response.message()) } ?: response.message()
+                        } catch (_: Exception) { response.message() }
+                        Toast.makeText(requireContext(), "Gagal mengirim: $errorMsg", Toast.LENGTH_LONG).show()
                     }
                 }
             } catch (e: Exception) {

@@ -149,7 +149,7 @@
                         android:text="Excel"
                         android:textColor="@android:color/white"
                         android:textSize="11sp"
-                        app:backgroundTint="#4CAF50"
+                        app:backgroundTint="@color/green"
                         app:cornerRadius="8dp"
                         android:layout_marginEnd="6dp" />
 
@@ -161,7 +161,7 @@
                         android:text="PDF"
                         android:textColor="@android:color/white"
                         android:textSize="11sp"
-                        app:backgroundTint="#F44336"
+                        app:backgroundTint="@color/red"
                         app:cornerRadius="8dp" />
 
                 </LinearLayout>
@@ -568,25 +568,25 @@
                                 android:layout_marginStart="16dp">
 
                                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="6dp">
-                                    <View android:layout_width="12dp" android:layout_height="12dp" android:background="#4CAF50" />
+                                    <View android:layout_width="12dp" android:layout_height="12dp" android:background="@color/green" />
                                     <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Hadir" android:textColor="@color/text_secondary" android:textSize="12sp" android:layout_marginStart="8dp" />
                                     <TextView android:id="@+id/tvLegendHadir" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="@color/on_background" android:textSize="12sp" android:textStyle="bold" />
                                 </LinearLayout>
 
                                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="6dp">
-                                    <View android:layout_width="12dp" android:layout_height="12dp" android:background="#FF9800" />
+                                    <View android:layout_width="12dp" android:layout_height="12dp" android:background="@color/orange_warning" />
                                     <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Izin" android:textColor="@color/text_secondary" android:textSize="12sp" android:layout_marginStart="8dp" />
                                     <TextView android:id="@+id/tvLegendIzin" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="@color/on_background" android:textSize="12sp" android:textStyle="bold" />
                                 </LinearLayout>
 
                                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="6dp">
-                                    <View android:layout_width="12dp" android:layout_height="12dp" android:background="#2196F3" />
+                                    <View android:layout_width="12dp" android:layout_height="12dp" android:background="@color/blue" />
                                     <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Sakit" android:textColor="@color/text_secondary" android:textSize="12sp" android:layout_marginStart="8dp" />
                                     <TextView android:id="@+id/tvLegendSakit" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="@color/on_background" android:textSize="12sp" android:textStyle="bold" />
                                 </LinearLayout>
 
                                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
-                                    <View android:layout_width="12dp" android:layout_height="12dp" android:background="#F44336" />
+                                    <View android:layout_width="12dp" android:layout_height="12dp" android:background="@color/red" />
                                     <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Alpha" android:textColor="@color/text_secondary" android:textSize="12sp" android:layout_marginStart="8dp" />
                                     <TextView android:id="@+id/tvLegendAlpha" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="@color/on_background" android:textSize="12sp" android:textStyle="bold" />
                                 </LinearLayout>

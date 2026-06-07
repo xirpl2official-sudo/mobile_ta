@@ -79,7 +79,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
         rvPrayerSchedules = findViewById(R.id.rvPrayerSchedules)
         rvPrayerSchedules.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
-        rvPrayerSchedules.isNestedScrollingEnabled = false
+        rvPrayerSchedules.isNestedScrollingEnabled = true
 
         setupMenuIcon()
 

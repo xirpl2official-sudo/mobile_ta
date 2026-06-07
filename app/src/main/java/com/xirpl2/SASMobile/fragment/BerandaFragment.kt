@@ -100,6 +100,12 @@ class BerandaFragment : Fragment(R.layout.fragment_beranda) {
             if (!isAdded) return@setOnClickListener
             PresenceDetailDialogFragment().show(parentFragmentManager, "PresenceDetail")
         }
+        view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnInputManualPresensi).setOnClickListener {
+            if (!isAdded) return@setOnClickListener
+            ManualPresensiSiswaDialogFragment.newInstance {
+                loadAllData()
+            }.show(parentFragmentManager, "ManualPresensi")
+        }
     }
 
     private fun setupJadwalSholat() {

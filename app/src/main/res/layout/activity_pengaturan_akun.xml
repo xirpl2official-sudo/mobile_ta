@@ -176,7 +176,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
                                     android:text="@string/PlaceholderInisial"
-                                    android:textColor="#FFFFFF"
+                                    android:textColor="@color/white"
                                     android:textSize="22sp"
                                     android:textStyle="bold"
                                     android:gravity="center" />
@@ -386,7 +386,7 @@
                 </androidx.cardview.widget.CardView>
 
                 <androidx.cardview.widget.CardView
-                    android:id="@+id/cardDeviceChange"
+                    android:id="@+id/cardTheme"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     app:cardCornerRadius="12dp"
@@ -394,6 +394,103 @@
                     app:cardBackgroundColor="@color/surface"
                     app:cardUseCompatPadding="true"
                     app:layout_constraintTop_toBottomOf="@id/cardMain"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginTop="8dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/spacing_large">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Pengaturan Tema"
+                            android:textColor="@color/on_background"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/poppins_bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Pilih tampilan aplikasi"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="13sp"
+                            android:layout_marginTop="4dp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="16dp"
+                            android:gravity="center">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnTerang"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:minHeight="48dp"
+                                android:layout_weight="1"
+                                android:text="Terang"
+                                android:textSize="12sp"
+                                android:textAllCaps="false"
+                                android:paddingStart="4dp"
+                                android:paddingEnd="4dp"
+                                android:paddingTop="8dp"
+                                android:paddingBottom="8dp"
+                                app:cornerRadius="8dp"
+                                android:layout_marginEnd="8dp" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnGelap"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:minHeight="48dp"
+                                android:layout_weight="1"
+                                android:text="Gelap"
+                                android:textSize="12sp"
+                                android:textAllCaps="false"
+                                android:paddingStart="4dp"
+                                android:paddingEnd="4dp"
+                                android:paddingTop="8dp"
+                                android:paddingBottom="8dp"
+                                app:cornerRadius="8dp"
+                                android:layout_marginHorizontal="4dp" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnSistem"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:minHeight="48dp"
+                                android:layout_weight="1"
+                                android:text="Sistem"
+                                android:textSize="12sp"
+                                android:textAllCaps="false"
+                                android:paddingStart="4dp"
+                                android:paddingEnd="4dp"
+                                android:paddingTop="8dp"
+                                android:paddingBottom="8dp"
+                                app:cornerRadius="8dp"
+                                android:layout_marginStart="8dp" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardDeviceChange"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="@color/surface"
+                    app:cardUseCompatPadding="true"
+                    app:layout_constraintTop_toBottomOf="@id/cardTheme"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     android:layout_marginTop="8dp">

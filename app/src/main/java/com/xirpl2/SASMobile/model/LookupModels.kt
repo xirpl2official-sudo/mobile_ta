@@ -17,6 +17,17 @@ data class KelasListResponse(
     val data: List<KelasItem> = emptyList()
 )
 
+data class CreateKelasRequest(
+    val tingkatan: Int,
+    val id_jurusan: Int,
+    val part: String = "A"
+)
+
+data class CreateKelasResponse(
+    val message: String? = null,
+    val data: KelasItem? = null
+)
+
 data class KelasItem(
     val id_kelas: Int,
     val id_jurusan: Int,

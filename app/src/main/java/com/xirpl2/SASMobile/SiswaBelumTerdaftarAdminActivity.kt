@@ -219,7 +219,11 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
             if (forcedClass != null && forcedClassId == null) {
                 repository.getKelasLookup(token).fold(
                     onSuccess = { kelasList ->
-                        val match = kelasList.find { "${it.tingkatan}${it.part}" == forcedClass }
+                        val match = kelasList.find {
+                            it.label.equals(forcedClass, ignoreCase = true) ||
+                            "${it.tingkatan} ${it.jurusan} ${it.part}".equals(forcedClass, ignoreCase = true) ||
+                            "${it.tingkatan}${it.jurusan}${it.part}".equals(forcedClass, ignoreCase = true)
+                        }
                         forcedClassId = match?.id_kelas
                     },
                     onFailure = { }

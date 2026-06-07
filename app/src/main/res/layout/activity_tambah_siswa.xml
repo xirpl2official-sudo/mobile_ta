@@ -205,6 +205,15 @@
                             </com.google.android.material.textfield.TextInputLayout>
                         </LinearLayout>
 
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Part (Rombel) ditentukan otomatis berdasarkan kelas yang dipilih."
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp"
+                            android:layout_marginBottom="16dp"
+                            android:fontFamily="@font/poppins_medium" />
+
                         <!-- Tahun Masuk & Jenis Kelamin (side by side) -->
                         <LinearLayout
                             android:layout_width="match_parent"

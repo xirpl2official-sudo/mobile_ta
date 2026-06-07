@@ -67,14 +67,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0"
-                    android:textColor="#2E7D32"
+                    android:textColor="@color/status_success"
                     android:textSize="18sp"
                     android:textStyle="bold" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Hadir"
-                    android:textColor="#2E7D32"
+                    android:textColor="@color/status_success"
                     android:textSize="12sp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -133,14 +133,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0"
-                    android:textColor="#EF6C00"
+                    android:textColor="@color/orange_theme"
                     android:textSize="18sp"
                     android:textStyle="bold" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Sakit"
-                    android:textColor="#EF6C00"
+                    android:textColor="@color/orange_theme"
                     android:textSize="12sp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -176,18 +176,18 @@
         android:orientation="vertical"
         app:layout_constraintTop_toBottomOf="@id/rvDateStrip">
 
-        
+        <include
             android:id="@+id/itemDhuha"
             layout="@layout/item_presence_prayer" />
 
-        
+        <include
             android:id="@+id/itemDzuhur"
             layout="@layout/item_presence_prayer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp" />
 
-        
+        <include
             android:id="@+id/itemJumat"
             layout="@layout/item_presence_prayer"
             android:layout_width="match_parent"

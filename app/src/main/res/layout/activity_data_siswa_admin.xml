@@ -446,61 +446,71 @@
                         </HorizontalScrollView>
 
                         <!-- Bulk Action Bar (shown when items selected) -->
-                        <LinearLayout
+                        <com.google.android.material.card.MaterialCardView
                             android:id="@+id/bulkActionCard"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:paddingHorizontal="12dp"
-                            android:paddingVertical="10dp"
                             android:layout_marginTop="8dp"
                             android:layout_marginHorizontal="4dp"
-                            android:background="@drawable/bg_bulk_action"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeColor="@color/outline"
+                            app:strokeWidth="1dp"
                             android:visibility="gone">
 
-                            <CheckBox
-                                android:id="@+id/cbSelectAll"
-                                android:layout_width="36dp"
+                            <LinearLayout
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:padding="0dp"
-                                android:layout_marginEnd="8dp" />
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                android:paddingHorizontal="12dp"
+                                android:paddingVertical="12dp"
+                                android:background="@color/surface">
 
-                            <TextView
-                                android:id="@+id/tvSelectedCount"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="0 siswa terpilih"
-                                android:textSize="13sp"
-                                android:textStyle="bold"
-                                android:textColor="@color/on_surface" />
+                                <CheckBox
+                                    android:id="@+id/cbSelectAll"
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:padding="4dp"
+                                    android:layout_marginEnd="8dp" />
 
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btnManajemenMassal"
-                                style="@style/Widget.MaterialComponents.Button"
-                                android:layout_width="wrap_content"
-                                android:layout_height="36dp"
-                                android:text="Manajemen Massal"
-                                android:textAllCaps="false"
-                                android:textSize="12sp"
-                                app:icon="@drawable/ic_bulk_action"
-                                app:iconSize="16dp"
-                                app:cornerRadius="8dp"
-                                app:backgroundTint="@color/blue_theme"
-                                android:textColor="@android:color/white" />
+                                <TextView
+                                    android:id="@+id/tvSelectedCount"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="0 siswa terpilih"
+                                    android:textSize="14sp"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/on_surface" />
 
-                            <ImageView
-                                android:id="@+id/btnCloseBulk"
-                                android:layout_width="32dp"
-                                android:layout_height="32dp"
-                                android:padding="6dp"
-                                android:layout_marginStart="8dp"
-                                android:src="@drawable/ic_close"
-                                app:tint="@color/slate_500"
-                                android:contentDescription="Tutup" />
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btnManajemenMassal"
+                                    style="@style/Widget.Material3.Button.TonalButton"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:text="Aksi"
+                                    android:textAllCaps="false"
+                                    android:textSize="13sp"
+                                    app:icon="@drawable/ic_bulk_action"
+                                    app:iconSize="18dp"
+                                    app:cornerRadius="8dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:textColor="@color/on_surface" />
 
-                        </LinearLayout>
+                                <ImageView
+                                    android:id="@+id/btnCloseBulk"
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:padding="8dp"
+                                    android:src="@drawable/ic_close"
+                                    app:tint="@color/text_secondary"
+                                    android:background="?attr/selectableItemBackgroundBorderless"
+                                    android:contentDescription="Tutup pilihan" />
+
+                            </LinearLayout>
+
+                        </com.google.android.material.card.MaterialCardView>
 
                         <!-- Divider -->
                         <View

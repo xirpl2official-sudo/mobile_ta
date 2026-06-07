@@ -1,12 +1,8 @@
 package com.xirpl2.SASMobile
 
-import android.content.ContentValues
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.os.Build
 import android.os.CountDownTimer
-import android.os.Environment
-import android.provider.MediaStore
 import android.util.Base64
 import android.view.View
 import android.widget.ImageView
@@ -20,7 +16,6 @@ import com.xirpl2.SASMobile.repository.QRCodeRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -40,8 +35,7 @@ class QRCodeAdminActivity : BaseAdminActivity() {
     private lateinit var tvCodeExpires: TextView
     private lateinit var cardManualCode: View
 
-    // Download button
-    private lateinit var btnDownload: MaterialButton
+    // Download button removed
 
     private var countDownTimer: CountDownTimer? = null
     private var codeTimer: CountDownTimer? = null
@@ -97,8 +91,6 @@ class QRCodeAdminActivity : BaseAdminActivity() {
         tvManualCode = findViewById(R.id.tvManualCode)
         tvCodeExpires = findViewById(R.id.tvCodeExpires)
         cardManualCode = findViewById(R.id.cardManualCode)
-
-        btnDownload = findViewById(R.id.btnDownload)
     }
 
     private fun setupClickListeners() {
@@ -107,9 +99,7 @@ class QRCodeAdminActivity : BaseAdminActivity() {
             loadAttendanceCode()
         }
 
-        btnDownload.setOnClickListener {
-            downloadQRCode()
-        }
+        // Download button removed - no longer needed
     }
 
     private fun startAutoRefresh() {
@@ -205,7 +195,6 @@ class QRCodeAdminActivity : BaseAdminActivity() {
             currentBitmap = bitmap
             ivQRCode.setImageBitmap(bitmap)
             ivQRCode.alpha = 1.0f
-            btnDownload.isEnabled = true
         } else {
             showError("Gagal memuat gambar QR code")
             return
@@ -285,7 +274,6 @@ class QRCodeAdminActivity : BaseAdminActivity() {
         ivQRCode.setImageResource(R.drawable.ic_qr_code)
         ivQRCode.alpha = 0.3f
         currentBitmap = null
-        btnDownload.isEnabled = false
         cardManualCode.visibility = View.GONE
     }
 
@@ -297,48 +285,7 @@ class QRCodeAdminActivity : BaseAdminActivity() {
         }
     }
 
-    private fun downloadQRCode() {
-        val bitmap = currentBitmap ?: return
-
-        lifecycleScope.launch {
-            try {
-                val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-                val filename = "QR_Presensi_$timestamp.png"
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    val values = ContentValues().apply {
-                        put(MediaStore.Images.Media.DISPLAY_NAME, filename)
-                        put(MediaStore.Images.Media.MIME_TYPE, "image/png")
-                        put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/SAS Mobile")
-                    }
-                    val uri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
-                    uri?.let {
-                        val outputStream: OutputStream? = contentResolver.openOutputStream(it)
-                        outputStream?.use { stream ->
-                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
-                        }
-                    }
-                } else {
-                    @Suppress("DEPRECATION")
-                    val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-                    val sasDir = java.io.File(dir, "SAS Mobile")
-                    sasDir.mkdirs()
-                    val file = java.io.File(sasDir, filename)
-                    file.outputStream().use { stream ->
-                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
-                    }
-                }
-
-                runOnUiThread {
-                    Toast.makeText(this@QRCodeAdminActivity, "QR Code tersimpan di Pictures/SAS Mobile", Toast.LENGTH_SHORT).show()
-                }
-            } catch (e: Exception) {
-                runOnUiThread {
-                    Toast.makeText(this@QRCodeAdminActivity, "Gagal menyimpan: ${e.message}", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-    }
+    // downloadQRCode() removed - no longer needed
 
     override fun onDestroy() {
         super.onDestroy()

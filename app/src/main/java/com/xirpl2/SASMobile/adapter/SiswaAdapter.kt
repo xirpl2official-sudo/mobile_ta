@@ -142,7 +142,11 @@ class SiswaAdapter(
             tvKelas.text = siswa.kelas
             tvJurusan?.text = siswa.jurusan
             tvWaliKelas?.text = siswa.waliKelasName?.ifEmpty { "-" } ?: "-"
-            tvJenisKelamin?.text = siswa.jenis_kelamin
+            tvJenisKelamin?.text = when (siswa.jenis_kelamin.uppercase()) {
+                "L" -> "Laki-laki"
+                "P" -> "Perempuan"
+                else -> siswa.jenis_kelamin
+            }
             tvStatusAkademik?.text = siswa.statusAkademik?.uppercase() ?: "AKTIF"
 
             cbRow?.let {

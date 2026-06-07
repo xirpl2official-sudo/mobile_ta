@@ -214,20 +214,26 @@ interface ApiService {
     @GET("v2/students/{nis}")
     suspend fun getStudentDetail(
         @Header("Authorization") token: String,
-        @Path("nis") nis: String
+        @Path(value = "nis", encoded = true) nis: String
     ): Response<ApiResponse<StudentDetailResponse>>
+
+    @PUT("v2/students/by-nis")
+    suspend fun updateStudentByNIS(
+        @Header("Authorization") token: String,
+        @Body request: UpdateSiswaByNISRequest
+    ): Response<ApiResponse<SiswaItem>>
 
     @PUT("v2/students/{nis}")
     suspend fun updateStudent(
         @Header("Authorization") token: String,
-        @Path("nis") nis: String,
+        @Path(value = "nis", encoded = true) nis: String,
         @Body request: UpdateSiswaRequest
     ): Response<ApiResponse<SiswaItem>>
 
     @DELETE("v2/students/{nis}")
     suspend fun deleteStudent(
         @Header("Authorization") token: String,
-        @Path("nis") nis: String
+        @Path(value = "nis", encoded = true) nis: String
     ): Response<MessageResponse>
 
     @GET("v2/students/me/attendance-history")
@@ -239,7 +245,7 @@ interface ApiService {
     @POST("v2/students/{nis}/attendances")
     suspend fun submitAttendance(
         @Header("Authorization") token: String,
-        @Path("nis") nis: String,
+        @Path(value = "nis", encoded = true) nis: String,
         @Body request: CreateAbsensiRequest
     ): Response<MessageResponse>
 
@@ -444,6 +450,12 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Response<KelasListResponse>
 
+    @POST("v2/admin/management/kelas")
+    suspend fun createKelas(
+        @Header("Authorization") token: String,
+        @Body request: CreateKelasRequest
+    ): Response<CreateKelasResponse>
+
     @GET("v2/jurusan")
     suspend fun getJurusanLookup(
         @Header("Authorization") token: String
@@ -537,7 +549,7 @@ interface ApiService {
     suspend fun getStudentFilters(@Header("Authorization") token: String): Response<ApiResponse<com.google.gson.JsonObject>>
 
     @PATCH("v2/students/{nis}/status")
-    suspend fun updateStudentStatus(@Header("Authorization") token: String, @Path("nis") nis: String, @Body request: UpdateStatusRequest): Response<MessageResponse>
+    suspend fun updateStudentStatus(@Header("Authorization") token: String, @Path(value = "nis", encoded = true) nis: String, @Body request: UpdateStatusRequest): Response<MessageResponse>
 
     @POST("v2/students/notify-wali-kelas")
     suspend fun notifyWaliKelas(@Header("Authorization") token: String, @Body request: NotifyWaliKelasRequest): Response<MessageResponse>

@@ -97,6 +97,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
+                android:minHeight="48dp"
                 android:text="SIMPAN"
                 android:textColor="@color/on_background"
                 android:textSize="14sp"
