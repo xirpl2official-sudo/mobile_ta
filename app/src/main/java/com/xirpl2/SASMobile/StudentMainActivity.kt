@@ -110,7 +110,7 @@ class StudentMainActivity : BaseActivity() {
     }
 
     private fun setupStatusBar() {
-        window.statusBarColor = android.graphics.Color.TRANSPARENT
+        window.statusBarColor = androidx.core.content.ContextCompat.getColor(this, R.color.blue_theme)
         androidx.core.view.WindowCompat.getInsetsController(window, window.decorView).apply {
             isAppearanceLightStatusBars = false
         }

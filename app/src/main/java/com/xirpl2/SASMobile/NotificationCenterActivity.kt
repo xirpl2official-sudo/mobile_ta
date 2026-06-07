@@ -40,7 +40,7 @@ class NotificationCenterActivity : BaseActivity() {
             view.setPadding(view.paddingLeft, systemBars.top, view.paddingRight, view.paddingBottom)
             insets
         }
-        window.statusBarColor = android.graphics.Color.TRANSPARENT
+        window.statusBarColor = androidx.core.content.ContextCompat.getColor(this, R.color.blue_theme)
         WindowCompat.getInsetsController(window, window.decorView).apply {
             isAppearanceLightStatusBars = false
         }
