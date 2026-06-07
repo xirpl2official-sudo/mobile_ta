@@ -201,7 +201,8 @@ interface ApiService {
         @Query("search") search: String? = null,
         @Query("tingkatan") tingkatan: Int? = null,
         @Query("jurusan") jurusan: String? = null,
-        @Query("jk") jk: String? = null
+        @Query("jk") jk: String? = null,
+        @Query("agama") agama: String? = null
     ): Response<SiswaListPaginatedResponse>
 
     @POST("v2/students")

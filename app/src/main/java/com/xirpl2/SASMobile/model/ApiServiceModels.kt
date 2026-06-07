@@ -22,7 +22,8 @@ data class PendingAttendanceItem(
 // --- FASE 3.3: Student Update Status ---
 
 data class UpdateStatusRequest(
-    val status: String // aktif, nonaktif, alumni, keluar
+    @SerializedName("status_akademik")
+    val status: String
 )
 
 // --- FASE 3.4: Admin Student Control Models ---

@@ -22,6 +22,10 @@ data class SiswaItem(
     val kelas: String = "",
     @SerializedName(value = "jurusan", alternate = ["major"])
     val jurusan: String = "",
+    @SerializedName(value = "id_kelas")
+    val id_kelas: Int? = null,
+    @SerializedName(value = "id_jurusan")
+    val id_jurusan: Int? = null,
     @SerializedName(value = "device_status", alternate = ["deviceStatus"])
     val deviceStatus: String? = null,
     @SerializedName(value = "hardware_id", alternate = ["hardwareId"])

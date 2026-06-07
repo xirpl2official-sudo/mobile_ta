@@ -411,7 +411,8 @@ class BerandaRepository {
         search: String? = null,
         tingkatan: Int? = null,
         jurusan: String? = null,
-        jk: String? = null
+        jk: String? = null,
+        agama: String? = null
     ): Result<SiswaListPaginatedResponse> {
         return withContext(Dispatchers.IO) {
             try {
@@ -423,7 +424,8 @@ class BerandaRepository {
                         search,
                         tingkatan,
                         jurusan,
-                        jk
+                        jk,
+                        agama
                     )
 
                 if (!response.isSuccessful) {

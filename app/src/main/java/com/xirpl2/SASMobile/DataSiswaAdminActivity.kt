@@ -203,7 +203,9 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
         }
 
         // TODO: btnBulkMutasi, btnBulkDelete, btnBulkDetail not yet added to layout
-        // findViewById<View>(R.id.btnBulkMutasi)?.setOnClickListener { showBulkMutationDialog() }
+        findViewById<View>(R.id.btnManajemenMassal)?.setOnClickListener {
+            showBulkActionMenu()
+        }
         // findViewById<View>(R.id.btnBulkDelete)?.setOnClickListener { showBulkDeleteConfirmation() }
     }
 
@@ -220,6 +222,55 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
         siswaAdapter.setSelectionMode(false)
     }
 
+    private fun showBulkActionMenu() {
+        val selectedItems = siswaAdapter.getSelectedItems()
+        val options = arrayOf("Ubah Status Akademik", "Mutasi Massal", "Hapus Semua")
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Manajemen Massal (${selectedItems.size} siswa)")
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> showBulkUpdateStatusDialog(selectedItems)
+                    1 -> showBulkMutationDialog()
+                    2 -> showBulkDeleteConfirmation()
+                }
+            }
+            .setNegativeButton("Batal", null)
+            .show()
+    }
+
+    private fun showBulkUpdateStatusDialog(items: List<SiswaItem>) {
+        val statusOptions = listOf("AKTIF", "PKL", "KEK", "MUTASI", "KELUAR", "ALUMNI")
+        val statusDisplay = mapOf(
+            "AKTIF" to "Aktif", "PKL" to "Praktik Kerja Lapangan",
+            "KEK" to "Kerja Eksplorasi Kerja", "MUTASI" to "Mutasi",
+            "KELUAR" to "Keluar", "ALUMNI" to "Alumni"
+        )
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Ubah Status (${items.size} siswa)")
+            .setSingleChoiceItems(statusOptions.map { statusDisplay[it] ?: it }.toTypedArray(), -1) { dialog, which ->
+                val newStatus = statusOptions[which]
+                dialog.dismiss()
+                executeBulkUpdateStatus(items, newStatus)
+            }
+            .setNegativeButton("Batal", null)
+            .show()
+    }
+
+    private fun executeBulkUpdateStatus(items: List<SiswaItem>, newStatus: String) {
+        val token = getAuthToken()
+        lifecycleScope.launch {
+            var successCount = 0
+            for (siswa in items) {
+                val request = com.xirpl2.SASMobile.model.UpdateStatusRequest(status = newStatus)
+                val result = repository.updateStudentStatus(token, siswa.nis, request)
+                if (result.isSuccess) successCount++
+            }
+            Toast.makeText(this@DataSiswaAdminActivity, "Berhasil mengubah status $successCount/${items.size} siswa", Toast.LENGTH_SHORT).show()
+            exitSelectionMode()
+            loadStudentData(reset = true)
+        }
+    }
+
     private fun showBulkMutationDialog() {
         val selectedItems = siswaAdapter.getSelectedItems()
         val view = layoutInflater.inflate(R.layout.dialog_bulk_mutasi, null)
@@ -230,39 +281,57 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
 
         spinnerKelas.adapter = android.widget.ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, listOf("10", "11", "12"))
         spinnerJurusan.adapter = android.widget.ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, fixedJurusanList)
-        spinnerStatus.adapter = android.widget.ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, listOf("AKTIF", "PKL", "MUTASI", "KELUAR"))
+        spinnerStatus.adapter = android.widget.ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, listOf("- Tidak Diubah -", "AKTIF", "PKL", "KEK", "MUTASI", "KELUAR", "ALUMNI"))
 
         MaterialAlertDialogBuilder(this)
             .setTitle("Mutasi Masal (${selectedItems.size} Siswa)")
             .setView(view)
             .setPositiveButton("Mutasi") { _, _ ->
-                val targetKelas = spinnerKelas.selectedItem.toString()
+                val targetTingkatan = spinnerKelas.selectedItem.toString()
                 val targetJurusan = spinnerJurusan.selectedItem.toString()
-                val targetStatus = spinnerStatus.selectedItem.toString()
-                executeBulkMutation(selectedItems, targetKelas, targetJurusan, targetStatus)
+                val targetStatus = spinnerStatus.selectedItem.toString().let { if (it == "- Tidak Diubah -") null else it }
+                executeBulkMutation(selectedItems, targetTingkatan, targetJurusan, targetStatus)
             }
             .setNegativeButton("Batal", null)
             .show()
     }
 
-    private fun executeBulkMutation(items: List<SiswaItem>, kelas: String, jurusan: String, status: String) {
-        val nises = items.map { it.nis }
+    private fun executeBulkMutation(items: List<SiswaItem>, tingkatan: String, jurusan: String, status: String?) {
         val token = getAuthToken()
+        if (token.isEmpty()) return
 
         lifecycleScope.launch {
             try {
-                val request = com.xirpl2.SASMobile.model.BulkFieldsRequest(
-                    student_ids = nises,
-                    kelas = kelas,
-                    jurusan = jurusan,
-                    statusAkademik = status
+                val kelasResult = repository.getKelasLookup(token)
+                kelasResult.fold(
+                    onSuccess = { kelasList ->
+                        val tingkatanInt = tingkatan.toIntOrNull() ?: return@fold
+                        val targetKelas = kelasList.find {
+                            it.tingkatan == tingkatanInt && it.jurusan.equals(jurusan, ignoreCase = true)
+                        }
+                        if (targetKelas == null) {
+                            Toast.makeText(this@DataSiswaAdminActivity, "Kelas $tingkatan $jurusan tidak ditemukan", Toast.LENGTH_SHORT).show()
+                            return@fold
+                        }
+
+                        var successCount = 0
+                        for (siswa in items) {
+                            val request = com.xirpl2.SASMobile.model.UpdateSiswaRequest(
+                                id_kelas = targetKelas.id_kelas,
+                                id_jurusan = targetKelas.id_jurusan,
+                                status_akademik = status
+                            )
+                            val result = repository.updateSiswa(token, siswa.nis, request)
+                            if (result.isSuccess) successCount++
+                        }
+                        Toast.makeText(this@DataSiswaAdminActivity, "Berhasil memutasi $successCount/${items.size} siswa ke ${targetKelas.label}", Toast.LENGTH_SHORT).show()
+                        exitSelectionMode()
+                        loadStudentData(reset = true)
+                    },
+                    onFailure = { error ->
+                        Toast.makeText(this@DataSiswaAdminActivity, "Gagal memuat data kelas: ${error.message}", Toast.LENGTH_SHORT).show()
+                    }
                 )
-                val response = RetrofitClient.apiService.updateBulkStudentFields("Bearer $token", request)
-                if (response.isSuccessful) {
-                    Toast.makeText(this@DataSiswaAdminActivity, "Berhasil memutasi ${items.size} siswa", Toast.LENGTH_SHORT).show()
-                    exitSelectionMode()
-                    loadStudentData(reset = true)
-                }
             } catch (e: Exception) {
                 Toast.makeText(this@DataSiswaAdminActivity, "Gagal mutasi: ${e.message}", Toast.LENGTH_SHORT).show()
             }
@@ -285,7 +354,7 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
             try {
                 var successCount = 0
                 for (siswa in items) {
-                    val result = repository.deleteSiswa("Bearer $token", siswa.nis)
+                    val result = repository.deleteSiswa(token, siswa.nis)
                     if (result.isSuccess) successCount++
                 }
                 Toast.makeText(this@DataSiswaAdminActivity, "Berhasil menghapus $successCount/${items.size} siswa", Toast.LENGTH_SHORT).show()
@@ -441,7 +510,8 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
                 jurusan = if (selectedJurusan == "Semua Jurusan") null else selectedJurusan,
                 tingkatan = if (selectedKelas == "Semua Kelas") null else selectedKelas.toIntOrNull(),
                 jk = getGenderApiValue(selectedGender),
-                search = if (searchQuery.isNotEmpty()) searchQuery else null
+                search = if (searchQuery.isNotEmpty()) searchQuery else null,
+                agama = if (selectedAgama == "Semua Agama") null else selectedAgama
             ).fold(
                 onSuccess = { response ->
                     if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
@@ -920,7 +990,9 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
 
             val request = com.xirpl2.SASMobile.model.UpdateSiswaRequest(
                 nama_siswa = nama,
-                jenis_kelamin = jenisKelamin
+                jenis_kelamin = jenisKelamin,
+                id_kelas = siswa.id_kelas,
+                id_jurusan = siswa.id_jurusan
             )
 
             btnSimpan.isEnabled = false
@@ -1059,15 +1131,19 @@ btnSimpan.text = "Perbarui"
         btnPrevPage.alpha = if (currentPage <= 1) 0.3f else 1f
         btnNextPage.alpha = if (currentPage >= totalPages) 0.3f else 1f
         // Update count info
-        val start = (currentPage - 1) * 20 + 1
-        val end = minOf(currentPage * 20, allStudentList.size)
+        val start = (currentPage - 1) * pageSize + 1
+        val end = minOf(currentPage * pageSize, allStudentList.size)
         val shown = end - start + 1
         tvCountInfo.text = "Menampilkan $shown dari $totalItems data"
     }
 
     private fun showUpdateStatusDialog(siswa: SiswaItem) {
-        val statusOptions = listOf("AKTIF", "DROPOUT", "ALUMNI")
-        val statusDisplay = mapOf("AKTIF" to "Aktif", "DROPOUT" to "Dropout", "ALUMNI" to "Alumni")
+        val statusOptions = listOf("AKTIF", "PKL", "KEK", "MUTASI", "KELUAR", "ALUMNI")
+        val statusDisplay = mapOf(
+            "AKTIF" to "Aktif", "PKL" to "Praktik Kerja Lapangan",
+            "KEK" to "Kerja Eksplorasi Kerja", "MUTASI" to "Mutasi",
+            "KELUAR" to "Keluar", "ALUMNI" to "Alumni"
+        )
         val currentStatus = siswa.statusAkademik?.uppercase()?.takeIf { it in statusOptions } ?: "AKTIF"
         val selectedIndex = statusOptions.indexOf(currentStatus).coerceAtLeast(0)
 

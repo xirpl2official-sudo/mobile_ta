@@ -29,6 +29,7 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
     
     private lateinit var tvTitle: TextView
     private lateinit var etSearch: EditText
+    private lateinit var filterTanggal: TextView
     private lateinit var filterKelas: TextView
     private lateinit var filterJurusan: TextView
     private lateinit var filterJenisSholat: TextView
@@ -48,6 +49,7 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
     private var selectedKelas: String = "Semua Kelas"
     private var selectedJurusan: String = "Semua Jurusan"
     private var selectedJenisSholat: String = "Semua Sholat"
+    private var selectedTanggal: String = "Semua Tanggal"
     private var searchQuery: String = ""
 
     // ForcedClass: for wali_kelas, auto-filter to their assigned class
@@ -71,6 +73,33 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
     private val jurusanOptions: List<String> = listOf("Semua Jurusan") + fixedJurusanList
     private val kelasOptions: List<String> = listOf("Semua Kelas", "10", "11", "12")
     private val jenisSholatOptions: List<String> = listOf("Semua Sholat", "Dhuha", "Dzuhur", "Jumat")
+    private val tanggalOptions: List<String> = listOf("Semua Tanggal", "Hari Ini", "Minggu Ini", "Bulan Ini")
+
+    private fun getDateRange(): Pair<String?, String?> {
+        val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US)
+        val cal = java.util.Calendar.getInstance()
+        return when (selectedTanggal) {
+            "Hari Ini" -> {
+                val today = sdf.format(cal.time)
+                today to today
+            }
+            "Minggu Ini" -> {
+                cal.set(java.util.Calendar.DAY_OF_WEEK, cal.firstDayOfWeek)
+                val start = sdf.format(cal.time)
+                cal.add(java.util.Calendar.DAY_OF_WEEK, 6)
+                val end = sdf.format(cal.time)
+                start to end
+            }
+            "Bulan Ini" -> {
+                cal.set(java.util.Calendar.DAY_OF_MONTH, 1)
+                val start = sdf.format(cal.time)
+                cal.set(java.util.Calendar.DAY_OF_MONTH, cal.getActualMaximum(java.util.Calendar.DAY_OF_MONTH))
+                val end = sdf.format(cal.time)
+                start to end
+            }
+            else -> null to null
+        }
+    }
 
     
     private fun getJenisSholatApiValue(displayValue: String): String? {
@@ -136,6 +165,7 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
     private fun initViews() {
         tvTitle = findViewById(R.id.tvTitle) ?: TextView(this)
         etSearch = findViewById(R.id.etSearch) ?: EditText(this)
+        filterTanggal = findViewById(R.id.filterTanggal) ?: TextView(this)
         filterKelas = findViewById(R.id.filterKelas) ?: TextView(this)
         filterJurusan = findViewById(R.id.filterJurusan) ?: TextView(this)
         filterJenisSholat = findViewById(R.id.filterJenisSholat) ?: TextView(this)
@@ -225,10 +255,17 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
     }
 
     private fun setupFilters() {
-        // For wali_kelas: hide Jurusan and Kelas filter dropdowns (forcedClass filtering)
         if (isWaliKelas) {
             filterKelas.visibility = View.GONE
             filterJurusan.visibility = View.GONE
+        }
+
+        filterTanggal.setOnClickListener {
+            showFilterDialog("Pilih Tanggal", tanggalOptions, selectedTanggal) { selected ->
+                selectedTanggal = selected
+                filterTanggal.text = selected
+                refreshData()
+            }
         }
 
         filterKelas.setOnClickListener {
@@ -292,10 +329,7 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
         val jurusanApi = if (selectedJurusan == "Semua Jurusan") null else selectedJurusan
         val jenisSholatApi = getJenisSholatApiValue(selectedJenisSholat)
         val searchApi = if (searchQuery.isBlank()) null else searchQuery
-        
-        
-        val todayDate = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US)
-            .format(java.util.Date())
+        val (startDate, endDate) = getDateRange()
 
         lifecycleScope.launch {
             repository.getHistoryStaff(
@@ -304,7 +338,8 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
                 jurusan = jurusanApi,
                 jenisSholat = jenisSholatApi,
                 search = searchApi,
-                tanggal = todayDate,
+                startDate = startDate,
+                endDate = endDate,
                 page = currentPage,
                 limit = limit
             ).fold(

@@ -139,7 +139,7 @@ class KelasInGroupAdapter(
         fun bind(kelas: KelasManagementItem) {
             val context = itemView.context
 
-            tvNamaKelas.text = "${kelas.tingkatan} ${kelas.part}"
+            tvNamaKelas.text = kelas.label
             badgeSiswaCount.text = "${kelas.siswa_count} Siswa"
             tvDaftarSiswaTitle.text = "Daftar Siswa (${kelas.siswa_count})"
 
