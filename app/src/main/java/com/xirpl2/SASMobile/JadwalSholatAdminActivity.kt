@@ -481,14 +481,18 @@ override fun onCreate(savedInstanceState: Bundle?) {
         val token = getAuthToken()
         if (token.isEmpty()) return
 
-        showLoading(true)
+        val schedulesToDelete = jadwalList.filter {
+            it.jenis_sholat.equals(jenisSholat, ignoreCase = true) && it.id > 0
+        }
+
+        if (schedulesToDelete.isEmpty()) return
+
+        jadwalList = jadwalList.filter {
+            !(it.jenis_sholat.equals(jenisSholat, ignoreCase = true) && it.id > 0)
+        }
+        updateJadwalUI()
 
         lifecycleScope.launch {
-            // Find all schedules for this prayer type
-            val schedulesToDelete = jadwalList.filter {
-                it.jenis_sholat.equals(jenisSholat, ignoreCase = true) && it.id > 0
-            }
-
             var successCount = 0
             var failCount = 0
 
@@ -501,13 +505,12 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
             if (!isFinishing && !isDestroyed) {
                 safeRunOnUiThread {
-                    showLoading(false)
                     if (failCount == 0) {
                         Toast.makeText(this@JadwalSholatAdminActivity, "$jenisSholat berhasil dihapus ($successCount jadwal)", Toast.LENGTH_SHORT).show()
                     } else {
                         Toast.makeText(this@JadwalSholatAdminActivity, "$successCount berhasil, $failCount gagal", Toast.LENGTH_LONG).show()
+                        loadJadwalList()
                     }
-                    loadJadwalList()
                 }
             }
         }
@@ -516,23 +519,30 @@ override fun onCreate(savedInstanceState: Bundle?) {
     private fun deletePrayerTypeById(prayerTypeId: Int) {
         val token = getAuthToken()
         if (token.isEmpty()) return
-        showLoading(true)
+
+        val deletedType = prayerTypesList.find { it.id == prayerTypeId }
+
+        jadwalList = jadwalList.filter {
+            val matchingType = prayerTypesList.find { pt -> pt.id == prayerTypeId }
+            matchingType == null || !it.jenis_sholat.equals(matchingType.nama_jenis, ignoreCase = true)
+        }
+        prayerTypesList = prayerTypesList.filter { it.id != prayerTypeId }
+        updateJadwalUI()
+
         lifecycleScope.launch {
             repository.deletePrayerType(token, prayerTypeId).fold(
                 onSuccess = {
                     if (!isFinishing && !isDestroyed) {
                         safeRunOnUiThread {
-                            showLoading(false)
                             Toast.makeText(this@JadwalSholatAdminActivity, "Tipe sholat berhasil dihapus", Toast.LENGTH_SHORT).show()
-                            loadJadwalList()
                         }
                     }
                 },
                 onFailure = { e ->
                     if (!isFinishing && !isDestroyed) {
                         safeRunOnUiThread {
-                            showLoading(false)
                             Toast.makeText(this@JadwalSholatAdminActivity, "Gagal: ${e.message}", Toast.LENGTH_LONG).show()
+                            loadJadwalList()
                         }
                     }
                 }
