@@ -161,7 +161,7 @@ class PresenceDetailDialogFragment : BottomSheetDialogFragment() {
                             itemDhuha?.visibility = View.VISIBLE
                             val dhuhaJadwal = jadwals.find { it.jenis_sholat.equals("Dhuha", true) }
                             val time = if (dhuhaJadwal != null) "${dhuhaJadwal.jam_mulai} - ${dhuhaJadwal.jam_selesai}" else "06:30 - 09:00"
-                            setupPrayerItem(itemDhuha!!, "Sholat Dhuha", time)
+                            setupPrayerItem(itemDhuha!!, "Shalat Duha", time)
                         } else {
                             itemDhuha?.visibility = View.GONE
                         }
@@ -170,11 +170,11 @@ class PresenceDetailDialogFragment : BottomSheetDialogFragment() {
                         if (showJumat) {
                             val jumatJadwal = jadwals.find { it.jenis_sholat.equals("Jumat", ignoreCase = true) }
                             val time = if (jumatJadwal != null) "${jumatJadwal.jam_mulai} - ${jumatJadwal.jam_selesai}" else "11:00 - 13:00"
-                            setupPrayerItem(itemJumat!!, "Sholat Jumat", time)
+                            setupPrayerItem(itemJumat!!, "Shalat Jumat", time)
                         } else {
                             val dzuhurJadwal = jadwals.find { it.jenis_sholat.equals("Dzuhur", ignoreCase = true) }
                             val time = if (dzuhurJadwal != null) "${dzuhurJadwal.jam_mulai} - ${dzuhurJadwal.jam_selesai}" else "11:30 - 13:00"
-                            setupPrayerItem(itemDzuhur!!, "Sholat Dzuhur", time)
+                            setupPrayerItem(itemDzuhur!!, "Shalat Dzuhur", time)
                         }
                     }
                 },
@@ -182,9 +182,9 @@ class PresenceDetailDialogFragment : BottomSheetDialogFragment() {
                     activity?.runOnUiThread {
                         itemDhuha?.visibility = View.GONE
                         if (showJumat) {
-                            setupPrayerItem(itemJumat!!, "Sholat Jumat", "11:00 - 13:00")
+                            setupPrayerItem(itemJumat!!, "Shalat Jumat", "11:00 - 13:00")
                         } else {
-                            setupPrayerItem(itemDzuhur!!, "Sholat Dzuhur", "11:30 - 13:00")
+                            setupPrayerItem(itemDzuhur!!, "Shalat Dzuhur", "11:30 - 13:00")
                         }
                     }
                 }

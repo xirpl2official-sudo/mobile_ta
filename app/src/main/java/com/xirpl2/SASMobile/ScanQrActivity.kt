@@ -212,7 +212,7 @@ class ScanQrActivity : BaseSiswaActivity() {
         tvStudentClass.text = classInfo
 
 
-        tvPrayerType.text = "Sholat ${data.jenis_sholat}"
+        tvPrayerType.text = "Shalat ${data.jenis_sholat}"
         tvAttendanceStatus.text = data.status.replaceFirstChar { it.uppercase() }
         tvAttendanceTime.text = formatDate(data.tanggal)
 

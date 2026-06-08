@@ -125,7 +125,7 @@ class KelolaGuruAdminActivity : BaseAdminActivity() {
                 onSuccess = { response ->
                     if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                     progressLoading.visibility = View.GONE
-                    val list = response.data ?: emptyList()
+                    val list = (response.data ?: emptyList()).sortedBy { it.nama?.lowercase() ?: "" }
                     guruList.clear()
                     guruList.addAll(list)
                     adapter.submitList(guruList)

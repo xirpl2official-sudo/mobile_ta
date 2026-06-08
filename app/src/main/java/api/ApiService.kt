@@ -619,6 +619,7 @@ interface ApiService {
     @GET("v2/admin/device-management/change-requests")
     suspend fun getDeviceChangeRequests(@Header("Authorization") token: String): Response<DeviceChangeRequestListResponse>
 
+    @Headers("Content-Type: application/json")
     @PUT("v2/admin/device-management/change-requests/{id}/{action}")
     suspend fun processDeviceChangeRequest(@Header("Authorization") token: String, @Path("id") id: Int, @Path("action") action: String): Response<MessageResponse>
 
@@ -828,4 +829,39 @@ interface ApiService {
         @Query("search") search: String? = null,
         @Query("is_active") isActive: String? = null
     ): Response<WaliKelasManagementListResponse>
+
+    // --- Female Student Restriction (FASE 4.1) ---
+
+    @GET("v2/female-restriction/status")
+    suspend fun getFemaleRestrictionStatus(
+        @Header("Authorization") token: String
+    ): Response<FemaleRestrictionStatusResponse>
+
+    @POST("v2/female-restriction/request")
+    suspend fun createFemaleRestrictionRequest(
+        @Header("Authorization") token: String,
+        @Body request: SubmitApprovalRequest
+    ): Response<MessageResponse>
+
+    @GET("v2/female-restriction/pending-approvals")
+    suspend fun getFemaleRestrictionPendingApprovals(
+        @Header("Authorization") token: String
+    ): Response<ApprovalRequestListResponse>
+
+    @PATCH("v2/female-restriction/{id}/approve")
+    suspend fun processFemaleRestrictionApproval(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int,
+        @Body request: ProcessApprovalRequest
+    ): Response<MessageResponse>
+
+    @GET("v2/female-restriction/history")
+    suspend fun getFemaleRestrictionHistory(
+        @Header("Authorization") token: String
+    ): Response<RestrictionHistoryResponse>
+
+    @GET("v2/female-restriction/teachers")
+    suspend fun getFemaleTeachers(
+        @Header("Authorization") token: String
+    ): Response<FemaleTeacherListResponse>
 }

@@ -58,7 +58,7 @@
         android:id="@+id/tvJenisSholat"
         android:layout_width="70dp"
         android:layout_height="wrap_content"
-        android:text="Dhuha"
+        android:text="Duha"
         android:textColor="@color/on_background"
         android:textSize="12sp"
         android:gravity="center"

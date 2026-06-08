@@ -60,7 +60,7 @@
                 android:id="@+id/tvPageTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Grup Dhuha"
+                android:text="Grup Duha"
                 android:textColor="#FFFFFF"
                 android:textSize="18sp"
                 android:textStyle="bold"
@@ -100,7 +100,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Manajemen Grup Dhuha"
+                android:text="Manajemen Grup Duha"
                 android:textColor="@color/on_background"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -173,7 +173,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Tidak ada grup dhuha ditemukan."
+                android:text="Tidak ada grup duha ditemukan."
                 android:textColor="@color/on_background"
                 android:textSize="16sp"
                 android:textStyle="bold" />

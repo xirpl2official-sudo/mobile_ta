@@ -11,7 +11,7 @@ object RetrofitClient {
 
     // 1. URL Configuration — debug: localhost via USB adb reverse; release: production
     private val BASE_URL: String = if (com.xirpl2.SASMobile.BuildConfig.DEBUG)
-        "http://localhost:3000/api/"
+        "http://127.0.0.1:3000/api/"
     else
         "https://absensholat-api.vercel.app/api/"
 

@@ -81,7 +81,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="0.11"
         android:minWidth="40dp"
-        android:text="Dhuha"
+        android:text="Duha"
         android:textColor="@color/on_background"
         android:textSize="11sp"
         android:paddingHorizontal="4dp"

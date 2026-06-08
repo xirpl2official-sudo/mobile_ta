@@ -44,12 +44,12 @@ class JurusanAdapter(
             val waktuSelesai = if (rawSelesai.length >= 5) rawSelesai.substring(0, 5) else rawSelesai
 
             if (waktuMulai.isNotEmpty() && waktuSelesai.isNotEmpty()) {
-                holder.tvLabelHariIni.text = "Dhuha ${waktuMulai}-${waktuSelesai} WIB"
+                holder.tvLabelHariIni.text = "Duha ${waktuMulai}-${waktuSelesai} WIB"
             } else {
-                holder.tvLabelHariIni.text = "Dhuha Hari Ini"
+                holder.tvLabelHariIni.text = "Duha Hari Ini"
             }
         } else {
-            holder.tvLabelHariIni.text = "Dhuha Hari Ini"
+            holder.tvLabelHariIni.text = "Duha Hari Ini"
         }
 
         val warnaJurusan = Color.parseColor(JurusanHelper.getColorForJurusan(jurusanData.jurusan))

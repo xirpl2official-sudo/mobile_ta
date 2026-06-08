@@ -186,7 +186,7 @@ class QRCodeAdminActivity : BaseAdminActivity() {
     }
 
     private fun displayQRCode(base64WithPrefix: String, jenisSholat: String, expiresAt: String) {
-        tvJenisSholat.text = "Sholat $jenisSholat"
+        tvJenisSholat.text = "Shalat $jenisSholat"
         tvStatus.text = "Auto-refresh setiap 30 detik"
         tvStatus.setTextColor(getColor(R.color.status_success))
 

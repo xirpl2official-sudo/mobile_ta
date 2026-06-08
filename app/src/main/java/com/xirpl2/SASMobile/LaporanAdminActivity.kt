@@ -79,7 +79,6 @@ class LaporanAdminActivity : BaseAdminActivity() {
     private lateinit var paginationContainer: LinearLayout
 
     // Buttons
-    private lateinit var btnDownloadLaporan: MaterialButton
     private lateinit var btnExportExcel: MaterialButton
     private lateinit var btnExportPdf: MaterialButton
 
@@ -111,7 +110,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
     private val fixedJurusanList = listOf("RPL", "TKJ", "TEI", "TAV", "BC", "TMT", "DKV", "ANM")
     private val jurusanOptions = listOf("Semua Jurusan") + fixedJurusanList
     private val kelasOptions = listOf("Semua Kelas", "10", "11", "12")
-    private val sholatOptions = listOf("Semua Sholat", "Dhuha", "Dzuhur", "Jumat")
+    private val sholatOptions = listOf("Semua Shalat", "Duha", "Dzuhur", "Jumat")
 
     override fun getCurrentMenuItem(): AdminMenuItem = AdminMenuItem.LAPORAN
 
@@ -174,7 +173,6 @@ class LaporanAdminActivity : BaseAdminActivity() {
 
         paginationContainer = findViewById(R.id.paginationContainer)
 
-        btnDownloadLaporan = findViewById(R.id.btnDownloadLaporan)
         btnExportExcel = findViewById(R.id.btnExportExcel)
         btnExportPdf = findViewById(R.id.btnExportPdf)
     }
@@ -328,7 +326,6 @@ class LaporanAdminActivity : BaseAdminActivity() {
     private fun setupButtons() {
         btnExportExcel.setOnClickListener { downloadReport("excel") }
         btnExportPdf.setOnClickListener { downloadReport("pdf") }
-        btnDownloadLaporan.setOnClickListener { showFormatPicker() }
     }
 
     // ===== CHART DATA =====
@@ -641,7 +638,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
         val activeFilters = mutableListOf<String>()
         if (jurusanApi != null) activeFilters.add("Jurusan: $selectedJurusan")
         if (kelasApi != null) activeFilters.add("Kelas: $selectedKelas")
-        if (sholatApi != null) activeFilters.add("Sholat: $selectedSholat")
+        if (sholatApi != null) activeFilters.add("Shalat: $selectedSholat")
         if (searchApi != null) activeFilters.add("Cari: $searchQuery")
         if (activeFilters.isNotEmpty()) {
             Toast.makeText(this, "Filter aktif: ${activeFilters.joinToString(", ")}", Toast.LENGTH_LONG).show()
@@ -650,7 +647,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
         val btn = when (format) {
             "excel" -> btnExportExcel
             "pdf" -> btnExportPdf
-            else -> btnDownloadLaporan
+            else -> btnExportPdf
         }
         btn.isEnabled = false
 

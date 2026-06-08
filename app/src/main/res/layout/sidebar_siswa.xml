@@ -52,7 +52,7 @@
                 android:id="@+id/tvMenuSubtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Absensi Sholat"
+                android:text="Absensi Shalat"
                 android:textColor="@color/slate_200"
                 android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -194,7 +194,7 @@
                 android:layout_marginBottom="4dp"
                 android:background="@drawable/bg_sidebar_item_selector">
                 <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_qr_code" android:contentDescription="Scan QR Code" app:tint="@color/slate_500" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Pindai QR" android:textColor="@color/slate_700" android:textSize="15sp" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Pindai Kode QR" android:textColor="@color/slate_700" android:textSize="15sp" />
             </LinearLayout>
 
         </LinearLayout>

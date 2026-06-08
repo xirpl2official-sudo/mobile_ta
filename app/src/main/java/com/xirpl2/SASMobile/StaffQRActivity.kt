@@ -111,7 +111,7 @@ class StaffQRActivity : BaseActivity() {
     }
 
     private fun displayQRCode(qrData: QRCodeData) {
-        tvJenisSholat.text = "Sholat ${qrData.jenis_sholat}"
+        tvJenisSholat.text = "Shalat ${qrData.jenis_sholat}"
         val bitmap = decodeBase64ToBitmap(qrData.qr_code)
         if (bitmap != null) {
             ivQRCode.setImageBitmap(bitmap)

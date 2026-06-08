@@ -264,7 +264,7 @@ data class PaginationInfo(
     val limit: Int = 20,
     @SerializedName("total_pages")
     val totalPages: Int = 1,
-    @SerializedName("total_items")
+    @SerializedName("total")
     val totalItems: Int = 0
 )
 
@@ -317,7 +317,7 @@ data class DhuhaJadwalData(
     val waktuSholat: WaktuSholatData? = null
 ) {
     val jenis_sholat: String
-        get() = waktuSholat?.jenisSholat?.namaJenis ?: "Dhuha"
+        get() = waktuSholat?.jenisSholat?.namaJenis ?: "Duha"
     val jam_mulai: String
         get() = waktuSholat?.waktuMulai ?: ""
     val jam_selesai: String

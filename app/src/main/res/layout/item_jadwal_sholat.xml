@@ -40,7 +40,7 @@
                 android:id="@+id/tvNamaSholat"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Dhuha"
+                android:text="Duha"
                 android:textColor="@color/on_background"
                 android:textSize="@dimen/text_nama_sholat"
                 android:textStyle="bold" />

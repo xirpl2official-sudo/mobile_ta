@@ -117,7 +117,7 @@ class ScanQrFragment : Fragment(R.layout.fragment_scan_qr) {
     private fun showVerificationResult(data: QRCodeVerifyData) {
         tvStudentName.text = data.nama_siswa
         tvStudentClass.text = if (data.jurusan != null) "${data.kelas} - ${data.jurusan}" else data.kelas
-        tvPrayerType.text = "Sholat ${data.jenis_sholat}"
+        tvPrayerType.text = "Shalat ${data.jenis_sholat}"
         tvAttendanceStatus.text = data.status.replaceFirstChar { it.uppercase() }
         tvAttendanceTime.text = data.tanggal?.let { formatDate(it) } ?: "--"
         val statusColor = when (data.status.trim().uppercase()) { "HADIR" -> requireContext().getColor(R.color.status_success); "ALPHA" -> requireContext().getColor(R.color.status_error); else -> requireContext().getColor(R.color.status_warning) }

@@ -84,11 +84,11 @@ class DeviceAdapter(
                         setBadgeColors(holder, R.drawable.bg_status_gray, R.color.badge_pending_text)
                         holder.layoutActions.visibility = View.VISIBLE
                     }
-                    "approved" -> {
+                    "disetujui", "approved" -> {
                         setBadgeColors(holder, R.drawable.bg_status_approved, R.color.badge_approved_text)
                         holder.layoutActions.visibility = View.GONE
                     }
-                    "rejected" -> {
+                    "ditolak", "rejected" -> {
                         setBadgeColors(holder, R.drawable.bg_status_alpha, R.color.badge_rejected_text)
                         holder.layoutActions.visibility = View.GONE
                     }

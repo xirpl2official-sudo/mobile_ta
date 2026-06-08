@@ -281,7 +281,7 @@ class PresenceDetailPopUpFragment : DialogFragment() {
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val item = items[position]
-            holder.tvName.text = "Sholat ${item.jenis_sholat ?: "Unknown"}"
+            holder.tvName.text = "Shalat ${item.jenis_sholat ?: "Unknown"}"
 
             when (item.status.uppercase()) {
                 "HADIR" -> {

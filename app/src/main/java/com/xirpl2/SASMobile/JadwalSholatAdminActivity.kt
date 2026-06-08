@@ -482,7 +482,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
             return
         }
 
-        val nama = "Sholat ${jadwal.jenis_sholat}"
+        val nama = "Shalat ${jadwal.jenis_sholat}"
         val allSchedules = jadwalList.filter {
             it.jenis_sholat.equals(jadwal.jenis_sholat, ignoreCase = true)
         }
@@ -519,6 +519,9 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
         jadwalList = jadwalList.filter {
             !(it.jenis_sholat.equals(jenisSholat, ignoreCase = true) && it.id > 0)
+        }
+        prayerTypesList = prayerTypesList.filter {
+            !it.nama_jenis.equals(jenisSholat, ignoreCase = true)
         }
         updateJadwalUI()
 
