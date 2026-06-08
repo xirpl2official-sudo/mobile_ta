@@ -25,8 +25,13 @@ class PengajuanIzinRepository {
                 val response = apiService.getPengajuanIzinList("Bearer $token", filters)
 
                 if (!response.isSuccessful) {
+                    val errorBody = response.errorBody()?.string()
+                    val errorMsg = try {
+                        errorBody?.let { org.json.JSONObject(it).optString("error", response.message()) }
+                            ?: response.message()
+                    } catch (_: Exception) { response.message() }
                     return@withContext Result.failure(
-                        Exception("HTTP Error: ${response.code()} - ${response.message()}")
+                        Exception("HTTP ${response.code()}: $errorMsg")
                     )
                 }
 
@@ -58,8 +63,13 @@ class PengajuanIzinRepository {
                 val response = apiService.updatePengajuanIzinStatus("Bearer $token", id, request)
 
                 if (!response.isSuccessful) {
+                    val errorBody = response.errorBody()?.string()
+                    val errorMsg = try {
+                        errorBody?.let { org.json.JSONObject(it).optString("error", response.message()) }
+                            ?: response.message()
+                    } catch (_: Exception) { response.message() }
                     return@withContext Result.failure(
-                        Exception("HTTP Error: ${response.code()} - ${response.message()}")
+                        Exception("HTTP ${response.code()}: $errorMsg")
                     )
                 }
 
@@ -84,8 +94,13 @@ class PengajuanIzinRepository {
                 val response = apiService.getPengajuanIzinDetail("Bearer $token", id)
 
                 if (!response.isSuccessful) {
+                    val errorBody = response.errorBody()?.string()
+                    val errorMsg = try {
+                        errorBody?.let { org.json.JSONObject(it).optString("error", response.message()) }
+                            ?: response.message()
+                    } catch (_: Exception) { response.message() }
                     return@withContext Result.failure(
-                        Exception("HTTP Error: ${response.code()} - ${response.message()}")
+                        Exception("HTTP ${response.code()}: $errorMsg")
                     )
                 }
 
@@ -110,8 +125,13 @@ class PengajuanIzinRepository {
                 val response = apiService.getBuktiFoto("Bearer $token", id)
 
                 if (!response.isSuccessful) {
+                    val errorBody = response.errorBody()?.string()
+                    val errorMsg = try {
+                        errorBody?.let { org.json.JSONObject(it).optString("error", response.message()) }
+                            ?: response.message()
+                    } catch (_: Exception) { response.message() }
                     return@withContext Result.failure(
-                        Exception("HTTP Error: ${response.code()} - ${response.message()}")
+                        Exception("HTTP ${response.code()}: $errorMsg")
                     )
                 }
 

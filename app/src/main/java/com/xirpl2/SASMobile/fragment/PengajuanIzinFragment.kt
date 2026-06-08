@@ -174,10 +174,30 @@ class PengajuanIzinFragment : Fragment(R.layout.fragment_pengajuan_izin) {
         if (startDate.isEmpty()) { tilStartDate.error = "Pilih tanggal mulai"; isValid = false } else tilStartDate.error = null
         val endDate = etEndDate.text.toString().trim()
         if (endDate.isEmpty()) { tilEndDate.error = "Pilih tanggal berakhir"; isValid = false } else tilEndDate.error = null
+        if (startDate.isNotEmpty() && endDate.isNotEmpty()) {
+            try {
+                val start = parseDate(startDate)
+                val end = parseDate(endDate)
+                if (end < start) {
+                    tilEndDate.error = "Tanggal akhir harus setelah atau sama dengan tanggal mulai"
+                    isValid = false
+                }
+            } catch (_: Exception) {
+                tilEndDate.error = "Format tanggal tidak valid"
+                isValid = false
+            }
+        }
         val reason = etReason.text.toString().trim()
         if (reason.isEmpty()) { tilReason.error = "Isi alasan perizinan"; isValid = false } else if (reason.length < 10) { tilReason.error = "Alasan minimal 10 karakter"; isValid = false } else tilReason.error = null
         if (rbSakit.isChecked && selectedPhotoUri == null) { Toast.makeText(requireContext(), "Lampirkan bukti foto untuk izin sakit", Toast.LENGTH_SHORT).show(); isValid = false }
         return isValid
+    }
+
+    private fun parseDate(dateStr: String): Calendar {
+        val parts = dateStr.split("-")
+        val cal = Calendar.getInstance()
+        cal.set(parts[0].toInt(), parts[1].toInt() - 1, parts[2].toInt())
+        return cal
     }
 
     private fun submitPermitRequest() {
