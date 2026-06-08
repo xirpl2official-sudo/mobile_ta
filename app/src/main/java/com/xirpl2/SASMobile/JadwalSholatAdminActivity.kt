@@ -1106,7 +1106,8 @@ override fun onCreate(savedInstanceState: Bundle?) {
                     var lastError: Throwable? = null
                     if (isTanggalKhusus) {
                         val req = JadwalSholatCreateRequest(
-                            hari = tanggalKhusus ?: "",
+                            hari = null,
+                            tanggal_khusus = tanggalKhusus,
                             id_waktu = idWaktu,
                             jurusan_ids = jurusanIds
                         )
@@ -1118,6 +1119,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
                         for (d in daysToCreate) {
                             val req = JadwalSholatCreateRequest(
                                 hari = d,
+                                tanggal_khusus = null,
                                 id_waktu = idWaktu,
                                 jurusan_ids = jurusanIds
                             )

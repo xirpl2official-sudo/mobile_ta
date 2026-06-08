@@ -110,7 +110,9 @@ data class JadwalSholatUpdateRequest(
 
 data class JadwalSholatCreateRequest(
     @SerializedName("hari")
-    val hari: String,
+    val hari: String? = null,
+    @SerializedName("tanggal_khusus")
+    val tanggal_khusus: String? = null,
     @SerializedName("id_waktu")
     val id_waktu: Int,
     @SerializedName("jurusan_ids")
