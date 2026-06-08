@@ -16,7 +16,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.work.WorkManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xirpl2.SASMobile.network.RetrofitClient
-import com.xirpl2.SASMobile.FemaleRestrictionStatusActivity
 import com.xirpl2.SASMobile.utils.NotificationCounterManager
 import com.xirpl2.SASMobile.utils.NotificationPollWorker
 import kotlinx.coroutines.Dispatchers
@@ -34,7 +33,7 @@ abstract class BaseSiswaActivity : BaseActivity() {
         BERANDA,
         QR_CODE,
         PENGAJUAN_IZIN,
-        STATUS_HALANGAN
+        PENGAJUAN_HALANGAN
     }
 
     abstract fun getCurrentMenuItem(): SiswaMenuItem
@@ -128,12 +127,12 @@ abstract class BaseSiswaActivity : BaseActivity() {
             navigateTo(PengajuanIzinActivity::class.java)
         }
 
-        setupMenuItem(R.id.menuStatusHalangan, SiswaMenuItem.STATUS_HALANGAN, currentItem) {
-            navigateTo(FemaleRestrictionStatusActivity::class.java)
-        }
-
         setupMenuItem(R.id.menuQRCode, SiswaMenuItem.QR_CODE, currentItem) {
             navigateTo(ScanQrActivity::class.java)
+        }
+
+        setupMenuItem(R.id.menuPengajuanHalangan, SiswaMenuItem.PENGAJUAN_HALANGAN, currentItem) {
+            navigateTo(PengajuanHalanganActivity::class.java)
         }
 
         // Bottom menu items (non-highlighted)
@@ -229,8 +228,8 @@ abstract class BaseSiswaActivity : BaseActivity() {
             if (::sidebarView.isInitialized) {
                 sidebarView.findViewById<LinearLayout>(R.id.menuBeranda)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuPengajuanIzin)?.setOnClickListener(null)
-                sidebarView.findViewById<LinearLayout>(R.id.menuStatusHalangan)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuQRCode)?.setOnClickListener(null)
+                sidebarView.findViewById<LinearLayout>(R.id.menuPengajuanHalangan)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuFAQ)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuPengaturan)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuLogout)?.setOnClickListener(null)

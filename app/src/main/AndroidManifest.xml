@@ -169,14 +169,13 @@
             android:name=".DuhaGroupsActivity"
             android:exported="false" />
         <activity
-            android:name=".FemaleRestrictionStatusActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
+            android:launchMode="singleTop"
+            android:name=".PengajuanHalanganActivity"
+            android:exported="false" />
         <activity
-            android:name=".FemaleRestrictionApprovalActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
-
+            android:launchMode="singleTop"
+            android:name=".ValidasiHalanganGuruActivity"
+            android:exported="false" />
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
