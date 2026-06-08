@@ -9,8 +9,11 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
 
-    // 1. URL Local — akses backend laptop dari device fisik via USB (adb reverse tcp:3000 tcp:3000)
-    private const val BASE_URL = "http://localhost:3000/api/"
+    // 1. URL Configuration — debug: localhost via USB adb reverse; release: production
+    private val BASE_URL: String = if (com.xirpl2.SASMobile.BuildConfig.DEBUG)
+        "http://localhost:3000/api/"
+    else
+        "https://absensholat-api.vercel.app/api/"
 
     // 2. Variabel Context untuk Autentikasi
     private var appContext: Context? = null
@@ -22,11 +25,12 @@ object RetrofitClient {
         appContext = context.applicationContext
     }
 
-    // 3. Logging Interceptor
+    // 3. Logging Interceptor — BODY only in debug; NONE in production to prevent data leaks
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
-        // Jika ingin melihat log request/response saat debug, ubah level ke BODY
-        // Jika sudah production, gunakan NONE agar tidak berat
-        level = HttpLoggingInterceptor.Level.BODY
+        level = if (com.xirpl2.SASMobile.BuildConfig.DEBUG)
+            HttpLoggingInterceptor.Level.BODY
+        else
+            HttpLoggingInterceptor.Level.NONE
     }
 
     // 4. OkHttpClient Configuration

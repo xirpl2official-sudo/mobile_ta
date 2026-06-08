@@ -54,7 +54,12 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
         androidx.activity.result.contract.ActivityResultContracts.GetContent()
     ) { uri: android.net.Uri? ->
         if (uri != null) {
-            uploadCsvFile(uri)
+            val mimeType = contentResolver.getType(uri)
+            if (mimeType == "text/csv" || mimeType == "text/comma-separated-values" || mimeType == "application/csv") {
+                uploadCsvFile(uri)
+            } else {
+                Toast.makeText(this, "File harus berupa CSV", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -987,6 +992,8 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
                 val jobName = "DataSiswa_${SimpleDateFormat("yyyyMMdd_HHmm", Locale.getDefault()).format(Date())}"
                 val printAdapter: PrintDocumentAdapter = view?.createPrintDocumentAdapter(jobName) ?: return
                 printManager.print(jobName, printAdapter, PrintAttributes.Builder().build())
+                // Destroy WebView after print to prevent memory leak
+                webView.destroy()
             }
         }
     }

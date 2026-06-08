@@ -430,6 +430,7 @@ class PengajuanIzinAdminActivity : BaseAdminActivity() {
     }
 
     override fun onDestroy() {
+        dataJob?.cancel()
         searchHandler.removeCallbacksAndMessages(null)
         super.onDestroy()
     }

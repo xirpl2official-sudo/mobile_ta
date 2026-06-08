@@ -59,6 +59,8 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
     private val daysOptions = listOf("Semua Hari", "Senin", "Selasa", "Rabu", "Kamis", "Jumat")
     private var jurusanOptions = listOf("Semua Jurusan")
 
+    private var activeDialog: AlertDialog? = null
+
     override fun getCurrentMenuItem(): AdminMenuItem = AdminMenuItem.JADWAL_SHOLAT
 override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -138,6 +140,8 @@ override fun onCreate(savedInstanceState: Bundle?) {
     }
 
     override fun onDestroy() {
+        activeDialog?.dismiss()
+        activeDialog = null
         if (::rvPrayerSchedules.isInitialized) {
             rvPrayerSchedules.adapter = null
         }
@@ -997,6 +1001,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
             .setView(dialogView)
             .setCancelable(false)
             .create()
+        activeDialog = dialog
 
         etWaktuMulai.setOnClickListener { showTimePickerEx { time -> etWaktuMulai.setText(time) } }
         etWaktuSelesai.setOnClickListener { showTimePickerEx { time -> etWaktuSelesai.setText(time) } }
