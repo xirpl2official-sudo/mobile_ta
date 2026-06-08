@@ -59,6 +59,7 @@
     <string name="Riwayat">Riwayat</string>
     <string name="Tanggal">Tanggal</string>
     <string name="Shalat">Shalat</string>
+    <string name="Sholat">Shalat</string>
     <string name="Status">Status</string>
     <string name="Warning">Peringatan</string>
 
@@ -257,4 +258,25 @@
     <string name="data_tidak_ditemukan">Data Tidak Ditemukan</string>
     <string name="halaman_x_dari_y">Halaman %1$d dari %2$d</string>
     <string name="nama_sekolah">SMK Negeri 2 Singosari</string>
+
+    <!-- Female Restriction Feature -->
+    <string name="status_halangan">Status Halangan</string>
+    <string name="halangan_perempuan">Halangan Perempuan</string>
+    <string name="ajukan_ke_guru">Ajukan ke Guru Perempuan</string>
+    <string name="riwayat_halangan">Riwayat Halangan</string>
+    <string name="persetujuan_siswi">Persetujuan Siswi</string>
+    <string name="terhalang_scan">Anda sedang terhalang untuk scan barcode</string>
+    <string name="sisa_hari">Hari Tersisa</string>
+    <string name="berakhir_pada">Berakhir</string>
+    <string name="belum_ada_riwayat_halangan">Belum ada riwayat halangan</string>
+    <string name="pengajuan_dikirim">Pengajuan berhasil dikirim</string>
+    <string name="pilih_guru_perempuan">Pilih Guru Perempuan</string>
+    <string name="guru_menyetujui">Guru yang menyetujui</string>
+    <string name="tidak_ada_guru">Tidak ada guru perempuan tersedia</string>
+    <string name="ajukan_pengajuan">Ajukan Pengajuan</string>
+    <string name="ajukan_ke_guru_perempuan">Ajukan ke Guru Perempuan</string>
+    <string name="diblokir_selama">Diblokir selama 14 hari</string>
+    <string name="menunggu_persetujuan">Menunggu Persetujuan</string>
+    <string name="sudah_disetujui">Sudah Disetujui</string>
+    <string name="sudah_ditolak">Sudah Ditolak</string>
 </resources>

@@ -168,6 +168,14 @@
             android:launchMode="singleTop"
             android:name=".DhuhaGroupsActivity"
             android:exported="false" />
+        <activity
+            android:name=".FemaleRestrictionStatusActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".FemaleRestrictionApprovalActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

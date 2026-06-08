@@ -25,6 +25,7 @@ import com.journeyapps.barcodescanner.DefaultDecoderFactory
 import com.xirpl2.SASMobile.R
 import com.xirpl2.SASMobile.StudentMainActivity
 import com.xirpl2.SASMobile.model.QRCodeVerifyData
+import com.xirpl2.SASMobile.FemaleRestrictionStatusActivity
 import com.xirpl2.SASMobile.repository.QRCodeRepository
 import kotlinx.coroutines.launch
 
@@ -109,7 +110,7 @@ class ScanQrFragment : Fragment(R.layout.fragment_scan_qr) {
         lifecycleScope.launch {
             repository.verifyQRCode(token, qrToken).fold(
                 onSuccess = { data -> hideLoading(); isProcessing = false; showVerificationResult(data) },
-                onFailure = { error -> hideLoading(); isProcessing = false; showStatus(error.message ?: "Gagal", false) }
+                onFailure = { error -> hideLoading(); isProcessing = false; val errorMsg = error.message ?: "Gagal"; if (errorMsg.contains("restriction_active", ignoreCase = true) || errorMsg.contains("terhalang", ignoreCase = true)) { showRestrictionBlocked() } else { showStatus(errorMsg, false) } }
             )
         }
     }
@@ -135,6 +136,12 @@ class ScanQrFragment : Fragment(R.layout.fragment_scan_qr) {
                 "${parts[2].toInt()} ${monthNames.getOrElse(parts[1].toInt() - 1) { parts[1] }} ${parts[0]}"
             } else tanggal
         } catch (e: Exception) { tanggal }
+    }
+
+    private fun showRestrictionBlocked() {
+        Toast.makeText(requireContext(), "Anda terhalang untuk scan. Silakan cek status halangan.", Toast.LENGTH_LONG).show()
+        val intent = Intent(requireContext(), FemaleRestrictionStatusActivity::class.java)
+        startActivity(intent)
     }
 
     private fun showStatus(message: String, isSuccess: Boolean) {

@@ -17,6 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.work.WorkManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xirpl2.SASMobile.network.RetrofitClient
+import com.xirpl2.SASMobile.FemaleRestrictionApprovalActivity
 import com.xirpl2.SASMobile.utils.NotificationCounterManager
 import com.xirpl2.SASMobile.utils.NotificationPollWorker
 import kotlinx.coroutines.Dispatchers
@@ -44,6 +45,7 @@ abstract class BaseAdminActivity : BaseActivity() {
         SISWA_BELUM_TERDAFTAR,
         MANAJEMEN_PERANGKAT,
         KENAIKAN_KELAS,
+        PERSETUJUAN_SISWI,
         PENGATURAN,
         LOGOUT
     }
@@ -219,6 +221,10 @@ abstract class BaseAdminActivity : BaseActivity() {
             navigateTo(PengajuanIzinAdminActivity::class.java)
         }
 
+        setupMenuItem(R.id.menuPersetujuanSiswi, AdminMenuItem.PERSETUJUAN_SISWI, currentItem) {
+            navigateTo(FemaleRestrictionApprovalActivity::class.java)
+        }
+
         
         setupMenuItem(R.id.menuLaporan, AdminMenuItem.LAPORAN, currentItem) {
             navigateTo(LaporanAdminActivity::class.java)
@@ -345,6 +351,7 @@ abstract class BaseAdminActivity : BaseActivity() {
                 sidebarView.findViewById<LinearLayout>(R.id.menuKelolaGuru)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuPresensi)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuPengajuanIzin)?.setOnClickListener(null)
+                sidebarView.findViewById<LinearLayout>(R.id.menuPersetujuanSiswi)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuLaporan)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuQRCode)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuSiswaBelumTerdaftar)?.setOnClickListener(null)

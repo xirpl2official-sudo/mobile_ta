@@ -250,6 +250,34 @@
                 <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Pengajuan Izin" android:textColor="@color/slate_700" android:textSize="15sp" />
             </LinearLayout>
 
+            <!-- Persetujuan Siswi (Female Restriction Approval) -->
+            <LinearLayout
+                android:id="@+id/menuPersetujuanSiswi"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="12dp"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_female_restriction"
+                    android:contentDescription="Persetujuan Siswi"
+                    android:layout_marginEnd="16dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Persetujuan Siswi"
+                    android:textColor="@color/slate_700"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
             <!-- Item Laporan -->
             <LinearLayout
                 android:id="@+id/menuLaporan"
