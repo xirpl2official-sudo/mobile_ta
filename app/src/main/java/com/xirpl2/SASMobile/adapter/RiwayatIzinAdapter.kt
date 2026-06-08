@@ -51,7 +51,7 @@ class RiwayatIzinAdapter :
 
             setupStatusBadge(item.status)
 
-            ivAttachment.visibility = if (!item.buktiFoto.isNullOrEmpty()) View.VISIBLE else View.GONE
+            ivAttachment.visibility = if (!item.buktiFotoUrl.isNullOrEmpty()) View.VISIBLE else View.GONE
         }
 
         private fun formatDate(dateStr: String): String {

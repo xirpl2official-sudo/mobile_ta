@@ -9,8 +9,8 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
 
-    // 1. URL Local (Android Emulator)
-    private const val BASE_URL = "http://10.0.2.2:3000/api/"
+    // 1. URL Local — akses backend laptop dari device fisik via USB (adb reverse tcp:3000 tcp:3000)
+    private const val BASE_URL = "http://localhost:3000/api/"
 
     // 2. Variabel Context untuk Autentikasi
     private var appContext: Context? = null

@@ -108,6 +108,7 @@ data class DeviceManagementListResponse(
 
 data class DeviceManagementItem(
     val id: Int,
+    @SerializedName("account_id")
     val user_id: Int,
     val user_name: String? = null,
     val email: String? = null,

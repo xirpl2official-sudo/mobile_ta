@@ -349,13 +349,13 @@ class PengajuanIzinAdminActivity : BaseAdminActivity() {
             val detailResult = repository.getPengajuanIzinDetail(token, item.id_pengajuan)
             val fullItem = detailResult.getOrNull() ?: item
             
-            // If buktiFoto is still null, try fetching it explicitly from the separate endpoint
+            // If buktiFotoUrl is still null, try fetching it explicitly from the separate endpoint
             var finalItem = fullItem
-            if (fullItem.buktiFoto.isNullOrEmpty()) {
+            if (fullItem.buktiFotoUrl.isNullOrEmpty()) {
                 val buktiResult = repository.getBuktiFoto(token, item.id_pengajuan)
                 buktiResult.onSuccess { url ->
                     if (!url.isNullOrEmpty()) {
-                        finalItem = fullItem.copy(buktiFoto = url)
+                        finalItem = fullItem.copy(buktiFotoUrl = url)
                     }
                 }
             }
@@ -379,7 +379,7 @@ class PengajuanIzinAdminActivity : BaseAdminActivity() {
         dialogView.findViewById<TextView>(R.id.tvDetailStatus).text = "Status: ${item.status}"
         
         val sectionLampiran = dialogView.findViewById<LinearLayout>(R.id.sectionLampiran)
-        if (!item.buktiFoto.isNullOrEmpty()) {
+        if (!item.buktiFotoUrl.isNullOrEmpty()) {
             sectionLampiran.visibility = View.VISIBLE
             val tvFileName = dialogView.findViewById<TextView>(R.id.tvFileName)
             val ivFileThumbnail = dialogView.findViewById<ImageView>(R.id.ivFileThumbnail)
@@ -387,7 +387,7 @@ class PengajuanIzinAdminActivity : BaseAdminActivity() {
             val btnDownloadFile = dialogView.findViewById<ImageButton>(R.id.btnDownloadFile)
 
             // Extract filename from URL
-            val fileName = item.buktiFoto.substringAfterLast("/")
+            val fileName = item.buktiFotoUrl.substringAfterLast("/")
             tvFileName.text = fileName
 
             // Basic type detection for icon
@@ -404,11 +404,11 @@ class PengajuanIzinAdminActivity : BaseAdminActivity() {
             }
 
             btnViewPreview.setOnClickListener {
-                openFile(item.buktiFoto)
+                openFile(item.buktiFotoUrl)
             }
 
             btnDownloadFile.setOnClickListener {
-                openFile(item.buktiFoto)
+                openFile(item.buktiFotoUrl)
                 Toast.makeText(this, "Membuka lampiran...", Toast.LENGTH_SHORT).show()
             }
         }
