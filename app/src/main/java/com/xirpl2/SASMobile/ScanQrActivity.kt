@@ -24,7 +24,6 @@ import com.journeyapps.barcodescanner.BarcodeResult
 import com.journeyapps.barcodescanner.BarcodeView
 import com.journeyapps.barcodescanner.DefaultDecoderFactory
 import com.xirpl2.SASMobile.model.QRCodeVerifyData
-import com.xirpl2.SASMobile.FemaleRestrictionStatusActivity
 import com.xirpl2.SASMobile.repository.QRCodeRepository
 import kotlinx.coroutines.launch
 
@@ -195,13 +194,7 @@ class ScanQrActivity : BaseSiswaActivity() {
                     if (isFinishing || isDestroyed) return@fold
                     hideLoading()
                     isProcessing = false
-                    val errorMsg = error.message ?: "Verifikasi gagal"
-                    if (errorMsg.contains("restriction_active", ignoreCase = true) ||
-                        errorMsg.contains("terhalang", ignoreCase = true)) {
-                        showRestrictionBlocked()
-                    } else {
-                        showStatus(errorMsg, false)
-                    }
+                    showStatus(error.message ?: "Verifikasi gagal", false)
                 }
             )
         }
@@ -219,7 +212,7 @@ class ScanQrActivity : BaseSiswaActivity() {
         tvStudentClass.text = classInfo
 
 
-        tvPrayerType.text = "Shalat ${data.jenis_sholat}"
+        tvPrayerType.text = "Salat ${data.jenis_sholat}"
         tvAttendanceStatus.text = data.status.replaceFirstChar { it.uppercase() }
         tvAttendanceTime.text = formatDate(data.tanggal)
 
@@ -264,12 +257,6 @@ class ScanQrActivity : BaseSiswaActivity() {
         } catch (e: Exception) {
             tanggal
         }
-    }
-
-    private fun showRestrictionBlocked() {
-        Toast.makeText(this, "Anda terhalang untuk scan. Silakan cek status halangan.", Toast.LENGTH_LONG).show()
-        val intent = Intent(this, FemaleRestrictionStatusActivity::class.java)
-        startActivity(intent)
     }
 
     private fun showStatus(message: String, isSuccess: Boolean) {

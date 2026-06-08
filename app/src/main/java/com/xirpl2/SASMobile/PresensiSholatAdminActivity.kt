@@ -48,7 +48,7 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
     
     private var selectedKelas: String = "Semua Kelas"
     private var selectedJurusan: String = "Semua Jurusan"
-    private var selectedJenisSholat: String = "Semua Sholat"
+    private var selectedJenisSholat: String = "Semua Salat"
     private var selectedTanggal: String = "Semua Tanggal"
     private var searchQuery: String = ""
 
@@ -72,7 +72,7 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
     private val fixedJurusanList = listOf("RPL", "TKJ", "TEI", "TAV", "BC", "TMT", "DKV", "ANM")
     private val jurusanOptions: List<String> = listOf("Semua Jurusan") + fixedJurusanList
     private val kelasOptions: List<String> = listOf("Semua Kelas", "10", "11", "12")
-    private val jenisSholatOptions: List<String> = listOf("Semua Shalat", "Duha", "Dzuhur", "Jumat")
+    private val jenisSholatOptions: List<String> = listOf("Semua Salat", "Dhuha", "Dzuhur", "Jumat")
     private val tanggalOptions: List<String> = listOf("Semua Tanggal", "Hari Ini", "Minggu Ini", "Bulan Ini")
 
     private fun getDateRange(): Pair<String?, String?> {
@@ -104,7 +104,7 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
     
     private fun getJenisSholatApiValue(displayValue: String): String? {
         return when (displayValue) {
-            "Duha" -> "Duha"
+            "Dhuha" -> "Dhuha"
             "Dzuhur" -> "Dzuhur"
             "Jumat" -> "Jumat"
             else -> null
@@ -285,7 +285,7 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
         }
 
         filterJenisSholat.setOnClickListener {
-            showFilterDialog("Pilih Jenis Sholat", jenisSholatOptions, selectedJenisSholat) { selected ->
+            showFilterDialog("Pilih Jenis Salat", jenisSholatOptions, selectedJenisSholat) { selected ->
                 selectedJenisSholat = selected
                 filterJenisSholat.text = selected
                 refreshData()

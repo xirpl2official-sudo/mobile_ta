@@ -9,7 +9,7 @@
     <item
         android:id="@+id/nav_jadwal_sholat"
         android:icon="@drawable/ic_jadwal"
-        android:title="Jadwal Sholat" />
+        android:title="Jadwal Salat" />
 
     <item
         android:id="@+id/nav_presensi"

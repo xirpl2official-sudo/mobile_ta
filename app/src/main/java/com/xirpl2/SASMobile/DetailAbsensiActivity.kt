@@ -51,7 +51,7 @@ class DetailAbsensiActivity : BaseActivity() {
         val studentName = intent.getStringExtra("student_name")
         
         if (studentName != null) {
-            tvTitle.text = "Detail Absensi: $studentName"
+            tvTitle.text = "Detail Presensi: $studentName"
         }
 
         setupDateStrip()
@@ -106,11 +106,11 @@ class DetailAbsensiActivity : BaseActivity() {
         if (isFriday) {
             itemDzuhur?.visibility = View.GONE
             itemJumat?.visibility = View.VISIBLE
-            itemJumat?.let { setupPrayerItem(it, "Shalat Jumat", "11:00 - 13:00") }
+            itemJumat?.let { setupPrayerItem(it, "Salat Jumat", "11:00 - 13:00") }
         } else {
             itemDzuhur?.visibility = View.VISIBLE
             itemJumat?.visibility = View.GONE
-            itemDzuhur?.let { setupPrayerItem(it, "Shalat Dzuhur", "11:30 - 13:00") }
+            itemDzuhur?.let { setupPrayerItem(it, "Salat Dzuhur", "11:30 - 13:00") }
         }
 
         checkDhuhaVisibility(itemDhuha)
@@ -140,7 +140,7 @@ class DetailAbsensiActivity : BaseActivity() {
                             itemDhuha?.visibility = View.VISIBLE
                             val dhuhaJadwal = jadwals.find { it.jenis_sholat.equals("Dhuha", true) }
                             val time = if (dhuhaJadwal != null) "${dhuhaJadwal.jam_mulai} - ${dhuhaJadwal.jam_selesai}" else "06:30 - 09:00"
-                            itemDhuha?.let { setupPrayerItem(it, "Shalat Duha", time) }
+                            itemDhuha?.let { setupPrayerItem(it, "Salat Dhuha", time) }
                         } else {
                             itemDhuha?.visibility = View.GONE
                         }

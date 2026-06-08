@@ -12,7 +12,7 @@
         android:id="@+id/tvDialogTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Edit Jadwal Shalat"
+        android:text="Edit Jadwal Salat"
         android:textSize="18sp"
         android:textStyle="bold"
         android:textColor="@color/on_background"

@@ -300,7 +300,7 @@ class TambahAbsensiDialogFragment : DialogFragment() {
         
         val deskripsi = etDeskripsi.text.toString().trim()
         if (status != "hadir" && deskripsi.isEmpty()) {
-            Toast.makeText(context, "Keterangan wajib diisi untuk perizinan/alpha", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Keterangan wajib diisi untuk perizinan/alfa", Toast.LENGTH_SHORT).show()
             return
         }
         

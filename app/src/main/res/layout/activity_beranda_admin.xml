@@ -233,7 +233,7 @@
                                 android:src="@drawable/users"
                                 android:contentDescription="@string/TotalSiswa"
                                 app:layout_constraintDimensionRatio="1:1"
-                                app:layout_constraintWidth_percent="0.25"
+                                app:layout_constraintWidth_percent="0.20"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -314,7 +314,7 @@
                                 android:src="@drawable/centang"
                                 android:contentDescription="@string/TotalHadirHariIni"
                                 app:layout_constraintDimensionRatio="1:1"
-                                app:layout_constraintWidth_percent="0.25"
+                                app:layout_constraintWidth_percent="0.20"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -392,7 +392,7 @@
                                 android:src="@drawable/jam"
                                 android:contentDescription="@string/IzinSakit"
                                 app:layout_constraintDimensionRatio="1:1"
-                                app:layout_constraintWidth_percent="0.25"
+                                app:layout_constraintWidth_percent="0.20"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -432,7 +432,7 @@
                                 android:id="@+id/tvAlphaLabel"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Total Alpha"
+                                android:text="Total Alfa"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="@dimen/text_admin_card_label"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -461,11 +461,13 @@
                                 android:layout_marginTop="2dp" />
 
                             <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
+                                android:layout_width="0dp"
+                                android:layout_height="0dp"
                                 android:contentDescription="@string/Alpha"
                                 android:src="@drawable/ic_peringatan"
                                 app:tint="@color/status_error"
+                                app:layout_constraintDimensionRatio="1:1"
+                                app:layout_constraintWidth_percent="0.20"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -600,7 +602,7 @@
                         android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:background="@drawable/bg_circle_light_blue_ripple"
-                        android:contentDescription="Buka Jadwal Shalat"
+                        android:contentDescription="Buka Jadwal Salat"
                         android:src="@drawable/ic_jadwal"
                         android:padding="12dp"
                         app:tint="@color/blue_theme" />
@@ -769,7 +771,7 @@
                         android:id="@+id/tvDhuhaTitle"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="Jadwal Duha per Jurusan"
+                        android:text="Jadwal Dhuha per Jurusan"
                         android:textColor="@color/on_background"
                         android:textSize="@dimen/text_prayer_title"
                         android:textStyle="bold"
@@ -801,13 +803,13 @@
                 app:layout_constraintTop_toBottomOf="@id/cardJadwalDhuha"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginTop="@dimen/spacing_small">
+                android:layout_marginTop="@dimen/spacing_xlarge">
 
                 <TextView
                     android:id="@+id/tvJurusanDhuhaTitle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Jadwal Jurusan Duha Hari Ini"
+                    android:text="Jadwal Jurusan Dhuha Hari Ini"
                     android:textColor="@color/on_background"
                     android:textSize="@dimen/text_prayer_title"
                     android:textStyle="bold"

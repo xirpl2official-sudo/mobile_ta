@@ -44,7 +44,7 @@ class RiwayatAbsensiAdapter : ListAdapter<RiwayatAbsensi, RiwayatAbsensiAdapter.
                 )
             }
             StatusAbsensi.ALPHA -> {
-                holder.tvStatus.text = "Alpha"
+                holder.tvStatus.text = "Alfa"
                 holder.tvStatus.setBackgroundResource(R.drawable.bg_status_alpha)
                 holder.tvStatus.setTextColor(
                     ContextCompat.getColor(holder.itemView.context, R.color.white)

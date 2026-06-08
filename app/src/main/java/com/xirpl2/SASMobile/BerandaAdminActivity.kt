@@ -255,7 +255,7 @@ class BerandaAdminActivity : BaseAdminActivity() {
                         val isCurrentlyActive = closestData.current != null
 
                         if (activePrayer != null && activePrayer.waktuSholat != null) {
-                            val namaSholat = activePrayer.waktuSholat.jenisSholat?.namaJenis ?: "Shalat"
+                            val namaSholat = activePrayer.waktuSholat.jenisSholat?.namaJenis ?: "Salat"
                             val jamMulai = activePrayer.waktuSholat.waktuMulai ?: ""
                             val jamSelesai = activePrayer.waktuSholat.waktuSelesai ?: ""
 

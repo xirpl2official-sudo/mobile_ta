@@ -186,7 +186,7 @@ class BerandaFragment : Fragment(R.layout.fragment_beranda) {
                     viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
                         if (!isAdded) return@launch
                         if (riwayatList.isNotEmpty()) { tvRiwayatError.visibility = View.GONE; rvRiwayatAbsensi.visibility = View.VISIBLE; riwayatAdapter.submitList(riwayatList) }
-                        else { rvRiwayatAbsensi.visibility = View.GONE; tvRiwayatError.text = "Belum ada riwayat absensi"; tvRiwayatError.visibility = View.VISIBLE }
+                        else { rvRiwayatAbsensi.visibility = View.GONE; tvRiwayatError.text = "Belum ada riwayat presensi"; tvRiwayatError.visibility = View.VISIBLE }
                     }
                 },
                 onFailure = {
@@ -205,7 +205,7 @@ class BerandaFragment : Fragment(R.layout.fragment_beranda) {
         val items = riwayatAdapter.currentList
         if (items.isEmpty()) { Toast.makeText(requireContext(), "Tidak ada data riwayat", Toast.LENGTH_SHORT).show(); return }
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-            val csv = "\uFEFF" + (listOf("Tanggal,Sholat,Waktu,Status") + items.map { "${it.tanggal},${it.namaSholat},${it.waktuAbsen ?: "-"},${it.status.name}" }).joinToString("\n")
+            val csv = "\uFEFF" + (listOf("Tanggal,Salat,Waktu,Status") + items.map { "${it.tanggal},${it.namaSholat},${it.waktuAbsen ?: "-"},${it.status.name}" }).joinToString("\n")
             val fileName = "riwayat_absensi_${java.text.SimpleDateFormat("yyyyMMdd_HHmmss", java.util.Locale.getDefault()).format(java.util.Date())}.csv"
             try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {

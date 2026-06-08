@@ -21,7 +21,6 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -80,6 +79,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
     private lateinit var paginationContainer: LinearLayout
 
     // Buttons
+    private lateinit var btnDownloadLaporan: MaterialButton
     private lateinit var btnExportExcel: MaterialButton
     private lateinit var btnExportPdf: MaterialButton
 
@@ -111,7 +111,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
     private val fixedJurusanList = listOf("RPL", "TKJ", "TEI", "TAV", "BC", "TMT", "DKV", "ANM")
     private val jurusanOptions = listOf("Semua Jurusan") + fixedJurusanList
     private val kelasOptions = listOf("Semua Kelas", "10", "11", "12")
-    private val sholatOptions = listOf("Semua Shalat", "Duha", "Dzuhur", "Jumat")
+    private val sholatOptions = listOf("Semua Sholat", "Dhuha", "Dzuhur", "Jumat")
 
     override fun getCurrentMenuItem(): AdminMenuItem = AdminMenuItem.LAPORAN
 
@@ -174,6 +174,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
 
         paginationContainer = findViewById(R.id.paginationContainer)
 
+        btnDownloadLaporan = findViewById(R.id.btnDownloadLaporan)
         btnExportExcel = findViewById(R.id.btnExportExcel)
         btnExportPdf = findViewById(R.id.btnExportPdf)
     }
@@ -327,6 +328,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
     private fun setupButtons() {
         btnExportExcel.setOnClickListener { downloadReport("excel") }
         btnExportPdf.setOnClickListener { downloadReport("pdf") }
+        btnDownloadLaporan.setOnClickListener { showFormatPicker() }
     }
 
     // ===== CHART DATA =====
@@ -365,7 +367,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
                             Entry(2f, sakit.toFloat()),
                             Entry(3f, alpha.toFloat())
                         )
-                        val labels = listOf("Hadir", "Izin", "Sakit", "Alpha")
+                        val labels = listOf("Hadir", "Izin", "Sakit", "Alfa")
                         val colors = listOf(
                             ContextCompat.getColor(this@LaporanAdminActivity, R.color.green),
                             ContextCompat.getColor(this@LaporanAdminActivity, R.color.orange_warning),
@@ -496,13 +498,13 @@ class LaporanAdminActivity : BaseAdminActivity() {
                         val offset = (currentPage - 1) * pageSize
                         absensiAdapter.updateData(currentPageItems, offset)
 
-                        tvDataAbsensiTitle.text = "Data Absensi ($totalItems entri)"
+                        tvDataAbsensiTitle.text = "Data Presensi ($totalItems entri)"
                         updatePaginationUI()
                         showLoading(false)
                         isLoading = false
 
                         if (currentPageItems.isEmpty()) {
-                            showEmptyState("Tidak ada data absensi untuk filter ini")
+                            showEmptyState("Tidak ada data presensi untuk filter ini")
                         } else {
                             hideEmptyState()
                         }
@@ -587,7 +589,6 @@ class LaporanAdminActivity : BaseAdminActivity() {
     private fun createPageButton(text: String, onClick: () -> Unit): TextView {
         return TextView(this).apply {
             this.text = text
-            contentDescription = "Halaman $text"
             textSize = 13f
             setTextColor(getColor(R.color.blue_theme))
             setPadding(24, 12, 24, 12)
@@ -606,7 +607,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
 
     private fun showFormatPicker() {
         val formats = arrayOf("Excel (.xlsx)", "PDF (.pdf)", "CSV (.csv)")
-        MaterialAlertDialogBuilder(this)
+        AlertDialog.Builder(this)
             .setTitle("Pilih Format")
             .setItems(formats) { _, which ->
                 when (which) {
@@ -640,7 +641,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
         val activeFilters = mutableListOf<String>()
         if (jurusanApi != null) activeFilters.add("Jurusan: $selectedJurusan")
         if (kelasApi != null) activeFilters.add("Kelas: $selectedKelas")
-        if (sholatApi != null) activeFilters.add("Shalat: $selectedSholat")
+        if (sholatApi != null) activeFilters.add("Salat: $selectedSholat")
         if (searchApi != null) activeFilters.add("Cari: $searchQuery")
         if (activeFilters.isNotEmpty()) {
             Toast.makeText(this, "Filter aktif: ${activeFilters.joinToString(", ")}", Toast.LENGTH_LONG).show()
@@ -649,7 +650,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
         val btn = when (format) {
             "excel" -> btnExportExcel
             "pdf" -> btnExportPdf
-            else -> btnExportPdf
+            else -> btnDownloadLaporan
         }
         btn.isEnabled = false
 
@@ -714,7 +715,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
     }
 
     private fun showShareOption(uri: android.net.Uri, mimeType: String, fileName: String) {
-        MaterialAlertDialogBuilder(this)
+        AlertDialog.Builder(this)
             .setTitle("Laporan Berhasil Diunduh")
             .setMessage("File: $fileName\n\nIngin membagikan laporan ini?")
             .setPositiveButton("Bagikan") { _, _ ->
@@ -763,7 +764,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
 
     private fun showFilterDialog(title: String, options: List<String>, currentSelection: String, onSelect: (String) -> Unit) {
         val selectedIndex = options.indexOf(currentSelection).takeIf { it >= 0 } ?: 0
-        MaterialAlertDialogBuilder(this)
+        AlertDialog.Builder(this)
             .setTitle(title)
             .setSingleChoiceItems(options.toTypedArray(), selectedIndex) { dialog, which ->
                 onSelect(options[which])

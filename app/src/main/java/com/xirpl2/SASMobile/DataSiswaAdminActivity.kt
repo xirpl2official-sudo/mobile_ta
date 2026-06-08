@@ -973,7 +973,7 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
                     </tbody>
                 </table>
                 <div class="footer">
-                    SMK Negeri 2 Singosari &mdash; Sistem Absensi Sholat &mdash; Halaman cetak
+                    SMK Negeri 2 Singosari &mdash; Sistem Presensi Salat &mdash; Halaman cetak
                 </div>
             </body>
             </html>

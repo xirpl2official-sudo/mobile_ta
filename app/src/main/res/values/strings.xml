@@ -13,7 +13,7 @@
     <string name="DekorasiOrange">Dekoratif orange di atas</string>
     <string name="TopBarBiru">Top Bar</string>
     <string name="LogoSMKN2">Logo SMK Negeri 2 Singosari</string>
-    <string name="app_name">Presensi Shalat</string>
+    <string name="app_name">Presensi Salat</string>
     <string name="JudulHal">MASUK</string>
     <string name="Masuk">Masuk</string>
     <string name="JudulDaf">DAFTAR</string>
@@ -52,32 +52,31 @@
     <string name="Valid">Valid</string>
     <string name="JadwalHariIni">Jadwal Hari Ini</string>
     <string name="Jadwal">Jadwal</string>
-    <string name="JadwalKosong">Tidak ada jadwal shalat hari ini</string>
+    <string name="JadwalKosong">Tidak ada jadwal salat hari ini</string>
     <string name="StatusSelesai">Selesai</string>
     <string name="StatusBerlangsung">Berlangsung</string>
     <string name="StatusAkanDatang">Akan Datang</string>
     <string name="Riwayat">Riwayat</string>
     <string name="Tanggal">Tanggal</string>
-    <string name="Shalat">Shalat</string>
-    <string name="Sholat">Shalat</string>
+    <string name="Sholat">Salat</string>
     <string name="Status">Status</string>
     <string name="Warning">Peringatan</string>
 
     
     <string name="TotalSiswa">Total Siswa</string>
     <string name="TotalHadirHariIni">Total Hadir Hari Ini</string>
-    <string name="TotalAlpha">Total Alpha</string>
+    <string name="TotalAlpha">Total Alfa</string>
     <string name="IzinSakit">Total Izin / Sakit</string>
     <string name="Kehadiran">Kehadiran</string>
-    <string name="Alpha">Alpha</string>
-    <string name="JadwalSholatTerdekat">Jadwal Shalat Terdekat</string>
+    <string name="Alpha">Alfa</string>
+    <string name="JadwalSholatTerdekat">Jadwal Salat Terdekat</string>
     <string name="SilahkanHariIni">Silahkan Hari Ini</string>
     <string name="icon">Ikon</string>
 
     
     <string name="Pengaturan">Pengaturan</string>
     <string name="PengaturanAkun">Pengaturan Akun</string>
-    <string name="KelolaInformasiAkun">Kelola informasi akun Anda</string>
+    <string name="KelolaInformasiAkun">Kelola informasi akun anda</string>
     <string name="FotoProfil">Foto Profil</string>
     <string name="DeskripsiFotoProfil">Foto profil kamu akan otomatis memotong huruf depan namamu</string>
     <string name="NamaLengkap">Nama Lengkap</string>
@@ -93,61 +92,62 @@
 
     
     <string name="QrCodeSaya">KODE QR SAYA</string>
-    <string name="SholatDzuhur">Shalat Dzuhur</string>
+    <string name="SholatDzuhur">Salat Dzuhur</string>
     <string name="BerlakuWaktu">Berlaku: 05:00</string>
     <string name="TunjukkanQR">Tunjukkan QR code ini ke guru</string>
-    <string name="RefreshQRCode">Segarkan</string>
-    <string name="TidakAdaJadwalAktif">Tidak ada jadwal shalat aktif saat ini</string>
+    <string name="RefreshQRCode">SEGARKAN QR</string>
+    <string name="TidakAdaJadwalAktif">Tidak ada jadwal salat aktif saat ini</string>
     <string name="CobaLagi">COBA LAGI</string>
 
     
-    <string name="QrCodeAbsensi">KODE QR PRESENSI</string>
-    <string name="QrCodeAktif">Kode QR Aktif</string>
-    <string name="InstruksiStaffQR">Tampilkan QR code ini di layar/proyektor.\nSiswa dapat memindai untuk absensi.</string>
+    <string name="QrCodeAbsensi">QR CODE PRESENSI</string>
+    <string name="QrCodeAktif">QR Code Aktif</string>
+    <string name="InstruksiStaffQR">Tampilkan QR code ini di layar/proyektor.\nSiswa dapat memindai untuk presensi.</string>
 
     
-    <string name="PindaiQR">PINDAI KODE QR</string>
-    <string name="PindaiKodeQR">PINDAI KODE QR</string>
-    <string name="ArahkanKamera">Arahkan kamera ke Kode QR</string>
+    <string name="PindaiQR">PINDAI QR CODE</string>
+    <string name="PindaiKodeQR">PINDAI QR CODE</string>
+    <string name="ArahkanKamera">Arahkan kamera ke QR Code</string>
     <string name="Pindai">PINDAI</string>
     <string name="NamaSiswa">Nama Siswa</string>
     <string name="PlaceholderKelasJurusan">XII RPL 1 - Rekayasa Perangkat Lunak</string>
-    <string name="SholatLabel">Shalat</string>
+    <string name="SholatLabel">Salat</string>
     <string name="HADIR">HADIR</string>
     <string name="Waktu">Waktu</string>
     <string name="PlaceholderWaktu">12:30</string>
     <string name="PindaiLagi">PINDAI LAGI</string>
 
     
-    <string name="PresensiSholat">Presensi Shalat</string>
+    <string name="PresensiSholat">Presensi Salat</string>
     <string name="InputIzin">Input Izin</string>
     <string name="Tambah">Tambah</string>
+    <string name="SemuaTanggal">Semua Tanggal</string>
     <string name="SemuaKelas">Semua Kelas</string>
     <string name="SemuaJurusan">Semua Jurusan</string>
-    <string name="SemuaSholat">Semua Shalat</string>
+    <string name="SemuaSholat">Semua Salat</string>
     <string name="Menampilkan0Data">Menampilkan 0 data</string>
-    <string name="TidakAdaDataAbsensi">Tidak ada data absensi.</string>
+    <string name="TidakAdaDataAbsensi">Tidak ada data presensi.</string>
     <string name="NO">NO</string>
     <string name="Kelas">Kelas</string>
-    <string name="JenisSholat">Jenis Shalat</string>
-    <string name="StatusAbsensi">Status Absensi</string>
+    <string name="JenisSholat">Jenis Salat</string>
+    <string name="StatusAbsensi">Status Presensi</string>
 
     
-    <string name="JadwalSholat">Jadwal Shalat</string>
-    <string name="PlaceholderJadwalSholatDhuha">Jadwal Shalat Duha - konsentrasi keahlian</string>
+    <string name="JadwalSholat">Jadwal Salat</string>
+    <string name="PlaceholderJadwalSholatDhuha">Jadwal Salat Dhuha - konsentrasi keahlian</string>
     <string name="Hari">Hari</string>
     <string name="KonsentrasiKeahlian1">Konsentrasi Keahlian 1</string>
     <string name="KonsentrasiKeahlian2">Konsentrasi Keahlian 2</string>
-    <string name="SholatDhuha">Shalat Duha</string>
+    <string name="SholatDhuha">Salat Dhuha</string>
     <string name="HariKerja">Senin, Selasa, Rabu, Kamis, Jumat</string>
     <string name="WaktuDhuha">Waktu: 06:30 - 09:00</string>
     <string name="JurusanSemuaJurusan">Jurusan: Semua Jurusan</string>
     <string name="KelasAllDhuha">Kelas: 10, 11, 12</string>
-    <string name="SholatDzhuhur">Shalat Dzuhur</string>
+    <string name="SholatDzhuhur">Salat Dzhuhur</string>
     <string name="HariKerjaAlt">Senin, Selasa, Rabu, kamis, Jumat</string>
     <string name="WaktuDzuhur">Waktu: 11:30 - 12:15</string>
     <string name="KelasAllDzuhur">Kelas: 10, 11</string>
-    <string name="SholatJumat">Shalat Jumat</string>
+    <string name="SholatJumat">Salat Jumat</string>
     <string name="Jumat">Jumat</string>
     <string name="WaktuJumat">Waktu: 11:25 - 12:10</string>
     <string name="KelasAllJumat">Kelas: 10, 11</string>
@@ -164,9 +164,9 @@
     <string name="RingkasanPeriode">Ringkasan Periode</string>
     <string name="Izin">Izin</string>
     <string name="Sakit">Sakit</string>
-    <string name="DataAbsensi0Entri">Data Absensi (0 entri)</string>
+    <string name="DataAbsensi0Entri">Data Presensi (0 entri)</string>
     <string name="ExportExcel">Ekspor Excel</string>
-    <string name="TidakAdaDataAbsensiAlt">Tidak ada data absensi</string>
+    <string name="TidakAdaDataAbsensiAlt">Tidak ada data presensi</string>
     <string name="Nama">Nama</string>
 
     
@@ -192,7 +192,7 @@
 
     
     <string name="PlaceholderDash">--</string>
-    <string name="Dhuha">Duha</string>
+    <string name="Dhuha">Dhuha</string>
     <string name="WaktuDhuhaJadwal">Waktu : 07.00 - 08.00</string>
 
     
@@ -258,25 +258,4 @@
     <string name="data_tidak_ditemukan">Data Tidak Ditemukan</string>
     <string name="halaman_x_dari_y">Halaman %1$d dari %2$d</string>
     <string name="nama_sekolah">SMK Negeri 2 Singosari</string>
-
-    <!-- Female Restriction Feature -->
-    <string name="status_halangan">Status Halangan</string>
-    <string name="halangan_perempuan">Halangan Perempuan</string>
-    <string name="ajukan_ke_guru">Ajukan ke Guru Perempuan</string>
-    <string name="riwayat_halangan">Riwayat Halangan</string>
-    <string name="persetujuan_siswi">Persetujuan Siswi</string>
-    <string name="terhalang_scan">Anda sedang terhalang untuk scan barcode</string>
-    <string name="sisa_hari">Hari Tersisa</string>
-    <string name="berakhir_pada">Berakhir</string>
-    <string name="belum_ada_riwayat_halangan">Belum ada riwayat halangan</string>
-    <string name="pengajuan_dikirim">Pengajuan berhasil dikirim</string>
-    <string name="pilih_guru_perempuan">Pilih Guru Perempuan</string>
-    <string name="guru_menyetujui">Guru yang menyetujui</string>
-    <string name="tidak_ada_guru">Tidak ada guru perempuan tersedia</string>
-    <string name="ajukan_pengajuan">Ajukan Pengajuan</string>
-    <string name="ajukan_ke_guru_perempuan">Ajukan ke Guru Perempuan</string>
-    <string name="diblokir_selama">Diblokir selama 14 hari</string>
-    <string name="menunggu_persetujuan">Menunggu Persetujuan</string>
-    <string name="sudah_disetujui">Sudah Disetujui</string>
-    <string name="sudah_ditolak">Sudah Ditolak</string>
 </resources>

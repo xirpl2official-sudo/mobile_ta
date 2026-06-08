@@ -26,7 +26,7 @@
             android:background="@android:color/transparent">
 
             
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp">
@@ -35,29 +35,26 @@
                     android:id="@+id/tvDialogTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
                     android:text="Tambah Presensi Siswa"
                     android:textSize="20sp"
                     android:textStyle="bold"
-                    android:textColor="@color/on_surface"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent" />
+                    android:textColor="@color/on_surface" />
 
                 <ImageView
                     android:id="@+id/btnClose"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
                     android:contentDescription="Tutup"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"
                     android:focusable="true"
                     android:padding="8dp"
                     android:src="@android:drawable/ic_menu_close_clear_cancel"
-                    app:tint="@color/text_secondary"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                    app:tint="@color/text_secondary" />
+            </RelativeLayout>
 
             
             <TextView
@@ -150,7 +147,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Jadwal Shalat"
+                android:text="Jadwal Salat"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="@color/slate_700"
@@ -174,7 +171,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_input_rounded"
-                    android:hint="Pilih Jadwal Shalat"
+                    android:hint="Pilih Jadwal Salat"
                     android:textColorHint="@color/text_hint"
                     android:textSize="13sp"
                     android:paddingHorizontal="16dp"
@@ -256,7 +253,7 @@
                     android:button="@null"
                     android:gravity="center"
                     android:paddingVertical="10dp"
-                    android:text="Alpha"
+                    android:text="Alfa"
                     android:textColor="@color/selector_radio_text"
                     android:textSize="12sp"
                     android:textStyle="bold" />

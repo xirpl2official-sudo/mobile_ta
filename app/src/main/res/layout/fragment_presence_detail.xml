@@ -29,7 +29,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="Ringkasan Absensi (Bulan ini)"
+        android:text="Ringkasan Presensi (Bulan ini)"
         android:textColor="@color/on_background"
         android:textSize="20sp"
         android:fontFamily="sans-serif-medium"
@@ -151,7 +151,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="Riwayat Shalat (7 Hari Terakhir)"
+        android:text="Riwayat Salat (7 Hari Terakhir)"
         android:textColor="@color/text_secondary"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
@@ -160,7 +160,6 @@
     
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvDateStrip"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"

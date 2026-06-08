@@ -314,8 +314,8 @@
                 <Button
                     android:id="@+id/btnVerifikasi"
                     android:layout_width="0dp"
-                    android:layout_height="56dp"
-                    android:paddingVertical="12dp"
+                    android:layout_height="wrap_content"
+                    android:minHeight="55dp"
                     android:layout_marginTop="20dp"
                     android:backgroundTint="#E58133"
                     android:text="@string/Verifikasi"

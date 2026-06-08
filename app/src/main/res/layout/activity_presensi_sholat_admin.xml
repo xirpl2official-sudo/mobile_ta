@@ -164,72 +164,84 @@
                 app:layout_constraintEnd_toEndOf="parent" />
 
             
-            <LinearLayout
-                android:id="@+id/filtersRow"
+            <HorizontalScrollView
+                android:id="@+id/filterScroll"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:orientation="horizontal"
+                android:scrollbars="none"
                 app:layout_constraintTop_toBottomOf="@id/etSearch"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 
-                <TextView
-                    android:id="@+id/filterTanggal"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="6dp"
-                    android:background="@drawable/bg_dropdown"
-                    android:drawableEnd="@drawable/ic_chevron_right"
-                    android:gravity="center_vertical"
-                    android:paddingHorizontal="10dp"
-                    android:text="Semua Tanggal"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="11sp" />
+                <LinearLayout
+                    android:id="@+id/filtersRow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/filterKelas"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="6dp"
-                    android:background="@drawable/bg_dropdown"
-                    android:drawableEnd="@drawable/ic_chevron_right"
-                    android:gravity="center_vertical"
-                    android:paddingHorizontal="10dp"
-                    android:text="@string/SemuaKelas"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="11sp" />
+                    <TextView
+                        android:id="@+id/filterTanggal"
+                        android:layout_width="100dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="6dp"
+                        android:background="@drawable/bg_dropdown"
+                        android:drawableEnd="@drawable/ic_chevron_right"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="10dp"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:text="@string/SemuaTanggal"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp" />
 
-                <TextView
-                    android:id="@+id/filterJurusan"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="6dp"
-                    android:background="@drawable/bg_dropdown"
-                    android:drawableEnd="@drawable/ic_chevron_right"
-                    android:gravity="center_vertical"
-                    android:paddingHorizontal="10dp"
-                    android:text="@string/SemuaJurusan"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="11sp" />
+                    <TextView
+                        android:id="@+id/filterKelas"
+                        android:layout_width="100dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="6dp"
+                        android:background="@drawable/bg_dropdown"
+                        android:drawableEnd="@drawable/ic_chevron_right"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="10dp"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:text="@string/SemuaKelas"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp" />
 
-                <TextView
-                    android:id="@+id/filterJenisSholat"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_dropdown"
-                    android:drawableEnd="@drawable/ic_chevron_right"
-                    android:gravity="center_vertical"
-                    android:paddingHorizontal="10dp"
-                    android:text="@string/SemuaSholat"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="11sp" />
+                    <TextView
+                        android:id="@+id/filterJurusan"
+                        android:layout_width="120dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="6dp"
+                        android:background="@drawable/bg_dropdown"
+                        android:drawableEnd="@drawable/ic_chevron_right"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="10dp"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:text="@string/SemuaJurusan"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp" />
 
-            </LinearLayout>
+                    <TextView
+                        android:id="@+id/filterJenisSholat"
+                        android:layout_width="100dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/bg_dropdown"
+                        android:drawableEnd="@drawable/ic_chevron_right"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="10dp"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:text="@string/SemuaSholat"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp" />
+
+                </LinearLayout>
+
+            </HorizontalScrollView>
 
             
             <TextView
@@ -240,7 +252,7 @@
                 android:text="@string/Menampilkan0Data"
                 android:textColor="@color/text_secondary"
                 android:textSize="12sp"
-                app:layout_constraintTop_toBottomOf="@id/filtersRow"
+                app:layout_constraintTop_toBottomOf="@id/filterScroll"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 

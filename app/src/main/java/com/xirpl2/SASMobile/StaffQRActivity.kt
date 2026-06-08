@@ -111,7 +111,7 @@ class StaffQRActivity : BaseActivity() {
     }
 
     private fun displayQRCode(qrData: QRCodeData) {
-        tvJenisSholat.text = "Shalat ${qrData.jenis_sholat}"
+        tvJenisSholat.text = "Salat ${qrData.jenis_sholat}"
         val bitmap = decodeBase64ToBitmap(qrData.qr_code)
         if (bitmap != null) {
             ivQRCode.setImageBitmap(bitmap)
@@ -122,7 +122,7 @@ class StaffQRActivity : BaseActivity() {
         startCountdown(qrData.expires_at)
         tvStatus.text = "QR Code Aktif"
         tvStatus.setTextColor(getColor(R.color.status_success))
-        tvInstructions.text = "Tampilkan QR code ini di layar/proyektor.\nSiswa dapat memindai untuk absensi."
+        tvInstructions.text = "Tampilkan QR code ini di layar/proyektor.\nSiswa dapat memindai untuk presensi."
         tvInstructions.visibility = View.VISIBLE
     }
 

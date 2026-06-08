@@ -418,7 +418,7 @@
                                 android:id="@+id/tvAlphaLabel"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Total Alpha"
+                                android:text="Total Alfa"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="@dimen/text_admin_card_label"
                                 app:layout_constraintStart_toStartOf="parent"

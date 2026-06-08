@@ -91,7 +91,7 @@ class PresenceDetailPopUpFragment : DialogFragment() {
         tvTitle = view.findViewById(R.id.tvTitle)
 
         if (studentName != null) {
-            tvTitle.text = "Detail Absensi: $studentName"
+            tvTitle.text = "Detail Presensi: $studentName"
         }
 
         val monthFormat = SimpleDateFormat("MMMM yyyy", Locale("id", "ID"))
@@ -281,7 +281,7 @@ class PresenceDetailPopUpFragment : DialogFragment() {
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val item = items[position]
-            holder.tvName.text = "Shalat ${item.jenis_sholat ?: "Unknown"}"
+            holder.tvName.text = "Salat ${item.jenis_sholat ?: "Unknown"}"
 
             when (item.status.uppercase()) {
                 "HADIR" -> {

@@ -32,7 +32,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-medium"
-            android:text="Detail Absensi"
+            android:text="Detail Presensi"
             android:textColor="@color/on_background"
             android:textSize="18sp"
             android:textStyle="bold"

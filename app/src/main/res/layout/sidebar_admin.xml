@@ -52,7 +52,7 @@
                 android:id="@+id/tvMenuSubtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Absensi Shalat"
+                android:text="Presensi Salat"
                 android:textColor="@color/slate_200"
                 android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -175,8 +175,8 @@
                 android:padding="16dp"
                 android:layout_marginBottom="4dp"
                 android:background="@drawable/bg_sidebar_item_selector">
-                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_clock" android:contentDescription="Jadwal Sholat" app:tint="@color/slate_500" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Jadwal Shalat" android:textColor="@color/slate_700" android:textSize="15sp" />
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_clock" android:contentDescription="Jadwal Salat" app:tint="@color/slate_500" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Jadwal Salat" android:textColor="@color/slate_700" android:textSize="15sp" />
             </LinearLayout>
 
             <!-- Item Kelola Siswa -->
@@ -250,34 +250,6 @@
                 <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Pengajuan Izin" android:textColor="@color/slate_700" android:textSize="15sp" />
             </LinearLayout>
 
-            <!-- Persetujuan Siswi (Female Restriction Approval) -->
-            <LinearLayout
-                android:id="@+id/menuPersetujuanSiswi"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="12dp"
-                android:background="?attr/selectableItemBackground"
-                android:clickable="true"
-                android:focusable="true">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_female_restriction"
-                    android:contentDescription="Persetujuan Siswi"
-                    android:layout_marginEnd="16dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Persetujuan Siswi"
-                    android:textColor="@color/slate_700"
-                    android:textSize="14sp" />
-            </LinearLayout>
-
             <!-- Item Laporan -->
             <LinearLayout
                 android:id="@+id/menuLaporan"
@@ -303,7 +275,7 @@
                 android:layout_marginBottom="4dp"
                 android:background="@drawable/bg_sidebar_item_selector">
                 <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_qr_code" android:contentDescription="QR Code" app:tint="@color/slate_500" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Kode QR" android:textColor="@color/slate_700" android:textSize="15sp" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="QR Code" android:textColor="@color/slate_700" android:textSize="15sp" />
             </LinearLayout>
 
             <!-- Item Siswa Belum Terdaftar -->

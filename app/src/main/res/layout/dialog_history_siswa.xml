@@ -20,7 +20,7 @@
             android:orientation="vertical"
             android:padding="20dp">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp">
@@ -29,13 +29,11 @@
                     android:id="@+id/tvTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Riwayat Absensi"
+                    android:layout_alignParentStart="true"
+                    android:text="Riwayat Presensi"
                     android:textColor="@color/on_background"
                     android:textSize="18sp"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent" />
+                    android:textStyle="bold" />
 
                 <ImageView
                     android:id="@+id/btnClose"
@@ -45,7 +43,7 @@
                     android:src="@drawable/ic_close"
                     android:contentDescription="Tutup"
                     app:tint="@color/slate_400" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            </RelativeLayout>
 
             <TextView
                 android:id="@+id/tvStudentInfo"
@@ -82,7 +80,6 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerHistory"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minHeight="120dp"

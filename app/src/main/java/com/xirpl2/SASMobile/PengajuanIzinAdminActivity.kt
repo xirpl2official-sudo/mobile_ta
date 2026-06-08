@@ -7,7 +7,6 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.widget.*
-import androidx.appcompat.widget.SearchView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,7 +24,7 @@ class PengajuanIzinAdminActivity : BaseAdminActivity() {
     private lateinit var adapter: PengajuanIzinAdminAdapter
     private lateinit var spinnerFilterStatus: TextView
     private lateinit var spinnerSort: TextView
-    private lateinit var searchView: SearchView
+    private lateinit var searchView: EditText
     private lateinit var tvInfoBanner: TextView
     private lateinit var infoBanner: View
     private lateinit var progressBar: ProgressBar
@@ -141,23 +140,28 @@ class PengajuanIzinAdminActivity : BaseAdminActivity() {
     }
 
     private fun setupSearch() {
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                searchQuery = query ?: ""
-                loadData(reset = true)
-                return true
-            }
+        searchView.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
-            override fun onQueryTextChange(newText: String?): Boolean {
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 searchRunnable?.let { searchHandler.removeCallbacks(it) }
                 searchRunnable = Runnable {
-                    searchQuery = newText ?: ""
+                    searchQuery = s?.toString() ?: ""
                     loadData(reset = true)
                 }
                 searchHandler.postDelayed(searchRunnable!!, 300)
-                return true
             }
+
+            override fun afterTextChanged(s: android.text.Editable?) {}
         })
+        searchView.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH) {
+                searchQuery = searchView.text.toString()
+                loadData(reset = true)
+                return@setOnEditorActionListener true
+            }
+            false
+        }
     }
 
     private fun setupActions() {
@@ -176,7 +180,7 @@ class PengajuanIzinAdminActivity : BaseAdminActivity() {
     }
 
     private fun resetFilters() {
-        searchView.setQuery("", false)
+        searchView.setText("")
         spinnerFilterStatus.text = "Semua Status"
         spinnerSort.text = "Terbaru"
         currentStatusFilter = null

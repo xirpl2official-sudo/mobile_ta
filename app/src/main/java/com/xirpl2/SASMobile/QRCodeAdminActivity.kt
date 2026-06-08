@@ -186,7 +186,7 @@ class QRCodeAdminActivity : BaseAdminActivity() {
     }
 
     private fun displayQRCode(base64WithPrefix: String, jenisSholat: String, expiresAt: String) {
-        tvJenisSholat.text = "Shalat $jenisSholat"
+        tvJenisSholat.text = "Salat $jenisSholat"
         tvStatus.text = "Auto-refresh setiap 30 detik"
         tvStatus.setTextColor(getColor(R.color.status_success))
 
@@ -268,7 +268,7 @@ class QRCodeAdminActivity : BaseAdminActivity() {
         progressBar.visibility = View.GONE
         containerQR.visibility = View.VISIBLE
         tvJenisSholat.text = message
-        tvStatus.text = "QR Code akan otomatis muncul saat waktu sholat tiba"
+        tvStatus.text = "QR Code akan otomatis muncul saat waktu salat tiba"
         tvStatus.setTextColor(getColor(R.color.gray_light))
         tvCountdown.text = ""
         ivQRCode.setImageResource(R.drawable.ic_qr_code)

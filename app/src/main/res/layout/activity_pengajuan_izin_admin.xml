@@ -128,14 +128,21 @@
                         android:padding="16dp">
 
                         <!-- Search Bar -->
-                        <androidx.appcompat.widget.SearchView
+                        <EditText
                             android:id="@+id/searchView"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:minHeight="48dp"
                             android:background="@drawable/bg_search_input"
-                            app:iconifiedByDefault="false"
-                            app:queryHint="Cari nama siswa atau NIS..."
-                            app:queryBackground="@android:color/transparent" />
+                            android:drawableStart="@drawable/ic_search"
+                            android:drawablePadding="12dp"
+                            android:hint="Cari nama siswa atau NIS..."
+                            android:inputType="text"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:paddingTop="12dp"
+                            android:paddingBottom="12dp"
+                            android:textSize="14sp" />
 
                         <LinearLayout
                             android:layout_width="match_parent"

@@ -59,8 +59,6 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
     private val daysOptions = listOf("Semua Hari", "Senin", "Selasa", "Rabu", "Kamis", "Jumat")
     private var jurusanOptions = listOf("Semua Jurusan")
 
-    private var activeDialog: AlertDialog? = null
-
     override fun getCurrentMenuItem(): AdminMenuItem = AdminMenuItem.JADWAL_SHOLAT
 override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -140,8 +138,6 @@ override fun onCreate(savedInstanceState: Bundle?) {
     }
 
     override fun onDestroy() {
-        activeDialog?.dismiss()
-        activeDialog = null
         if (::rvPrayerSchedules.isInitialized) {
             rvPrayerSchedules.adapter = null
         }
@@ -482,7 +478,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
             return
         }
 
-        val nama = "Shalat ${jadwal.jenis_sholat}"
+        val nama = "Salat ${jadwal.jenis_sholat}"
         val allSchedules = jadwalList.filter {
             it.jenis_sholat.equals(jadwal.jenis_sholat, ignoreCase = true)
         }
@@ -519,9 +515,6 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
         jadwalList = jadwalList.filter {
             !(it.jenis_sholat.equals(jenisSholat, ignoreCase = true) && it.id > 0)
-        }
-        prayerTypesList = prayerTypesList.filter {
-            !it.nama_jenis.equals(jenisSholat, ignoreCase = true)
         }
         updateJadwalUI()
 
@@ -1004,7 +997,6 @@ override fun onCreate(savedInstanceState: Bundle?) {
             .setView(dialogView)
             .setCancelable(false)
             .create()
-        activeDialog = dialog
 
         etWaktuMulai.setOnClickListener { showTimePickerEx { time -> etWaktuMulai.setText(time) } }
         etWaktuSelesai.setOnClickListener { showTimePickerEx { time -> etWaktuSelesai.setText(time) } }
@@ -1114,8 +1106,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
                     var lastError: Throwable? = null
                     if (isTanggalKhusus) {
                         val req = JadwalSholatCreateRequest(
-                            hari = null,
-                            tanggal_khusus = tanggalKhusus,
+                            hari = tanggalKhusus ?: "",
                             id_waktu = idWaktu,
                             jurusan_ids = jurusanIds
                         )
@@ -1127,7 +1118,6 @@ override fun onCreate(savedInstanceState: Bundle?) {
                         for (d in daysToCreate) {
                             val req = JadwalSholatCreateRequest(
                                 hari = d,
-                                tanggal_khusus = null,
                                 id_waktu = idWaktu,
                                 jurusan_ids = jurusanIds
                             )

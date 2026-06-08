@@ -25,7 +25,7 @@
             android:paddingBottom="20dp"
             android:background="@android:color/transparent">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp">
@@ -34,13 +34,11 @@
                     android:id="@+id/tvDialogTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Tambah Jadwal Shalat"
+                    android:layout_centerVertical="true"
+                    android:text="Tambah Jadwal Salat"
                     android:textSize="20sp"
                     android:textStyle="bold"
-                    android:textColor="@color/on_background"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent" />
+                    android:textColor="@color/on_background" />
 
                 <ImageView
                     android:id="@+id/btnClose"
@@ -55,12 +53,12 @@
                     android:padding="8dp"
                     android:src="@android:drawable/ic_menu_close_clear_cancel"
                     app:tint="@color/slate_400" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            </RelativeLayout>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Nama Shalat"
+                android:text="Nama Salat"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="@color/on_surface"
@@ -77,7 +75,7 @@
                     android:id="@+id/etNamaSholat"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Ketik nama sholat"
+                    android:hint="Ketik nama salat"
                     android:inputType="text"
                     android:focusable="true"
                     android:clickable="true" />
