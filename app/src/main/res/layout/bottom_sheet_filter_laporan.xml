@@ -39,10 +39,6 @@
         android:layout_height="wrap_content"
         app:singleSelection="true"
         android:layout_marginBottom="16dp">
-        <com.google.android.material.chip.Chip android:id="@+id/chipSemuaSholat" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Semua Shalat" />
-        <com.google.android.material.chip.Chip android:id="@+id/chipDhuha" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Duha" />
-        <com.google.android.material.chip.Chip android:id="@+id/chipDzuhur" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Dzuhur" />
-        <com.google.android.material.chip.Chip android:id="@+id/chipJumat" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Jumat" />
     </com.google.android.material.chip.ChipGroup>
 
     <!-- Jurusan Filter -->
@@ -80,10 +76,6 @@
         android:layout_height="wrap_content"
         app:singleSelection="true"
         android:layout_marginBottom="16dp">
-        <com.google.android.material.chip.Chip android:id="@+id/chipSemuaKelas" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Semua" />
-        <com.google.android.material.chip.Chip android:id="@+id/chipKelas10" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="10" />
-        <com.google.android.material.chip.Chip android:id="@+id/chipKelas11" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="11" />
-        <com.google.android.material.chip.Chip android:id="@+id/chipKelas12" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="12" />
     </com.google.android.material.chip.ChipGroup>
 
     <com.google.android.material.button.MaterialButton

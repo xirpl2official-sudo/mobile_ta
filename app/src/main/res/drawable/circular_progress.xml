@@ -6,7 +6,7 @@
             android:innerRadiusRatio="2.7"
             android:thicknessRatio="12"
             android:useLevel="false">
-            <solid android:color="#E8F5E9" />
+            <solid android:color="@color/bg_card_green" />
         </shape>
     </item>
     
@@ -18,7 +18,7 @@
                 android:innerRadiusRatio="2.7"
                 android:thicknessRatio="12"
                 android:useLevel="true">
-                <solid android:color="#4CAF50" />
+                <solid android:color="@color/status_success" />
             </shape>
         </rotate>
     </item>

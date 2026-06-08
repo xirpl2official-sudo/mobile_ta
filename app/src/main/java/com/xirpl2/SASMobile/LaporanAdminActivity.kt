@@ -21,6 +21,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -586,6 +587,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
     private fun createPageButton(text: String, onClick: () -> Unit): TextView {
         return TextView(this).apply {
             this.text = text
+            contentDescription = "Halaman $text"
             textSize = 13f
             setTextColor(getColor(R.color.blue_theme))
             setPadding(24, 12, 24, 12)
@@ -604,7 +606,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
 
     private fun showFormatPicker() {
         val formats = arrayOf("Excel (.xlsx)", "PDF (.pdf)", "CSV (.csv)")
-        AlertDialog.Builder(this)
+        MaterialAlertDialogBuilder(this)
             .setTitle("Pilih Format")
             .setItems(formats) { _, which ->
                 when (which) {
@@ -712,7 +714,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
     }
 
     private fun showShareOption(uri: android.net.Uri, mimeType: String, fileName: String) {
-        AlertDialog.Builder(this)
+        MaterialAlertDialogBuilder(this)
             .setTitle("Laporan Berhasil Diunduh")
             .setMessage("File: $fileName\n\nIngin membagikan laporan ini?")
             .setPositiveButton("Bagikan") { _, _ ->
@@ -761,7 +763,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
 
     private fun showFilterDialog(title: String, options: List<String>, currentSelection: String, onSelect: (String) -> Unit) {
         val selectedIndex = options.indexOf(currentSelection).takeIf { it >= 0 } ?: 0
-        AlertDialog.Builder(this)
+        MaterialAlertDialogBuilder(this)
             .setTitle(title)
             .setSingleChoiceItems(options.toTypedArray(), selectedIndex) { dialog, which ->
                 onSelect(options[which])
