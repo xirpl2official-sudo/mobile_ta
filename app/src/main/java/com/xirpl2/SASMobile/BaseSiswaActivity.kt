@@ -116,8 +116,17 @@ abstract class BaseSiswaActivity : BaseActivity() {
         }
     }
 
+    private fun filterMenuByGender() {
+        val sharedPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this)
+        val jk = sharedPref.getString("jenis_kelamin", null)
+        if (jk != "P") {
+            sidebarView.findViewById<LinearLayout>(R.id.menuPengajuanHalangan)?.visibility = View.GONE
+        }
+    }
+
     private fun setupMenuItems() {
         val currentItem = getCurrentMenuItem()
+        filterMenuByGender()
 
         setupMenuItem(R.id.menuBeranda, SiswaMenuItem.BERANDA, currentItem) {
             navigateTo(BerandaActivity::class.java)
