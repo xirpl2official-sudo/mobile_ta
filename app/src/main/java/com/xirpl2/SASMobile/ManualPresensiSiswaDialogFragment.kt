@@ -1,54 +1,33 @@
 package com.xirpl2.SASMobile
 
-import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
 import android.widget.ImageView
-import android.widget.RadioButton
-import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
-import com.xirpl2.SASMobile.model.CreateAbsensiRequest
-import com.xirpl2.SASMobile.model.JadwalSholatData
-import com.xirpl2.SASMobile.repository.BerandaRepository
+import com.xirpl2.SASMobile.model.VerifyCodeRequest
+import com.xirpl2.SASMobile.network.RetrofitClient
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
 
 class ManualPresensiSiswaDialogFragment : DialogFragment() {
 
-    private val repository = BerandaRepository()
-
     private lateinit var tvNis: TextView
     private lateinit var tvNama: TextView
-    private lateinit var etTanggal: TextInputEditText
-    private lateinit var actvJadwal: AutoCompleteTextView
-    private lateinit var rgStatus: RadioGroup
-    private lateinit var rbHadir: RadioButton
-    private lateinit var rbIzin: RadioButton
-    private lateinit var rbSakit: RadioButton
-    private lateinit var rbAlpha: RadioButton
-    private lateinit var etDeskripsi: TextInputEditText
+    private lateinit var etCode: TextInputEditText
+    private lateinit var tvStatus: TextView
     private lateinit var btnSimpan: MaterialButton
     private lateinit var btnBatal: MaterialButton
     private lateinit var btnClose: ImageView
 
-    private var selectedDate: String = ""
-    private var jadwalList: List<JadwalSholatData> = emptyList()
-    private var selectedJadwalId: Int? = null
-    private var selectedJenisSholat: String? = null
     private var studentNis: String = ""
     private var studentNama: String = ""
-    private var studentJurusan: String = ""
 
     var onDismissCallback: (() -> Unit)? = null
 
@@ -66,24 +45,13 @@ class ManualPresensiSiswaDialogFragment : DialogFragment() {
         initViews(view)
         loadStudentData()
         setupListeners()
-
-        val calendar = Calendar.getInstance()
-        updateDate(calendar)
-
-        loadJadwalSholat()
     }
 
     private fun initViews(view: View) {
         tvNis = view.findViewById(R.id.tvNis)
         tvNama = view.findViewById(R.id.tvNama)
-        etTanggal = view.findViewById(R.id.etTanggal)
-        actvJadwal = view.findViewById(R.id.actvJadwal)
-        rgStatus = view.findViewById(R.id.rgStatus)
-        rbHadir = view.findViewById(R.id.rbHadir)
-        rbIzin = view.findViewById(R.id.rbIzin)
-        rbSakit = view.findViewById(R.id.rbSakit)
-        rbAlpha = view.findViewById(R.id.rbAlpha)
-        etDeskripsi = view.findViewById(R.id.etDeskripsi)
+        etCode = view.findViewById(R.id.etCode)
+        tvStatus = view.findViewById(R.id.tvStatus)
         btnSimpan = view.findViewById(R.id.btnSimpan)
         btnBatal = view.findViewById(R.id.btnBatal)
         btnClose = view.findViewById(R.id.btnClose)
@@ -93,7 +61,6 @@ class ManualPresensiSiswaDialogFragment : DialogFragment() {
         val session = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(requireContext())
         studentNis = session.getString("user_nis", "") ?: ""
         studentNama = session.getString("user_name", "") ?: ""
-        studentJurusan = session.getString("user_jurusan", "") ?: ""
 
         tvNis.text = studentNis.ifEmpty { "-" }
         tvNama.text = studentNama.ifEmpty { "-" }
@@ -102,175 +69,95 @@ class ManualPresensiSiswaDialogFragment : DialogFragment() {
     private fun setupListeners() {
         btnClose.setOnClickListener { dismiss() }
         btnBatal.setOnClickListener { dismiss() }
-        etTanggal.setOnClickListener { showDatePicker() }
-        btnSimpan.setOnClickListener { submitForm() }
+        btnSimpan.setOnClickListener { submitCode() }
 
-        actvJadwal.setOnItemClickListener { parent, _, position, _ ->
-            selectedJenisSholat = parent.getItemAtPosition(position) as String
-            updateSelectedJadwalId()
-        }
-
-        rgStatus.setOnCheckedChangeListener { _, checkedId ->
-            if (checkedId == R.id.rbHadir) {
-                etDeskripsi.hint = "Opsional (Keterangan tambahan)"
-            } else {
-                etDeskripsi.hint = "Wajib diisi (Alasan perizinan)"
+        etCode.addTextChangedListener { text ->
+            if (text?.length == 6) {
+                tvStatus.visibility = View.GONE
             }
         }
     }
 
-    private fun showDatePicker() {
-        val calendar = Calendar.getInstance()
-        DatePickerDialog(
-            requireContext(),
-            { _, year, month, dayOfMonth ->
-                calendar.set(Calendar.YEAR, year)
-                calendar.set(Calendar.MONTH, month)
-                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-                updateDate(calendar)
-            },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
-        ).show()
-    }
+    private fun submitCode() {
+        val code = etCode.text.toString().trim()
 
-    private fun updateDate(calendar: Calendar) {
-        val myFormat = "yyyy-MM-dd"
-        val sdf = SimpleDateFormat(myFormat, Locale.US)
-        selectedDate = sdf.format(calendar.time)
-        etTanggal.setText(selectedDate)
-        filterJadwalByDay()
-    }
-
-    private fun loadJadwalSholat() {
-        val token = getToken()
-        if (token.isEmpty()) return
-
-        lifecycleScope.launch {
-            repository.getJadwalSholat(token).fold(
-                onSuccess = { list ->
-                    jadwalList = list
-                    filterJadwalByDay()
-                },
-                onFailure = {
-                    Toast.makeText(context, "Gagal memuat jadwal sholat", Toast.LENGTH_SHORT).show()
-                }
-            )
-        }
-    }
-
-    private fun filterJadwalByDay() {
-        if (jadwalList.isEmpty() || !isAdded) return
-        var uniqueTypes = jadwalList.map { it.jenis_sholat }.distinct().toMutableList()
-
-        val currentDay = try {
-            val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
-            val date = sdf.parse(selectedDate)
-            val cal = Calendar.getInstance()
-            cal.time = date!!
-            cal.get(Calendar.DAY_OF_WEEK)
-        } catch (e: Exception) {
-            Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
-        }
-
-        val isFriday = currentDay == Calendar.FRIDAY
-
-        if (isFriday) {
-            val session = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(requireContext())
-            val gender = session.getString("user_jk", "L") ?: "L"
-            if (gender.equals("L", ignoreCase = true)) {
-                uniqueTypes.removeAll { it.equals("Dzuhur", ignoreCase = true) }
-            } else if (gender.equals("P", ignoreCase = true)) {
-                uniqueTypes.removeAll { it.equals("Jumat", ignoreCase = true) }
-            }
-        }
-
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, uniqueTypes)
-        actvJadwal.setAdapter(adapter)
-        updateSelectedJadwalId()
-    }
-
-    private fun updateSelectedJadwalId() {
-        if (selectedJenisSholat == null || jadwalList.isEmpty()) {
-            selectedJadwalId = null
-            return
-        }
-
-        val targetJurusan = studentJurusan.lowercase()
-
-        val match = jadwalList.find {
-            val isSameType = it.jenis_sholat.equals(selectedJenisSholat, ignoreCase = true)
-            val scheduleJurusan = (it.jurusan ?: "").lowercase()
-            isSameType && (scheduleJurusan == targetJurusan || scheduleJurusan == "umum" || scheduleJurusan.isEmpty())
-        }
-
-        selectedJadwalId = match?.id
-    }
-
-    private fun submitForm() {
         if (studentNis.isEmpty()) {
             Toast.makeText(context, "Data siswa tidak ditemukan", Toast.LENGTH_SHORT).show()
             return
         }
-        if (selectedDate.isEmpty()) {
-            Toast.makeText(context, "Pilih tanggal", Toast.LENGTH_SHORT).show()
+        if (code.length != 6) {
+            tvStatus.visibility = View.VISIBLE
+            tvStatus.text = "Kode harus 6 digit"
+            tvStatus.setTextColor(requireContext().getColor(R.color.status_error))
             return
         }
-        if (selectedJadwalId == null) {
-            Toast.makeText(context, "Pilih jadwal sholat yang sesuai", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val selectedStatusId = rgStatus.checkedRadioButtonId
-        if (selectedStatusId == -1) {
-            Toast.makeText(context, "Pilih status kehadiran", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val status = when (selectedStatusId) {
-            R.id.rbHadir -> "hadir"
-            R.id.rbIzin -> "izin"
-            R.id.rbSakit -> "sakit"
-            R.id.rbAlpha -> "alpha"
-            else -> "hadir"
-        }
-
-        val deskripsi = etDeskripsi.text.toString().trim()
-        if (status != "hadir" && deskripsi.isEmpty()) {
-            Toast.makeText(context, "Keterangan wajib diisi untuk perizinan/alpha", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val request = CreateAbsensiRequest(
-            id_jadwal = selectedJadwalId!!,
-            status = status,
-            tanggal = selectedDate,
-            deskripsi = if (deskripsi.isEmpty()) "Mencatat presensi manual" else deskripsi
-        )
 
         btnSimpan.isEnabled = false
-        btnSimpan.text = "MENYIMPAN..."
+        btnSimpan.text = "MENGIRIM..."
+        tvStatus.visibility = View.VISIBLE
+        tvStatus.text = "Memverifikasi kode..."
+        tvStatus.setTextColor(requireContext().getColor(R.color.text_hint))
 
         val token = getToken()
+        if (token.isEmpty()) {
+            Toast.makeText(context, "Sesi berakhir, silakan login kembali", Toast.LENGTH_SHORT).show()
+            dismiss()
+            return
+        }
 
         lifecycleScope.launch {
-            repository.createAbsensi(token, studentNis, request).fold(
-                onSuccess = {
-                    activity?.runOnUiThread {
-                        Toast.makeText(context, "Berhasil mencatat presensi!", Toast.LENGTH_LONG).show()
+            try {
+                val request = VerifyCodeRequest(code = code)
+                val response = RetrofitClient.apiService.verifyAttendanceCode(
+                    token = "Bearer $token",
+                    request = request
+                )
+
+                if (isAdded.not()) return@launch
+
+                activity?.runOnUiThread {
+                    if (!isAdded) return@runOnUiThread
+
+                    if (response.isSuccessful && response.body() != null) {
+                        val body = response.body()!!
+                        val data = body.data
+                        val msg = buildString {
+                            append(body.message)
+                            if (data != null) {
+                                append("\n${data.jenis_sholat} - ${data.tanggal}")
+                                append("\nStatus: ${data.status}")
+                            }
+                        }
+                        tvStatus.text = msg
+                        tvStatus.setTextColor(requireContext().getColor(R.color.status_success))
+                        Toast.makeText(context, "Absensi berhasil!", Toast.LENGTH_LONG).show()
                         onDismissCallback?.invoke()
                         dismiss()
-                    }
-                },
-                onFailure = { error ->
-                    activity?.runOnUiThread {
-                        Toast.makeText(context, "Gagal: ${error.message}", Toast.LENGTH_LONG).show()
+                    } else {
+                        val errorMsg = try {
+                            response.errorBody()?.string()?.let { errBody ->
+                                org.json.JSONObject(errBody).optString("message", response.message())
+                            } ?: response.message()
+                        } catch (_: Exception) {
+                            response.message()
+                        }
+
+                        tvStatus.text = "Gagal: $errorMsg"
+                        tvStatus.setTextColor(requireContext().getColor(R.color.status_error))
                         btnSimpan.isEnabled = true
-                        btnSimpan.text = "SIMPAN PRESENSI"
+                        btnSimpan.text = "KIRIM ABSENSI"
                     }
                 }
-            )
+            } catch (e: Exception) {
+                if (isAdded.not()) return@launch
+                activity?.runOnUiThread {
+                    if (!isAdded) return@runOnUiThread
+                    tvStatus.text = "Kesalahan: ${e.message}"
+                    tvStatus.setTextColor(requireContext().getColor(R.color.status_error))
+                    btnSimpan.isEnabled = true
+                    btnSimpan.text = "KIRIM ABSENSI"
+                }
+            }
         }
     }
 

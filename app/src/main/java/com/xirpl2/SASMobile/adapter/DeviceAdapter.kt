@@ -54,8 +54,13 @@ class DeviceAdapter(
         when (val item = getItem(position)) {
             is DeviceListItem.Device -> {
                 val d = item.item
-                holder.tvDeviceName.text = d.device_name ?: "Unknown Device"
-                holder.tvHardwareId.text = "ID: ${d.hardware_id}"
+                val ownerName = d.user_name ?: d.email ?: "Tidak diketahui"
+                holder.tvDeviceName.text = ownerName
+                val deviceInfo = buildString {
+                    append(d.device_name ?: "Perangkat")
+                    if (d.device_model != null) append(" ($d.device_model)")
+                }
+                holder.tvHardwareId.text = deviceInfo
                 holder.tvExtraInfo.text = "OS: ${d.os_version ?: "-"} | Aktif: ${d.last_auth_at ?: "-"}"
                 holder.tvStatus.text = if (d.is_verified) "TERVERIFIKASI" else "PENDING"
                 if (d.is_verified) {

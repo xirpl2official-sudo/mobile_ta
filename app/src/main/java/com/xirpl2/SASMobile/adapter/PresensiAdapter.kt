@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.xirpl2.SASMobile.R
 import com.xirpl2.SASMobile.model.AbsensiStaffItem
-import java.util.Locale
 
 class PresensiAdapter :
     ListAdapter<AbsensiStaffItem, PresensiAdapter.PresensiViewHolder>(DIFF_CALLBACK) {
@@ -34,6 +33,7 @@ class PresensiAdapter :
         val tvNama: TextView = itemView.findViewById(R.id.tvNama)
         val tvKelas: TextView = itemView.findViewById(R.id.tvKelas)
         val tvJenisSholat: TextView = itemView.findViewById(R.id.tvJenisSholat)
+        val tvTanggal: TextView = itemView.findViewById(R.id.tvTanggal)
         val tvStatus: TextView = itemView.findViewById(R.id.tvStatus)
         val btnDetail: MaterialButton = itemView.findViewById(R.id.btnDetail)
     }
@@ -51,22 +51,25 @@ class PresensiAdapter :
         holder.tvNis.text = item.nis ?: ""
         holder.tvNama.text = item.nama_siswa ?: ""
 
-
-        val kelasDisplay = buildString {
-            append(item.kelas ?: "")
-            if (!item.jurusan.isNullOrEmpty()) {
-                append(" ")
-                append(item.jurusan)
-            }
+        val kelasVal = item.kelas ?: ""
+        val jurusanVal = item.jurusan ?: ""
+        val kelasDisplay = if (jurusanVal.isNotEmpty() && kelasVal.contains(jurusanVal)) {
+            kelasVal
+        } else if (jurusanVal.isNotEmpty()) {
+            "$kelasVal $jurusanVal"
+        } else {
+            kelasVal
         }
         holder.tvKelas.text = kelasDisplay
 
-
         holder.tvJenisSholat.text = item.jenis_sholat ?: "-"
 
+        val tanggal = item.tanggal ?: ""
+        holder.tvTanggal.text = if (tanggal.length >= 10) tanggal.substring(5, 10).replace("-", "/") else tanggal
 
         val status = item.status?.lowercase() ?: "alpha"
-        holder.tvStatus.text = status.replaceFirstChar { if (it.isLowerCase()) it.uppercase() else it.toString() }
+        val statusDisplay = status.replaceFirstChar { if (it.isLowerCase()) it.uppercase() else it.toString() }
+        holder.tvStatus.text = statusDisplay
 
         val backgroundRes = when (status) {
             "hadir" -> R.drawable.bg_status_hadir
@@ -77,10 +80,19 @@ class PresensiAdapter :
         }
         holder.tvStatus.setBackgroundResource(backgroundRes)
 
-        // Detail button action for all statuses
         holder.btnDetail.visibility = View.VISIBLE
-        holder.btnDetail.setOnClickListener {
-            showDetailDialog(holder.itemView.context, item)
+        if (status == "izin" || status == "sakit") {
+            holder.btnDetail.text = "Detail"
+            holder.btnDetail.isEnabled = true
+            holder.btnDetail.alpha = 1f
+            holder.btnDetail.setOnClickListener {
+                showDetailDialog(holder.itemView.context, item)
+            }
+        } else {
+            holder.btnDetail.text = "-"
+            holder.btnDetail.isEnabled = false
+            holder.btnDetail.alpha = 0.4f
+            holder.btnDetail.setOnClickListener(null)
         }
     }
 

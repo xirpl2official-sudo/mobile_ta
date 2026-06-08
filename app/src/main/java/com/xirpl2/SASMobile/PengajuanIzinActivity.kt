@@ -367,10 +367,16 @@ class PengajuanIzinActivity : BaseSiswaActivity() {
                         resetForm()
                         loadRiwayatIzin()
                     } else {
-                        val errorMsg = when (response.code()) {
-                            400 -> "Semua field wajib diisi atau jenis izin tidak valid"
-                            409 -> "Pengajuan tumpang-tindih dengan periode yang sudah diajukan"
-                            else -> "Gagal mengirim pengajuan: ${response.message()}"
+                        val errorMsg = try {
+                            response.errorBody()?.string()?.let { errBody ->
+                                org.json.JSONObject(errBody).optString("error", response.message())
+                            } ?: response.message()
+                        } catch (_: Exception) {
+                            when (response.code()) {
+                                400 -> "Semua field wajib diisi atau jenis izin tidak valid"
+                                409 -> "Pengajuan tumpang-tindih dengan periode yang sudah diajukan"
+                                else -> "Gagal mengirim pengajuan: ${response.message()}"
+                            }
                         }
                         Toast.makeText(this@PengajuanIzinActivity, errorMsg, Toast.LENGTH_LONG).show()
                     }

@@ -109,6 +109,9 @@ data class DeviceManagementListResponse(
 data class DeviceManagementItem(
     val id: Int,
     val user_id: Int,
+    val user_name: String? = null,
+    val email: String? = null,
+    val role: String? = null,
     val hardware_id: String,
     val device_name: String?,
     val device_model: String?,

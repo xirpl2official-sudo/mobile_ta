@@ -225,17 +225,34 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
     private fun showBulkActionMenu() {
         val selectedItems = siswaAdapter.getSelectedItems()
         val options = arrayOf(
-            "Ubah Status Akademik — Ubah status siswa (Aktif, PKL, KEK, dll)",
-            "Mutasi Massal — Pindahkan siswa ke kelas/jurusan lain",
-            "Hapus Semua — Hapus data siswa terpilih secara permanen"
+            "Mutasi / Pindah Kelas Spesifik",
+            "Naik Kelas Otomatis (1 Tingkat)",
+            "Tinggal Kelas Otomatis (1 Tingkat)",
+            "Luluskan Semua Siswa",
+            "Ubah Status Akademik",
+            "Ubah Tahun Masuk",
+            "Hapus Data Siswa"
+        )
+        val descriptions = arrayOf(
+            "Pindahkan siswa ke kelas/jurusan tertentu",
+            "Siswa kelas 10→11, 11→12, 12→lulus",
+            "Siswa tetap di kelas yang sama tahun depan",
+            "Tandai siswa sebagai lulus/alumni",
+            "Ubah status: Aktif, PKL, KEK, dll",
+            "Ubah tahun masuk untuk banyak siswa",
+            "Hapus data siswa secara permanen"
         )
         MaterialAlertDialogBuilder(this)
             .setTitle("Aksi untuk ${selectedItems.size} siswa terpilih")
             .setItems(options) { _, which ->
                 when (which) {
-                    0 -> showBulkUpdateStatusDialog(selectedItems)
-                    1 -> showBulkMutationDialog()
-                    2 -> showBulkDeleteConfirmation()
+                    0 -> showBulkMutationDialog(selectedItems)
+                    1 -> showBulkPromoteDialog(selectedItems)
+                    2 -> showBulkRetainDialog(selectedItems)
+                    3 -> showBulkGraduateDialog(selectedItems)
+                    4 -> showBulkUpdateStatusDialog(selectedItems)
+                    5 -> showBulkTahunMasukDialog(selectedItems)
+                    6 -> showBulkDeleteConfirmation()
                 }
             }
             .setNegativeButton("Batal", null)
@@ -263,101 +280,263 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
     private fun executeBulkUpdateStatus(items: List<SiswaItem>, newStatus: String) {
         val token = getAuthToken()
         lifecycleScope.launch {
-            var successCount = 0
-            for (siswa in items) {
-                val request = com.xirpl2.SASMobile.model.UpdateStatusRequest(status = newStatus)
-                val result = repository.updateStudentStatus(token, siswa.nis, request)
-                if (result.isSuccess) successCount++
+            try {
+                val nisList = items.map { it.nis }
+                val request = com.xirpl2.SASMobile.model.BulkFieldsRequest(
+                    student_ids = nisList,
+                    statusAkademik = newStatus
+                )
+                repository.updateBulkStudentFields(token, request).fold(
+                    onSuccess = {
+                        Toast.makeText(this@DataSiswaAdminActivity, "Berhasil mengubah status ${items.size} siswa ke $newStatus", Toast.LENGTH_SHORT).show()
+                        exitSelectionMode()
+                        loadStudentData(reset = true)
+                    },
+                    onFailure = { error ->
+                        Toast.makeText(this@DataSiswaAdminActivity, "Gagal: ${error.message}", Toast.LENGTH_SHORT).show()
+                    }
+                )
+            } catch (e: Exception) {
+                Toast.makeText(this@DataSiswaAdminActivity, "Gagal: ${e.message}", Toast.LENGTH_SHORT).show()
             }
-            Toast.makeText(this@DataSiswaAdminActivity, "Berhasil mengubah status $successCount/${items.size} siswa", Toast.LENGTH_SHORT).show()
-            exitSelectionMode()
-            loadStudentData(reset = true)
         }
     }
 
-    private fun showBulkMutationDialog() {
-        val selectedItems = siswaAdapter.getSelectedItems()
+    private fun showBulkMutationDialog(selectedItems: List<SiswaItem>) {
         val view = layoutInflater.inflate(R.layout.dialog_bulk_mutasi, null)
 
         val spinnerKelas = view.findViewById<android.widget.Spinner>(R.id.spinnerTargetKelas)
         val spinnerJurusan = view.findViewById<android.widget.Spinner>(R.id.spinnerTargetJurusan)
-        val spinnerStatus = view.findViewById<android.widget.Spinner>(R.id.spinnerTargetStatus)
 
         spinnerKelas.adapter = android.widget.ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, listOf("10", "11", "12"))
         spinnerJurusan.adapter = android.widget.ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, fixedJurusanList)
-        spinnerStatus.adapter = android.widget.ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, listOf("- Tidak Diubah -", "AKTIF", "PKL", "KEK", "MUTASI", "KELUAR", "ALUMNI"))
 
         MaterialAlertDialogBuilder(this)
-            .setTitle("Mutasi Masal (${selectedItems.size} Siswa)")
+            .setTitle("Mutasi ${selectedItems.size} Siswa")
             .setView(view)
             .setPositiveButton("Mutasi") { _, _ ->
                 val targetTingkatan = spinnerKelas.selectedItem.toString()
                 val targetJurusan = spinnerJurusan.selectedItem.toString()
-                val targetStatus = spinnerStatus.selectedItem.toString().let { if (it == "- Tidak Diubah -") null else it }
-                executeBulkMutation(selectedItems, targetTingkatan, targetJurusan, targetStatus)
+                executeBulkSetClass(selectedItems, "$targetTingkatan $targetJurusan A")
             }
             .setNegativeButton("Batal", null)
             .show()
     }
 
-    private fun executeBulkMutation(items: List<SiswaItem>, tingkatan: String, jurusan: String, status: String?) {
+    private fun executeBulkSetClass(items: List<SiswaItem>, targetClass: String) {
         val token = getAuthToken()
         if (token.isEmpty()) return
 
         lifecycleScope.launch {
             try {
-                val kelasResult = repository.getKelasLookup(token)
-                kelasResult.fold(
-                    onSuccess = { kelasList ->
-                        val tingkatanInt = tingkatan.toIntOrNull() ?: return@fold
-                        var targetKelas = kelasList.find {
-                            it.tingkatan == tingkatanInt && it.jurusan.equals(jurusan, ignoreCase = true)
-                        }
-
-                        if (targetKelas == null) {
-                            val jurusanResult = repository.getJurusanLookup(token)
-                            val jurusanItem = jurusanResult.getOrNull()?.find {
-                                it.nama.equals(jurusan, ignoreCase = true)
-                            }
-                            if (jurusanItem == null) {
-                                Toast.makeText(this@DataSiswaAdminActivity, "Jurusan $jurusan tidak ditemukan", Toast.LENGTH_SHORT).show()
-                                return@fold
-                            }
-                            val createResult = repository.createKelas(
-                                token,
-                                com.xirpl2.SASMobile.model.CreateKelasRequest(
-                                    tingkatan = tingkatanInt,
-                                    id_jurusan = jurusanItem.id,
-                                    part = "A"
-                                )
-                            )
-                            targetKelas = createResult.getOrNull()
-                            if (targetKelas == null) {
-                                Toast.makeText(this@DataSiswaAdminActivity, "Gagal membuat kelas $tingkatan $jurusan", Toast.LENGTH_SHORT).show()
-                                return@fold
-                            }
-                        }
-
-                        var successCount = 0
-                        for (siswa in items) {
-                            val request = com.xirpl2.SASMobile.model.UpdateSiswaRequest(
-                                id_kelas = targetKelas.id_kelas,
-                                id_jurusan = targetKelas.id_jurusan,
-                                status_akademik = status
-                            )
-                            val result = repository.updateSiswaByNIS(token, siswa.nis, request)
-                            if (result.isSuccess) successCount++
-                        }
-                        Toast.makeText(this@DataSiswaAdminActivity, "Berhasil memutasi $successCount/${items.size} siswa ke ${targetKelas.label}", Toast.LENGTH_SHORT).show()
+                val nisList = items.map { it.nis }
+                val request = com.xirpl2.SASMobile.model.BulkProgressionRequest(
+                    student_ids = nisList,
+                    target_kelas = targetClass,
+                    action = "set_class",
+                    note = "Mutasi massal dari Mobile"
+                )
+                repository.bulkStudentProgression(token, request).fold(
+                    onSuccess = {
+                        Toast.makeText(this@DataSiswaAdminActivity, "Berhasil memutasi ${items.size} siswa ke $targetClass", Toast.LENGTH_SHORT).show()
                         exitSelectionMode()
                         loadStudentData(reset = true)
                     },
                     onFailure = { error ->
-                        Toast.makeText(this@DataSiswaAdminActivity, "Gagal memuat data kelas: ${error.message}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@DataSiswaAdminActivity, "Gagal mutasi: ${error.message}", Toast.LENGTH_SHORT).show()
                     }
                 )
             } catch (e: Exception) {
                 Toast.makeText(this@DataSiswaAdminActivity, "Gagal mutasi: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun showBulkPromoteDialog(selectedItems: List<SiswaItem>) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Naik Kelas Otomatis (${selectedItems.size} Siswa)")
+            .setMessage(
+                "Siswa akan dinaikkan 1 tingkat:\n" +
+                "- Kelas 10 → 11\n" +
+                "- Kelas 11 → 12\n" +
+                "- Kelas 12 → Lulus (Alumni)\n\n" +
+                "Jurusan dan rombel tetap sama."
+            )
+            .setPositiveButton("Naik Kelas") { _, _ ->
+                executeBulkPromote(selectedItems)
+            }
+            .setNegativeButton("Batal", null)
+            .show()
+    }
+
+    private fun executeBulkPromote(items: List<SiswaItem>) {
+        val token = getAuthToken()
+        if (token.isEmpty()) return
+
+        lifecycleScope.launch {
+            var successCount = 0
+            var failCount = 0
+            for (siswa in items) {
+                try {
+                    val parts = siswa.kelas.split(" ")
+                    if (parts.size < 3) {
+                        failCount++
+                    } else {
+                        val currentTingkatan = parts[0].toIntOrNull()
+                        if (currentTingkatan == null) {
+                            failCount++
+                        } else {
+                            val nextTingkatan = currentTingkatan + 1
+                            if (nextTingkatan > 12) {
+                                val request = com.xirpl2.SASMobile.model.BulkProgressionRequest(
+                                    student_ids = listOf(siswa.nis),
+                                    target_kelas = "",
+                                    action = "mark_dropout",
+                                    note = "Lulus otomatis dari kelas 12"
+                                )
+                                val result = repository.bulkStudentProgression(token, request)
+                                if (result.isSuccess) successCount++ else failCount++
+                            } else {
+                                val targetClass = "$nextTingkatan ${parts.drop(1).joinToString(" ")}"
+                                val request = com.xirpl2.SASMobile.model.BulkProgressionRequest(
+                                    student_ids = listOf(siswa.nis),
+                                    target_kelas = targetClass,
+                                    action = "promote",
+                                    note = "Naik kelas otomatis"
+                                )
+                                val result = repository.bulkStudentProgression(token, request)
+                                if (result.isSuccess) successCount++ else failCount++
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    failCount++
+                }
+            }
+            val msg = if (failCount == 0) "Berhasil menaikkan $successCount siswa"
+                      else "Berhasil: $successCount, Gagal: $failCount"
+            Toast.makeText(this@DataSiswaAdminActivity, msg, Toast.LENGTH_SHORT).show()
+            exitSelectionMode()
+            loadStudentData(reset = true)
+        }
+    }
+
+    private fun showBulkRetainDialog(selectedItems: List<SiswaItem>) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Tinggal Kelas (${selectedItems.size} Siswa)")
+            .setMessage("Siswa akan tetap di kelas yang sama tahun depan (tidak naik kelas).")
+            .setPositiveButton("Tinggalkan") { _, _ ->
+                executeBulkRetain(selectedItems)
+            }
+            .setNegativeButton("Batal", null)
+            .show()
+    }
+
+    private fun executeBulkRetain(items: List<SiswaItem>) {
+        val token = getAuthToken()
+        if (token.isEmpty()) return
+
+        lifecycleScope.launch {
+            try {
+                val nisList = items.map { it.nis }
+                val request = com.xirpl2.SASMobile.model.BulkProgressionRequest(
+                    student_ids = nisList,
+                    target_kelas = "",
+                    action = "retain",
+                    note = "Tinggal kelas massal dari Mobile"
+                )
+                repository.bulkStudentProgression(token, request).fold(
+                    onSuccess = {
+                        Toast.makeText(this@DataSiswaAdminActivity, "Berhasil menahan ${items.size} siswa", Toast.LENGTH_SHORT).show()
+                        exitSelectionMode()
+                        loadStudentData(reset = true)
+                    },
+                    onFailure = { error ->
+                        Toast.makeText(this@DataSiswaAdminActivity, "Gagal: ${error.message}", Toast.LENGTH_SHORT).show()
+                    }
+                )
+            } catch (e: Exception) {
+                Toast.makeText(this@DataSiswaAdminActivity, "Gagal: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun showBulkGraduateDialog(selectedItems: List<SiswaItem>) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Luluskan ${selectedItems.size} Siswa?")
+            .setMessage("Semua siswa terpilih akan ditandai sebagai LULUS / ALUMNI. Tindakan ini tidak dapat dibatalkan.")
+            .setPositiveButton("Luluskan") { _, _ ->
+                executeBulkGraduate(selectedItems)
+            }
+            .setNegativeButton("Batal", null)
+            .show()
+    }
+
+    private fun executeBulkGraduate(items: List<SiswaItem>) {
+        val token = getAuthToken()
+        if (token.isEmpty()) return
+
+        lifecycleScope.launch {
+            try {
+                val nisList = items.map { it.nis }
+                val request = com.xirpl2.SASMobile.model.BulkProgressionRequest(
+                    student_ids = nisList,
+                    target_kelas = "",
+                    action = "mark_dropout",
+                    note = "Kelulusan massal dari Mobile"
+                )
+                repository.bulkStudentProgression(token, request).fold(
+                    onSuccess = {
+                        Toast.makeText(this@DataSiswaAdminActivity, "Berhasil meluluskan ${items.size} siswa", Toast.LENGTH_SHORT).show()
+                        exitSelectionMode()
+                        loadStudentData(reset = true)
+                    },
+                    onFailure = { error ->
+                        Toast.makeText(this@DataSiswaAdminActivity, "Gagal: ${error.message}", Toast.LENGTH_SHORT).show()
+                    }
+                )
+            } catch (e: Exception) {
+                Toast.makeText(this@DataSiswaAdminActivity, "Gagal: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun showBulkTahunMasukDialog(selectedItems: List<SiswaItem>) {
+        val tahunOptions = listOf("2024", "2023", "2022", "2021", "2020")
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Ubah Tahun Masuk (${selectedItems.size} Siswa)")
+            .setSingleChoiceItems(tahunOptions.toTypedArray(), -1) { dialog, which ->
+                val selectedTahun = tahunOptions[which]
+                dialog.dismiss()
+                executeBulkTahunMasuk(selectedItems, selectedTahun)
+            }
+            .setNegativeButton("Batal", null)
+            .show()
+    }
+
+    private fun executeBulkTahunMasuk(items: List<SiswaItem>, tahun: String) {
+        val token = getAuthToken()
+        if (token.isEmpty()) return
+
+        lifecycleScope.launch {
+            try {
+                val nisList = items.map { it.nis }
+                val request = com.xirpl2.SASMobile.model.BulkFieldsRequest(
+                    student_ids = nisList,
+                    idTahunMasuk = tahun.toIntOrNull()
+                )
+                repository.updateBulkStudentFields(token, request).fold(
+                    onSuccess = {
+                        Toast.makeText(this@DataSiswaAdminActivity, "Tahun masuk ${items.size} siswa diubah ke $tahun", Toast.LENGTH_SHORT).show()
+                        exitSelectionMode()
+                        loadStudentData(reset = true)
+                    },
+                    onFailure = { error ->
+                        Toast.makeText(this@DataSiswaAdminActivity, "Gagal: ${error.message}", Toast.LENGTH_SHORT).show()
+                    }
+                )
+            } catch (e: Exception) {
+                Toast.makeText(this@DataSiswaAdminActivity, "Gagal: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }

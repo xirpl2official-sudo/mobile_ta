@@ -115,7 +115,7 @@ class QRCodeRepository {
             val errorBody = response.errorBody()?.string()
             if (!errorBody.isNullOrEmpty()) {
                 val map = gson.fromJson(errorBody, Map::class.java)
-                map?.get("message") as? String
+                map?.get("error") as? String
             } else {
                 null
             }

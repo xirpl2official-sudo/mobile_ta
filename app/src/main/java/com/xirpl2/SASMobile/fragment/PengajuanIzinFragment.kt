@@ -206,7 +206,7 @@ class PengajuanIzinFragment : Fragment(R.layout.fragment_pengajuan_izin) {
                         resetForm(); loadRiwayatIzin()
                     } else {
                         val errorMsg = try {
-                            response.errorBody()?.string()?.let { org.json.JSONObject(it).optString("message", response.message()) } ?: response.message()
+                            response.errorBody()?.string()?.let { org.json.JSONObject(it).optString("error", response.message()) } ?: response.message()
                         } catch (_: Exception) { response.message() }
                         Toast.makeText(requireContext(), "Gagal mengirim: $errorMsg", Toast.LENGTH_LONG).show()
                     }

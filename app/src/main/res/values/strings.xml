@@ -91,23 +91,23 @@
     <string name="VerifikasiAkun">VERIFIKASI AKUN</string>
 
     
-    <string name="QrCodeSaya">QR CODE SAYA</string>
+    <string name="QrCodeSaya">KODE QR SAYA</string>
     <string name="SholatDzuhur">Sholat Dzuhur</string>
     <string name="BerlakuWaktu">Berlaku: 05:00</string>
     <string name="TunjukkanQR">Tunjukkan QR code ini ke guru</string>
-    <string name="RefreshQRCode">SEGARKAN KODE QR</string>
+    <string name="RefreshQRCode">SEGARKAN QR</string>
     <string name="TidakAdaJadwalAktif">Tidak ada jadwal sholat aktif saat ini</string>
     <string name="CobaLagi">COBA LAGI</string>
 
     
-    <string name="QrCodeAbsensi">QR CODE ABSENSI</string>
+    <string name="QrCodeAbsensi">QR CODE PRESENSI</string>
     <string name="QrCodeAktif">QR Code Aktif</string>
     <string name="InstruksiStaffQR">Tampilkan QR code ini di layar/proyektor.\nSiswa dapat memindai untuk absensi.</string>
 
     
-    <string name="PindaiQR">PINDAI QR</string>
-    <string name="PindaiKodeQR">PINDAI KODE QR</string>
-    <string name="ArahkanKamera">Arahkan kamera ke Kode QR</string>
+    <string name="PindaiQR">PINDAI QR CODE</string>
+    <string name="PindaiKodeQR">PINDAI QR CODE</string>
+    <string name="ArahkanKamera">Arahkan kamera ke QR Code</string>
     <string name="Pindai">PINDAI</string>
     <string name="NamaSiswa">Nama Siswa</string>
     <string name="PlaceholderKelasJurusan">XII RPL 1 - Rekayasa Perangkat Lunak</string>
