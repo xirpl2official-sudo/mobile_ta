@@ -6,6 +6,8 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
@@ -34,7 +36,7 @@ class PengajuanHalanganActivity : BaseSiswaActivity() {
     private val repository = PerizinanHalanganRepository()
     private var selectedDate: String? = null
 
-    override fun getCurrentMenuItem(): SiswaMenuItem = SiswaMenuItem.PENGAJUAN_IZIN
+    override fun getCurrentMenuItem(): SiswaMenuItem = SiswaMenuItem.PENGAJUAN_HALANGAN
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +46,7 @@ class PengajuanHalanganActivity : BaseSiswaActivity() {
         initializeViews()
         setupDrawerAndSidebar()
         setupMenuIcon()
+        setupWindowInsets()
         setupDatePicker()
         setupSubmitButton()
     }
@@ -110,15 +113,23 @@ class PengajuanHalanganActivity : BaseSiswaActivity() {
         }
     }
 
+    private fun setupWindowInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+    }
+
     private fun showResult(data: RequestHalanganData) {
         cardHasil.visibility = View.VISIBLE
         btnAjukan.visibility = View.GONE
 
         if (data.isIstihadhah) {
-            tvStatusLabel.text = "Status: Istihadhah Check"
-            tvStatusLabel.setTextColor(getColor(android.R.color.holo_orange_dark))
+            tvStatusLabel.text = "Status: Perlu Cek Medis (Istihadhah)"
+            tvStatusLabel.setTextColor(getColor(R.color.status_warning))
         } else {
-            tvStatusLabel.text = "Status: ${data.statusValidasi.replaceFirstChar { it.uppercase() }}"
+            tvStatusLabel.text = "Status: Diajukan"
             tvStatusLabel.setTextColor(getColor(R.color.blue_theme))
         }
 
