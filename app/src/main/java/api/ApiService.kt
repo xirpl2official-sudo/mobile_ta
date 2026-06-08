@@ -180,17 +180,6 @@ interface ApiService {
         @Body request: VerifyCodeRequest
     ): Response<QRCodeVerifyResponse>
 
-    @GET("v2/attendance/barcode/current")
-    suspend fun getCurrentBarcode(
-        @Header("Authorization") token: String
-    ): Response<ApiResponse<BarcodeData>>
-
-    @POST("v2/attendance/barcode/verify")
-    suspend fun verifyBarcode(
-        @Header("Authorization") token: String,
-        @Body request: BarcodeVerifyRequest
-    ): Response<QRCodeVerifyResponse>
-
     // --- Students ---
 
     @GET("v2/students")
@@ -216,12 +205,6 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Path(value = "nis", encoded = true) nis: String
     ): Response<ApiResponse<StudentDetailResponse>>
-
-    @PUT("v2/students/by-nis")
-    suspend fun updateStudentByNIS(
-        @Header("Authorization") token: String,
-        @Body request: UpdateSiswaByNISRequest
-    ): Response<ApiResponse<SiswaItem>>
 
     @PUT("v2/students/{nis}")
     suspend fun updateStudent(
@@ -733,6 +716,26 @@ interface ApiService {
     @DELETE("v2/data-retention/backups")
     suspend fun deleteBackup(@Header("Authorization") token: String): Response<MessageResponse>
 
+    // --- Perizinan Halangan ---
+
+    @POST("v2/perizinan/halangan/request")
+    suspend fun requestHalangan(
+        @Header("Authorization") token: String,
+        @Body request: com.xirpl2.SASMobile.model.RequestHalanganBody
+    ): Response<com.xirpl2.SASMobile.model.ApiResponse<com.xirpl2.SASMobile.model.RequestHalanganData>>
+
+    @POST("v2/perizinan/halangan/validate")
+    suspend fun validateHalangan(
+        @Header("Authorization") token: String,
+        @Body request: com.xirpl2.SASMobile.model.ValidateHalanganBody
+    ): Response<com.xirpl2.SASMobile.model.MessageResponse>
+
+    @GET("v2/perizinan/halangan/status/{siswa_id}")
+    suspend fun getHalanganStatus(
+        @Header("Authorization") token: String,
+        @Path("siswa_id") siswaId: Int
+    ): Response<com.xirpl2.SASMobile.model.ApiResponse<com.xirpl2.SASMobile.model.HalanganStatusData>>
+
     // --- Reports: PDF Export ---
 
     @GET("v2/reports/attendances/pdf")
@@ -829,39 +832,4 @@ interface ApiService {
         @Query("search") search: String? = null,
         @Query("is_active") isActive: String? = null
     ): Response<WaliKelasManagementListResponse>
-
-    // --- Female Student Restriction (FASE 4.1) ---
-
-    @GET("v2/female-restriction/status")
-    suspend fun getFemaleRestrictionStatus(
-        @Header("Authorization") token: String
-    ): Response<FemaleRestrictionStatusResponse>
-
-    @POST("v2/female-restriction/request")
-    suspend fun createFemaleRestrictionRequest(
-        @Header("Authorization") token: String,
-        @Body request: SubmitApprovalRequest
-    ): Response<MessageResponse>
-
-    @GET("v2/female-restriction/pending-approvals")
-    suspend fun getFemaleRestrictionPendingApprovals(
-        @Header("Authorization") token: String
-    ): Response<ApprovalRequestListResponse>
-
-    @PATCH("v2/female-restriction/{id}/approve")
-    suspend fun processFemaleRestrictionApproval(
-        @Header("Authorization") token: String,
-        @Path("id") id: Int,
-        @Body request: ProcessApprovalRequest
-    ): Response<MessageResponse>
-
-    @GET("v2/female-restriction/history")
-    suspend fun getFemaleRestrictionHistory(
-        @Header("Authorization") token: String
-    ): Response<RestrictionHistoryResponse>
-
-    @GET("v2/female-restriction/teachers")
-    suspend fun getFemaleTeachers(
-        @Header("Authorization") token: String
-    ): Response<FemaleTeacherListResponse>
 }
