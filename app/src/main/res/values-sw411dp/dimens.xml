@@ -52,8 +52,18 @@
     <dimen name="qr_label_size">13sp</dimen>
     <dimen name="qr_button_text_size">17sp</dimen>
     <dimen name="qr_frame_padding">20dp</dimen>
+    <dimen name="text_small">15sp</dimen>
     <dimen name="qr_button_height">48dp</dimen>
     <dimen name="qr_button_width">48dp</dimen>
+
+    <dimen name="status_padding_horizontal">15dp</dimen>
+    <dimen name="status_padding_vertical">5dp</dimen>
+    <dimen name="riwayat_padding_horizontal">12dp</dimen>
+    <dimen name="riwayat_padding_vertical">4dp</dimen>
+
+    <dimen name="sidebar_width">280dp</dimen>
+    <dimen name="constraint_profile_photo_width">0.20</dimen>
+    <dimen name="text_foto_profil">16sp</dimen>
 
 
     

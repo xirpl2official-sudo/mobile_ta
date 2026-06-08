@@ -181,7 +181,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/ic_chevron_right"
-                    android:contentDescription=""
+                    android:contentDescription="@string/Masuk"
                     app:tint="@color/slate_300" />
 
             </LinearLayout>
@@ -223,7 +223,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/ic_chevron_right"
-                    android:contentDescription=""
+                    android:contentDescription="@string/Masuk"
                     app:tint="@color/slate_300" />
 
             </LinearLayout>

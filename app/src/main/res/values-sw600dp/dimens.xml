@@ -94,4 +94,13 @@
     <dimen name="constraint_profile_photo_width">0.08</dimen>
     <dimen name="text_foto_profil">20sp</dimen>
 
+    <dimen name="sidebar_width">320dp</dimen>
+    <dimen name="qr_size_v2">280dp</dimen>
+    <dimen name="manual_code_text_size">36sp</dimen>
+
+    <dimen name="status_padding_horizontal">20dp</dimen>
+    <dimen name="status_padding_vertical">8dp</dimen>
+    <dimen name="riwayat_padding_horizontal">16dp</dimen>
+    <dimen name="riwayat_padding_vertical">6dp</dimen>
+
 </resources>

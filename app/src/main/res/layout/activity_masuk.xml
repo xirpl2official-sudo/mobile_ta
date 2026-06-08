@@ -6,228 +6,228 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    android:theme="@style/Theme.SAS_Mobile.WhiteBackground"
     tools:context=".MasukActivity">
 
-    <ImageView
-        android:id="@+id/vectorAtasBiru"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:contentDescription="@string/DekorasiBiru"
-        android:scaleType="fitXY"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.38"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/gelombangbiru" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guidelineTopBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.38" />
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardLogo"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:cardCornerRadius="200dp"
-        app:cardElevation="10dp"
-        app:cardBackgroundColor="@android:color/transparent"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.13"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/guidelineTopBar"
-        app:layout_constraintVertical_bias="0.22">
-
         <ImageView
-            android:id="@+id/LogoInorasi1"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:contentDescription="@string/LogoSMKN2"
-            android:scaleType="fitCenter"
-            app:srcCompat="@drawable/logo_smk" />
+            android:id="@+id/vectorAtasBiru"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:contentDescription="@string/DekorasiBiru"
+            android:scaleType="fitXY"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.38"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/gelombangbiru" />
 
-    </androidx.cardview.widget.CardView>
-
-    <TextView
-        android:id="@+id/textHalaman1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:fontFamily="sans-serif-medium"
-        android:shadowColor="#80000000"
-        android:shadowDx="0"
-        android:shadowDy="6"
-        android:shadowRadius="4"
-        android:text="@string/SMK"
-        android:textColor="@color/white"
-        android:textSize="@dimen/text_title"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cardLogo" />
-
-    <TextView
-        android:id="@+id/textMasuk1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:fontFamily="sans-serif-medium"
-        android:shadowColor="#40000000"
-        android:shadowDx="0"
-        android:shadowDy="4"
-        android:shadowRadius="4"
-        android:alpha="0.8"
-        android:text="@string/MasukTitle"
-        android:textColor="@color/white"
-        android:textSize="@dimen/text_bawah_title"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textHalaman1" />
-
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-        android:id="@+id/nisLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_xlarge"
-        android:hint="@string/NIS"
-        app:boxBackgroundColor="@color/surface"
-        app:hintTextColor="@color/hint_and_floating"
-        app:boxStrokeColor="@color/stroke_blue_always"
-        app:boxStrokeWidth="1dp"
-        app:boxStrokeWidthFocused="1dp"
-        app:boxCornerRadiusTopStart="12dp"
-        app:boxCornerRadiusTopEnd="12dp"
-        app:boxCornerRadiusBottomStart="12dp"
-        app:boxCornerRadiusBottomEnd="12dp"
-        app:layout_constraintBottom_toTopOf="@id/passwordLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/guidelineTopBar"
-        app:layout_constraintVertical_chainStyle="packed"
-        app:layout_constraintWidth_percent="0.80">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/et_nis"
-            android:layout_width="match_parent"
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineTopBar"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:autofillHints="username"
-            android:imeOptions="actionNext"
-            android:inputType="text"
-            android:nextFocusDown="@id/et_password"
-            android:textColor="@color/on_background"
-            android:textSize="@dimen/text_input_hint" />
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.38" />
 
-    </com.google.android.material.textfield.TextInputLayout>
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardLogo"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:cardCornerRadius="200dp"
+            app:cardElevation="10dp"
+            app:cardBackgroundColor="@android:color/transparent"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.13"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/guidelineTopBar"
+            app:layout_constraintVertical_bias="0.22">
 
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-        android:id="@+id/passwordLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_small"
-        android:hint="@string/Sandi"
-        app:boxBackgroundColor="@color/surface"
-        app:hintTextColor="@color/hint_and_floating"
-        app:boxStrokeColor="@color/stroke_blue_always"
-        app:boxStrokeWidth="1dp"
-        app:boxStrokeWidthFocused="1dp"
-        app:boxCornerRadiusTopStart="12dp"
-        app:boxCornerRadiusTopEnd="12dp"
-        app:boxCornerRadiusBottomStart="12dp"
-        app:boxCornerRadiusBottomEnd="12dp"
-        app:endIconMode="password_toggle"
-        app:endIconTint="#B3B3B3"
-        app:layout_constraintBottom_toTopOf="@id/textLupaPassword"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/nisLayout"
-        app:layout_constraintWidth_percent="0.80">
+            <ImageView
+                android:id="@+id/LogoInorasi1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/LogoSMKN2"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/logo_smk" />
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/et_password"
-            android:layout_width="match_parent"
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/textHalaman1"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:autofillHints="password"
-            android:imeOptions="actionDone"
-            android:inputType="textPassword"
+            android:layout_marginTop="12dp"
+            android:fontFamily="sans-serif-medium"
+            android:shadowColor="#80000000"
+            android:shadowDx="0"
+            android:shadowDy="6"
+            android:shadowRadius="4"
+            android:text="@string/SMK"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_title"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cardLogo" />
+
+        <TextView
+            android:id="@+id/textMasuk1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="sans-serif-medium"
+            android:shadowColor="#40000000"
+            android:shadowDx="0"
+            android:shadowDy="4"
+            android:shadowRadius="4"
+            android:alpha="0.8"
+            android:text="@string/MasukTitle"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_bawah_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textHalaman1" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:id="@+id/nisLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xlarge"
+            android:hint="@string/NIS"
+            app:boxBackgroundColor="@color/surface"
+            app:hintTextColor="@color/hint_and_floating"
+            app:boxStrokeColor="@color/stroke_blue_always"
+            app:boxStrokeWidth="1dp"
+            app:boxStrokeWidthFocused="1dp"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:layout_constraintBottom_toTopOf="@id/passwordLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/guidelineTopBar"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:layout_constraintWidth_percent="0.80">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_nis"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="username"
+                android:imeOptions="actionNext"
+                android:inputType="text"
+                android:nextFocusDown="@id/et_password"
+                android:textColor="@color/on_background"
+                android:textSize="@dimen/text_input_hint" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:id="@+id/passwordLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_small"
+            android:hint="@string/Sandi"
+            app:boxBackgroundColor="@color/surface"
+            app:hintTextColor="@color/hint_and_floating"
+            app:boxStrokeColor="@color/stroke_blue_always"
+            app:boxStrokeWidth="1dp"
+            app:boxStrokeWidthFocused="1dp"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:endIconMode="password_toggle"
+            app:endIconTint="#B3B3B3"
+            app:layout_constraintBottom_toTopOf="@id/textLupaPassword"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/nisLayout"
+            app:layout_constraintWidth_percent="0.80">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="password"
+                android:imeOptions="actionDone"
+                android:inputType="textPassword"
+                android:textColor="@color/on_background"
+                android:textSize="@dimen/text_input_hint" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:id="@+id/textLupaPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="32dp"
+            android:gravity="center_vertical"
+            android:layout_marginTop="@dimen/spacing_tiny"
+            android:text="@string/Lupa_KataSandi"
+            android:textColor="@color/slate_500"
+            android:textSize="@dimen/text_small"
+            app:layout_constraintEnd_toEndOf="@id/passwordLayout"
+            app:layout_constraintTop_toBottomOf="@id/passwordLayout" />
+
+        <Button
+            android:id="@+id/btn_masuk"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:minHeight="56dp"
+            android:paddingVertical="12dp"
+            android:layout_marginTop="@dimen/spacing_xxlarge"
+            android:backgroundTint="@color/blue_theme"
+            android:text="@string/Masuk"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/text_button"
+            app:layout_constraintBottom_toTopOf="@id/progressBar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textLupaPassword"
+            app:layout_constraintVertical_bias="0.0"
+            app:layout_constraintWidth_percent="0.80"
+            app:cornerRadius="30dp" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/textBelumPunyaAkun"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_masuk" />
+
+        <TextView
+            android:id="@+id/textBelumPunyaAkun"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_large"
+            android:layout_marginBottom="@dimen/spacing_xxlarge"
+            android:text="@string/BelumAkun"
             android:textColor="@color/on_background"
-            android:textSize="@dimen/text_input_hint" />
+            android:textSize="@dimen/text_small"
+            app:layout_constraintEnd_toStartOf="@id/textBuatAkun"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/progressBar" />
 
-    </com.google.android.material.textfield.TextInputLayout>
+        <TextView
+            android:id="@+id/textBuatAkun"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:gravity="center_vertical"
+            android:layout_marginStart="4dp"
+            android:text="@string/BuatAkun"
+            android:textColor="#0099F8"
+            android:textSize="@dimen/text_small"
+            app:layout_constraintBaseline_toBaselineOf="@id/textBelumPunyaAkun"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/textBelumPunyaAkun" />
 
-    <TextView
-        android:id="@+id/textLupaPassword"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:minHeight="32dp"
-        android:gravity="center_vertical"
-        android:layout_marginTop="@dimen/spacing_tiny"
-        android:text="@string/Lupa_KataSandi"
-        android:textColor="@color/slate_500"
-        android:textSize="@dimen/text_small"
-        app:layout_constraintEnd_toEndOf="@id/passwordLayout"
-        app:layout_constraintTop_toBottomOf="@id/passwordLayout" />
-
-    <Button
-        android:id="@+id/btn_masuk"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:minHeight="56dp"
-        android:paddingVertical="12dp"
-        android:layout_marginTop="@dimen/spacing_xxlarge"
-        android:backgroundTint="@color/blue_theme"
-        android:text="@string/Masuk"
-        android:textColor="@android:color/white"
-        android:textSize="@dimen/text_button"
-        app:layout_constraintBottom_toTopOf="@id/progressBar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textLupaPassword"
-        app:layout_constraintVertical_bias="0.0"
-        app:layout_constraintWidth_percent="0.80"
-        app:cornerRadius="30dp" />
-
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/textBelumPunyaAkun"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btn_masuk" />
-
-    <TextView
-        android:id="@+id/textBelumPunyaAkun"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_large"
-        android:text="@string/BelumAkun"
-        android:textColor="@color/on_background"
-        android:textSize="@dimen/text_small"
-        app:layout_constraintEnd_toStartOf="@id/textBuatAkun"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/progressBar" />
-
-    <TextView
-        android:id="@+id/textBuatAkun"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:minHeight="48dp"
-        android:gravity="center_vertical"
-        android:layout_marginStart="4dp"
-        android:text="@string/BuatAkun"
-        android:textColor="#0099F8"
-        android:textSize="@dimen/text_small"
-        app:layout_constraintBaseline_toBaselineOf="@id/textBelumPunyaAkun"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/textBelumPunyaAkun" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>

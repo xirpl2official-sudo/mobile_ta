@@ -6,287 +6,287 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    android:theme="@style/Theme.SAS_Mobile.WhiteBackground"
     tools:context=".DaftarActivity">
 
-    <ImageView
-        android:id="@+id/vectorAtasOrange"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:contentDescription="@string/DekorasiOrange"
-        android:scaleType="fitXY"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.38"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/gelombangorange" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guidelineTopBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.38" />
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardLogo"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:cardBackgroundColor="@android:color/transparent"
-        app:cardCornerRadius="200dp"
-        app:cardElevation="10dp"
-        app:layout_constraintBottom_toBottomOf="@id/guidelineTopBar"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.13"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.22">
-
         <ImageView
-            android:id="@+id/LogoInorasi2"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:contentDescription="@string/LogoSMKN2"
-            android:scaleType="fitCenter"
-            app:srcCompat="@drawable/logo_smk" />
+            android:id="@+id/vectorAtasOrange"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:contentDescription="@string/DekorasiOrange"
+            android:scaleType="fitXY"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.38"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/gelombangorange" />
 
-    </androidx.cardview.widget.CardView>
-
-    <TextView
-        android:id="@+id/textHalaman2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:fontFamily="@font/poppins_medium"
-        android:shadowColor="#80000000"
-        android:shadowDx="0"
-        android:shadowDy="6"
-        android:shadowRadius="4"
-        android:text="@string/SMK"
-        android:textColor="@color/white"
-        android:textSize="@dimen/text_title"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cardLogo" />
-
-    <TextView
-        android:id="@+id/textDaftar2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/poppins_medium"
-        android:shadowColor="#40000000"
-        android:shadowDx="0"
-        android:shadowDy="4"
-        android:shadowRadius="4"
-        android:text="@string/DaftarTitle"
-        android:textColor="@color/white"
-        android:textSize="@dimen/text_bawah_title"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textHalaman2" />
-
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-        android:id="@+id/nisLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_medium"
-        android:hint="@string/NIS"
-        app:boxBackgroundColor="@color/surface"
-        app:boxStrokeColor="@color/stroke_orange_always"
-        app:boxStrokeWidth="1dp"
-        app:boxStrokeWidthFocused="1dp"
-        app:boxCornerRadiusTopStart="12dp"
-        app:boxCornerRadiusTopEnd="12dp"
-        app:boxCornerRadiusBottomStart="12dp"
-        app:boxCornerRadiusBottomEnd="12dp"
-        app:layout_constraintBottom_toTopOf="@id/emailLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/guidelineTopBar"
-        app:layout_constraintVertical_chainStyle="packed"
-        app:layout_constraintWidth_percent="0.80">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/et_nis"
-            android:layout_width="match_parent"
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineTopBar"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:autofillHints="username"
-            android:imeOptions="actionNext"
-            android:inputType="text"
-            android:nextFocusDown="@id/et_email"
-            android:textColor="@color/on_background"
-            android:textSize="@dimen/text_input_hint" />
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.38" />
 
-    </com.google.android.material.textfield.TextInputLayout>
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardLogo"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:cardBackgroundColor="@android:color/transparent"
+            app:cardCornerRadius="200dp"
+            app:cardElevation="10dp"
+            app:layout_constraintBottom_toBottomOf="@id/guidelineTopBar"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.13"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.22">
 
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-        android:id="@+id/emailLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_tiny"
-        android:hint="@string/Email"
-        app:boxBackgroundColor="@color/surface"
-        app:boxStrokeColor="@color/stroke_orange_always"
-        app:boxStrokeWidth="1dp"
-        app:boxStrokeWidthFocused="1dp"
-        app:boxCornerRadiusTopStart="12dp"
-        app:boxCornerRadiusTopEnd="12dp"
-        app:boxCornerRadiusBottomStart="12dp"
-        app:boxCornerRadiusBottomEnd="12dp"
-        app:layout_constraintBottom_toTopOf="@id/passwordLayout2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/nisLayout"
-        app:layout_constraintWidth_percent="0.80">
+            <ImageView
+                android:id="@+id/LogoInorasi2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/LogoSMKN2"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/logo_smk" />
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/et_email"
-            android:layout_width="match_parent"
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/textHalaman2"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:autofillHints="emailAddress"
-            android:imeOptions="actionNext"
-            android:inputType="textEmailAddress"
-            android:nextFocusDown="@id/et_password"
-            android:textColor="@color/on_background"
-            android:textSize="@dimen/text_input_hint" />
+            android:layout_marginTop="12dp"
+            android:fontFamily="@font/poppins_medium"
+            android:shadowColor="#80000000"
+            android:shadowDx="0"
+            android:shadowDy="6"
+            android:shadowRadius="4"
+            android:text="@string/SMK"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_title"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cardLogo" />
 
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-        android:id="@+id/passwordLayout2"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_tiny"
-        android:hint="@string/Sandi"
-        app:boxBackgroundColor="@color/surface"
-        app:boxStrokeColor="@color/stroke_orange_always"
-        app:boxStrokeWidth="1dp"
-        app:boxStrokeWidthFocused="1dp"
-        app:boxCornerRadiusTopStart="12dp"
-        app:boxCornerRadiusTopEnd="12dp"
-        app:boxCornerRadiusBottomStart="12dp"
-        app:boxCornerRadiusBottomEnd="12dp"
-        app:endIconMode="password_toggle"
-        app:endIconTint="@color/text_hint"
-        app:helperText="Minimal 8 karakter, kombinasi huruf &amp; angka"
-        app:helperTextEnabled="true"
-        app:helperTextTextColor="@color/text_secondary"
-        app:errorEnabled="true"
-        app:layout_constraintBottom_toTopOf="@id/confirmPasswordLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/emailLayout"
-        app:layout_constraintWidth_percent="0.80">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/et_password"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/textDaftar2"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:autofillHints="password"
-            android:imeOptions="actionNext"
-            android:inputType="textPassword"
-            android:nextFocusDown="@id/et_confirm_password"
-            android:textColor="@color/on_background"
-            android:textSize="@dimen/text_input_hint" />
+            android:fontFamily="@font/poppins_medium"
+            android:shadowColor="#40000000"
+            android:shadowDx="0"
+            android:shadowDy="4"
+            android:shadowRadius="4"
+            android:text="@string/DaftarTitle"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_bawah_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textHalaman2" />
 
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-        android:id="@+id/confirmPasswordLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_tiny"
-        android:hint="@string/konfirSandi"
-        app:boxBackgroundColor="@color/surface"
-        app:boxStrokeColor="@color/stroke_orange_always"
-        app:boxStrokeWidth="1dp"
-        app:boxStrokeWidthFocused="1dp"
-        app:boxCornerRadiusTopStart="12dp"
-        app:boxCornerRadiusTopEnd="12dp"
-        app:boxCornerRadiusBottomStart="12dp"
-        app:boxCornerRadiusBottomEnd="12dp"
-        app:endIconMode="password_toggle"
-        app:endIconTint="@color/text_hint"
-        app:layout_constraintBottom_toTopOf="@id/btn_daftar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/passwordLayout2"
-        app:layout_constraintWidth_percent="0.80">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/et_confirm_password"
-            android:layout_width="match_parent"
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:id="@+id/nisLayout"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:autofillHints="password"
-            android:imeOptions="actionDone"
-            android:inputType="textPassword"
+            android:layout_marginTop="@dimen/spacing_medium"
+            android:hint="@string/NIS"
+            app:boxBackgroundColor="@color/surface"
+            app:boxStrokeColor="@color/stroke_orange_always"
+            app:boxStrokeWidth="1dp"
+            app:boxStrokeWidthFocused="1dp"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:layout_constraintBottom_toTopOf="@id/emailLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/guidelineTopBar"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:layout_constraintWidth_percent="0.80">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_nis"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="username"
+                android:imeOptions="actionNext"
+                android:inputType="text"
+                android:nextFocusDown="@id/et_email"
+                android:textColor="@color/on_background"
+                android:textSize="@dimen/text_input_hint" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:id="@+id/emailLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_tiny"
+            android:hint="@string/Email"
+            app:boxBackgroundColor="@color/surface"
+            app:boxStrokeColor="@color/stroke_orange_always"
+            app:boxStrokeWidth="1dp"
+            app:boxStrokeWidthFocused="1dp"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:layout_constraintBottom_toTopOf="@id/passwordLayout2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/nisLayout"
+            app:layout_constraintWidth_percent="0.80">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="emailAddress"
+                android:imeOptions="actionNext"
+                android:inputType="textEmailAddress"
+                android:nextFocusDown="@id/et_password"
+                android:textColor="@color/on_background"
+                android:textSize="@dimen/text_input_hint" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:id="@+id/passwordLayout2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_tiny"
+            android:hint="@string/Sandi"
+            app:boxBackgroundColor="@color/surface"
+            app:boxStrokeColor="@color/stroke_orange_always"
+            app:boxStrokeWidth="1dp"
+            app:boxStrokeWidthFocused="1dp"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:endIconMode="password_toggle"
+            app:endIconTint="@color/text_hint"
+            app:helperText="Minimal 8 karakter, kombinasi huruf &amp; angka"
+            app:helperTextEnabled="true"
+            app:helperTextTextColor="@color/text_secondary"
+            app:errorEnabled="true"
+            app:layout_constraintBottom_toTopOf="@id/confirmPasswordLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/emailLayout"
+            app:layout_constraintWidth_percent="0.80">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="password"
+                android:imeOptions="actionNext"
+                android:inputType="textPassword"
+                android:nextFocusDown="@id/et_confirm_password"
+                android:textColor="@color/on_background"
+                android:textSize="@dimen/text_input_hint" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:id="@+id/confirmPasswordLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_tiny"
+            android:hint="@string/konfirSandi"
+            app:boxBackgroundColor="@color/surface"
+            app:boxStrokeColor="@color/stroke_orange_always"
+            app:boxStrokeWidth="1dp"
+            app:boxStrokeWidthFocused="1dp"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:endIconMode="password_toggle"
+            app:endIconTint="@color/text_hint"
+            app:layout_constraintBottom_toTopOf="@id/btn_daftar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/passwordLayout2"
+            app:layout_constraintWidth_percent="0.80">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_confirm_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="password"
+                android:imeOptions="actionDone"
+                android:inputType="textPassword"
+                android:textColor="@color/on_background"
+                android:textSize="@dimen/text_input_hint" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/btn_daftar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:minHeight="56dp"
+            android:paddingVertical="12dp"
+            android:layout_marginTop="@dimen/spacing_xxlarge"
+            android:backgroundTint="@color/orange_theme"
+            android:text="@string/buatakun"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/text_button"
+            app:layout_constraintBottom_toTopOf="@id/progressBar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/confirmPasswordLayout"
+            app:layout_constraintVertical_bias="0.0"
+            app:layout_constraintWidth_percent="0.80"
+            app:cornerRadius="30dp" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/textSudahPunyaAkun"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_daftar" />
+
+        <TextView
+            android:id="@+id/textSudahPunyaAkun"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:gravity="center_vertical"
+            android:layout_marginTop="@dimen/spacing_tiny"
+            android:layout_marginBottom="@dimen/spacing_xxlarge"
+            android:text="@string/SudahAkun"
             android:textColor="@color/on_background"
-            android:textSize="@dimen/text_input_hint" />
+            android:textSize="@dimen/text_small"
+            app:layout_constraintEnd_toStartOf="@id/textMasuk"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/progressBar" />
 
-    </com.google.android.material.textfield.TextInputLayout>
+        <TextView
+            android:id="@+id/textMasuk"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:gravity="center_vertical"
+            android:layout_marginStart="4dp"
+            android:text="@string/Masuk"
+            android:textColor="@color/orange_theme"
+            android:textSize="@dimen/text_small"
+            app:layout_constraintBaseline_toBaselineOf="@id/textSudahPunyaAkun"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/textSudahPunyaAkun" />
 
-    <Button
-        android:id="@+id/btn_daftar"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:minHeight="56dp"
-        android:paddingVertical="12dp"
-        android:layout_marginTop="@dimen/spacing_xxlarge"
-        android:backgroundTint="@color/orange_theme"
-        android:text="@string/buatakun"
-        android:textColor="@android:color/white"
-        android:textSize="@dimen/text_button"
-        app:layout_constraintBottom_toTopOf="@id/progressBar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/confirmPasswordLayout"
-        app:layout_constraintVertical_bias="0.0"
-        app:layout_constraintWidth_percent="0.80"
-        app:cornerRadius="30dp" />
-
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/textSudahPunyaAkun"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btn_daftar" />
-
-    <TextView
-        android:id="@+id/textSudahPunyaAkun"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:minHeight="48dp"
-        android:gravity="center_vertical"
-        android:layout_marginTop="@dimen/spacing_tiny"
-        android:text="@string/SudahAkun"
-        android:textColor="@color/on_background"
-        android:textSize="@dimen/text_small"
-        app:layout_constraintEnd_toStartOf="@id/textMasuk"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/progressBar" />
-
-    <TextView
-        android:id="@+id/textMasuk"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:minHeight="48dp"
-        android:gravity="center_vertical"
-        android:layout_marginStart="4dp"
-        android:text="@string/Masuk"
-        android:textColor="@color/orange_theme"
-        android:textSize="@dimen/text_small"
-        app:layout_constraintBaseline_toBaselineOf="@id/textSudahPunyaAkun"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/textSudahPunyaAkun" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>

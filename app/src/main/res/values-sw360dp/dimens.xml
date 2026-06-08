@@ -56,6 +56,15 @@
     <dimen name="qr_button_height">46dp</dimen>
     <dimen name="qr_button_width">46dp</dimen>
 
+    <dimen name="status_padding_horizontal">14dp</dimen>
+    <dimen name="status_padding_vertical">5dp</dimen>
+    <dimen name="riwayat_padding_horizontal">10dp</dimen>
+    <dimen name="riwayat_padding_vertical">4dp</dimen>
+
+    <dimen name="sidebar_width">260dp</dimen>
+    <dimen name="constraint_profile_photo_width">0.28</dimen>
+    <dimen name="text_foto_profil">15sp</dimen>
+
 
     
     <dimen name="popup_width">240dp</dimen>

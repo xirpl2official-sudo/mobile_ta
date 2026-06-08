@@ -21,7 +21,7 @@
             android:background="@color/surface">
 
             
-            <RelativeLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp">
@@ -33,7 +33,9 @@
                     android:textColor="@color/on_surface"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:layout_centerVertical="true"/>
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
 
                 <ImageView
                     android:id="@+id/btnClose"
@@ -48,7 +50,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     app:tint="@color/text_secondary"/>
-            </RelativeLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             
             <TextView
