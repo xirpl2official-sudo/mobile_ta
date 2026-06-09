@@ -401,16 +401,6 @@ android:text="Semua Salat"
                                 android:gravity="center" />
 
                             <TextView
-                                android:layout_width="90dp"
-                                android:layout_height="wrap_content"
-                                android:text="@string/NIS"
-                                android:textColor="@android:color/white"
-                                android:textSize="11sp"
-                                android:textStyle="bold"
-                                android:paddingHorizontal="4dp"
-                                android:gravity="center" />
-
-                            <TextView
                                 android:layout_width="110dp"
                                 android:layout_height="wrap_content"
                                 android:text="@string/Nama"

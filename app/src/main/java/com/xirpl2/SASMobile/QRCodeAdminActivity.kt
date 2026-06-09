@@ -12,10 +12,14 @@ import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.button.MaterialButtonToggleGroup
+import com.xirpl2.SASMobile.network.RetrofitClient
 import com.xirpl2.SASMobile.repository.QRCodeRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -34,6 +38,10 @@ class QRCodeAdminActivity : BaseAdminActivity() {
     private lateinit var tvManualCode: TextView
     private lateinit var tvCodeExpires: TextView
     private lateinit var cardManualCode: View
+    private lateinit var toggleQRType: MaterialButtonToggleGroup
+    private lateinit var btnAbsensi: MaterialButton
+    private lateinit var btnHalangan: MaterialButton
+    private var isHalanganMode = false
 
     // Download button removed
 
@@ -91,15 +99,25 @@ class QRCodeAdminActivity : BaseAdminActivity() {
         tvManualCode = findViewById(R.id.tvManualCode)
         tvCodeExpires = findViewById(R.id.tvCodeExpires)
         cardManualCode = findViewById(R.id.cardManualCode)
+
+        toggleQRType = findViewById(R.id.toggleQRType)
+        btnAbsensi = findViewById(R.id.btnAbsensi)
+        btnHalangan = findViewById(R.id.btnHalangan)
+
+        filterHalanganToggle()
     }
 
     private fun setupClickListeners() {
         btnRefresh.setOnClickListener {
-            loadQRCode()
-            loadAttendanceCode()
+            if (isHalanganMode) loadHalanganQR() else { loadQRCode(); loadAttendanceCode() }
         }
 
-        // Download button removed - no longer needed
+        toggleQRType.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (!isChecked) return@addOnButtonCheckedListener
+            isHalanganMode = checkedId == R.id.btnHalangan
+            cardManualCode.visibility = if (isHalanganMode) View.GONE else View.VISIBLE
+            if (isHalanganMode) loadHalanganQR() else { loadQRCode(); loadAttendanceCode() }
+        }
     }
 
     private fun startAutoRefresh() {
@@ -118,36 +136,91 @@ class QRCodeAdminActivity : BaseAdminActivity() {
         }
     }
 
+    private fun filterHalanganToggle() {
+        val sessionPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this)
+        val role = sessionPref.getString("user_role", "")?.lowercase() ?: ""
+
+        if (role == "admin") {
+            btnHalangan.visibility = View.VISIBLE
+            return
+        }
+
+        val dataPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this)
+        val jk = dataPref.getString("jenis_kelamin", null)
+        if (jk == "P") {
+            btnHalangan.visibility = View.VISIBLE
+        }
+    }
+
     private fun loadQRCode() {
+        val token = getAuthToken()
+        if (token.isEmpty()) { showError("Sesi telah berakhir"); return }
+        if (currentBitmap == null) showLoading()
+        lifecycleScope.launch {
+            qrRepository.generateQRCode(token).fold(
+                onSuccess = { data ->
+                    displayQRCode(data.qr_code, data.jenis_sholat, data.expires_at)
+                    showQRCode(); if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
+                },
+                onFailure = { e ->
+                    if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
+                    val msg = e.message ?: "Gagal memuat QR"
+                    if (msg.contains("tidak ada jadwal", true) || msg.contains("404"))
+                        showNoSchedule("Tidak ada jadwal sholat aktif saat ini")
+                    else if (msg.contains("sesi", true) || msg.contains("401"))
+                        showError("Sesi telah berakhir")
+                    else if (currentBitmap == null) showError(msg)
+                }
+            )
+        }
+    }
+
+    private fun loadHalanganQR() {
         val token = getAuthToken()
         if (token.isEmpty()) {
             showError("Sesi telah berakhir, silakan login kembali")
             return
         }
 
-        if (currentBitmap == null) {
-            showLoading()
-        }
-
-        lifecycleScope.launch {
-            qrRepository.generateQRCode(token).fold(
-                onSuccess = { data ->
-                    displayQRCode(data.qr_code, data.jenis_sholat, data.expires_at)
-                    showQRCode()
-                    if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
-                },
-                onFailure = { e ->
-                    if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
-                    val msg = e.message ?: "Gagal memuat QR code"
-                    if (msg.contains("tidak ada jadwal", ignoreCase = true) || msg.contains("404")) {
-                        showNoSchedule("Tidak ada jadwal sholat aktif saat ini")
-                    } else if (msg.contains("sesi", ignoreCase = true) || msg.contains("401")) {
-                        showError("Sesi telah berakhir, silakan login kembali")
-                    } else if (currentBitmap == null) {
-                        showError(msg)
+        if (currentBitmap == null) showLoading()
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val response = RetrofitClient.apiService.getCurrentQRCodeImage("Bearer $token",
+                    type = "halangan")
+                if (response.isSuccessful) {
+                    val bytes = response.body()?.bytes()
+                    if (bytes != null && bytes.isNotEmpty()) {
+                        val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                        withContext(Dispatchers.Main) {
+                            currentBitmap = bitmap
+                            ivQRCode.setImageBitmap(bitmap)
+                            tvJenisSholat.text = "Halangan"
+                            showQRCode()
+                            if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
+                        }
+                        return@launch
                     }
                 }
-            )
+                val errMsg = try { response.errorBody()?.string() } catch (_: Exception) { null }
+                    ?: response.message()
+                withContext(Dispatchers.Main) {
+                    if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
+                    if (errMsg.contains("Forbidden", ignoreCase = true) || errMsg.contains("403")) {
+                        isHalanganMode = false
+                        toggleQRType.check(R.id.btnAbsensi)
+                        showError("Hanya guru perempuan atau admin yang dapat generate QR Halangan")
+                    } else if (errMsg.contains("tidak ada jadwal", ignoreCase = true) || errMsg.contains("404")) {
+                        showNoSchedule("Tidak ada jadwal sholat aktif saat ini")
+                    } else {
+                        showError(errMsg)
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
+                    showError(e.message ?: "Gagal memuat QR Halangan")
+                }
+            }
         }
     }
 

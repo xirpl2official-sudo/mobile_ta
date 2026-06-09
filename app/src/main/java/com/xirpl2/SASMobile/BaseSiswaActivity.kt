@@ -32,8 +32,7 @@ abstract class BaseSiswaActivity : BaseActivity() {
     enum class SiswaMenuItem {
         BERANDA,
         QR_CODE,
-        PENGAJUAN_IZIN,
-        PENGAJUAN_HALANGAN
+        PENGAJUAN_IZIN
     }
 
     abstract fun getCurrentMenuItem(): SiswaMenuItem
@@ -116,17 +115,8 @@ abstract class BaseSiswaActivity : BaseActivity() {
         }
     }
 
-    private fun filterMenuByGender() {
-        val sharedPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this)
-        val jk = sharedPref.getString("jenis_kelamin", null)
-        if (jk != "P") {
-            sidebarView.findViewById<LinearLayout>(R.id.menuPengajuanHalangan)?.visibility = View.GONE
-        }
-    }
-
     private fun setupMenuItems() {
         val currentItem = getCurrentMenuItem()
-        filterMenuByGender()
 
         setupMenuItem(R.id.menuBeranda, SiswaMenuItem.BERANDA, currentItem) {
             navigateTo(BerandaActivity::class.java)
@@ -138,10 +128,6 @@ abstract class BaseSiswaActivity : BaseActivity() {
 
         setupMenuItem(R.id.menuQRCode, SiswaMenuItem.QR_CODE, currentItem) {
             navigateTo(ScanQrActivity::class.java)
-        }
-
-        setupMenuItem(R.id.menuPengajuanHalangan, SiswaMenuItem.PENGAJUAN_HALANGAN, currentItem) {
-            navigateTo(PengajuanHalanganActivity::class.java)
         }
 
         // Bottom menu items (non-highlighted)
@@ -238,7 +224,6 @@ abstract class BaseSiswaActivity : BaseActivity() {
                 sidebarView.findViewById<LinearLayout>(R.id.menuBeranda)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuPengajuanIzin)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuQRCode)?.setOnClickListener(null)
-                sidebarView.findViewById<LinearLayout>(R.id.menuPengajuanHalangan)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuFAQ)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuPengaturan)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuLogout)?.setOnClickListener(null)
@@ -247,7 +232,9 @@ abstract class BaseSiswaActivity : BaseActivity() {
             if (::drawerLayout.isInitialized) {
                 drawerLayout.setDrawerListener(null)
             }
-        } catch (e: Exception) {}
+        } catch (e: Exception) {
+            Log.w("BaseSiswaActivity", "Failed to clean up sidebar listeners: ${e.message}")
+        }
         super.onDestroy()
     }
 

@@ -1,6 +1,7 @@
 package com.xirpl2.SASMobile.network
 
 import android.content.Context
+import com.xirpl2.SASMobile.BuildConfig
 import com.xirpl2.SASMobile.network.generated.api.AttendanceApi
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -10,8 +11,8 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
 
-    // 1. URL Local — akses backend laptop dari device fisik via USB (adb reverse tcp:3000 tcp:3000)
-    private const val BASE_URL = "http://127.0.0.1:3000/api/"
+    private val BASE_URL: String
+        get() = if (BuildConfig.API_BASE_URL.endsWith("/")) BuildConfig.API_BASE_URL else BuildConfig.API_BASE_URL + "/"
 
     // 2. Variabel Context untuk Autentikasi
     private var appContext: Context? = null

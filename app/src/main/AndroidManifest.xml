@@ -166,7 +166,7 @@
             android:exported="false" />
         <activity
             android:launchMode="singleTop"
-            android:name=".DuhaGroupsActivity"
+            android:name=".DhuhaGroupsActivity"
             android:exported="false" />
         <activity
             android:launchMode="singleTop"

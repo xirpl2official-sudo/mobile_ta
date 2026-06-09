@@ -20,8 +20,8 @@ data class RequestHalanganData(
 )
 
 data class VerifyHalanganBody(
-    @SerializedName("halangan_id")
-    val halanganId: Int
+    @SerializedName("halangan_token")
+    val halanganToken: String
 )
 
 data class HalanganStatusData(
@@ -33,23 +33,10 @@ data class HalanganPerizinan(
     val id: Int,
     @SerializedName("siswa_id")
     val siswaId: Int,
-    @SerializedName("guru_id")
-    val guruId: Int?,
     @SerializedName("tanggal_mulai")
     val tanggalMulai: String,
     @SerializedName("tanggal_selesai")
     val tanggalSelesai: String,
     @SerializedName("status_validasi")
-    val statusValidasi: String,
-    @SerializedName("catatan_guru")
-    val catatanGuru: String?,
-    val siswa: PendingSiswaInfo?
-)
-
-data class PendingSiswaInfo(
-    @SerializedName("nama_siswa")
-    val namaSiswa: String?,
-    val nis: String?,
-    val kelas: String?,
-    val jurusan: String?
+    val statusValidasi: String
 )

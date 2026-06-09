@@ -8,6 +8,7 @@ import android.content.IntentFilter
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
+import android.util.Log
 import androidx.core.content.FileProvider
 import java.io.File
 
@@ -65,7 +66,8 @@ object UpdateDownloader {
                             cursor.close()
                         }
                     }
-                } catch (_: Exception) {
+                } catch (e: Exception) {
+                    Log.w("UpdateDownloader", "Download progress interrupted: ${e.message}")
                     downloading = false
                 }
             }

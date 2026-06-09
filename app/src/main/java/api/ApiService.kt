@@ -160,7 +160,8 @@ interface ApiService {
 
     @GET("v2/attendance/qr-codes/current/image")
     suspend fun getCurrentQRCodeImage(
-        @Header("Authorization") token: String
+        @Header("Authorization") token: String,
+        @Query("type") type: String? = null
     ): Response<ResponseBody>
 
     @POST("v2/attendance/qr-codes/verify")
@@ -735,11 +736,6 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Path("siswa_id") siswaId: Int
     ): Response<com.xirpl2.SASMobile.model.ApiResponse<com.xirpl2.SASMobile.model.HalanganStatusData>>
-
-    @GET("v2/perizinan/halangan/pending")
-    suspend fun getPendingHalangan(
-        @Header("Authorization") token: String
-    ): Response<com.xirpl2.SASMobile.model.ApiResponse<List<com.xirpl2.SASMobile.model.HalanganPerizinan>>>
 
     // --- Reports: PDF Export ---
 

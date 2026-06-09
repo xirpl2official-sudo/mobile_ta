@@ -24,6 +24,7 @@ import com.journeyapps.barcodescanner.BarcodeResult
 import com.journeyapps.barcodescanner.BarcodeView
 import com.journeyapps.barcodescanner.DefaultDecoderFactory
 import com.xirpl2.SASMobile.model.QRCodeVerifyData
+import com.xirpl2.SASMobile.repository.PerizinanHalanganRepository
 import com.xirpl2.SASMobile.repository.QRCodeRepository
 import kotlinx.coroutines.launch
 
@@ -42,6 +43,7 @@ class ScanQrActivity : BaseSiswaActivity() {
     private lateinit var progressBar: ProgressBar
 
     private val repository = QRCodeRepository()
+    private val halanganRepository = PerizinanHalanganRepository()
     private val TAG = "ScanQrActivity"
     private var isProcessing = false
 
@@ -154,11 +156,15 @@ class ScanQrActivity : BaseSiswaActivity() {
                 barcodeView.pause()
 
                 runOnUiThread {
+                    if (isFinishing || isDestroyed) return@runOnUiThread
                     if (result != null && result.text.isNotBlank()) {
                         val qrToken = result.text
-                        
-                        
-                        verifyQRCode(qrToken)
+
+                        if (qrToken.startsWith("HALANGAN:")) {
+                            verifyHalanganQR(qrToken)
+                        } else {
+                            verifyQRCode(qrToken)
+                        }
                     } else {
                         showStatus("Tidak ada QR yang terdeteksi", false)
                     }
@@ -200,7 +206,34 @@ class ScanQrActivity : BaseSiswaActivity() {
         }
     }
 
+    private fun verifyHalanganQR(qrToken: String) {
+        val authToken = getAuthToken()
+        if (authToken.isEmpty()) { showStatus("Sesi berakhir", false); return }
+        isProcessing = true
+        showLoading()
+        lifecycleScope.launch {
+            halanganRepository.verifyHalangan(authToken, qrToken).fold(
+                onSuccess = { msg ->
+                    if (isFinishing || isDestroyed) return@fold
+                    hideLoading(); isProcessing = false
+                    showStatus("Izin halangan tercatat!\n$msg", true)
+                    cardResult.visibility = View.VISIBLE
+                    tvStudentName.text = "Halangan"
+                    tvStudentClass.text = "Izin 14 hari"
+                    tvPrayerType.text = "Disetujui"
+                    tvAttendanceStatus.text = "Berhasil"
+                    tvAttendanceTime.text = ""
+                },
+                onFailure = { e ->
+                    hideLoading(); isProcessing = false
+                    showStatus(e.message ?: "Gagal verifikasi", false)
+                }
+            )
+        }
+    }
+
     private fun showVerificationResult(data: QRCodeVerifyData) {
+        if (isFinishing || isDestroyed) return
 
         tvStudentName.text = data.nama_siswa
 
@@ -260,6 +293,7 @@ class ScanQrActivity : BaseSiswaActivity() {
     }
 
     private fun showStatus(message: String, isSuccess: Boolean) {
+        if (isFinishing || isDestroyed) return
         if (isFinishing || isDestroyed) return
         tvStatus.text = message
         tvStatus.visibility = View.VISIBLE

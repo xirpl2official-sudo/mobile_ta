@@ -140,7 +140,9 @@ class SASMobileApp : Application() {
                 it.isAccessible = true
                 it.invoke(null)
             }
-        } catch (_: Exception) {}
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to clear image caches: ${e.message}")
+        }
         // Clear any ValueAnimator frame callbacks
         ValueAnimator.setFrameDelay(ValueAnimator.getFrameDelay())
         // Request garbage collection for caches

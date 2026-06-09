@@ -32,7 +32,6 @@ class LaporanAbsensiAdapter(
     class LaporanViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvNo: TextView = itemView.findViewById(R.id.tvNo)
         val tvTanggal: TextView = itemView.findViewById(R.id.tvTanggal)
-        val tvNis: TextView = itemView.findViewById(R.id.tvNis)
         val tvNama: TextView = itemView.findViewById(R.id.tvNama)
         val tvKelas: TextView = itemView.findViewById(R.id.tvKelas)
         val tvSholat: TextView = itemView.findViewById(R.id.tvSholat)
@@ -50,7 +49,6 @@ class LaporanAbsensiAdapter(
 
         holder.tvNo.text = (pageOffset + position + 1).toString()
         holder.tvTanggal.text = formatTanggal(item.tanggal)
-        holder.tvNis.text = item.nis
         holder.tvNama.text = item.nama_siswa
 
         val kelasDisplay = buildString {

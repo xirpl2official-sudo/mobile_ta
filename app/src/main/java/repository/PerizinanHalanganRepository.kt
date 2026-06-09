@@ -33,12 +33,12 @@ class PerizinanHalanganRepository {
         }
     }
 
-    suspend fun verifyHalangan(token: String, halanganId: Int): Result<String> {
+    suspend fun verifyHalangan(token: String, halanganToken: String): Result<String> {
         return withContext(Dispatchers.IO) {
             try {
                 val response = apiService.verifyHalangan(
                     "Bearer $token",
-                    VerifyHalanganBody(halanganId = halanganId)
+                    VerifyHalanganBody(halanganToken = halanganToken)
                 )
                 if (!response.isSuccessful) {
                     val msg = parseError(response)
@@ -46,25 +46,6 @@ class PerizinanHalanganRepository {
                 }
                 val body = response.body()
                 Result.success(body?.message ?: "Verifikasi berhasil")
-            } catch (e: Exception) {
-                Result.failure(e)
-            }
-        }
-    }
-
-    suspend fun getPendingHalangan(token: String): Result<List<HalanganPerizinan>> {
-        return withContext(Dispatchers.IO) {
-            try {
-                val response = apiService.getPendingHalangan("Bearer $token")
-                if (!response.isSuccessful) {
-                    val msg = parseError(response)
-                    return@withContext Result.failure(Exception(msg))
-                }
-                val body = response.body()
-                if (body?.data == null) {
-                    return@withContext Result.failure(Exception("Response data kosong"))
-                }
-                Result.success(body.data)
             } catch (e: Exception) {
                 Result.failure(e)
             }

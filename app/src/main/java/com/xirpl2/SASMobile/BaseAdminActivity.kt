@@ -44,7 +44,6 @@ abstract class BaseAdminActivity : BaseActivity() {
         SISWA_BELUM_TERDAFTAR,
         MANAJEMEN_PERANGKAT,
         KENAIKAN_KELAS,
-        VALIDASI_HALANGAN,
         PENGATURAN,
         LOGOUT
     }
@@ -241,10 +240,6 @@ abstract class BaseAdminActivity : BaseActivity() {
             navigateTo(StudentPromotionActivity::class.java)
         }
 
-        setupMenuItem(R.id.menuValidasiHalangan, AdminMenuItem.VALIDASI_HALANGAN, currentItem) {
-            navigateTo(ValidasiHalanganGuruActivity::class.java)
-        }
-
         sidebarView.findViewById<LinearLayout>(R.id.menuFAQ)?.setOnClickListener {
             closeSidebar()
             drawerLayout.postDelayed({
@@ -354,7 +349,6 @@ abstract class BaseAdminActivity : BaseActivity() {
                 sidebarView.findViewById<LinearLayout>(R.id.menuSiswaBelumTerdaftar)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuManajemenPerangkat)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuKenaikanKelas)?.setOnClickListener(null)
-                sidebarView.findViewById<LinearLayout>(R.id.menuValidasiHalangan)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuFAQ)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuPengaturan)?.setOnClickListener(null)
                 sidebarView.findViewById<LinearLayout>(R.id.menuLogout)?.setOnClickListener(null)

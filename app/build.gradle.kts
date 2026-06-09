@@ -30,10 +30,10 @@ android {
 
     signingConfigs {
         create("release") {
-            storeFile = file(keystoreProperties.getProperty("storeFile", "release-keystore.jks"))
-            storePassword = keystoreProperties.getProperty("storePassword", "sasmobile2026")
-            keyAlias = keystoreProperties.getProperty("keyAlias", "sas-mobile")
-            keyPassword = keystoreProperties.getProperty("keyPassword", "sasmobile2026")
+            storeFile = keystoreProperties.getProperty("storeFile")?.let { file(it) }
+            storePassword = keystoreProperties.getProperty("storePassword")
+            keyAlias = keystoreProperties.getProperty("keyAlias")
+            keyPassword = keystoreProperties.getProperty("keyPassword")
         }
     }
 
@@ -84,6 +84,11 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.kaspresso)
+    androidTestImplementation(libs.kakao)
+    androidTestImplementation(libs.mockwebserver)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.rules)
 
     //Scan QR
     implementation("com.google.zxing:core:3.5.1")
