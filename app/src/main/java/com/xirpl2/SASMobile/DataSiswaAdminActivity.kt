@@ -178,8 +178,8 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
         btnPrevPage = findViewById(R.id.btnPrevPage)
         btnNextPage = findViewById(R.id.btnNextPage)
 
-        // Stat cards: kelas = 3 (10,11,12), jurusan = fixed list size
-        tvStatTotalKelas.text = "3"
+        // Stat cards: kelas = dynamic count from API
+        loadClassCount()
         tvStatTotalJurusan.text = fixedJurusanList.size.toString()
     }
 
@@ -786,6 +786,21 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
         if (!isLoading && !isLastPage) {
             currentPage++
             loadStudentData(reset = false)
+        }
+    }
+
+    private fun loadClassCount() {
+        val token = getAuthToken()
+        if (token.isEmpty()) return
+        lifecycleScope.launch {
+            repository.getAdminManagementKelas(token).fold(
+                onSuccess = { kelasList ->
+                    tvStatTotalKelas.text = kelasList.size.toString()
+                },
+                onFailure = {
+                    tvStatTotalKelas.text = "--"
+                }
+            )
         }
     }
 

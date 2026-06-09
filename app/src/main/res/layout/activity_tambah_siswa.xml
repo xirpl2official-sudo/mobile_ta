@@ -36,7 +36,7 @@
                 android:layout_gravity="center"
                 android:src="@drawable/ic_back"
                 android:contentDescription="Kembali"
-                app:tint="@android:color/white" />
+                app:tint="@color/white" />
         </FrameLayout>
 
         <ImageView
@@ -55,7 +55,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Tambah Siswa"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/white"
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@id/logoSekolah"
@@ -69,7 +69,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="SMK Negeri 2 Singosari"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/white"
             android:textSize="12sp"
             android:ellipsize="end"
             android:maxLines="1"
@@ -337,7 +337,7 @@
         android:id="@+id/loadingOverlay"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="#80FFFFFF"
+        android:background="#80000000"
         android:clickable="true"
         android:focusable="true"
         android:visibility="gone"

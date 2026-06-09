@@ -4,6 +4,7 @@ import com.xirpl2.SASMobile.model.*
 import com.xirpl2.SASMobile.network.RetrofitClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import retrofit2.Response
 
 class BerandaRepository {
@@ -516,18 +517,11 @@ class BerandaRepository {
     ): Result<SiswaItem> {
         return withContext(Dispatchers.IO) {
             try {
-                val byNISRequest = UpdateSiswaByNISRequest(
-                    nis = nis,
-                    nama_siswa = request.nama_siswa,
-                    jenis_kelamin = request.jenis_kelamin,
-                    id_kelas = request.id_kelas,
-                    id_jurusan = request.id_jurusan,
-                    id_tahun_masuk = request.id_tahun_masuk,
-                    agama = request.agama,
-                    class_status = request.class_status,
-                    status_akademik = request.status_akademik
+                val response = apiService.updateStudent(
+                    "Bearer $token",
+                    nis.replace("/", "%2F"),
+                    request
                 )
-                val response = apiService.updateStudentByNIS("Bearer $token", byNISRequest)
 
                 if (!response.isSuccessful) {
                     return@withContext Result.failure(
@@ -1166,7 +1160,8 @@ class BerandaRepository {
                 if (response.isSuccessful) {
                     Result.success(Unit)
                 } else {
-                    Result.failure(Exception(response.message()))
+                    val errorMsg = parseErrorMessage(response) ?: response.message()
+                    Result.failure(Exception(errorMsg))
                 }
             } catch (e: Exception) {
                 Result.failure(e)
@@ -1213,15 +1208,9 @@ class BerandaRepository {
                 if (response.isSuccessful) {
                     Result.success(Unit)
                 } else {
-                    val errorMsg = try {
-                        val errorBody = response.errorBody()?.string()
-                        if (errorBody.isNullOrBlank()) {
-                            "HTTP ${response.code()}"
-                        } else {
-                            "HTTP ${response.code()}: $errorBody"
-                        }
-                    } catch (e: Exception) {
-                        "HTTP ${response.code()}"
+                    val errorMsg = when (response.code()) {
+                        409 -> "Tipe shalat tidak bisa dihapus karena masih memiliki data absensi terkait"
+                        else -> parseErrorMessage(response) ?: response.message()
                     }
                     Result.failure(Exception(errorMsg))
                 }
@@ -1229,6 +1218,18 @@ class BerandaRepository {
                 Result.failure(e)
             }
         }
+    }
+
+    private fun parseErrorMessage(response: retrofit2.Response<*>): String? {
+        return try {
+            val errorBody = response.errorBody()?.string()
+            if (!errorBody.isNullOrEmpty()) {
+                val map = org.json.JSONObject(errorBody)
+                    .optJSONObject("error")?.optString("message")
+                    ?: org.json.JSONObject(errorBody).optString("error")
+                map
+            } else null
+        } catch (_: Exception) { null }
     }
 
     // --- Prayer Times ---
@@ -1270,7 +1271,8 @@ class BerandaRepository {
                 if (response.isSuccessful) {
                     Result.success(Unit)
                 } else {
-                    Result.failure(Exception(response.message()))
+                    val errorMsg = parseErrorMessage(response) ?: response.message()
+                    Result.failure(Exception(errorMsg))
                 }
             } catch (e: Exception) {
                 Result.failure(e)

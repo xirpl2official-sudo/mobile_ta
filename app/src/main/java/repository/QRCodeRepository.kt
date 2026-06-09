@@ -1,22 +1,44 @@
 package com.xirpl2.SASMobile.repository
 
 import com.google.gson.Gson
-import com.xirpl2.SASMobile.model.*
+import com.google.gson.reflect.TypeToken
+import com.xirpl2.SASMobile.model.AttendanceCodeData
+import com.xirpl2.SASMobile.model.QRCodeData
+import com.xirpl2.SASMobile.model.QRCodeVerifyData
 import com.xirpl2.SASMobile.network.RetrofitClient
+import com.xirpl2.SASMobile.network.generated.model.QRCodeVerifyRequest as GeneratedQRCodeVerifyRequest
+import com.xirpl2.SASMobile.network.generated.model.VerifyCodeRequest as GeneratedVerifyCodeRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 
 class QRCodeRepository {
 
-    private val apiService = RetrofitClient.apiService
+    private val attendanceApi = RetrofitClient.attendanceApi
     private val gson = Gson()
+
+    // -- Helpers: Map<String,Any> -> legacy typed models (response surface unchanged) --
+
+    private fun mapToQRCodeData(map: Map<String, Any>?): QRCodeData? {
+        if (map == null) return null
+        return gson.fromJson(gson.toJson(map), QRCodeData::class.java)
+    }
+
+    private fun mapToQRCodeVerifyData(map: Map<String, Any>?): QRCodeVerifyData? {
+        if (map == null) return null
+        return gson.fromJson(gson.toJson(map), QRCodeVerifyData::class.java)
+    }
+
+    private fun mapToAttendanceCodeData(map: Map<String, Any>?): AttendanceCodeData? {
+        if (map == null) return null
+        return gson.fromJson(gson.toJson(map), AttendanceCodeData::class.java)
+    }
 
     suspend fun generateQRCode(token: String): Result<QRCodeData> {
         return withContext(Dispatchers.IO) {
             try {
-                val response: Response<QRCodeGenerateResponse> =
-                    apiService.getCurrentQRCode("Bearer $token")
+                val response: Response<com.xirpl2.SASMobile.network.generated.model.QRCodeGenerateResponse> =
+                    attendanceApi.v2AttendanceQrCodesCurrentGet()
 
                 if (!response.isSuccessful) {
                     val errorMessage = when (response.code()) {
@@ -33,7 +55,8 @@ class QRCodeRepository {
                     return@withContext Result.failure(Exception("Response body kosong"))
                 }
 
-                val qrData = body.data ?: return@withContext Result.failure(Exception("Data QR code kosong"))
+                val qrData = mapToQRCodeData(body.data)
+                    ?: return@withContext Result.failure(Exception("Data QR code kosong"))
                 return@withContext Result.success(qrData)
             } catch (e: Exception) {
                 Result.failure(Exception("Gagal terhubung ke server: ${e.message}"))
@@ -44,15 +67,19 @@ class QRCodeRepository {
     suspend fun verifyQRCode(authToken: String, qrToken: String): Result<QRCodeVerifyData> {
         return withContext(Dispatchers.IO) {
             try {
-                val request = QRCodeVerifyRequest(token = qrToken)
-                val response: Response<QRCodeVerifyResponse> =
-                    apiService.verifyQRCode("Bearer $authToken", request)
+                val response: Response<com.xirpl2.SASMobile.network.generated.model.QRCodeVerifyResponse> =
+                    attendanceApi.v2AttendanceQrCodesVerifyPost(
+                        GeneratedQRCodeVerifyRequest(token = qrToken)
+                    )
 
                 if (!response.isSuccessful) {
                     if (response.code() == 409) {
                         val parsed = parseErrorBodyAsVerifyResponse(response)
                         if (parsed?.data != null) {
-                            return@withContext Result.success(parsed.data)
+                            val verifyData = mapToQRCodeVerifyData(parsed.data)
+                            if (verifyData != null) {
+                                return@withContext Result.success(verifyData)
+                            }
                         }
                         return@withContext Result.failure(
                             Exception(parsed?.message ?: "Siswa sudah tercatat hadir untuk jadwal ini")
@@ -73,7 +100,8 @@ class QRCodeRepository {
                     return@withContext Result.failure(Exception("Response body kosong"))
                 }
 
-                val verifyData = body.data ?: return@withContext Result.failure(Exception("Data verifikasi tidak ditemukan"))
+                val verifyData = mapToQRCodeVerifyData(body.data)
+                    ?: return@withContext Result.failure(Exception("Data verifikasi tidak ditemukan"))
                 return@withContext Result.success(verifyData)
             } catch (e: Exception) {
                 Result.failure(Exception("Gagal terhubung ke server: ${e.message}"))
@@ -81,11 +109,13 @@ class QRCodeRepository {
         }
     }
 
-    private fun parseErrorBodyAsVerifyResponse(response: Response<*>): QRCodeVerifyResponse? {
+    private fun parseErrorBodyAsVerifyResponse(
+        response: Response<*>
+    ): com.xirpl2.SASMobile.network.generated.model.QRCodeVerifyResponse? {
         return try {
             val errorBody = response.errorBody()?.string()
             if (errorBody != null) {
-                gson.fromJson(errorBody, QRCodeVerifyResponse::class.java)
+                gson.fromJson(errorBody, com.xirpl2.SASMobile.network.generated.model.QRCodeVerifyResponse::class.java)
             } else {
                 null
             }
@@ -97,12 +127,13 @@ class QRCodeRepository {
     suspend fun generateAttendanceCode(token: String): Result<AttendanceCodeData> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.generateAttendanceCode("Bearer $token")
+                val response = attendanceApi.v2AttendanceCodeGenerateGet()
                 if (!response.isSuccessful) {
                     return@withContext Result.failure(Exception("HTTP Error: ${response.code()}"))
                 }
                 val body = response.body() ?: return@withContext Result.failure(Exception("Response body kosong"))
-                val data = body.data ?: return@withContext Result.failure(Exception("Data kode kosong"))
+                val data = mapToAttendanceCodeData(body.data)
+                    ?: return@withContext Result.failure(Exception("Data kode kosong"))
                 Result.success(data)
             } catch (e: Exception) {
                 Result.failure(Exception("Gagal terhubung ke server: ${e.message}"))

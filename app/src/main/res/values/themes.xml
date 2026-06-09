@@ -62,7 +62,7 @@
     <style name="Widget.App.FormField" parent="Widget.Material3.TextInputLayout.OutlinedBox">
         <item name="boxBackgroundColor">@color/surface</item>
         <item name="hintTextColor">@color/hint_and_floating</item>
-        <item name="boxStrokeColor">@color/stroke_orange_always</item>
+        <item name="boxStrokeColor">@color/slate_300</item>
         <item name="boxStrokeWidth">1dp</item>
         <item name="boxStrokeWidthFocused">1dp</item>
         <item name="shapeAppearanceOverlay">@style/Widget.App.FormField.Shape</item>
@@ -75,7 +75,7 @@
     <style name="Widget.App.FormField.Dropdown" parent="Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
         <item name="boxBackgroundColor">@color/surface</item>
         <item name="hintTextColor">@color/hint_and_floating</item>
-        <item name="boxStrokeColor">@color/stroke_orange_always</item>
+        <item name="boxStrokeColor">@color/slate_300</item>
         <item name="boxStrokeWidth">1dp</item>
         <item name="boxStrokeWidthFocused">1dp</item>
         <item name="shapeAppearanceOverlay">@style/Widget.App.FormField.Shape</item>

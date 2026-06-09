@@ -1,6 +1,7 @@
 package com.xirpl2.SASMobile.network
 
 import android.content.Context
+import com.xirpl2.SASMobile.network.generated.api.AttendanceApi
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -44,13 +45,20 @@ object RetrofitClient {
             .build()
     }
 
-    // 5. ApiService Instance
-    val apiService: ApiService by lazy {
+    // 5. Shared Retrofit instance
+    private val retrofit: Retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(ApiService::class.java)
     }
+
+    // 6. ApiService Instance
+    val apiService: ApiService by lazy {
+        retrofit.create(ApiService::class.java)
+    }
+
+    // 7. Generated API services
+    val attendanceApi: AttendanceApi by lazy { retrofit.create(AttendanceApi::class.java) }
 }
