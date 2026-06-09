@@ -9,8 +9,6 @@ data class RequestHalanganBody(
 
 data class RequestHalanganData(
     val id: Int,
-    @SerializedName("qr_token")
-    val qrToken: String,
     @SerializedName("status_validasi")
     val statusValidasi: String,
     @SerializedName("is_istihadhah")
@@ -21,11 +19,9 @@ data class RequestHalanganData(
     val tanggalSelesai: String
 )
 
-data class ValidateHalanganBody(
-    @SerializedName("qr_token")
-    val qrToken: String,
-    val status: String,
-    val catatan: String?
+data class VerifyHalanganBody(
+    @SerializedName("halangan_id")
+    val halanganId: Int
 )
 
 data class HalanganStatusData(
@@ -45,10 +41,15 @@ data class HalanganPerizinan(
     val tanggalSelesai: String,
     @SerializedName("status_validasi")
     val statusValidasi: String,
-    @SerializedName("qr_code_token")
-    val qrCodeToken: String,
     @SerializedName("catatan_guru")
     val catatanGuru: String?,
-    val siswa: SiswaItem?,
-    val guru: StaffInfo?
+    val siswa: PendingSiswaInfo?
+)
+
+data class PendingSiswaInfo(
+    @SerializedName("nama_siswa")
+    val namaSiswa: String?,
+    val nis: String?,
+    val kelas: String?,
+    val jurusan: String?
 )

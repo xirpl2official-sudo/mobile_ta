@@ -16,6 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.xirpl2.SASMobile.PengajuanHalanganActivity
 import com.xirpl2.SASMobile.R
 import com.xirpl2.SASMobile.StudentMainActivity
 import com.xirpl2.SASMobile.adapter.RiwayatIzinAdapter
@@ -57,6 +58,8 @@ class PengajuanIzinFragment : Fragment(R.layout.fragment_pengajuan_izin) {
     private lateinit var tvEmptyRiwayat: TextView
     private lateinit var riwayatAdapter: RiwayatIzinAdapter
     private lateinit var swipeRefresh: SwipeRefreshLayout
+    private lateinit var cardHalangan: View
+    private lateinit var btnKeHalangan: View
     private val repository = PengajuanIzinRepository()
     private val calendar = Calendar.getInstance()
     private var startDateMillis: Long = 0L
@@ -78,6 +81,9 @@ class PengajuanIzinFragment : Fragment(R.layout.fragment_pengajuan_izin) {
         setupPhotoUpload()
         swipeRefresh = view.findViewById(R.id.swipeRefresh)
         swipeRefresh.setOnRefreshListener { loadRiwayatIzin() }
+        cardHalangan = view.findViewById(R.id.cardHalangan)
+        btnKeHalangan = view.findViewById(R.id.btnKeHalangan)
+        setupHalanganCard()
         loadRiwayatIzin()
     }
 
@@ -286,6 +292,19 @@ class PengajuanIzinFragment : Fragment(R.layout.fragment_pengajuan_izin) {
     private fun getToken(): String {
         val act = requireActivity()
         return if (act is StudentMainActivity) act.getAuthTokenSiswa() else ""
+    }
+
+    private fun setupHalanganCard() {
+        val sharedPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(requireContext())
+        val jk = sharedPref.getString("jenis_kelamin", null)
+        if (jk != "P") {
+            cardHalangan.visibility = View.GONE
+            return
+        }
+        cardHalangan.visibility = View.VISIBLE
+        btnKeHalangan.setOnClickListener {
+            startActivity(Intent(requireContext(), PengajuanHalanganActivity::class.java))
+        }
     }
 
     private fun applyEdgeToEdge(view: View) {

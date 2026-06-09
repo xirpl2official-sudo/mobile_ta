@@ -33,29 +33,29 @@ class PerizinanHalanganRepository {
         }
     }
 
-    suspend fun validateHalangan(token: String, qrToken: String, status: String, catatan: String?): Result<String> {
+    suspend fun verifyHalangan(token: String, halanganId: Int): Result<String> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.validateHalangan(
+                val response = apiService.verifyHalangan(
                     "Bearer $token",
-                    ValidateHalanganBody(qrToken = qrToken, status = status, catatan = catatan)
+                    VerifyHalanganBody(halanganId = halanganId)
                 )
                 if (!response.isSuccessful) {
                     val msg = parseError(response)
                     return@withContext Result.failure(Exception(msg))
                 }
                 val body = response.body()
-                Result.success(body?.message ?: "Validasi berhasil")
+                Result.success(body?.message ?: "Verifikasi berhasil")
             } catch (e: Exception) {
                 Result.failure(e)
             }
         }
     }
 
-    suspend fun getHalanganStatus(token: String, siswaId: Int): Result<HalanganStatusData> {
+    suspend fun getPendingHalangan(token: String): Result<List<HalanganPerizinan>> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.getHalanganStatus("Bearer $token", siswaId)
+                val response = apiService.getPendingHalangan("Bearer $token")
                 if (!response.isSuccessful) {
                     val msg = parseError(response)
                     return@withContext Result.failure(Exception(msg))

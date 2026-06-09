@@ -724,10 +724,10 @@ interface ApiService {
         @Body request: com.xirpl2.SASMobile.model.RequestHalanganBody
     ): Response<com.xirpl2.SASMobile.model.ApiResponse<com.xirpl2.SASMobile.model.RequestHalanganData>>
 
-    @POST("v2/perizinan/halangan/validate")
-    suspend fun validateHalangan(
+    @POST("v2/perizinan/halangan/verify")
+    suspend fun verifyHalangan(
         @Header("Authorization") token: String,
-        @Body request: com.xirpl2.SASMobile.model.ValidateHalanganBody
+        @Body request: com.xirpl2.SASMobile.model.VerifyHalanganBody
     ): Response<com.xirpl2.SASMobile.model.MessageResponse>
 
     @GET("v2/perizinan/halangan/status/{siswa_id}")
@@ -735,6 +735,11 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Path("siswa_id") siswaId: Int
     ): Response<com.xirpl2.SASMobile.model.ApiResponse<com.xirpl2.SASMobile.model.HalanganStatusData>>
+
+    @GET("v2/perizinan/halangan/pending")
+    suspend fun getPendingHalangan(
+        @Header("Authorization") token: String
+    ): Response<com.xirpl2.SASMobile.model.ApiResponse<List<com.xirpl2.SASMobile.model.HalanganPerizinan>>>
 
     // --- Reports: PDF Export ---
 

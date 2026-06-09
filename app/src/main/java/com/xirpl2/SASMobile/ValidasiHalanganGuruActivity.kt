@@ -1,255 +1,183 @@
 package com.xirpl2.SASMobile
 
-import android.Manifest
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.net.Uri
+import android.graphics.Bitmap
 import android.os.Bundle
-import android.provider.Settings
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.card.MaterialCardView
-import com.google.android.material.textfield.TextInputEditText
-import com.journeyapps.barcodescanner.BarcodeCallback
-import com.journeyapps.barcodescanner.BarcodeResult
-import com.journeyapps.barcodescanner.BarcodeView
-import com.journeyapps.barcodescanner.DefaultDecoderFactory
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.qrcode.QRCodeWriter
+import com.xirpl2.SASMobile.model.HalanganPerizinan
 import com.xirpl2.SASMobile.repository.PerizinanHalanganRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ValidasiHalanganGuruActivity : BaseAdminActivity() {
 
-    private lateinit var barcodeView: BarcodeView
-    private lateinit var btnScan: MaterialButton
-    private lateinit var cardScanResult: MaterialCardView
-    private lateinit var tvSiswaInfo: TextView
-    private lateinit var tvTanggalInfo: TextView
-    private lateinit var etCatatan: TextInputEditText
-    private lateinit var btnSetujui: MaterialButton
-    private lateinit var btnTolak: MaterialButton
+    private lateinit var rvPending: RecyclerView
     private lateinit var progressBar: ProgressBar
-    private lateinit var tvStatus: TextView
+    private lateinit var tvEmpty: TextView
+    private lateinit var qrOverlay: View
+    private lateinit var ivQRCode: ImageView
+    private lateinit var tvQrSiswaInfo: TextView
+    private lateinit var tvQrPeriode: TextView
+    private lateinit var btnTutupQR: MaterialButton
 
     private val repository = PerizinanHalanganRepository()
-    private var scannedToken: String? = null
-    private var isProcessing = false
+    private val adapter = PendingHalanganAdapter { item -> showQR(item) }
 
-    private val cameraPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            barcodeView.resume()
-        } else {
-            showPermissionDeniedDialog()
-        }
-    }
-
-    override fun getCurrentMenuItem(): AdminMenuItem = AdminMenuItem.BERANDA
+    override fun getCurrentMenuItem(): AdminMenuItem = AdminMenuItem.VALIDASI_HALANGAN
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_validasi_halangan_guru)
         window.statusBarColor = 0xFF2886D6.toInt()
 
-        initializeViews()
+        initViews()
         setupDrawerAndSidebar()
         setupMenuIcon()
-        setupBarcodeScanner()
-        setupClickListeners()
-        checkCameraPermission()
+
+        rvPending.layoutManager = LinearLayoutManager(this)
+        rvPending.adapter = adapter
+
+        btnTutupQR.setOnClickListener { qrOverlay.visibility = View.GONE }
+        qrOverlay.setOnClickListener { qrOverlay.visibility = View.GONE }
+
+        loadPendingList()
     }
 
-    private fun initializeViews() {
-        barcodeView = findViewById(R.id.barcodeView)
-        btnScan = findViewById(R.id.btnScan)
-        cardScanResult = findViewById(R.id.cardScanResult)
-        tvSiswaInfo = findViewById(R.id.tvSiswaInfo)
-        tvTanggalInfo = findViewById(R.id.tvTanggalInfo)
-        etCatatan = findViewById(R.id.etCatatan)
-        btnSetujui = findViewById(R.id.btnSetujui)
-        btnTolak = findViewById(R.id.btnTolak)
-        progressBar = findViewById(R.id.progressBarScan)
-        tvStatus = findViewById(R.id.tvStatus)
+    private fun initViews() {
+        rvPending = findViewById(R.id.rvPendingHalangan)
+        progressBar = findViewById(R.id.progressBar)
+        tvEmpty = findViewById(R.id.tvEmptyPending)
+        qrOverlay = findViewById(R.id.qrOverlay)
+        ivQRCode = findViewById(R.id.ivQRCode)
+        tvQrSiswaInfo = findViewById(R.id.tvQrSiswaInfo)
+        tvQrPeriode = findViewById(R.id.tvQrPeriode)
+        btnTutupQR = findViewById(R.id.btnTutupQR)
     }
 
-    private fun setupBarcodeScanner() {
-        barcodeView.decoderFactory = DefaultDecoderFactory(listOf(
-            com.google.zxing.BarcodeFormat.QR_CODE,
-            com.google.zxing.BarcodeFormat.CODE_128
-        ))
-    }
-
-    private fun setupClickListeners() {
-        btnScan.setOnClickListener {
-            if (!isProcessing) {
-                startScanning()
-            }
-        }
-
-        btnSetujui.setOnClickListener {
-            validateHalangan("approved")
-        }
-
-        btnTolak.setOnClickListener {
-            validateHalangan("rejected")
-        }
-    }
-
-    private fun startScanning() {
-        if (isProcessing) return
-        if (!hasCameraPermission()) {
-            requestCameraPermission()
-            return
-        }
-
-        tvStatus.visibility = View.GONE
-        cardScanResult.visibility = View.GONE
-        scannedToken = null
-        barcodeView.resume()
-        btnScan.text = "Memindai..."
-
-        barcodeView.decodeSingle(object : BarcodeCallback {
-            override fun barcodeResult(result: BarcodeResult?) {
-                barcodeView.pause()
-                btnScan.text = "Mulai Pindai"
-
-                runOnUiThread {
-                    if (result != null && result.text.isNotBlank()) {
-                        scannedToken = result.text
-                        showScannedInfo(result.text)
-                    } else {
-                        showStatus("Tidak ada QR yang terdeteksi", false)
-                    }
-                }
-            }
-
-            override fun possibleResultPoints(resultPoints: MutableList<com.google.zxing.ResultPoint>?) {}
-        })
-    }
-
-    private fun showScannedInfo(token: String) {
-        tvSiswaInfo.text = "Token: ${token.take(16)}..."
-        tvTanggalInfo.text = "Menunggu validasi..."
-        cardScanResult.visibility = View.VISIBLE
-        tvStatus.visibility = View.GONE
-    }
-
-    private fun validateHalangan(status: String) {
+    private fun loadPendingList() {
         val token = getAuthToken()
-        val qrToken = scannedToken
-
-        if (token.isEmpty()) {
-            Toast.makeText(this, "Sesi berakhir", Toast.LENGTH_SHORT).show()
-            return
-        }
-        if (qrToken == null) {
-            Toast.makeText(this, "Scan QR terlebih dahulu", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        isProcessing = true
-        showLoading()
-        cardScanResult.visibility = View.GONE
-
-        val catatan = etCatatan.text?.toString()?.takeIf { it.isNotBlank() }
+        if (token.isEmpty()) return
+        progressBar.visibility = View.VISIBLE
+        rvPending.visibility = View.GONE
+        tvEmpty.visibility = View.GONE
 
         lifecycleScope.launch {
-            repository.validateHalangan(token, qrToken, status, catatan).fold(
-                onSuccess = { message ->
-                    isProcessing = false
-                    hideLoading()
-                    Toast.makeText(this@ValidasiHalanganGuruActivity, message, Toast.LENGTH_SHORT).show()
-                    resetScan()
+            repository.getPendingHalangan(token).fold(
+                onSuccess = { list ->
+                    progressBar.visibility = View.GONE
+                    if (list.isEmpty()) {
+                        tvEmpty.visibility = View.VISIBLE
+                    } else {
+                        rvPending.visibility = View.VISIBLE
+                        adapter.submitList(list)
+                    }
                 },
-                onFailure = { error ->
-                    isProcessing = false
-                    hideLoading()
-                    showStatus(error.message ?: "Validasi gagal", false)
-                    cardScanResult.visibility = View.VISIBLE
+                onFailure = {
+                    progressBar.visibility = View.GONE
+                    tvEmpty.visibility = View.VISIBLE
+                    Toast.makeText(this@ValidasiHalanganGuruActivity, it.message, Toast.LENGTH_SHORT).show()
                 }
             )
         }
     }
 
-    private fun resetScan() {
-        scannedToken = null
-        etCatatan.text?.clear()
-        cardScanResult.visibility = View.GONE
-        tvStatus.visibility = View.GONE
-        barcodeView.resume()
-    }
+    private fun showQR(item: HalanganPerizinan) {
+        val nama = item.siswa?.namaSiswa ?: "Siswa"
+        val kelas = item.siswa?.kelas ?: ""
+        val jurusan = item.siswa?.jurusan ?: ""
 
-    private fun showStatus(message: String, isSuccess: Boolean) {
-        tvStatus.text = message
-        tvStatus.visibility = View.VISIBLE
-        tvStatus.setTextColor(
-            if (isSuccess) getColor(R.color.status_success)
-            else getColor(R.color.status_error)
-        )
-    }
+        tvQrSiswaInfo.text = "$nama\n$kelas - $jurusan"
+        tvQrPeriode.text = "${item.tanggalMulai} s/d ${item.tanggalSelesai}"
 
-    private fun showLoading() {
-        progressBar.visibility = View.VISIBLE
-        btnScan.isEnabled = false
-    }
-
-    private fun hideLoading() {
-        progressBar.visibility = View.GONE
-        btnScan.isEnabled = true
-    }
-
-    private fun hasCameraPermission(): Boolean {
-        return ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
-    }
-
-    private fun checkCameraPermission() {
-        if (hasCameraPermission()) {
-            barcodeView.resume()
-        } else {
-            requestCameraPermission()
-        }
-    }
-
-    private fun requestCameraPermission() {
-        cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
-    }
-
-    private fun showPermissionDeniedDialog() {
-        AlertDialog.Builder(this)
-            .setTitle("Izin Kamera Diperlukan")
-            .setMessage("Aplikasi memerlukan akses kamera untuk memindai QR code perizinan halangan.")
-            .setPositiveButton("Buka Pengaturan") { _, _ ->
-                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                    data = Uri.fromParts("package", packageName, null)
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val qrContent = item.id.toString()
+                val writer = QRCodeWriter()
+                val bitMatrix = writer.encode(qrContent, BarcodeFormat.QR_CODE, 400, 400)
+                val bitmap = Bitmap.createBitmap(400, 400, Bitmap.Config.RGB_565)
+                for (x in 0 until 400) {
+                    for (y in 0 until 400) {
+                        bitmap.setPixel(x, y, if (bitMatrix[x, y]) 0xFF000000.toInt() else 0xFFFFFFFF.toInt())
+                    }
                 }
-                startActivity(intent)
+                withContext(Dispatchers.Main) {
+                    ivQRCode.setImageBitmap(bitmap)
+                    qrOverlay.visibility = View.VISIBLE
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@ValidasiHalanganGuruActivity, "Gagal generate QR", Toast.LENGTH_SHORT).show()
+                }
             }
-            .setNegativeButton("Kembali") { _, _ -> finish() }
-            .setCancelable(false)
-            .show()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        if (hasCameraPermission() && !isProcessing) {
-            barcodeView.resume()
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-        barcodeView.pause()
-    }
+    class PendingHalanganAdapter(
+        private val onItemClick: (HalanganPerizinan) -> Unit
+    ) : RecyclerView.Adapter<PendingHalanganAdapter.VH>() {
 
-    override fun onDestroy() {
-        barcodeView.pause()
-        super.onDestroy()
+        private var items = listOf<HalanganPerizinan>()
+
+        fun submitList(list: List<HalanganPerizinan>) {
+            items = list
+            notifyDataSetChanged()
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
+            val v = LayoutInflater.from(parent.context).inflate(R.layout.item_halangan_pending, parent, false)
+            return VH(v)
+        }
+
+        override fun onBindViewHolder(holder: VH, position: Int) {
+            holder.bind(items[position], onItemClick)
+        }
+
+        override fun getItemCount() = items.size
+
+        class VH(view: View) : RecyclerView.ViewHolder(view) {
+            val tvNamaSiswa: TextView = view.findViewById(R.id.tvNamaSiswa)
+            val tvInfoSiswa: TextView = view.findViewById(R.id.tvInfoSiswa)
+            val tvStatusBadge: TextView = view.findViewById(R.id.tvStatusBadge)
+            val tvTanggal: TextView = view.findViewById(R.id.tvTanggal)
+            val btnTampilkanQR: MaterialButton = view.findViewById(R.id.btnTampilkanQR)
+
+            fun bind(item: HalanganPerizinan, onClick: (HalanganPerizinan) -> Unit) {
+                val nama = item.siswa?.namaSiswa ?: "-"
+                val nis = item.siswa?.nis ?: ""
+                val kelas = item.siswa?.kelas ?: ""
+                val jurusan = item.siswa?.jurusan ?: ""
+
+                tvNamaSiswa.text = nama
+                tvInfoSiswa.text = "$nis  |  $kelas - $jurusan"
+                tvTanggal.text = "Pengajuan: ${item.tanggalMulai} s/d ${item.tanggalSelesai}"
+
+                val ctx = itemView.context
+                when (item.statusValidasi) {
+                    "istihadhah_check" -> {
+                        tvStatusBadge.text = "Istihadhah"
+                        tvStatusBadge.setTextColor(ctx.getColor(R.color.status_warning))
+                    }
+                    else -> {
+                        tvStatusBadge.text = "Pending"
+                        tvStatusBadge.setTextColor(ctx.getColor(R.color.blue_theme))
+                    }
+                }
+
+                btnTampilkanQR.setOnClickListener { onClick(item) }
+                itemView.setOnClickListener { onClick(item) }
+            }
+        }
     }
 }
