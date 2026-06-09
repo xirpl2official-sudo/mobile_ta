@@ -183,6 +183,20 @@
                 <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Perizinan" android:textColor="@color/slate_700" android:textSize="15sp" />
             </LinearLayout>
 
+            <!-- Item Status Halangan -->
+            <LinearLayout
+                android:id="@+id/menuStatusHalangan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="16dp"
+                android:layout_marginBottom="4dp"
+                android:background="@drawable/bg_sidebar_item_selector">
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_female_restriction" android:contentDescription="Status Halangan" app:tint="@color/slate_500" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Status Halangan" android:textColor="@color/slate_700" android:textSize="15sp" />
+            </LinearLayout>
+
             <!-- Item Scan QR Code -->
             <LinearLayout
                 android:id="@+id/menuQRCode"

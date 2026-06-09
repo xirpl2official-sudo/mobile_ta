@@ -25,7 +25,7 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
     private lateinit var acJurusan: AutoCompleteTextView
     private lateinit var acWaliKelas: AutoCompleteTextView
     private lateinit var tvCountInfo: TextView
-    private lateinit var tableScrollView: androidx.core.widget.NestedScrollView
+    private lateinit var tableContainer: android.widget.LinearLayout
     private lateinit var paginationRow: LinearLayout
     private lateinit var tvPagination: TextView
     private lateinit var btnPrevPage: com.google.android.material.button.MaterialButton
@@ -85,7 +85,7 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
         acJurusan = findViewById(R.id.acJurusan)
         acWaliKelas = findViewById(R.id.acWaliKelas)
         tvCountInfo = findViewById(R.id.tvCountInfo)
-        tableScrollView = findViewById(R.id.tableScrollView)
+        tableContainer = findViewById(R.id.tableContainer)
         paginationRow = findViewById(R.id.paginationRow)
         tvPagination = findViewById(R.id.tvPagination)
         btnPrevPage = findViewById(R.id.btnPrevPage)
@@ -283,7 +283,7 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
             }
             tvCountInfo.text = "Menampilkan ${allStudents.size} dari $totalItemsCount data"
             val empty = allStudents.isEmpty()
-            tableScrollView.visibility = if (empty) View.GONE else View.VISIBLE
+            tableContainer.visibility = if (empty) View.GONE else View.VISIBLE
             layoutEmpty.visibility = if (empty) View.VISIBLE else View.GONE
             paginationRow.visibility = if (empty || adapter.getTotalPages() <= 1) View.GONE else View.VISIBLE
             updatePagination()

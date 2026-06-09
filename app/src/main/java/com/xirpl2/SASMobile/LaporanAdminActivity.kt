@@ -79,7 +79,6 @@ class LaporanAdminActivity : BaseAdminActivity() {
     private lateinit var paginationContainer: LinearLayout
 
     // Buttons
-    private lateinit var btnDownloadLaporan: MaterialButton
     private lateinit var btnExportExcel: MaterialButton
     private lateinit var btnExportPdf: MaterialButton
 
@@ -174,7 +173,6 @@ class LaporanAdminActivity : BaseAdminActivity() {
 
         paginationContainer = findViewById(R.id.paginationContainer)
 
-        btnDownloadLaporan = findViewById(R.id.btnDownloadLaporan)
         btnExportExcel = findViewById(R.id.btnExportExcel)
         btnExportPdf = findViewById(R.id.btnExportPdf)
     }
@@ -328,7 +326,6 @@ class LaporanAdminActivity : BaseAdminActivity() {
     private fun setupButtons() {
         btnExportExcel.setOnClickListener { downloadReport("excel") }
         btnExportPdf.setOnClickListener { downloadReport("pdf") }
-        btnDownloadLaporan.setOnClickListener { showFormatPicker() }
     }
 
     // ===== CHART DATA =====
@@ -650,7 +647,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
         val btn = when (format) {
             "excel" -> btnExportExcel
             "pdf" -> btnExportPdf
-            else -> btnDownloadLaporan
+            else -> return
         }
         btn.isEnabled = false
 

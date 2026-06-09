@@ -191,107 +191,100 @@
                 android:layout_gravity="center" />
 
             <!-- Table -->
-            <androidx.core.widget.NestedScrollView
-                android:id="@+id/tableScrollView"
+            <LinearLayout
+                android:id="@+id/tableContainer"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_marginTop="12dp"
                 android:layout_weight="1"
-                android:fillViewport="true">
+                android:background="@color/background"
+                android:orientation="vertical">
 
                 <LinearLayout
+                    android:id="@+id/tableHeader"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/background"
-                    android:orientation="vertical">
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:background="@color/blue_theme"
+                    android:paddingVertical="12dp"
+                    android:gravity="center_vertical">
 
-                    <LinearLayout
-                        android:id="@+id/tableHeader"
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:background="@color/blue_theme"
-                        android:paddingVertical="12dp"
-                        android:gravity="center_vertical">
+                        android:layout_weight="0.20"
+                        android:text="@string/NIS"
+                        android:textColor="@android:color/white"
+                        android:textSize="12sp"
+                        android:paddingHorizontal="8dp"
+                        android:gravity="center" />
 
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0.20"
-                            android:text="@string/NIS"
-                            android:textColor="@android:color/white"
-                            android:textSize="12sp"
-                            android:paddingHorizontal="8dp"
-                            android:gravity="center" />
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.22"
+                        android:text="@string/Nama"
+                        android:textColor="@android:color/white"
+                        android:textSize="12sp"
+                        android:paddingHorizontal="4dp" />
 
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0.22"
-                            android:text="@string/Nama"
-                            android:textColor="@android:color/white"
-                            android:textSize="12sp"
-                            android:paddingHorizontal="4dp" />
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.12"
+                        android:text="@string/Kelas"
+                        android:textColor="@android:color/white"
+                        android:textSize="12sp"
+                        android:paddingHorizontal="2dp"
+                        android:gravity="center" />
 
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0.12"
-                            android:text="@string/Kelas"
-                            android:textColor="@android:color/white"
-                            android:textSize="12sp"
-                            android:paddingHorizontal="2dp"
-                            android:gravity="center" />
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.15"
+                        android:text="@string/Jurusan"
+                        android:textColor="@android:color/white"
+                        android:textSize="11sp"
+                        android:paddingHorizontal="4dp"
+                        android:gravity="center" />
 
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0.15"
-                            android:text="@string/Jurusan"
-                            android:textColor="@android:color/white"
-                            android:textSize="11sp"
-                            android:paddingHorizontal="4dp"
-                            android:gravity="center" />
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.20"
+                        android:text="@string/wali_kelas"
+                        android:textColor="@android:color/white"
+                        android:textSize="12sp"
+                        android:paddingHorizontal="4dp"
+                        android:gravity="center" />
 
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0.20"
-                            android:text="@string/wali_kelas"
-                            android:textColor="@android:color/white"
-                            android:textSize="12sp"
-                            android:paddingHorizontal="4dp"
-                            android:gravity="center" />
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0.14"
-                            android:text="@string/Aksi"
-                            android:textColor="@android:color/white"
-                            android:textSize="10sp"
-                            android:paddingHorizontal="4dp"
-                            android:gravity="center" />
-
-                    </LinearLayout>
-
-                    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-                        android:id="@+id/swipeRefresh"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1">
-
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/rvSiswaBaru"
-                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:scrollbars="vertical" />
-                    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.14"
+                        android:text="@string/Aksi"
+                        android:textColor="@android:color/white"
+                        android:textSize="10sp"
+                        android:paddingHorizontal="4dp"
+                        android:gravity="center" />
 
                 </LinearLayout>
 
-            </androidx.core.widget.NestedScrollView>
+                <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                    android:id="@+id/swipeRefresh"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvSiswaBaru"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scrollbars="vertical" />
+                </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/paginationRow"

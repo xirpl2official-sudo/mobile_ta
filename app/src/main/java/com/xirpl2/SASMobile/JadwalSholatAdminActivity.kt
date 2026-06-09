@@ -521,11 +521,15 @@ override fun onCreate(savedInstanceState: Bundle?) {
         lifecycleScope.launch {
             var successCount = 0
             var failCount = 0
+            val errors = mutableListOf<String>()
 
             for (jadwal in schedulesToDelete) {
                 repository.deleteJadwalSholat(token, jadwal.id).fold(
                     onSuccess = { successCount++ },
-                    onFailure = { failCount++ }
+                    onFailure = { e ->
+                        failCount++
+                        errors.add("ID ${jadwal.id}: ${e.message}")
+                    }
                 )
             }
 
@@ -534,7 +538,8 @@ override fun onCreate(savedInstanceState: Bundle?) {
                     if (failCount == 0) {
                         Toast.makeText(this@JadwalSholatAdminActivity, "$jenisSholat berhasil dihapus ($successCount jadwal)", Toast.LENGTH_SHORT).show()
                     } else {
-                        Toast.makeText(this@JadwalSholatAdminActivity, "$successCount berhasil, $failCount gagal", Toast.LENGTH_LONG).show()
+                        val errorText = errors.joinToString("\n")
+                        Toast.makeText(this@JadwalSholatAdminActivity, "$successCount berhasil, $failCount gagal\n$errorText", Toast.LENGTH_LONG).show()
                         loadJadwalList()
                     }
                 }

@@ -362,9 +362,17 @@ class BerandaRepository {
                 val response = apiService.deletePrayerSchedule("Bearer $token", id)
 
                 if (!response.isSuccessful) {
-                    return@withContext Result.failure(
-                        Exception("HTTP Error: ${response.code()} - ${response.message()}")
-                    )
+                    val errorMsg = try {
+                        val errorBody = response.errorBody()?.string()
+                        if (errorBody.isNullOrBlank()) {
+                            "HTTP ${response.code()}"
+                        } else {
+                            "HTTP ${response.code()}: $errorBody"
+                        }
+                    } catch (e: Exception) {
+                        "HTTP ${response.code()}"
+                    }
+                    return@withContext Result.failure(Exception(errorMsg))
                 }
 
                 val body = response.body()
@@ -1205,7 +1213,17 @@ class BerandaRepository {
                 if (response.isSuccessful) {
                     Result.success(Unit)
                 } else {
-                    Result.failure(Exception(response.message()))
+                    val errorMsg = try {
+                        val errorBody = response.errorBody()?.string()
+                        if (errorBody.isNullOrBlank()) {
+                            "HTTP ${response.code()}"
+                        } else {
+                            "HTTP ${response.code()}: $errorBody"
+                        }
+                    } catch (e: Exception) {
+                        "HTTP ${response.code()}"
+                    }
+                    Result.failure(Exception(errorMsg))
                 }
             } catch (e: Exception) {
                 Result.failure(e)

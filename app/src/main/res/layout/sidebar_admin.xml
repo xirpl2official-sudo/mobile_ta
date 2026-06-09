@@ -250,6 +250,20 @@
                 <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Pengajuan Izin" android:textColor="@color/slate_700" android:textSize="15sp" />
             </LinearLayout>
 
+            <!-- Item Persetujuan Siswi -->
+            <LinearLayout
+                android:id="@+id/menuPersetujuanSiswi"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="16dp"
+                android:layout_marginBottom="4dp"
+                android:background="@drawable/bg_sidebar_item_selector">
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_female_restriction" android:contentDescription="Persetujuan Siswi" app:tint="@color/slate_500" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Persetujuan Siswi" android:textColor="@color/slate_700" android:textSize="15sp" />
+            </LinearLayout>
+
             <!-- Item Laporan -->
             <LinearLayout
                 android:id="@+id/menuLaporan"
