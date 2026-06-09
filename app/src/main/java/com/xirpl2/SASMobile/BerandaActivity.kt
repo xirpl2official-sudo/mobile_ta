@@ -246,8 +246,8 @@ class BerandaActivity : BaseSiswaActivity() {
     }
 
     private suspend fun loadJadwalSholatFromAPI(token: String) {
-        // Server /today returns ALL prayers for the day (Subuh, Dzuhur, Ashar, Maghrib, Isya, Dhuha, Jumat).
-        // Client-side gender filter: on Friday, male sees Jumat (not Dzuhur), female sees Dzuhur (not Jumat).
+        // Server /today returns ALL prayers for the day (Subuh, Zuhur, Ashar, Maghrib, Isya, Duha, Jumat).
+        // Client-side gender filter: on Friday, male sees Jumat (not Zuhur), female sees Zuhur (not Jumat).
         // Client-side jurusan filter: only show schedules for student's own jurusan or global (null).
         // Status (AKAN_DATANG/SEDANG_BERLANGSUNG/SELESAI) is computed client-side — server doesn't provide it.
         val jenisKelamin = getJenisKelaminFromStorage()

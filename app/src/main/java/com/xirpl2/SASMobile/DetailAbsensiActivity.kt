@@ -99,21 +99,21 @@ class DetailAbsensiActivity : BaseActivity() {
         val currentDay = Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
         val isFriday = currentDay == Calendar.FRIDAY
 
-        val itemDhuha = findViewById<View>(R.id.itemDhuha)
-        val itemDzuhur = findViewById<View>(R.id.itemDzuhur)
+        val itemDuha = findViewById<View>(R.id.itemDuha)
+        val itemZuhur = findViewById<View>(R.id.itemZuhur)
         val itemJumat = findViewById<View>(R.id.itemJumat)
 
         if (isFriday) {
-            itemDzuhur?.visibility = View.GONE
+            itemZuhur?.visibility = View.GONE
             itemJumat?.visibility = View.VISIBLE
             itemJumat?.let { setupPrayerItem(it, "Salat Jumat", "11:00 - 13:00") }
         } else {
-            itemDzuhur?.visibility = View.VISIBLE
+            itemZuhur?.visibility = View.VISIBLE
             itemJumat?.visibility = View.GONE
-            itemDzuhur?.let { setupPrayerItem(it, "Salat Dzuhur", "11:30 - 13:00") }
+            itemZuhur?.let { setupPrayerItem(it, "Salat Zuhur", "11:30 - 13:00") }
         }
 
-        checkDhuhaVisibility(itemDhuha)
+        checkDuhaVisibility(itemDuha)
     }
 
     private fun setupPrayerItem(view: View, name: String, time: String) {
@@ -122,7 +122,7 @@ class DetailAbsensiActivity : BaseActivity() {
         view.findViewById<TextView>(R.id.tvPresenceStatus).text = "Belum Sholat"
     }
 
-    private fun checkDhuhaVisibility(itemDhuha: View?) {
+    private fun checkDuhaVisibility(itemDuha: View?) {
         val major = studentMajor ?: ""
         val token = getAuthToken()
         
@@ -130,25 +130,25 @@ class DetailAbsensiActivity : BaseActivity() {
             repository.getJadwalSholat(token).fold(
                 onSuccess = { jadwals ->
                     if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
-                    val isDhuhaScheduled = jadwals.any { 
-                        it.jenis_sholat.equals("Dhuha", ignoreCase = true) && 
+                    val isDuhaScheduled = jadwals.any { 
+                        it.jenis_sholat.equals("Duha", ignoreCase = true) && 
                                 (it.jurusan.equals("Semua Jurusan", ignoreCase = true) || it.jurusan.equals(major, ignoreCase = true))
                     }
                     
                     runOnUiThread {
-                        if (isDhuhaScheduled) {
-                            itemDhuha?.visibility = View.VISIBLE
-                            val dhuhaJadwal = jadwals.find { it.jenis_sholat.equals("Dhuha", true) }
-                            val time = if (dhuhaJadwal != null) "${dhuhaJadwal.jam_mulai} - ${dhuhaJadwal.jam_selesai}" else "06:30 - 09:00"
-                            itemDhuha?.let { setupPrayerItem(it, "Salat Dhuha", time) }
+                        if (isDuhaScheduled) {
+                            itemDuha?.visibility = View.VISIBLE
+                            val DuhaJadwal = jadwals.find { it.jenis_sholat.equals("Duha", true) }
+                            val time = if (DuhaJadwal != null) "${DuhaJadwal.jam_mulai} - ${DuhaJadwal.jam_selesai}" else "06:30 - 09:00"
+                            itemDuha?.let { setupPrayerItem(it, "Salat Duha", time) }
                         } else {
-                            itemDhuha?.visibility = View.GONE
+                            itemDuha?.visibility = View.GONE
                         }
                     }
                 },
                 onFailure = {
                     if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
-                    runOnUiThread { itemDhuha?.visibility = View.GONE }
+                    runOnUiThread { itemDuha?.visibility = View.GONE }
                 }
             )
         }
@@ -192,8 +192,8 @@ class DetailAbsensiActivity : BaseActivity() {
         val todayStr = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
         val todayAbsensi = absensiList.filter { it.tanggal == todayStr }
 
-        updateStatus(findViewById(R.id.itemDhuha), "Dhuha", todayAbsensi)
-        updateStatus(findViewById(R.id.itemDzuhur), "Dzuhur", todayAbsensi)
+        updateStatus(findViewById(R.id.itemDuha), "Duha", todayAbsensi)
+        updateStatus(findViewById(R.id.itemZuhur), "Zuhur", todayAbsensi)
         updateStatus(findViewById(R.id.itemJumat), "Jumat", todayAbsensi)
     }
 

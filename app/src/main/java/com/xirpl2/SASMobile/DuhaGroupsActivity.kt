@@ -23,23 +23,23 @@ import com.google.android.material.card.MaterialCardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
-import com.xirpl2.SASMobile.model.DhuhaGroup
-import com.xirpl2.SASMobile.model.DhuhaGroupRequest
-import com.xirpl2.SASMobile.model.WeeklyDhuhaGroupRequest
+import com.xirpl2.SASMobile.model.DuhaGroup
+import com.xirpl2.SASMobile.model.DuhaGroupRequest
+import com.xirpl2.SASMobile.model.WeeklyDuhaGroupRequest
 import com.xirpl2.SASMobile.repository.BerandaRepository
 import kotlinx.coroutines.launch
 
-class DhuhaGroupsActivity : BaseAdminActivity() {
+class DuhaGroupsActivity : BaseAdminActivity() {
 
     private val repository = BerandaRepository()
-    private lateinit var adapter: DhuhaGroupAdapter
+    private lateinit var adapter: DuhaGroupAdapter
     private lateinit var recyclerView: RecyclerView
     private lateinit var progressLoading: ProgressBar
     private lateinit var tvEmptyState: TextView
     private lateinit var emptyStateContainer: View
     private lateinit var swipeRefresh: SwipeRefreshLayout
 
-    private val allGroups = mutableListOf<DhuhaGroup>()
+    private val allGroups = mutableListOf<DuhaGroup>()
 
     private val daysList = listOf("Senin", "Selasa", "Rabu", "Kamis")
     private val fixedJurusanList = listOf("RPL", "TKJ", "TEI", "TAV", "BC", "TMT", "DKV", "ANM")
@@ -50,7 +50,7 @@ class DhuhaGroupsActivity : BaseAdminActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_dhuha_groups)
+        setContentView(R.layout.activity_duha_groups)
         setupStatusBar()
 
         val topBarContent = findViewById<View>(R.id.topBarContent)
@@ -69,26 +69,26 @@ class DhuhaGroupsActivity : BaseAdminActivity() {
     }
 
     private fun initializeViews() {
-        recyclerView = findViewById(R.id.recyclerDhuhaGroups)
+        recyclerView = findViewById(R.id.recyclerDuhaGroups)
         progressLoading = findViewById(R.id.progressLoading)
         tvEmptyState = findViewById(R.id.tvEmptyState)
         emptyStateContainer = findViewById(R.id.emptyState)
     }
 
     private fun setupRecyclerView() {
-        adapter = DhuhaGroupAdapter(
-            onEditClick = { group -> showDhuhaGroupDialog(group) },
+        adapter = DuhaGroupAdapter(
+            onEditClick = { group -> showDuhaGroupDialog(group) },
             onDeleteClick = { group -> confirmDelete(group) }
         )
         recyclerView.apply {
-            layoutManager = LinearLayoutManager(this@DhuhaGroupsActivity)
-            adapter = this@DhuhaGroupsActivity.adapter
+            layoutManager = LinearLayoutManager(this@DuhaGroupsActivity)
+            adapter = this@DuhaGroupsActivity.adapter
         }
     }
 
     private fun setupFab() {
-        findViewById<FloatingActionButton>(R.id.btnTambahDhuhaGroup).setOnClickListener {
-            showDhuhaGroupDialog(null)
+        findViewById<FloatingActionButton>(R.id.btnTambahDuhaGroup).setOnClickListener {
+            showDuhaGroupDialog(null)
         }
 
         findViewById<MaterialButton>(R.id.btnBuatMingguan).setOnClickListener {
@@ -105,7 +105,7 @@ class DhuhaGroupsActivity : BaseAdminActivity() {
         emptyStateContainer.visibility = View.GONE
 
         lifecycleScope.launch {
-            repository.getDhuhaGroups(token).fold(
+            repository.getDuhaGroups(token).fold(
                 onSuccess = { list ->
                     if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                     allGroups.clear()
@@ -137,8 +137,8 @@ class DhuhaGroupsActivity : BaseAdminActivity() {
         }
     }
 
-    private fun showDhuhaGroupDialog(existing: DhuhaGroup?) {
-        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_dhuha_group, null)
+    private fun showDuhaGroupDialog(existing: DuhaGroup?) {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_duha_group, null)
 
         val tvTitle = dialogView.findViewById<TextView>(R.id.tvDialogTitle)
         val actvHari = dialogView.findViewById<AutoCompleteTextView>(R.id.actvHari)
@@ -152,13 +152,13 @@ class DhuhaGroupsActivity : BaseAdminActivity() {
         actvJurusan.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, fixedJurusanList))
 
         if (existing != null) {
-            tvTitle.text = "Edit Grup Dhuha"
+            tvTitle.text = "Edit Grup Duha"
             btnSimpan.text = "PERBARUI"
             actvHari.setText(existing.hari, false)
             actvJurusan.setText(existing.jurusan, false)
             etStudents.setText(existing.students.joinToString("\n"))
         } else {
-            tvTitle.text = "Tambah Grup Dhuha"
+            tvTitle.text = "Tambah Grup Duha"
             btnSimpan.text = "SIMPAN"
         }
 
@@ -185,7 +185,7 @@ class DhuhaGroupsActivity : BaseAdminActivity() {
             btnSimpan.text = "MENYIMPAN..."
 
             val jurusanIndex = fixedJurusanList.indexOf(jurusan)
-            val request = DhuhaGroupRequest(
+            val request = DuhaGroupRequest(
                 hari = hari,
                 jurusan = jurusan,
                 idJurusan = jurusanIndex + 1,
@@ -196,21 +196,21 @@ class DhuhaGroupsActivity : BaseAdminActivity() {
 
             lifecycleScope.launch {
                 val result = if (existing != null) {
-                    repository.updateDhuhaGroup(token, existing.id, request)
+                    repository.updateDuhaGroup(token, existing.id, request)
                 } else {
-                    repository.createDhuhaGroup(token, request)
+                    repository.createDuhaGroup(token, request)
                 }
 
                 result.fold(
                     onSuccess = {
-                        Toast.makeText(this@DhuhaGroupsActivity, "Berhasil disimpan", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@DuhaGroupsActivity, "Berhasil disimpan", Toast.LENGTH_SHORT).show()
                         dialog.dismiss()
                         loadData()
                     },
                     onFailure = { error ->
                         btnSimpan.isEnabled = true
                         btnSimpan.text = if (existing != null) "PERBARUI" else "SIMPAN"
-                        Toast.makeText(this@DhuhaGroupsActivity, "Gagal: ${error.message}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@DuhaGroupsActivity, "Gagal: ${error.message}", Toast.LENGTH_SHORT).show()
                     }
                 )
             }
@@ -220,25 +220,25 @@ class DhuhaGroupsActivity : BaseAdminActivity() {
         dialog.show()
     }
 
-    private fun confirmDelete(group: DhuhaGroup) {
+    private fun confirmDelete(group: DuhaGroup) {
         MaterialAlertDialogBuilder(this)
-            .setTitle("Hapus Grup Dhuha")
+            .setTitle("Hapus Grup Duha")
             .setMessage("Apakah Anda yakin ingin menghapus grup ${group.jurusan} (${group.hari})?")
             .setPositiveButton("Hapus") { _, _ -> deleteGroup(group) }
             .setNegativeButton("Batal", null)
             .show()
     }
 
-    private fun deleteGroup(group: DhuhaGroup) {
+    private fun deleteGroup(group: DuhaGroup) {
         val token = getAuthToken()
         lifecycleScope.launch {
-            repository.deleteDhuhaGroup(token, group.id).fold(
+            repository.deleteDuhaGroup(token, group.id).fold(
                 onSuccess = {
-                    Toast.makeText(this@DhuhaGroupsActivity, "Grup berhasil dihapus", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@DuhaGroupsActivity, "Grup berhasil dihapus", Toast.LENGTH_SHORT).show()
                     loadData()
                 },
                 onFailure = { error ->
-                    Toast.makeText(this@DhuhaGroupsActivity, "Gagal: ${error.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@DuhaGroupsActivity, "Gagal: ${error.message}", Toast.LENGTH_SHORT).show()
                 }
             )
         }
@@ -247,7 +247,7 @@ class DhuhaGroupsActivity : BaseAdminActivity() {
     private fun showBuatMingguanDialog() {
         MaterialAlertDialogBuilder(this)
             .setTitle("Buat Jadwal Mingguan")
-            .setMessage("Akan membuat jadwal dhuha untuk semua grup yang ada selama satu minggu penuh.\nLanjutkan?")
+            .setMessage("Akan membuat jadwal Duha untuk semua grup yang ada selama satu minggu penuh.\nLanjutkan?")
             .setPositiveButton("Buat") { _, _ -> buatMingguan() }
             .setNegativeButton("Batal", null)
             .show()
@@ -260,37 +260,37 @@ class DhuhaGroupsActivity : BaseAdminActivity() {
         lifecycleScope.launch {
             val groups = allGroups.map { group ->
                 val jurusanIndex = fixedJurusanList.indexOf(group.jurusan)
-                DhuhaGroupRequest(
+                DuhaGroupRequest(
                     hari = group.hari,
                     jurusan = group.jurusan,
                     idJurusan = if (jurusanIndex >= 0) jurusanIndex + 1 else 1,
                     students = group.students
                 )
             }
-            val request = WeeklyDhuhaGroupRequest(groups = groups)
+            val request = WeeklyDuhaGroupRequest(groups = groups)
 
-            repository.createWeeklyDhuhaGroups(token, request).fold(
+            repository.createWeeklyDuhaGroups(token, request).fold(
                 onSuccess = {
                     progressLoading.visibility = View.GONE
-                    Toast.makeText(this@DhuhaGroupsActivity, "Jadwal mingguan berhasil dibuat", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@DuhaGroupsActivity, "Jadwal mingguan berhasil dibuat", Toast.LENGTH_SHORT).show()
                     loadData()
                 },
                 onFailure = { error ->
                     progressLoading.visibility = View.GONE
-                    Toast.makeText(this@DhuhaGroupsActivity, "Gagal: ${error.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@DuhaGroupsActivity, "Gagal: ${error.message}", Toast.LENGTH_SHORT).show()
                 }
             )
         }
     }
 }
 
-class DhuhaGroupAdapter(
-    private val onEditClick: (DhuhaGroup) -> Unit,
-    private val onDeleteClick: (DhuhaGroup) -> Unit
-) : ListAdapter<DhuhaGroup, DhuhaGroupAdapter.ViewHolder>(DiffCallback) {
+class DuhaGroupAdapter(
+    private val onEditClick: (DuhaGroup) -> Unit,
+    private val onDeleteClick: (DuhaGroup) -> Unit
+) : ListAdapter<DuhaGroup, DuhaGroupAdapter.ViewHolder>(DiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_dhuha_group, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_duha_group, parent, false)
         return ViewHolder(view)
     }
 
@@ -299,14 +299,14 @@ class DhuhaGroupAdapter(
     }
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        private val card: MaterialCardView = view.findViewById(R.id.cardDhuhaGroup)
+        private val card: MaterialCardView = view.findViewById(R.id.cardDuhaGroup)
         private val tvHari: TextView = view.findViewById(R.id.tvHari)
         private val tvJurusan: TextView = view.findViewById(R.id.tvJurusan)
         private val tvStudents: TextView = view.findViewById(R.id.tvStudents)
-        private val btnEdit: ImageView = view.findViewById(R.id.btnEditDhuhaGroup)
-        private val btnDelete: ImageView = view.findViewById(R.id.btnDeleteDhuhaGroup)
+        private val btnEdit: ImageView = view.findViewById(R.id.btnEditDuhaGroup)
+        private val btnDelete: ImageView = view.findViewById(R.id.btnDeleteDuhaGroup)
 
-        fun bind(group: DhuhaGroup) {
+        fun bind(group: DuhaGroup) {
             tvHari.text = group.hari
             tvJurusan.text = group.jurusan
             tvStudents.text = if (group.students.isEmpty()) "Tidak ada siswa" else group.students.joinToString(", ")
@@ -315,8 +315,8 @@ class DhuhaGroupAdapter(
         }
     }
 
-    private object DiffCallback : DiffUtil.ItemCallback<DhuhaGroup>() {
-        override fun areItemsTheSame(oldItem: DhuhaGroup, newItem: DhuhaGroup) = oldItem.id == newItem.id
-        override fun areContentsTheSame(oldItem: DhuhaGroup, newItem: DhuhaGroup) = oldItem == newItem
+    private object DiffCallback : DiffUtil.ItemCallback<DuhaGroup>() {
+        override fun areItemsTheSame(oldItem: DuhaGroup, newItem: DuhaGroup) = oldItem.id == newItem.id
+        override fun areContentsTheSame(oldItem: DuhaGroup, newItem: DuhaGroup) = oldItem == newItem
     }
 }

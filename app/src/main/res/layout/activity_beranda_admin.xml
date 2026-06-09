@@ -689,7 +689,7 @@
                                 android:id="@+id/tvNamaSholat"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/Dhuha"
+                                android:text="@string/Duha"
                                 android:textColor="@color/on_background"
                                 android:textSize="@dimen/text_prayer_name"
                                 android:textStyle="bold"
@@ -731,7 +731,7 @@
                                 android:id="@+id/tvWaktuSholat"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:text="@string/WaktuDhuhaJadwal"
+                                android:text="@string/WaktuDuhaJadwal"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="@dimen/text_prayer_time"
                                 app:layout_constraintStart_toStartOf="@id/tvNamaSholat"
@@ -749,7 +749,7 @@
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/cardJadwalDhuha"
+                android:id="@+id/cardJadwalDuha"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="12dp"
@@ -768,10 +768,10 @@
                     android:padding="@dimen/spacing_medium">
 
                     <TextView
-                        android:id="@+id/tvDhuhaTitle"
+                        android:id="@+id/tvDuhaTitle"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="Jadwal Dhuha per Jurusan"
+                        android:text="Jadwal Duha per Jurusan"
                         android:textColor="@color/on_background"
                         android:textSize="@dimen/text_prayer_title"
                         android:textStyle="bold"
@@ -780,16 +780,16 @@
                         app:layout_constraintEnd_toEndOf="parent" />
 
                     <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rvDhuhaSchedule"
+                        android:id="@+id/rvDuhaSchedule"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:nestedScrollingEnabled="false"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/tvDhuhaTitle"
+                        app:layout_constraintTop_toBottomOf="@id/tvDuhaTitle"
                         android:layout_marginTop="@dimen/spacing_small"
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                        tools:listitem="@layout/item_dhuha_schedule"
+                        tools:listitem="@layout/item_duha_schedule"
                         tools:itemCount="4" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
@@ -797,19 +797,19 @@
             </androidx.cardview.widget.CardView>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/cardJurusanDhuhaHariIni"
+                android:id="@+id/cardJurusanDuhaHariIni"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/cardJadwalDhuha"
+                app:layout_constraintTop_toBottomOf="@id/cardJadwalDuha"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginTop="@dimen/spacing_xlarge">
 
                 <TextView
-                    android:id="@+id/tvJurusanDhuhaTitle"
+                    android:id="@+id/tvJurusanDuhaTitle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Jadwal Jurusan Dhuha Hari Ini"
+                    android:text="Jadwal Jurusan Duha Hari Ini"
                     android:textColor="@color/on_background"
                     android:textSize="@dimen/text_prayer_title"
                     android:textStyle="bold"
@@ -825,7 +825,7 @@
                     android:nestedScrollingEnabled="false"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tvJurusanDhuhaTitle"
+                    app:layout_constraintTop_toBottomOf="@id/tvJurusanDuhaTitle"
                     android:layout_marginTop="@dimen/spacing_small"
                     app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                     app:spanCount="2"
@@ -847,7 +847,7 @@
                 app:strokeColor="@color/status_warning"
                 app:strokeWidth="1dp"
                 app:cardBackgroundColor="@color/bg_card_yellow"
-                app:layout_constraintTop_toBottomOf="@id/cardJurusanDhuhaHariIni"
+                app:layout_constraintTop_toBottomOf="@id/cardJurusanDuhaHariIni"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent">

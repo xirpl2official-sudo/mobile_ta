@@ -6,6 +6,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.google.android.material.snackbar.Snackbar
@@ -29,6 +30,10 @@ class KelolaGuruAdminActivity : BaseAdminActivity() {
     private lateinit var tvEmptyState: View
     private lateinit var etSearch: EditText
     private lateinit var tvCountInfo: TextView
+    private lateinit var paginationControls: View
+    private lateinit var btnPrevPage: ImageView
+    private lateinit var btnNextPage: ImageView
+    private lateinit var tvPageInfo: TextView
 
     private lateinit var adapter: KelolaGuruAdminAdapter
     private lateinit var swipeRefresh: SwipeRefreshLayout
@@ -59,7 +64,6 @@ class KelolaGuruAdminActivity : BaseAdminActivity() {
 
     override fun onResume() {
         super.onResume()
-        // Reload data whenever this activity resumes (e.g. after adding or editing a guru)
         loadDataGuru(etSearch.text.toString())
     }
 
@@ -69,6 +73,13 @@ class KelolaGuruAdminActivity : BaseAdminActivity() {
         tvEmptyState = findViewById(R.id.tvEmptyState)
         etSearch = findViewById(R.id.etSearch)
         tvCountInfo = findViewById(R.id.tvCountInfo)
+        paginationControls = findViewById(R.id.paginationControls)
+        btnPrevPage = findViewById(R.id.btnPrevPage)
+        btnNextPage = findViewById(R.id.btnNextPage)
+        tvPageInfo = findViewById(R.id.tvPageInfo)
+
+        btnPrevPage.setOnClickListener { adapter.prevPage() }
+        btnNextPage.setOnClickListener { adapter.nextPage() }
 
         val fabAddGuru = findViewById<View>(R.id.fabAddGuru)
         fabAddGuru?.setOnClickListener {
@@ -92,6 +103,9 @@ class KelolaGuruAdminActivity : BaseAdminActivity() {
             },
             onDeleteClick = { guru ->
                 showConfirmDelete(guru)
+            },
+            onPageChanged = { totalItems, totalPages, currentPage ->
+                tvPageInfo.text = "Halaman $currentPage dari $totalPages"
             }
         )
         recyclerGuru.layoutManager = LinearLayoutManager(this)
@@ -119,6 +133,7 @@ class KelolaGuruAdminActivity : BaseAdminActivity() {
         progressLoading.visibility = View.VISIBLE
         recyclerGuru.visibility = View.GONE
         tvEmptyState.visibility = View.GONE
+        paginationControls.visibility = View.GONE
 
         lifecycleScope.launch {
             repository.getGuruList(token, limit = 100, search = searchQuery).fold(
@@ -128,15 +143,18 @@ class KelolaGuruAdminActivity : BaseAdminActivity() {
                     val list = (response.data ?: emptyList()).sortedBy { it.nama?.lowercase() ?: "" }
                     guruList.clear()
                     guruList.addAll(list)
-                    adapter.submitList(guruList)
-                    tvCountInfo.text = "Menampilkan ${list.size} Guru"
+
+                    adapter.setFullList(guruList)
+                    tvCountInfo.text = "Menampilkan ${adapter.currentList.size} dari ${list.size} data"
 
                     if (list.isEmpty()) {
                         tvEmptyState.visibility = View.VISIBLE
                         recyclerGuru.visibility = View.GONE
+                        paginationControls.visibility = View.GONE
                     } else {
                         tvEmptyState.visibility = View.GONE
                         recyclerGuru.visibility = View.VISIBLE
+                        paginationControls.visibility = View.VISIBLE
                     }
                 },
                 onFailure = { e ->

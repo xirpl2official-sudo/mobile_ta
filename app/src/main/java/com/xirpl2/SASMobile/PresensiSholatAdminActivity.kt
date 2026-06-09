@@ -72,7 +72,7 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
     private val fixedJurusanList = listOf("RPL", "TKJ", "TEI", "TAV", "BC", "TMT", "DKV", "ANM")
     private val jurusanOptions: List<String> = listOf("Semua Jurusan") + fixedJurusanList
     private val kelasOptions: List<String> = listOf("Semua Kelas", "10", "11", "12")
-    private val jenisSholatOptions: List<String> = listOf("Semua Salat", "Dhuha", "Dzuhur", "Jumat")
+    private val jenisSholatOptions: List<String> = listOf("Semua Salat", "Duha", "Zuhur", "Jumat")
     private val tanggalOptions: List<String> = listOf("Semua Tanggal", "Hari Ini", "Minggu Ini", "Bulan Ini")
 
     private fun getDateRange(): Pair<String?, String?> {
@@ -104,8 +104,8 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
     
     private fun getJenisSholatApiValue(displayValue: String): String? {
         return when (displayValue) {
-            "Dhuha" -> "Dhuha"
-            "Dzuhur" -> "Dzuhur"
+            "Duha" -> "Duha"
+            "Zuhur" -> "Zuhur"
             "Jumat" -> "Jumat"
             else -> null
         }

@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.snackbar.Snackbar
 import com.xirpl2.SASMobile.repository.BerandaRepository
-import com.xirpl2.SASMobile.model.DhuhaJurusanData
+import com.xirpl2.SASMobile.model.DuhaJurusanData
 import com.xirpl2.SASMobile.network.RetrofitClient
 import com.xirpl2.SASMobile.utils.NotificationCounterManager
 import kotlinx.coroutines.launch
@@ -41,14 +41,14 @@ class BerandaAdminActivity : BaseAdminActivity() {
     private lateinit var btnQuickJadwal: View
     private lateinit var swipeRefresh: SwipeRefreshLayout
 
-    private lateinit var cardJadwalDhuha: View
-    private lateinit var rvDhuhaSchedule: RecyclerView
+    private lateinit var cardJadwalDuha: View
+    private lateinit var rvDuhaSchedule: RecyclerView
     private lateinit var notificationBellContainer: android.widget.FrameLayout
     private lateinit var tvNotificationBadge: TextView
     private lateinit var rvJurusan: RecyclerView
 
     private lateinit var jurusanAdapter: JurusanAdapter
-    private lateinit var dhuhaScheduleAdapter: DhuhaScheduleAdapter
+    private lateinit var DuhaScheduleAdapter: DuhaScheduleAdapter
 
     private val repository = BerandaRepository()
     private val TAG = "BerandaAdminActivity"
@@ -102,8 +102,8 @@ class BerandaAdminActivity : BaseAdminActivity() {
         tvWaktuSholat = findViewById(R.id.tvWaktuSholat)
         tvStatusBadge = findViewById(R.id.tvStatusBadge)
         btnQRCode = findViewById(R.id.btnQRCode)
-        cardJadwalDhuha = findViewById(R.id.cardJadwalDhuha)
-        rvDhuhaSchedule = findViewById(R.id.rvDhuhaSchedule)
+        cardJadwalDuha = findViewById(R.id.cardJadwalDuha)
+        rvDuhaSchedule = findViewById(R.id.rvDuhaSchedule)
 
         btnQuickPresensi = findViewById(R.id.btnQuickPresensi)
         btnQuickLaporan = findViewById(R.id.btnQuickLaporan)
@@ -140,10 +140,10 @@ class BerandaAdminActivity : BaseAdminActivity() {
             isNestedScrollingEnabled = false
         }
 
-        dhuhaScheduleAdapter = DhuhaScheduleAdapter()
-        rvDhuhaSchedule.apply {
+        DuhaScheduleAdapter = DuhaScheduleAdapter()
+        rvDuhaSchedule.apply {
             layoutManager = LinearLayoutManager(this@BerandaAdminActivity)
-            adapter = dhuhaScheduleAdapter
+            adapter = DuhaScheduleAdapter
             isNestedScrollingEnabled = false
         }
     }
@@ -272,16 +272,16 @@ class BerandaAdminActivity : BaseAdminActivity() {
                                 tvStatusBadge.setBackgroundResource(R.drawable.bg_badge_akandatang)
                             }
 
-                            val isDhuhaActive = namaSholat.equals("Dhuha", ignoreCase = true) && isCurrentlyActive
-                            cardJadwalDhuha.visibility = if (isDhuhaActive) View.VISIBLE else View.GONE
-                            if (isDhuhaActive) {
-                                loadDhuhaSchedule()
+                            val isDuhaActive = namaSholat.equals("Duha", ignoreCase = true) && isCurrentlyActive
+                            cardJadwalDuha.visibility = if (isDuhaActive) View.VISIBLE else View.GONE
+                            if (isDuhaActive) {
+                                loadDuhaSchedule()
                             }
                         } else {
                             tvNamaSholat.text = "-"
                             tvWaktuSholat.text = "Tidak ada jadwal yang akan datang"
                             tvStatusBadge.visibility = View.GONE
-                            cardJadwalDhuha.visibility = View.GONE
+                            cardJadwalDuha.visibility = View.GONE
                         }
                     }
                 },
@@ -321,19 +321,19 @@ class BerandaAdminActivity : BaseAdminActivity() {
             .show()
     }
 
-    private fun loadDhuhaSchedule() {
+    private fun loadDuhaSchedule() {
         val token = getAuthToken()
         if (token.isEmpty()) return
 
         lifecycleScope.launch {
-            repository.getJadwalDhuhaKeahlian(token).fold(
+            repository.getJadwalDuhaKeahlian(token).fold(
                 onSuccess = { data ->
                     if (!isFinishing && !isDestroyed) {
-                        dhuhaScheduleAdapter.submitList(data)
+                        DuhaScheduleAdapter.submitList(data)
                     }
                 },
                 onFailure = { error ->
-                    Log.w(TAG, "Failed to load dhuha schedule: ${error.message}")
+                    Log.w(TAG, "Failed to load Duha schedule: ${error.message}")
                 }
             )
         }
@@ -347,10 +347,10 @@ class BerandaAdminActivity : BaseAdminActivity() {
         }
         
         lifecycleScope.launch {
-            repository.getDhuhaToday(token).fold(
-                onSuccess = { dhuhaData ->
+            repository.getDuhaToday(token).fold(
+                onSuccess = { DuhaData ->
                     if (!isFinishing && !isDestroyed) {
-                        val safeData = dhuhaData ?: emptyList()
+                        val safeData = DuhaData ?: emptyList()
                         jurusanAdapter.updateData(safeData)
                     }
                 },
@@ -368,8 +368,8 @@ class BerandaAdminActivity : BaseAdminActivity() {
         if (::rvJurusan.isInitialized) {
             rvJurusan.adapter = null
         }
-        if (::rvDhuhaSchedule.isInitialized) {
-            rvDhuhaSchedule.adapter = null
+        if (::rvDuhaSchedule.isInitialized) {
+            rvDuhaSchedule.adapter = null
         }
         super.onDestroy()
     }

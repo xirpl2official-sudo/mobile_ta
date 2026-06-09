@@ -166,7 +166,7 @@
             android:exported="false" />
         <activity
             android:launchMode="singleTop"
-            android:name=".DhuhaGroupsActivity"
+            android:name=".DuhaGroupsActivity"
             android:exported="false" />
         <activity
             android:name=".FemaleRestrictionStatusActivity"

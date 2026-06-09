@@ -11,7 +11,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.xirpl2.SASMobile.model.DhuhaJurusanData
+import com.xirpl2.SASMobile.model.DuhaJurusanData
 import com.xirpl2.SASMobile.repository.BerandaRepository
 import com.xirpl2.SASMobile.network.RetrofitClient
 import com.xirpl2.SASMobile.utils.NotificationCounterManager
@@ -30,15 +30,15 @@ class BerandaGuruActivity : BaseAdminActivity() {
     private lateinit var tvWaktuSholat: TextView
     private lateinit var tvStatusBadge: TextView
     private lateinit var btnQRCode: View
-    private lateinit var cardJadwalDhuha: View
-    private lateinit var rvDhuhaSchedule: RecyclerView
+    private lateinit var cardJadwalDuha: View
+    private lateinit var rvDuhaSchedule: RecyclerView
     private lateinit var notificationBellContainer: android.widget.FrameLayout
     private lateinit var tvNotificationBadge: TextView
     private lateinit var rvJurusan: RecyclerView
 
     private lateinit var swipeRefresh: SwipeRefreshLayout
     private lateinit var jurusanAdapter: JurusanAdapter
-    private lateinit var dhuhaScheduleAdapter: DhuhaScheduleAdapter
+    private lateinit var DuhaScheduleAdapter: DuhaScheduleAdapter
     
     private val repository = BerandaRepository()
     private val TAG = "BerandaGuruActivity"
@@ -94,8 +94,8 @@ class BerandaGuruActivity : BaseAdminActivity() {
         tvWaktuSholat = findViewById(R.id.tvWaktuSholat)
         tvStatusBadge = findViewById(R.id.tvStatusBadge)
         btnQRCode = findViewById(R.id.btnQRCode)
-        cardJadwalDhuha = findViewById(R.id.cardJadwalDhuha)
-        rvDhuhaSchedule = findViewById(R.id.rvDhuhaSchedule)
+        cardJadwalDuha = findViewById(R.id.cardJadwalDuha)
+        rvDuhaSchedule = findViewById(R.id.rvDuhaSchedule)
         rvJurusan = findViewById(R.id.rvJurusan)
 
         btnQRCode.setOnClickListener {
@@ -176,16 +176,16 @@ class BerandaGuruActivity : BaseAdminActivity() {
                                 tvStatusBadge.setBackgroundResource(R.drawable.bg_badge_akandatang)
                             }
 
-                            val isDhuhaActive = namaSholat.equals("Dhuha", ignoreCase = true) && isCurrentlyActive
-                            cardJadwalDhuha.visibility = if (isDhuhaActive) View.VISIBLE else View.GONE
-                            if (isDhuhaActive) {
-                                loadDhuhaSchedule()
+                            val isDuhaActive = namaSholat.equals("Duha", ignoreCase = true) && isCurrentlyActive
+                            cardJadwalDuha.visibility = if (isDuhaActive) View.VISIBLE else View.GONE
+                            if (isDuhaActive) {
+                                loadDuhaSchedule()
                             }
                         } else {
                             tvNamaSholat.text = "-"
                             tvWaktuSholat.text = "Tidak ada jadwal yang akan datang dalam\nwaktu dekat"
                             tvStatusBadge.visibility = View.GONE
-                            cardJadwalDhuha.visibility = View.GONE
+                            cardJadwalDuha.visibility = View.GONE
                         }
                     }
                     if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
@@ -203,25 +203,25 @@ class BerandaGuruActivity : BaseAdminActivity() {
         }
     }
 
-    private fun loadDhuhaSchedule() {
+    private fun loadDuhaSchedule() {
         val token = getAuthToken()
         if (token.isEmpty()) return
 
         lifecycleScope.launch {
-            repository.getJadwalDhuhaKeahlian(token).fold(
+            repository.getJadwalDuhaKeahlian(token).fold(
                 onSuccess = { data ->
                     if (!isFinishing && !isDestroyed) {
-                        dhuhaScheduleAdapter = DhuhaScheduleAdapter()
-                        dhuhaScheduleAdapter.submitList(data)
-                        rvDhuhaSchedule.apply {
+                        DuhaScheduleAdapter = DuhaScheduleAdapter()
+                        DuhaScheduleAdapter.submitList(data)
+                        rvDuhaSchedule.apply {
                             layoutManager = LinearLayoutManager(this@BerandaGuruActivity)
-                            adapter = dhuhaScheduleAdapter
+                            adapter = DuhaScheduleAdapter
                             isNestedScrollingEnabled = false
                         }
                     }
                 },
                 onFailure = { error ->
-                    Log.w(TAG, "Failed to load dhuha schedule: ${error.message}")
+                    Log.w(TAG, "Failed to load Duha schedule: ${error.message}")
                 }
             )
         }
@@ -249,10 +249,10 @@ class BerandaGuruActivity : BaseAdminActivity() {
         if (token.isEmpty()) return
         
         lifecycleScope.launch {
-            repository.getDhuhaToday(token).fold(
-                onSuccess = { dhuhaData ->
+            repository.getDuhaToday(token).fold(
+                onSuccess = { DuhaData ->
                     if (!isFinishing && !isDestroyed) {
-                        val safeData = dhuhaData ?: emptyList()
+                        val safeData = DuhaData ?: emptyList()
                         jurusanAdapter = JurusanAdapter(safeData)
 
                         rvJurusan.apply {
@@ -266,7 +266,7 @@ class BerandaGuruActivity : BaseAdminActivity() {
                 onFailure = { error ->
                     if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                     if (!isFinishing && !isDestroyed) {
-                        jurusanAdapter = JurusanAdapter(emptyList<DhuhaJurusanData>())
+                        jurusanAdapter = JurusanAdapter(emptyList<DuhaJurusanData>())
 
                         rvJurusan.apply {
                             layoutManager = androidx.recyclerview.widget.GridLayoutManager(this@BerandaGuruActivity, 2)
@@ -284,8 +284,8 @@ class BerandaGuruActivity : BaseAdminActivity() {
         if (::rvJurusan.isInitialized) {
             rvJurusan.adapter = null
         }
-        if (::rvDhuhaSchedule.isInitialized) {
-            rvDhuhaSchedule.adapter = null
+        if (::rvDuhaSchedule.isInitialized) {
+            rvDuhaSchedule.adapter = null
         }
         super.onDestroy()
     }

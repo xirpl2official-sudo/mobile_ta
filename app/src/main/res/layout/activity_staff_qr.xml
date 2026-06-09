@@ -63,7 +63,7 @@
             android:id="@+id/tvJenisSholat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/SholatDzuhur"
+            android:text="@string/SholatZuhur"
             android:textColor="@android:color/white"
             android:textSize="22sp"
             android:textStyle="bold"

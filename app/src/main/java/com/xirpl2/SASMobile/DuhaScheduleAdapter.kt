@@ -8,19 +8,19 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.xirpl2.SASMobile.model.JadwalDhuhaKeahlian
+import com.xirpl2.SASMobile.model.JadwalDuhaKeahlian
 
-private object DhuhaDiffCallback : DiffUtil.ItemCallback<JadwalDhuhaKeahlian>() {
-    override fun areItemsTheSame(oldItem: JadwalDhuhaKeahlian, newItem: JadwalDhuhaKeahlian): Boolean =
+private object DuhaDiffCallback : DiffUtil.ItemCallback<JadwalDuhaKeahlian>() {
+    override fun areItemsTheSame(oldItem: JadwalDuhaKeahlian, newItem: JadwalDuhaKeahlian): Boolean =
         oldItem.hari == newItem.hari
 
-    override fun areContentsTheSame(oldItem: JadwalDhuhaKeahlian, newItem: JadwalDhuhaKeahlian): Boolean =
+    override fun areContentsTheSame(oldItem: JadwalDuhaKeahlian, newItem: JadwalDuhaKeahlian): Boolean =
         oldItem == newItem
 }
 
-class DhuhaScheduleAdapter(
+class DuhaScheduleAdapter(
     private val onSwap: ((row1: Int, col1: Int, row2: Int, col2: Int) -> Unit)? = null
-) : ListAdapter<JadwalDhuhaKeahlian, DhuhaScheduleAdapter.ViewHolder>(DhuhaDiffCallback) {
+) : ListAdapter<JadwalDuhaKeahlian, DuhaScheduleAdapter.ViewHolder>(DuhaDiffCallback) {
 
     var isEditMode = false
         set(value) {
@@ -81,7 +81,7 @@ class DhuhaScheduleAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_dhuha_schedule, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_duha_schedule, parent, false)
         return ViewHolder(view)
     }
 

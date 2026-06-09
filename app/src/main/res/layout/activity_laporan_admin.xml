@@ -634,18 +634,18 @@ android:text="Semua Salat"
 
                         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginBottom="8dp">
                             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-                                <TextView android:layout_width="60dp" android:layout_height="wrap_content" android:text="Dhuha" android:textColor="@color/on_background" android:textSize="12sp" />
-                                <TextView android:id="@+id/tvBarDhuha" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="@color/text_secondary" android:textSize="11sp" android:layout_marginStart="4dp" />
+                                <TextView android:layout_width="60dp" android:layout_height="wrap_content" android:text="Duha" android:textColor="@color/on_background" android:textSize="12sp" />
+                                <TextView android:id="@+id/tvBarDuha" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="@color/text_secondary" android:textSize="11sp" android:layout_marginStart="4dp" />
                             </LinearLayout>
-                            <ProgressBar android:id="@+id/progressBarDhuha" style="?android:attr/progressBarStyleHorizontal" android:layout_width="match_parent" android:layout_height="12dp" android:max="100" android:progress="0" android:progressDrawable="@drawable/progress_bar_green" android:layout_marginTop="2dp" />
+                            <ProgressBar android:id="@+id/progressBarDuha" style="?android:attr/progressBarStyleHorizontal" android:layout_width="match_parent" android:layout_height="12dp" android:max="100" android:progress="0" android:progressDrawable="@drawable/progress_bar_green" android:layout_marginTop="2dp" />
                         </LinearLayout>
 
                         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginBottom="8dp">
                             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-                                <TextView android:layout_width="60dp" android:layout_height="wrap_content" android:text="Dzuhur" android:textColor="@color/on_background" android:textSize="12sp" />
-                                <TextView android:id="@+id/tvBarDzuhur" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="@color/text_secondary" android:textSize="11sp" android:layout_marginStart="4dp" />
+                                <TextView android:layout_width="60dp" android:layout_height="wrap_content" android:text="Zuhur" android:textColor="@color/on_background" android:textSize="12sp" />
+                                <TextView android:id="@+id/tvBarZuhur" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="@color/text_secondary" android:textSize="11sp" android:layout_marginStart="4dp" />
                             </LinearLayout>
-                            <ProgressBar android:id="@+id/progressBarDzuhur" style="?android:attr/progressBarStyleHorizontal" android:layout_width="match_parent" android:layout_height="12dp" android:max="100" android:progress="0" android:progressDrawable="@drawable/progress_bar_blue" android:layout_marginTop="2dp" />
+                            <ProgressBar android:id="@+id/progressBarZuhur" style="?android:attr/progressBarStyleHorizontal" android:layout_width="match_parent" android:layout_height="12dp" android:max="100" android:progress="0" android:progressDrawable="@drawable/progress_bar_blue" android:layout_marginTop="2dp" />
                         </LinearLayout>
 
                         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">

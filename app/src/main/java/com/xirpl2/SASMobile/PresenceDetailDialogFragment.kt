@@ -108,25 +108,25 @@ class PresenceDetailDialogFragment : BottomSheetDialogFragment() {
         val currentDay = Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
         val isFriday = currentDay == Calendar.FRIDAY
 
-        // Check student gender: female students see Dzuhur (not Jumat) on Friday
+        // Check student gender: female students see Zuhur (not Jumat) on Friday
         val sharedPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(requireContext())
         val jenisKelamin = sharedPref.getString("jenis_kelamin", "L") ?: "L"
         val isMale = jenisKelamin.equals("L", ignoreCase = true)
         val showJumat = isFriday && isMale
 
-        val itemDhuha = view?.findViewById<View>(R.id.itemDhuha)
-        val itemDzuhur = view?.findViewById<View>(R.id.itemDzuhur)
+        val itemDuha = view?.findViewById<View>(R.id.itemDuha)
+        val itemZuhur = view?.findViewById<View>(R.id.itemZuhur)
         val itemJumat = view?.findViewById<View>(R.id.itemJumat)
 
         if (showJumat) {
-            itemDzuhur?.visibility = View.GONE
+            itemZuhur?.visibility = View.GONE
             itemJumat?.visibility = View.VISIBLE
         } else {
-            itemDzuhur?.visibility = View.VISIBLE
+            itemZuhur?.visibility = View.VISIBLE
             itemJumat?.visibility = View.GONE
         }
 
-        fetchJadwalAndSetupPrayers(itemDhuha, itemDzuhur, itemJumat, showJumat)
+        fetchJadwalAndSetupPrayers(itemDuha, itemZuhur, itemJumat, showJumat)
     }
 
     private fun setupPrayerItem(view: View, name: String, time: String) {
@@ -136,7 +136,7 @@ class PresenceDetailDialogFragment : BottomSheetDialogFragment() {
     }
 
     private fun fetchJadwalAndSetupPrayers(
-        itemDhuha: View?, itemDzuhur: View?, itemJumat: View?, showJumat: Boolean
+        itemDuha: View?, itemZuhur: View?, itemJumat: View?, showJumat: Boolean
     ) {
         val token = getAuthToken()
         val major = if (studentMajor != null) studentMajor!! else {
@@ -152,39 +152,39 @@ class PresenceDetailDialogFragment : BottomSheetDialogFragment() {
                         val todayIndo = JadwalSholatHelper.getIndonesianDay()
                         val jadwals = allJadwals.filter { JadwalSholatHelper.isDayMatch(todayIndo, it.hari) }
 
-                        // Dhuha
-                        val isDhuhaScheduled = jadwals.any {
-                            it.jenis_sholat.equals("Dhuha", ignoreCase = true) &&
+                        // Duha
+                        val isDuhaScheduled = jadwals.any {
+                            it.jenis_sholat.equals("Duha", ignoreCase = true) &&
                                     (it.jurusan.equals("Semua Jurusan", ignoreCase = true) || it.jurusan.equals(major, ignoreCase = true))
                         }
-                        if (isDhuhaScheduled) {
-                            itemDhuha?.visibility = View.VISIBLE
-                            val dhuhaJadwal = jadwals.find { it.jenis_sholat.equals("Dhuha", true) }
-                            val time = if (dhuhaJadwal != null) "${dhuhaJadwal.jam_mulai} - ${dhuhaJadwal.jam_selesai}" else "06:30 - 09:00"
-                            setupPrayerItem(itemDhuha!!, "Salat Dhuha", time)
+                        if (isDuhaScheduled) {
+                            itemDuha?.visibility = View.VISIBLE
+                            val DuhaJadwal = jadwals.find { it.jenis_sholat.equals("Duha", true) }
+                            val time = if (DuhaJadwal != null) "${DuhaJadwal.jam_mulai} - ${DuhaJadwal.jam_selesai}" else "06:30 - 09:00"
+                            setupPrayerItem(itemDuha!!, "Salat Duha", time)
                         } else {
-                            itemDhuha?.visibility = View.GONE
+                            itemDuha?.visibility = View.GONE
                         }
 
-                        // Dzuhur / Jumat
+                        // Zuhur / Jumat
                         if (showJumat) {
                             val jumatJadwal = jadwals.find { it.jenis_sholat.equals("Jumat", ignoreCase = true) }
                             val time = if (jumatJadwal != null) "${jumatJadwal.jam_mulai} - ${jumatJadwal.jam_selesai}" else "11:00 - 13:00"
                             setupPrayerItem(itemJumat!!, "Salat Jumat", time)
                         } else {
-                            val dzuhurJadwal = jadwals.find { it.jenis_sholat.equals("Dzuhur", ignoreCase = true) }
-                            val time = if (dzuhurJadwal != null) "${dzuhurJadwal.jam_mulai} - ${dzuhurJadwal.jam_selesai}" else "11:30 - 13:00"
-                            setupPrayerItem(itemDzuhur!!, "Salat Dzuhur", time)
+                            val ZuhurJadwal = jadwals.find { it.jenis_sholat.equals("Zuhur", ignoreCase = true) }
+                            val time = if (ZuhurJadwal != null) "${ZuhurJadwal.jam_mulai} - ${ZuhurJadwal.jam_selesai}" else "11:30 - 13:00"
+                            setupPrayerItem(itemZuhur!!, "Salat Zuhur", time)
                         }
                     }
                 },
                 onFailure = {
                     activity?.runOnUiThread {
-                        itemDhuha?.visibility = View.GONE
+                        itemDuha?.visibility = View.GONE
                         if (showJumat) {
                             setupPrayerItem(itemJumat!!, "Salat Jumat", "11:00 - 13:00")
                         } else {
-                            setupPrayerItem(itemDzuhur!!, "Salat Dzuhur", "11:30 - 13:00")
+                            setupPrayerItem(itemZuhur!!, "Salat Zuhur", "11:30 - 13:00")
                         }
                     }
                 }
@@ -248,8 +248,8 @@ class PresenceDetailDialogFragment : BottomSheetDialogFragment() {
         val todayStr = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
         val todayAbsensi = absensiList.filter { it.tanggal == todayStr }
 
-        updateStatus(view?.findViewById(R.id.itemDhuha), "Dhuha", todayAbsensi.find { it.getPrayerName().equals("Dhuha", true) }?.status)
-        updateStatus(view?.findViewById(R.id.itemDzuhur), "Dzuhur", todayAbsensi.find { it.getPrayerName().equals("Dzuhur", true) }?.status)
+        updateStatus(view?.findViewById(R.id.itemDuha), "Duha", todayAbsensi.find { it.getPrayerName().equals("Duha", true) }?.status)
+        updateStatus(view?.findViewById(R.id.itemZuhur), "Zuhur", todayAbsensi.find { it.getPrayerName().equals("Zuhur", true) }?.status)
         updateStatus(view?.findViewById(R.id.itemJumat), "Jumat", todayAbsensi.find { it.getPrayerName().equals("Jumat", true) }?.status)
     }
 
@@ -257,8 +257,8 @@ class PresenceDetailDialogFragment : BottomSheetDialogFragment() {
         val todayStr = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
         val todayAbsensi = absensiList.filter { it.tanggal == todayStr }
 
-        updateStatus(view?.findViewById(R.id.itemDhuha), "Dhuha", todayAbsensi.find { it.jenis_sholat.equals("Dhuha", true) }?.status)
-        updateStatus(view?.findViewById(R.id.itemDzuhur), "Dzuhur", todayAbsensi.find { it.jenis_sholat.equals("Dzuhur", true) }?.status)
+        updateStatus(view?.findViewById(R.id.itemDuha), "Duha", todayAbsensi.find { it.jenis_sholat.equals("Duha", true) }?.status)
+        updateStatus(view?.findViewById(R.id.itemZuhur), "Zuhur", todayAbsensi.find { it.jenis_sholat.equals("Zuhur", true) }?.status)
         updateStatus(view?.findViewById(R.id.itemJumat), "Jumat", todayAbsensi.find { it.jenis_sholat.equals("Jumat", true) }?.status)
     }
 

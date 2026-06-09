@@ -8,13 +8,13 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
-import com.xirpl2.SASMobile.DhuhaScheduleAdapter
+import com.xirpl2.SASMobile.DuhaScheduleAdapter
 import com.xirpl2.SASMobile.R
-import com.xirpl2.SASMobile.model.JadwalDhuhaKeahlian
+import com.xirpl2.SASMobile.model.JadwalDuhaKeahlian
 import com.xirpl2.SASMobile.model.JadwalSholatData
 
 sealed class PrayerScheduleItem {
-    data class DhuhaKeahlian(val data: List<JadwalDhuhaKeahlian>) : PrayerScheduleItem()
+    data class DuhaKeahlian(val data: List<JadwalDuhaKeahlian>) : PrayerScheduleItem()
     data class PrayerCard(val jadwal: JadwalSholatData) : PrayerScheduleItem()
 }
 
@@ -23,31 +23,31 @@ class PrayerScheduleAdapter(
     var canEdit: Boolean = true,
     private val onEditPrayer: (jenisSholat: String) -> Unit,
     private val onDeletePrayer: (jadwal: JadwalSholatData) -> Unit = {},
-    private val onDhuhaKeahlianSwap: (row1: Int, col1: Int, row2: Int, col2: Int) -> Unit,
-    private val onSaveDhuhaKeahlian: () -> Unit = {}
+    private val onDuhaKeahlianSwap: (row1: Int, col1: Int, row2: Int, col2: Int) -> Unit,
+    private val onSaveDuhaKeahlian: () -> Unit = {}
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
-        private const val TYPE_DHUHA_KEAHLIAN = 0
+        private const val TYPE_Duha_KEAHLIAN = 0
         private const val TYPE_PRAYER_CARD = 1
     }
 
-    private var dhuhaAdapter: DhuhaScheduleAdapter? = null
-    private var isDhuhaEditMode = false
+    private var DuhaAdapter: DuhaScheduleAdapter? = null
+    private var isDuhaEditMode = false
 
     override fun getItemViewType(position: Int): Int {
         return when (items[position]) {
-            is PrayerScheduleItem.DhuhaKeahlian -> TYPE_DHUHA_KEAHLIAN
+            is PrayerScheduleItem.DuhaKeahlian -> TYPE_Duha_KEAHLIAN
             is PrayerScheduleItem.PrayerCard -> TYPE_PRAYER_CARD
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-            TYPE_DHUHA_KEAHLIAN -> {
+            TYPE_Duha_KEAHLIAN -> {
                 val view = LayoutInflater.from(parent.context)
-                    .inflate(R.layout.item_prayer_dhuha_keahlian, parent, false)
-                DhuhaKeahlianViewHolder(view)
+                    .inflate(R.layout.item_prayer_duha_keahlian, parent, false)
+                DuhaKeahlianViewHolder(view)
             }
             else -> {
                 val view = LayoutInflater.from(parent.context)
@@ -59,7 +59,7 @@ class PrayerScheduleAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (val item = items[position]) {
-            is PrayerScheduleItem.DhuhaKeahlian -> (holder as DhuhaKeahlianViewHolder).bind(item)
+            is PrayerScheduleItem.DuhaKeahlian -> (holder as DuhaKeahlianViewHolder).bind(item)
             is PrayerScheduleItem.PrayerCard -> (holder as PrayerCardViewHolder).bind(item)
         }
     }
@@ -71,31 +71,31 @@ class PrayerScheduleAdapter(
         notifyDataSetChanged()
     }
 
-    fun setDhuhaEditMode(editMode: Boolean) {
-        isDhuhaEditMode = editMode
-        dhuhaAdapter?.isEditMode = editMode
+    fun setDuhaEditMode(editMode: Boolean) {
+        isDuhaEditMode = editMode
+        DuhaAdapter?.isEditMode = editMode
     }
 
-    fun getDhuhaAdapter(): DhuhaScheduleAdapter? = dhuhaAdapter
+    fun getDuhaAdapter(): DuhaScheduleAdapter? = DuhaAdapter
 
-    inner class DhuhaKeahlianViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val btnEdit: ImageView = itemView.findViewById(R.id.btnEditDhuha)
-        private val btnSave: MaterialButton = itemView.findViewById(R.id.btnSaveDhuha)
-        private val rvDhuhaSchedule: RecyclerView = itemView.findViewById(R.id.rvDhuhaSchedule)
+    inner class DuhaKeahlianViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val btnEdit: ImageView = itemView.findViewById(R.id.btnEditDuha)
+        private val btnSave: MaterialButton = itemView.findViewById(R.id.btnSaveDuha)
+        private val rvDuhaSchedule: RecyclerView = itemView.findViewById(R.id.rvDuhaSchedule)
 
-        fun bind(item: PrayerScheduleItem.DhuhaKeahlian) {
-            if (dhuhaAdapter == null) {
-                dhuhaAdapter = DhuhaScheduleAdapter { row1, col1, row2, col2 ->
-                    onDhuhaKeahlianSwap(row1, col1, row2, col2)
+        fun bind(item: PrayerScheduleItem.DuhaKeahlian) {
+            if (DuhaAdapter == null) {
+                DuhaAdapter = DuhaScheduleAdapter { row1, col1, row2, col2 ->
+                    onDuhaKeahlianSwap(row1, col1, row2, col2)
                 }
-                dhuhaAdapter?.submitList(item.data)
-                rvDhuhaSchedule.apply {
+                DuhaAdapter?.submitList(item.data)
+                rvDuhaSchedule.apply {
                     layoutManager = LinearLayoutManager(itemView.context)
-                    adapter = dhuhaAdapter
+                    adapter = DuhaAdapter
                     isNestedScrollingEnabled = false
                 }
             } else {
-                dhuhaAdapter?.submitList(item.data)
+                DuhaAdapter?.submitList(item.data)
             }
 
             if (canEdit) {
@@ -103,15 +103,15 @@ class PrayerScheduleAdapter(
                 btnEdit.setOnClickListener {
                     btnEdit.visibility = View.GONE
                     btnSave.visibility = View.VISIBLE
-                    isDhuhaEditMode = true
-                    dhuhaAdapter?.isEditMode = true
+                    isDuhaEditMode = true
+                    DuhaAdapter?.isEditMode = true
                 }
                 btnSave.setOnClickListener {
                     btnSave.visibility = View.GONE
                     btnEdit.visibility = View.VISIBLE
-                    isDhuhaEditMode = false
-                    dhuhaAdapter?.isEditMode = false
-                    onSaveDhuhaKeahlian()
+                    isDuhaEditMode = false
+                    DuhaAdapter?.isEditMode = false
+                    onSaveDuhaKeahlian()
                 }
             } else {
                 btnEdit.visibility = View.GONE
@@ -119,8 +119,8 @@ class PrayerScheduleAdapter(
             }
         }
 
-        private fun getCurrentDhuhaData(): List<JadwalDhuhaKeahlian> {
-            return (items.find { it is PrayerScheduleItem.DhuhaKeahlian } as? PrayerScheduleItem.DhuhaKeahlian)?.data ?: emptyList()
+        private fun getCurrentDuhaData(): List<JadwalDuhaKeahlian> {
+            return (items.find { it is PrayerScheduleItem.DuhaKeahlian } as? PrayerScheduleItem.DuhaKeahlian)?.data ?: emptyList()
         }
     }
 

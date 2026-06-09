@@ -229,30 +229,30 @@ data class PrayerTimeRequest(
     val berlaku_mulai: String
 )
 
-// --- FASE 3.13: Dhuha & Jurusan Models ---
+// --- FASE 3.13: Duha & Jurusan Models ---
 
-data class JurusanDhuhaSchedulesResponse(
+data class JurusanDuhaSchedulesResponse(
     val message: String? = null,
-    val data: List<JurusanDhuhaSchedule> = emptyList()
+    val data: List<JurusanDuhaSchedule> = emptyList()
 )
 
-data class JurusanDhuhaSchedule(
+data class JurusanDuhaSchedule(
     val id_jurusan: Int,
     val nama_jurusan: String,
-    val hari_dhuha: String?
+    val hari_Duha: String?
 )
 
-data class DhuhaDayRequest(
-    val hari_dhuha: String
+data class DuhaDayRequest(
+    val hari_Duha: String
 )
 
-data class JadwalDhuhaTimeUpdateRequest(
+data class JadwalDuhaTimeUpdateRequest(
     val waktu_mulai: String,
     val waktu_selesai: String,
     val hari: String
 )
 
-data class JadwalDhuhaKeahlianUpdateRequest(
+data class JadwalDuhaKeahlianUpdateRequest(
     @SerializedName("hari")
     val hari: String,
     @SerializedName("id_jurusan")
@@ -263,17 +263,17 @@ data class JadwalDhuhaKeahlianUpdateRequest(
     val waktuSelesai: String
 )
 
-data class DhuhaGroupListResponse(
+data class DuhaGroupListResponse(
     val message: String? = null,
-    val data: List<DhuhaGroup> = emptyList()
+    val data: List<DuhaGroup> = emptyList()
 )
 
-data class DhuhaGroupResponse(
+data class DuhaGroupResponse(
     val message: String? = null,
-    val data: DhuhaGroup? = null
+    val data: DuhaGroup? = null
 )
 
-data class DhuhaGroup(
+data class DuhaGroup(
     @SerializedName("id_giliran")
     val id: Int,
     val hari: String,
@@ -283,7 +283,7 @@ data class DhuhaGroup(
     val students: List<String> = emptyList()
 )
 
-data class DhuhaGroupRequest(
+data class DuhaGroupRequest(
     val hari: String,
     val jurusan: String,
     @SerializedName("id_jurusan")
@@ -291,8 +291,8 @@ data class DhuhaGroupRequest(
     val students: List<String> = emptyList()
 )
 
-data class WeeklyDhuhaGroupRequest(
-    val groups: List<DhuhaGroupRequest>
+data class WeeklyDuhaGroupRequest(
+    val groups: List<DuhaGroupRequest>
 )
 
 // --- FASE 3.16: Data Retention Models ---

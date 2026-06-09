@@ -298,7 +298,7 @@
                         android:id="@+id/tvPrayerType"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/SholatDzuhur"
+                        android:text="@string/SholatZuhur"
                         android:textColor="@color/on_background"
                         android:textSize="14sp"
                         android:textStyle="bold"

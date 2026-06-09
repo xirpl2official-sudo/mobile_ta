@@ -7,13 +7,13 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
-import com.xirpl2.SASMobile.model.DhuhaJurusanData
+import com.xirpl2.SASMobile.model.DuhaJurusanData
 
 class JurusanAdapter(
-    private var listJurusan: List<DhuhaJurusanData> = emptyList()
+    private var listJurusan: List<DuhaJurusanData> = emptyList()
 ) : RecyclerView.Adapter<JurusanAdapter.JurusanViewHolder>() {
 
-    fun updateData(newList: List<DhuhaJurusanData>) {
+    fun updateData(newList: List<DuhaJurusanData>) {
         listJurusan = newList
         notifyDataSetChanged()
     }

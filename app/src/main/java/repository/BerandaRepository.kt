@@ -124,20 +124,20 @@ class BerandaRepository {
         }
     }
 
-    suspend fun getJadwalDhuhaKeahlian(token: String): Result<List<com.xirpl2.SASMobile.model.JadwalDhuhaKeahlian>> {
+    suspend fun getJadwalDuhaKeahlian(token: String): Result<List<com.xirpl2.SASMobile.model.JadwalDuhaKeahlian>> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.getJurusanDhuhaSchedules("Bearer $token")
+                val response = apiService.getJurusanDuhaSchedules("Bearer $token")
                 if (response.isSuccessful) {
                     val jurusans = response.body()?.data ?: emptyList()
                     val days = listOf("Senin", "Selasa", "Rabu", "Kamis")
                     val grouped = jurusans
-                        .filter { !it.hari_dhuha.isNullOrBlank() }
-                        .groupBy { it.hari_dhuha ?: "" }
+                        .filter { !it.hari_Duha.isNullOrBlank() }
+                        .groupBy { it.hari_Duha ?: "" }
 
                     val resultList = days.map { day ->
                         val onDay = grouped[day] ?: emptyList()
-                        com.xirpl2.SASMobile.model.JadwalDhuhaKeahlian(
+                        com.xirpl2.SASMobile.model.JadwalDuhaKeahlian(
                             hari = day,
                             jurusan1 = onDay.getOrNull(0),
                             jurusan2 = onDay.getOrNull(1)
@@ -153,10 +153,10 @@ class BerandaRepository {
         }
     }
 
-    suspend fun updateJurusanDhuhaDay(token: String, id: Int, hari: String): Result<Boolean> {
+    suspend fun updateJurusanDuhaDay(token: String, id: Int, hari: String): Result<Boolean> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.updateJurusanDhuhaDay("Bearer $token", id, com.xirpl2.SASMobile.model.DhuhaDayRequest(hari_dhuha = hari))
+                val response = apiService.updateJurusanDuhaDay("Bearer $token", id, com.xirpl2.SASMobile.model.DuhaDayRequest(hari_Duha = hari))
                 if (response.isSuccessful) {
                     Result.success(true)
                 } else {
@@ -168,10 +168,10 @@ class BerandaRepository {
         }
     }
 
-    suspend fun updateJadwalDhuhaTime(token: String, idJurusan: Int, request: com.xirpl2.SASMobile.model.JadwalDhuhaTimeUpdateRequest): Result<Boolean> {
+    suspend fun updateJadwalDuhaTime(token: String, idJurusan: Int, request: com.xirpl2.SASMobile.model.JadwalDuhaTimeUpdateRequest): Result<Boolean> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.updateJadwalDhuhaTime("Bearer $token", idJurusan, request)
+                val response = apiService.updateJadwalDuhaTime("Bearer $token", idJurusan, request)
                 if (response.isSuccessful) {
                     Result.success(true)
                 } else {
@@ -682,10 +682,10 @@ class BerandaRepository {
         request: CreateAbsensiRequest
     ): Result<String> = submitAbsensi(token, nis, request)
 
-    suspend fun getDhuhaToday(token: String): Result<List<DhuhaJurusanData>> {
+    suspend fun getDuhaToday(token: String): Result<List<DuhaJurusanData>> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.getDhuhaToday("Bearer $token")
+                val response = apiService.getDuhaToday("Bearer $token")
 
                 if (!response.isSuccessful) {
                     return@withContext Result.failure(
@@ -1097,12 +1097,12 @@ class BerandaRepository {
         }
     }
 
-    // --- Dhuha Groups ---
+    // --- Duha Groups ---
 
-    suspend fun getDhuhaGroups(token: String): Result<List<DhuhaGroup>> {
+    suspend fun getDuhaGroups(token: String): Result<List<DuhaGroup>> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.getDhuhaGroups("Bearer $token")
+                val response = apiService.getDuhaGroups("Bearer $token")
                 if (response.isSuccessful && response.body() != null) {
                     Result.success(response.body()!!.data)
                 } else {
@@ -1114,10 +1114,10 @@ class BerandaRepository {
         }
     }
 
-    suspend fun createDhuhaGroup(token: String, request: DhuhaGroupRequest): Result<DhuhaGroup> {
+    suspend fun createDuhaGroup(token: String, request: DuhaGroupRequest): Result<DuhaGroup> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.createDhuhaGroup("Bearer $token", request)
+                val response = apiService.createDuhaGroup("Bearer $token", request)
                 if (response.isSuccessful && response.body() != null) {
                     Result.success(response.body()!!.data!!)
                 } else {
@@ -1129,10 +1129,10 @@ class BerandaRepository {
         }
     }
 
-    suspend fun updateDhuhaGroup(token: String, id: Int, request: DhuhaGroupRequest): Result<DhuhaGroup> {
+    suspend fun updateDuhaGroup(token: String, id: Int, request: DuhaGroupRequest): Result<DuhaGroup> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.updateDhuhaGroup("Bearer $token", id, request)
+                val response = apiService.updateDuhaGroup("Bearer $token", id, request)
                 if (response.isSuccessful && response.body() != null) {
                     Result.success(response.body()!!.data!!)
                 } else {
@@ -1144,10 +1144,10 @@ class BerandaRepository {
         }
     }
 
-    suspend fun createWeeklyDhuhaGroups(token: String, request: WeeklyDhuhaGroupRequest): Result<Unit> {
+    suspend fun createWeeklyDuhaGroups(token: String, request: WeeklyDuhaGroupRequest): Result<Unit> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.createWeeklyDhuhaGroup("Bearer $token", request)
+                val response = apiService.createWeeklyDuhaGroup("Bearer $token", request)
                 if (response.isSuccessful) {
                     Result.success(Unit)
                 } else {
@@ -1159,10 +1159,10 @@ class BerandaRepository {
         }
     }
 
-    suspend fun deleteDhuhaGroup(token: String, id: Int): Result<Unit> {
+    suspend fun deleteDuhaGroup(token: String, id: Int): Result<Unit> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.deleteDhuhaGroup("Bearer $token", id)
+                val response = apiService.deleteDuhaGroup("Bearer $token", id)
                 if (response.isSuccessful) {
                     Result.success(Unit)
                 } else {

@@ -93,7 +93,7 @@
 
     
     <string name="QrCodeSaya">KODE QR SAYA</string>
-    <string name="SholatDzuhur">Salat Dzuhur</string>
+    <string name="SholatZuhur">Salat Zuhur</string>
     <string name="BerlakuWaktu">Berlaku: 05:00</string>
     <string name="TunjukkanQR">Tunjukkan QR code ini ke guru</string>
     <string name="RefreshQRCode">SEGARKAN QR</string>
@@ -135,19 +135,19 @@
 
     
     <string name="JadwalSholat">Jadwal Salat</string>
-    <string name="PlaceholderJadwalSholatDhuha">Jadwal Salat Dhuha - konsentrasi keahlian</string>
+    <string name="PlaceholderJadwalSholatDuha">Jadwal Salat Duha - konsentrasi keahlian</string>
     <string name="Hari">Hari</string>
     <string name="KonsentrasiKeahlian1">Konsentrasi Keahlian 1</string>
     <string name="KonsentrasiKeahlian2">Konsentrasi Keahlian 2</string>
-    <string name="SholatDhuha">Salat Dhuha</string>
+    <string name="SholatDuha">Salat Duha</string>
     <string name="HariKerja">Senin, Selasa, Rabu, Kamis, Jumat</string>
-    <string name="WaktuDhuha">Waktu: 06:30 - 09:00</string>
+    <string name="WaktuDuha">Waktu: 06:30 - 09:00</string>
     <string name="JurusanSemuaJurusan">Jurusan: Semua Jurusan</string>
-    <string name="KelasAllDhuha">Kelas: 10, 11, 12</string>
+    <string name="KelasAllDuha">Kelas: 10, 11, 12</string>
     <string name="SholatDzhuhur">Salat Dzhuhur</string>
     <string name="HariKerjaAlt">Senin, Selasa, Rabu, kamis, Jumat</string>
-    <string name="WaktuDzuhur">Waktu: 11:30 - 12:15</string>
-    <string name="KelasAllDzuhur">Kelas: 10, 11</string>
+    <string name="WaktuZuhur">Waktu: 11:30 - 12:15</string>
+    <string name="KelasAllZuhur">Kelas: 10, 11</string>
     <string name="SholatJumat">Salat Jumat</string>
     <string name="Jumat">Jumat</string>
     <string name="WaktuJumat">Waktu: 11:25 - 12:10</string>
@@ -193,8 +193,8 @@
 
     
     <string name="PlaceholderDash">--</string>
-    <string name="Dhuha">Dhuha</string>
-    <string name="WaktuDhuhaJadwal">Waktu : 07.00 - 08.00</string>
+    <string name="Duha">Duha</string>
+    <string name="WaktuDuhaJadwal">Waktu : 07.00 - 08.00</string>
 
     
     <string name="SemuaSiswaTerdaftar">Semua siswa terdaftar</string>

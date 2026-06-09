@@ -26,7 +26,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.xirpl2.SASMobile.adapter.PrayerScheduleAdapter
 import com.xirpl2.SASMobile.adapter.PrayerScheduleItem
-import com.xirpl2.SASMobile.model.JadwalDhuhaKeahlian
+import com.xirpl2.SASMobile.model.JadwalDuhaKeahlian
 import com.xirpl2.SASMobile.model.JadwalSholatCreateRequest
 import com.xirpl2.SASMobile.model.JadwalSholatData
 import com.xirpl2.SASMobile.model.JurusanItem
@@ -36,8 +36,8 @@ import com.xirpl2.SASMobile.model.PrayerTime
 import com.xirpl2.SASMobile.model.PrayerType
 import com.xirpl2.SASMobile.model.PrayerTypeRequest
 import com.xirpl2.SASMobile.model.PrayerTimeRequest
-import com.xirpl2.SASMobile.model.SholatDhuhaDetail
-import com.xirpl2.SASMobile.model.SholatDzuhurDetail
+import com.xirpl2.SASMobile.model.SholatDuhaDetail
+import com.xirpl2.SASMobile.model.SholatZuhurDetail
 import com.xirpl2.SASMobile.model.WaktuSholatData
 import com.xirpl2.SASMobile.repository.BerandaRepository
 import kotlinx.coroutines.async
@@ -52,7 +52,7 @@ class JadwalSholatAdminActivity : BaseAdminActivity() {
 
     
     private var jadwalList: List<JadwalSholatData> = emptyList()
-    private var dhuhaKeahlianList: List<com.xirpl2.SASMobile.model.JadwalDhuhaKeahlian> = emptyList()
+    private var DuhaKeahlianList: List<com.xirpl2.SASMobile.model.JadwalDuhaKeahlian> = emptyList()
     private var prayerTimesList: List<PrayerTime> = emptyList()
     private var prayerTypesList: List<PrayerType> = emptyList()
 
@@ -99,7 +99,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
             val deferredJadwal = async { repository.getJadwalSholat(token) }
             val deferredTimes = async { repository.getPrayerTimes(token) }
             val deferredTypes = async { repository.getPrayerTypes(token) }
-            val deferredDhuha = async { repository.getJadwalDhuhaKeahlian(token) }
+            val deferredDuha = async { repository.getJadwalDuhaKeahlian(token) }
             val deferredJurusan = async { repository.getJurusanLookup(token) }
 
             deferredJadwal.await().fold(
@@ -114,8 +114,8 @@ override fun onCreate(savedInstanceState: Bundle?) {
                 onSuccess = { types -> prayerTypesList = types },
                 onFailure = { hasError = true }
             )
-            deferredDhuha.await().fold(
-                onSuccess = { list -> dhuhaKeahlianList = list },
+            deferredDuha.await().fold(
+                onSuccess = { list -> DuhaKeahlianList = list },
                 onFailure = { hasError = true }
             )
             deferredJurusan.await().fold(
@@ -236,8 +236,8 @@ override fun onCreate(savedInstanceState: Bundle?) {
         // Build maps for enrichment
         val items = mutableListOf<PrayerScheduleItem>()
 
-        // Add Dhuha Keahlian table first
-        items.add(PrayerScheduleItem.DhuhaKeahlian(dhuhaKeahlianList))
+        // Add Duha Keahlian table first
+        items.add(PrayerScheduleItem.DuhaKeahlian(DuhaKeahlianList))
 
         val genericPrayers = jadwalList.filter { it.jurusan.isNullOrEmpty() }
 
@@ -248,14 +248,14 @@ override fun onCreate(savedInstanceState: Bundle?) {
         val typeById = prayerTypesList.associateBy { it.id }
 
         // Preferred display order
-        val displayOrder = listOf("dhuha", "dzuhur", "jumat")
+        val displayOrder = listOf("Duha", "Zuhur", "jumat")
         val addedTypes = mutableSetOf<String>()
 
         fun matchesTypeKey(namaJenis: String, typeKey: String): Boolean {
             val lower = namaJenis.lowercase()
             return when (typeKey) {
-                "dhuha" -> lower == "dhuha" || lower == "duha"
-                "dzuhur" -> lower == "dzuhur" || lower == "zuhur"
+                "Duha" -> lower == "Duha" || lower == "duha"
+                "Zuhur" -> lower == "Zuhur" || lower == "zuhur"
                 else -> lower == typeKey
             }
         }
@@ -333,11 +333,11 @@ override fun onCreate(savedInstanceState: Bundle?) {
                 canEdit = canUserEdit(),
                 onEditPrayer = { jenisSholat -> showEditDialogByJenis(jenisSholat) },
                 onDeletePrayer = { jadwal -> showDeleteConfirmation(jadwal) },
-                onDhuhaKeahlianSwap = { row1, col1, row2, col2 ->
+                onDuhaKeahlianSwap = { row1, col1, row2, col2 ->
                     handleSwap(row1, col1, row2, col2)
-                    prayerAdapter?.getDhuhaAdapter()?.submitList(dhuhaKeahlianList)
+                    prayerAdapter?.getDuhaAdapter()?.submitList(DuhaKeahlianList)
                 },
-                onSaveDhuhaKeahlian = { saveDhuhaKeahlianToApi() }
+                onSaveDuhaKeahlian = { saveDuhaKeahlianToApi() }
             )
             rvPrayerSchedules.adapter = prayerAdapter
         } else {
@@ -375,9 +375,9 @@ override fun onCreate(savedInstanceState: Bundle?) {
         return !isReadOnly && role.contains("admin")
     }
 
-    private fun saveDhuhaKeahlianToApi() {
+    private fun saveDuhaKeahlianToApi() {
         val updates = mutableListOf<Pair<Int, String>>()
-        dhuhaKeahlianList.forEach { daySchedule ->
+        DuhaKeahlianList.forEach { daySchedule ->
             val day = daySchedule.hari
             daySchedule.jurusan1?.id_jurusan?.let { updates.add(it to day) }
             daySchedule.jurusan2?.id_jurusan?.let { updates.add(it to day) }
@@ -387,14 +387,14 @@ override fun onCreate(savedInstanceState: Bundle?) {
             val token = getAuthToken()
             var hasError = false
             updates.forEach { (id, day) ->
-                val res = repository.updateJurusanDhuhaDay(token, id, day)
+                val res = repository.updateJurusanDuhaDay(token, id, day)
                 if (res.isFailure) hasError = true
             }
             safeRunOnUiThread {
                 if (hasError) {
                     Toast.makeText(this@JadwalSholatAdminActivity, "Beberapa perubahan gagal disimpan", Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(this@JadwalSholatAdminActivity, "Jadwal Dhuha berhasil disimpan", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@JadwalSholatAdminActivity, "Jadwal Duha berhasil disimpan", Toast.LENGTH_SHORT).show()
                 }
                 loadJadwalList()
             }
@@ -408,11 +408,11 @@ override fun onCreate(savedInstanceState: Bundle?) {
     private var prayerAdapter: PrayerScheduleAdapter? = null
 
     private fun handleSwap(row1: Int, col1: Int, row2: Int, col2: Int) {
-        val list = dhuhaKeahlianList.toMutableList()
+        val list = DuhaKeahlianList.toMutableList()
 
         // Bounds check to prevent IndexOutOfBoundsException
         if (list.isEmpty()) {
-            android.util.Log.w(TAG, "handleSwap called on empty dhuhaKeahlianList")
+            android.util.Log.w(TAG, "handleSwap called on empty DuhaKeahlianList")
             return
         }
         if (row1 < 0 || row1 >= list.size || row2 < 0 || row2 >= list.size) {
@@ -442,7 +442,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
             list[row2] = newItem2
         }
 
-        dhuhaKeahlianList = list
+        DuhaKeahlianList = list
     }
 
     private fun setupButtons() {
@@ -598,7 +598,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
     private fun checkDuplicateJurusan(selectedJurusan: String, selectedHari: String, currentJadwalId: Int): String? {
         val existing = jadwalList.find {
-            it.jenis_sholat.equals("Dhuha", ignoreCase = true) &&
+            it.jenis_sholat.equals("Duha", ignoreCase = true) &&
                     it.jurusan.equals(selectedJurusan, ignoreCase = true) &&
                     !it.hari.equals(selectedHari, ignoreCase = true) &&
                     it.id != currentJadwalId
@@ -639,7 +639,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
         fun updateValidationStatus() {
             val selectedJurusan = actvJurusan.text.toString().trim()
-            if (selectedJurusan.isEmpty() || namaSholat.equals("Dhuha", ignoreCase = true)) {
+            if (selectedJurusan.isEmpty() || namaSholat.equals("Duha", ignoreCase = true)) {
                 validationContainer.visibility = View.GONE
                 return
             }
@@ -681,8 +681,8 @@ override fun onCreate(savedInstanceState: Bundle?) {
                 onFailure = { error ->
                     safeRunOnUiThread {
                         when (namaSholat.lowercase()) {
-                            "dhuha" -> { etJamMulai.setText("06:30"); etJamSelesai.setText("09:00") }
-                            "dzuhur" -> { etJamMulai.setText("11:30"); etJamSelesai.setText("13:00") }
+                            "Duha" -> { etJamMulai.setText("06:30"); etJamSelesai.setText("09:00") }
+                            "Zuhur" -> { etJamMulai.setText("11:30"); etJamSelesai.setText("13:00") }
                             "jumat" -> { etJamMulai.setText("11:00"); etJamSelesai.setText("13:00") }
                         }
                     }

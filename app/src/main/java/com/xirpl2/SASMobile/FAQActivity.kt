@@ -91,7 +91,7 @@ class FAQActivity : AppCompatActivity() {
         ),
         FAQItem(
             "Bagaimana cara mengelola jadwal sholat?",
-            "Buka menu 'Jadwal Sholat'. Di sana Anda bisa menambah, mengedit, atau menghapus jadwal sholat (Dhuha, Dzuhur, Jumat). Setiap jadwal bisa diatur per jurusan atau umum."
+            "Buka menu 'Jadwal Sholat'. Di sana Anda bisa menambah, mengedit, atau menghapus jadwal sholat (Duha, Zuhur, Jumat). Setiap jadwal bisa diatur per jurusan atau umum."
         ),
         FAQItem(
             "Bagaimana cara mengatur wali kelas?",

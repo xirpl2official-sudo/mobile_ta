@@ -122,10 +122,10 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Response<JadwalSholatTodayResponse>
 
-    @GET("v2/prayer-schedules/dhuha/today")
-    suspend fun getDhuhaToday(
+    @GET("v2/prayer-schedules/Duha/today")
+    suspend fun getDuhaToday(
         @Header("Authorization") token: String
-    ): Response<DhuhaTodayResponse>
+    ): Response<DuhaTodayResponse>
 
     @GET("v2/prayer-schedules/closest")
     suspend fun getClosestPrayerSchedule(
@@ -262,37 +262,37 @@ interface ApiService {
 
     // --- Synchronized SMKN 2 Singosari ---
 
-    @GET("v2/prayer-schedules/dhuha/keahlian")
-    suspend fun getJadwalDhuhaKeahlian(
+    @GET("v2/prayer-schedules/Duha/keahlian")
+    suspend fun getJadwalDuhaKeahlian(
         @Header("Authorization") token: String
-    ): Response<JadwalDhuhaKeahlianResponse>
+    ): Response<JadwalDuhaKeahlianResponse>
 
-    @GET("v2/prayer-schedules/dhuha/detail")
-    suspend fun getSholatDhuhaDetail(
+    @GET("v2/prayer-schedules/Duha/detail")
+    suspend fun getSholatDuhaDetail(
         @Header("Authorization") token: String
-    ): Response<SholatDhuhaDetailResponse>
+    ): Response<SholatDuhaDetailResponse>
 
-    @GET("v2/prayer-schedules/dzuhur/detail")
-    suspend fun getSholatDzuhurDetail(
+    @GET("v2/prayer-schedules/Zuhur/detail")
+    suspend fun getSholatZuhurDetail(
         @Header("Authorization") token: String
-    ): Response<SholatDzuhurDetailResponse>
+    ): Response<SholatZuhurDetailResponse>
 
-    @POST("v2/prayer-schedules/dhuha/keahlian")
-    suspend fun createJadwalDhuhaKeahlian(
+    @POST("v2/prayer-schedules/Duha/keahlian")
+    suspend fun createJadwalDuhaKeahlian(
         @Header("Authorization") token: String,
-        @Body request: JadwalDhuhaKeahlian
+        @Body request: JadwalDuhaKeahlian
     ): Response<MessageResponse>
 
-    @PUT("v2/prayer-schedules/dhuha/detail")
-    suspend fun updateSholatDhuha(
+    @PUT("v2/prayer-schedules/Duha/detail")
+    suspend fun updateSholatDuha(
         @Header("Authorization") token: String,
-        @Body request: SholatDhuhaDetail
+        @Body request: SholatDuhaDetail
     ): Response<MessageResponse>
 
-    @PUT("v2/prayer-schedules/dzuhur/detail")
-    suspend fun updateSholatDzuhur(
+    @PUT("v2/prayer-schedules/Zuhur/detail")
+    suspend fun updateSholatZuhur(
         @Header("Authorization") token: String,
-        @Body request: SholatDzuhurDetail
+        @Body request: SholatZuhurDetail
     ): Response<MessageResponse>
 
     // --- Pengajuan Izin ---
@@ -679,34 +679,34 @@ interface ApiService {
     @DELETE("v2/prayer-times/{id}")
     suspend fun deletePrayerTime(@Header("Authorization") token: String, @Path("id") id: Int): Response<MessageResponse>
 
-    // --- Dhuha & Jurusan (FASE 3.13) ---
+    // --- Duha & Jurusan (FASE 3.13) ---
 
-    @GET("v2/jurusan/dhuha-schedules")
-    suspend fun getJurusanDhuhaSchedules(@Header("Authorization") token: String): Response<JurusanDhuhaSchedulesResponse>
+    @GET("v2/jurusan/Duha-schedules")
+    suspend fun getJurusanDuhaSchedules(@Header("Authorization") token: String): Response<JurusanDuhaSchedulesResponse>
 
-    @PUT("v2/jurusan/{id}/dhuha-day")
-    suspend fun updateJurusanDhuhaDay(@Header("Authorization") token: String, @Path("id") id: Int, @Body request: DhuhaDayRequest): Response<MessageResponse>
+    @PUT("v2/jurusan/{id}/Duha-day")
+    suspend fun updateJurusanDuhaDay(@Header("Authorization") token: String, @Path("id") id: Int, @Body request: DuhaDayRequest): Response<MessageResponse>
 
-    @GET("v2/dhuha-groups")
-    suspend fun getDhuhaGroups(@Header("Authorization") token: String): Response<DhuhaGroupListResponse>
+    @GET("v2/Duha-groups")
+    suspend fun getDuhaGroups(@Header("Authorization") token: String): Response<DuhaGroupListResponse>
 
-    @POST("v2/dhuha-groups")
-    suspend fun createDhuhaGroup(@Header("Authorization") token: String, @Body request: DhuhaGroupRequest): Response<DhuhaGroupResponse>
+    @POST("v2/Duha-groups")
+    suspend fun createDuhaGroup(@Header("Authorization") token: String, @Body request: DuhaGroupRequest): Response<DuhaGroupResponse>
 
-    @PUT("v2/dhuha-groups/{id}")
-    suspend fun updateDhuhaGroup(@Header("Authorization") token: String, @Path("id") id: Int, @Body request: DhuhaGroupRequest): Response<DhuhaGroupResponse>
+    @PUT("v2/Duha-groups/{id}")
+    suspend fun updateDuhaGroup(@Header("Authorization") token: String, @Path("id") id: Int, @Body request: DuhaGroupRequest): Response<DuhaGroupResponse>
 
-    @POST("v2/dhuha-groups/weekly")
-    suspend fun createWeeklyDhuhaGroup(@Header("Authorization") token: String, @Body request: WeeklyDhuhaGroupRequest): Response<MessageResponse>
+    @POST("v2/Duha-groups/weekly")
+    suspend fun createWeeklyDuhaGroup(@Header("Authorization") token: String, @Body request: WeeklyDuhaGroupRequest): Response<MessageResponse>
 
-    @DELETE("v2/dhuha-groups/{id}")
-    suspend fun deleteDhuhaGroup(@Header("Authorization") token: String, @Path("id") id: Int): Response<MessageResponse>
+    @DELETE("v2/Duha-groups/{id}")
+    suspend fun deleteDuhaGroup(@Header("Authorization") token: String, @Path("id") id: Int): Response<MessageResponse>
 
-    @PUT("v2/prayer-schedules/dhuha/keahlian/{id}")
-    suspend fun updateDhuhaKeahlian(
+    @PUT("v2/prayer-schedules/Duha/keahlian/{id}")
+    suspend fun updateDuhaKeahlian(
         @Header("Authorization") token: String,
         @Path("id") id: Int,
-        @Body request: JadwalDhuhaKeahlianUpdateRequest
+        @Body request: JadwalDuhaKeahlianUpdateRequest
     ): Response<MessageResponse>
 
     // --- Pengajuan Izin Tambahan (FASE 3.14) ---
@@ -716,11 +716,11 @@ interface ApiService {
 
     // --- Prayer Schedules (FASE 3.15) ---
 
-    @PUT("v2/prayer-schedules/dhuha/{id}")
-    suspend fun updateJadwalDhuhaTime(@Header("Authorization") token: String, @Path("id") idJurusan: Int, @Body request: com.xirpl2.SASMobile.model.JadwalDhuhaTimeUpdateRequest): Response<MessageResponse>
+    @PUT("v2/prayer-schedules/Duha/{id}")
+    suspend fun updateJadwalDuhaTime(@Header("Authorization") token: String, @Path("id") idJurusan: Int, @Body request: com.xirpl2.SASMobile.model.JadwalDuhaTimeUpdateRequest): Response<MessageResponse>
 
-    @GET("v2/prayer-schedules/dhuha/turns")
-    suspend fun getDhuhaTurnsToday(@Header("Authorization") token: String): Response<DhuhaTurnsResponse>
+    @GET("v2/prayer-schedules/Duha/turns")
+    suspend fun getDuhaTurnsToday(@Header("Authorization") token: String): Response<DuhaTurnsResponse>
 
     // --- Data Retention (FASE 3.16) ---
 

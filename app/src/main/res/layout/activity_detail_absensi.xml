@@ -254,11 +254,11 @@
                 app:layout_constraintTop_toBottomOf="@id/rvDateStrip">
 
                 <include
-                    android:id="@+id/itemDhuha"
+                    android:id="@+id/itemDuha"
                     layout="@layout/item_presence_prayer" />
 
                 <include
-                    android:id="@+id/itemDzuhur"
+                    android:id="@+id/itemZuhur"
                     layout="@layout/item_presence_prayer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

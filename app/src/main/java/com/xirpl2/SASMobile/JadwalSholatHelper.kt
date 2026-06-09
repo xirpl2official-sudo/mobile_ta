@@ -13,7 +13,7 @@ object JadwalSholatHelper {
     }
 
     
-    val ALLOWED_PRAYERS = listOf("Dhuha", "Dzuhur", "Jumat")
+    val ALLOWED_PRAYERS = listOf("Duha", "Zuhur", "Jumat")
     
     fun getJadwalSholatByGender(
         jenisKelamin: JenisKelamin,
@@ -26,13 +26,13 @@ object JadwalSholatHelper {
             
             isJumat -> {
                 when (jenisKelamin) {
-                    JenisKelamin.LAKI_LAKI -> listOf("Dhuha", "Jumat") 
-                    JenisKelamin.PEREMPUAN -> listOf("Dhuha", "Dzuhur") 
+                    JenisKelamin.LAKI_LAKI -> listOf("Duha", "Jumat") 
+                    JenisKelamin.PEREMPUAN -> listOf("Duha", "Zuhur") 
                 }
             }
             
             else -> {
-                listOf("Dhuha", "Dzuhur") 
+                listOf("Duha", "Zuhur") 
             }
         }
     }
@@ -43,10 +43,10 @@ object JadwalSholatHelper {
         
         return if (isJumat) {
             
-            listOf("Dhuha", "Jumat", "Dzuhur")
+            listOf("Duha", "Jumat", "Zuhur")
         } else {
             
-            listOf("Dhuha", "Dzuhur")
+            listOf("Duha", "Zuhur")
         }
     }
     

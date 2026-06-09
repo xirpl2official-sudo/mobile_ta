@@ -49,7 +49,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
     private lateinit var etSearch: EditText
     private lateinit var tvTanggalAwal: TextView
     private lateinit var tvTanggalAkhir: TextView
-    private lateinit var tvFilterSholat: TextView
+    private lateinit var tvFilterSalat: TextView
     private lateinit var tvFilterJurusan: TextView
     private lateinit var tvFilterKelas: TextView
 
@@ -61,10 +61,10 @@ class LaporanAdminActivity : BaseAdminActivity() {
     private lateinit var tvLegendIzin: TextView
     private lateinit var tvLegendSakit: TextView
     private lateinit var tvLegendAlpha: TextView
-    private lateinit var progressBarDhuha: ProgressBar
-    private lateinit var tvBarDhuha: TextView
-    private lateinit var progressBarDzuhur: ProgressBar
-    private lateinit var tvBarDzuhur: TextView
+    private lateinit var progressBarDuha: ProgressBar
+    private lateinit var tvBarDuha: TextView
+    private lateinit var progressBarZuhur: ProgressBar
+    private lateinit var tvBarZuhur: TextView
     private lateinit var progressBarJumat: ProgressBar
     private lateinit var tvBarJumat: TextView
 
@@ -97,7 +97,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
 
     // Filter state
     private var searchQuery: String = ""
-    private var selectedSholat: String = "Semua Sholat"
+    private var selectedSalat: String = "Semua Salat"
     private var selectedJurusan: String = "Semua Jurusan"
     private var selectedKelas: String = "Semua Kelas"
     private var tanggalAwal: Calendar = Calendar.getInstance().apply { add(Calendar.DAY_OF_MONTH, -6) }
@@ -110,7 +110,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
     private val fixedJurusanList = listOf("RPL", "TKJ", "TEI", "TAV", "BC", "TMT", "DKV", "ANM")
     private val jurusanOptions = listOf("Semua Jurusan") + fixedJurusanList
     private val kelasOptions = listOf("Semua Kelas", "10", "11", "12")
-    private val sholatOptions = listOf("Semua Sholat", "Dhuha", "Dzuhur", "Jumat")
+    private val salatOptions = listOf("Semua Salat", "Duha dan Zuhur", "Jumat")
 
     override fun getCurrentMenuItem(): AdminMenuItem = AdminMenuItem.LAPORAN
 
@@ -147,7 +147,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
         etSearch = findViewById(R.id.etSearch)
         tvTanggalAwal = findViewById(R.id.tvTanggalAwal)
         tvTanggalAkhir = findViewById(R.id.tvTanggalAkhir)
-        tvFilterSholat = findViewById(R.id.tvFilterSholat)
+        tvFilterSalat = findViewById(R.id.tvFilterSholat)
         tvFilterJurusan = findViewById(R.id.tvFilterJurusan)
         tvFilterKelas = findViewById(R.id.tvFilterKelas)
 
@@ -158,10 +158,10 @@ class LaporanAdminActivity : BaseAdminActivity() {
         tvLegendIzin = findViewById(R.id.tvLegendIzin)
         tvLegendSakit = findViewById(R.id.tvLegendSakit)
         tvLegendAlpha = findViewById(R.id.tvLegendAlpha)
-        progressBarDhuha = findViewById(R.id.progressBarDhuha)
-        tvBarDhuha = findViewById(R.id.tvBarDhuha)
-        progressBarDzuhur = findViewById(R.id.progressBarDzuhur)
-        tvBarDzuhur = findViewById(R.id.tvBarDzuhur)
+        progressBarDuha = findViewById(R.id.progressBarDuha)
+        tvBarDuha = findViewById(R.id.tvBarDuha)
+        progressBarZuhur = findViewById(R.id.progressBarZuhur)
+        tvBarZuhur = findViewById(R.id.tvBarZuhur)
         progressBarJumat = findViewById(R.id.progressBarJumat)
         tvBarJumat = findViewById(R.id.tvBarJumat)
 
@@ -248,7 +248,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
             showAdvancedFilterBottomSheet()
         }
 
-        tvFilterSholat.setOnClickListener { openFilter() }
+        tvFilterSalat.setOnClickListener { openFilter() }
         tvFilterJurusan.setOnClickListener { openFilter() }
         tvFilterKelas.setOnClickListener { openFilter() }
     }
@@ -257,21 +257,21 @@ class LaporanAdminActivity : BaseAdminActivity() {
         val dialog = com.google.android.material.bottomsheet.BottomSheetDialog(this)
         val view = layoutInflater.inflate(R.layout.bottom_sheet_filter_laporan, null)
         
-        val chipGroupSholat = view.findViewById<com.google.android.material.chip.ChipGroup>(R.id.chipGroupSholat)
+        val chipGroupSalat = view.findViewById<com.google.android.material.chip.ChipGroup>(R.id.chipGroupSalat)
         val chipGroupJurusan = view.findViewById<com.google.android.material.chip.ChipGroup>(R.id.chipGroupJurusan)
         val chipGroupKelas = view.findViewById<com.google.android.material.chip.ChipGroup>(R.id.chipGroupKelas)
         val btnApply = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnApplyFilter)
 
         // Set current selections
-        sholatOptions.forEach { opt ->
+        salatOptions.forEach { opt ->
             val chip = com.google.android.material.chip.Chip(this)
             chip.text = opt
             chip.isCheckable = true
             chip.id = View.generateViewId()
-            if (opt == selectedSholat) {
+            if (opt == selectedSalat) {
                 chip.isChecked = true
             }
-            chipGroupSholat.addView(chip)
+            chipGroupSalat.addView(chip)
         }
 
         jurusanOptions.forEach { opt ->
@@ -297,13 +297,13 @@ class LaporanAdminActivity : BaseAdminActivity() {
         }
 
         btnApply.setOnClickListener {
-            val checkedSholatId = chipGroupSholat.checkedChipId
+            val checkedSalatId = chipGroupSalat.checkedChipId
             val checkedJurusanId = chipGroupJurusan.checkedChipId
             val checkedKelasId = chipGroupKelas.checkedChipId
 
-            if (checkedSholatId != View.NO_ID) {
-                selectedSholat = chipGroupSholat.findViewById<com.google.android.material.chip.Chip>(checkedSholatId).text.toString()
-                tvFilterSholat.text = selectedSholat
+            if (checkedSalatId != View.NO_ID) {
+                selectedSalat = chipGroupSalat.findViewById<com.google.android.material.chip.Chip>(checkedSalatId).text.toString()
+                tvFilterSalat.text = selectedSalat
             }
             if (checkedJurusanId != View.NO_ID) {
                 selectedJurusan = chipGroupJurusan.findViewById<com.google.android.material.chip.Chip>(checkedJurusanId).text.toString()
@@ -436,12 +436,12 @@ class LaporanAdminActivity : BaseAdminActivity() {
                                 prayerData[prayer.lowercase()] = hadir
                                 if (hadir > maxHadir) maxHadir = hadir
                             }
-                            val dhuha = prayerData["dhuha"] ?: 0
-                            val dzuhur = prayerData["dzuhur"] ?: 0
+                            val Duha = prayerData["Duha"] ?: 0
+                            val Zuhur = prayerData["Zuhur"] ?: 0
                             val jumat = prayerData["jumat"] ?: 0
 
-                            progressBarDhuha.max = maxHadir; progressBarDhuha.progress = dhuha; tvBarDhuha.text = "$dhuha hadir"
-                            progressBarDzuhur.max = maxHadir; progressBarDzuhur.progress = dzuhur; tvBarDzuhur.text = "$dzuhur hadir"
+                            progressBarDuha.max = maxHadir; progressBarDuha.progress = Duha; tvBarDuha.text = "$Duha hadir"
+                            progressBarZuhur.max = maxHadir; progressBarZuhur.progress = Zuhur; tvBarZuhur.text = "$Zuhur hadir"
                             progressBarJumat.max = maxHadir; progressBarJumat.progress = jumat; tvBarJumat.text = "$jumat hadir"
                         }
                     }
@@ -464,7 +464,11 @@ class LaporanAdminActivity : BaseAdminActivity() {
 
         val kelasApi = if (selectedKelas == "Semua Kelas") null else selectedKelas
         val jurusanApi = if (selectedJurusan == "Semua Jurusan") null else selectedJurusan
-        val sholatApi = if (selectedSholat == "Semua Sholat") null else selectedSholat.lowercase()
+        val salatApi = when (selectedSalat) {
+            "Semua Salat" -> null
+            "Duha dan Zuhur" -> null // Backend does not support combined "Duha dan Zuhur" for single jenisSholat, default to all.
+            else -> selectedSalat.lowercase()
+        }
         val searchApi = searchQuery.ifEmpty { null }
         val apiDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val startDate = apiDateFormat.format(tanggalAwal.time)
@@ -477,7 +481,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
                 endDate = endDate,
                 kelas = kelasApi,
                 jurusan = jurusanApi,
-                jenisSholat = sholatApi,
+                jenisSholat = salatApi,
                 search = searchApi,
                 page = currentPage,
                 limit = pageSize
@@ -631,14 +635,18 @@ class LaporanAdminActivity : BaseAdminActivity() {
         val endDate = apiDateFormat.format(tanggalAkhir.time)
         val jurusanApi = if (selectedJurusan == "Semua Jurusan") null else selectedJurusan
         val kelasApi = if (selectedKelas == "Semua Kelas") null else selectedKelas
-        val sholatApi = if (selectedSholat == "Semua Sholat") null else selectedSholat.lowercase()
+        val salatApi = when (selectedSalat) {
+            "Semua Salat" -> null
+            "Duha dan Zuhur" -> null // Backend does not support combined "Duha dan Zuhur" for single jenisSholat, default to all.
+            else -> selectedSalat.lowercase()
+        }
         val searchApi = searchQuery.ifEmpty { null }
 
         // Show active filters to user so they know what is being exported
         val activeFilters = mutableListOf<String>()
         if (jurusanApi != null) activeFilters.add("Jurusan: $selectedJurusan")
         if (kelasApi != null) activeFilters.add("Kelas: $selectedKelas")
-        if (sholatApi != null) activeFilters.add("Salat: $selectedSholat")
+        if (salatApi != null) activeFilters.add("Salat: $selectedSalat") // Changed sholatApi to salatApi and selectedSholat to selectedSalat
         if (searchApi != null) activeFilters.add("Cari: $searchQuery")
         if (activeFilters.isNotEmpty()) {
             Toast.makeText(this, "Filter aktif: ${activeFilters.joinToString(", ")}", Toast.LENGTH_LONG).show()
@@ -656,19 +664,19 @@ class LaporanAdminActivity : BaseAdminActivity() {
                 val response: Response<ResponseBody> = when (format) {
                     "excel" -> RetrofitClient.apiService.exportAttendanceReport(
                         token = "Bearer $token", startDate = startDate, endDate = endDate,
-                        jurusan = jurusanApi, kelas = kelasApi, jenisSholat = sholatApi, search = searchApi
+                        jurusan = jurusanApi, kelas = kelasApi, jenisSholat = salatApi, search = searchApi
                     )
                     "pdf" -> RetrofitClient.apiService.exportAttendanceReportPdf(
                         token = "Bearer $token", startDate = startDate, endDate = endDate,
-                        jurusan = jurusanApi, kelas = kelasApi, jenisSholat = sholatApi, search = searchApi
+                        jurusan = jurusanApi, kelas = kelasApi, jenisSholat = salatApi, search = searchApi
                     )
                     "csv" -> RetrofitClient.apiService.exportAttendanceCSV(
                         token = "Bearer $token", startDate = startDate, endDate = endDate,
-                        jurusan = jurusanApi, kelas = kelasApi, jenisSholat = sholatApi, search = searchApi
+                        jurusan = jurusanApi, kelas = kelasApi, jenisSholat = salatApi, search = searchApi
                     )
                     else -> RetrofitClient.apiService.exportAttendanceReport(
                         token = "Bearer $token", startDate = startDate, endDate = endDate,
-                        jurusan = jurusanApi, kelas = kelasApi, jenisSholat = sholatApi, search = searchApi
+                        jurusan = jurusanApi, kelas = kelasApi, jenisSholat = salatApi, search = searchApi
                     )
                 }
 
@@ -729,14 +737,21 @@ class LaporanAdminActivity : BaseAdminActivity() {
 
     private fun saveFileToDownloads(body: ResponseBody, fileName: String, mimeType: String = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"): android.net.Uri? {
         return try {
-            val contentValues = ContentValues().apply {
-                put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
-                put(MediaStore.MediaColumns.MIME_TYPE, mimeType)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val uri: android.net.Uri?
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val contentValues = ContentValues().apply {
+                    put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+                    put(MediaStore.MediaColumns.MIME_TYPE, mimeType)
                     put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
                 }
+                uri = contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
+            } else {
+                @Suppress("DEPRECATION")
+                val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                if (!dir.exists()) dir.mkdirs()
+                val file = java.io.File(dir, fileName)
+                uri = android.net.Uri.fromFile(file)
             }
-            val uri = contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
             uri?.let {
                 contentResolver.openOutputStream(it)?.use { outputStream ->
                     body.byteStream().use { inputStream -> inputStream.copyTo(outputStream) }

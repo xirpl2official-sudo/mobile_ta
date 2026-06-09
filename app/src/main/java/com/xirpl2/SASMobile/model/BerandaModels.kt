@@ -298,17 +298,17 @@ data class StatistikStaffData(
     val total_alpha: Int = 0
 )
 
-data class DhuhaTodayResponse(
+data class DuhaTodayResponse(
     val message: String? = null,
-    val data: List<DhuhaJurusanData> = emptyList()
+    val data: List<DuhaJurusanData> = emptyList()
 )
 
-data class DhuhaJurusanData(
+data class DuhaJurusanData(
     val jurusan: String,
-    val jadwal: List<DhuhaJadwalData>
+    val jadwal: List<DuhaJadwalData>
 )
 
-data class DhuhaJadwalData(
+data class DuhaJadwalData(
     val id_jadwal: Int,
     val hari: String,
     val jurusan: String? = null,
@@ -385,25 +385,25 @@ data class BarcodeVerifyRequest(
 )
 
 
-// Dhuha Turns - flat response {hari, jurusans[]}
-data class DhuhaTurnsResponse(
+// Duha Turns - flat response {hari, jurusans[]}
+data class DuhaTurnsResponse(
     val hari: String? = null,
-    val jurusans: List<DhuhaTurnJurusan> = emptyList()
+    val jurusans: List<DuhaTurnJurusan> = emptyList()
 )
 
-data class DhuhaTurnJurusan(
+data class DuhaTurnJurusan(
     @SerializedName("id_jurusan")
     val idJurusan: Int = 0,
     @SerializedName("nama_jurusan")
     val namaJurusan: String = "",
-    @SerializedName("id_dhuha_group")
-    val idDhuhaGroup: Int? = null,
-    @SerializedName("hari_dhuha")
-    val hariDhuha: String? = null,
-    val schedules: List<DhuhaTurnSchedule> = emptyList()
+    @SerializedName("id_Duha_group")
+    val idDuhaGroup: Int? = null,
+    @SerializedName("hari_Duha")
+    val hariDuha: String? = null,
+    val schedules: List<DuhaTurnSchedule> = emptyList()
 )
 
-data class DhuhaTurnSchedule(
+data class DuhaTurnSchedule(
     @SerializedName("id_jadwal")
     val idJadwal: Int = 0,
     @SerializedName("waktu_mulai")
@@ -413,21 +413,21 @@ data class DhuhaTurnSchedule(
 )
 
 // Synchronized SMKN 2 Singosari Spec Models
-data class JadwalDhuhaKeahlianResponse(
-    val data: List<JadwalDhuhaKeahlian> = emptyList()
+data class JadwalDuhaKeahlianResponse(
+    val data: List<JadwalDuhaKeahlian> = emptyList()
 )
 
-data class JadwalDhuhaKeahlian(
+data class JadwalDuhaKeahlian(
     val hari: String,
-    val jurusan1: JurusanDhuhaSchedule? = null,
-    val jurusan2: JurusanDhuhaSchedule? = null
+    val jurusan1: JurusanDuhaSchedule? = null,
+    val jurusan2: JurusanDuhaSchedule? = null
 )
 
-data class SholatDhuhaDetailResponse(
-    val data: SholatDhuhaDetail? = null
+data class SholatDuhaDetailResponse(
+    val data: SholatDuhaDetail? = null
 )
 
-data class SholatDhuhaDetail(
+data class SholatDuhaDetail(
     val id: Int,
     val judul: String,
     val hari: String,
@@ -438,11 +438,11 @@ data class SholatDhuhaDetail(
     val kelas: String
 )
 
-data class SholatDzuhurDetailResponse(
-    val data: SholatDzuhurDetail? = null
+data class SholatZuhurDetailResponse(
+    val data: SholatZuhurDetail? = null
 )
 
-data class SholatDzuhurDetail(
+data class SholatZuhurDetail(
     val id: Int,
     val judul: String,
     val hari: String,

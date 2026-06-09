@@ -259,7 +259,7 @@ class TambahAbsensiDialogFragment : DialogFragment() {
         if (isFriday && selectedSiswa != null) {
             val gender = selectedSiswa!!.jenis_kelamin
             if (gender.equals("L", ignoreCase = true)) {
-                uniqueTypes.removeAll { it.equals("Dzuhur", ignoreCase = true) }
+                uniqueTypes.removeAll { it.equals("Zuhur", ignoreCase = true) }
             } else if (gender.equals("P", ignoreCase = true)) {
                 uniqueTypes.removeAll { it.equals("Jumat", ignoreCase = true) }
             }

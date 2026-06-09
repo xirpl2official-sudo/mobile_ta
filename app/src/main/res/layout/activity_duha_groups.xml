@@ -128,7 +128,7 @@
             app:layout_constraintEnd_toEndOf="parent">
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerDhuhaGroups"
+                android:id="@+id/recyclerDuhaGroups"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -190,7 +190,7 @@
         </LinearLayout>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btnTambahDhuhaGroup"
+            android:id="@+id/btnTambahDuhaGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
