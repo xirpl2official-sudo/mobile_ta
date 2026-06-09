@@ -65,6 +65,7 @@ class BerandaGuruActivity : BaseAdminActivity() {
         }
 
         initializeViews()
+        setupRecyclerViews()
         setupDrawerAndSidebar()
         setupMenuIcon()
 
@@ -116,7 +117,22 @@ class BerandaGuruActivity : BaseAdminActivity() {
             }
         }
     }
-    
+
+    private fun setupRecyclerViews() {
+        jurusanAdapter = JurusanAdapter()
+        rvJurusan.apply {
+            layoutManager = androidx.recyclerview.widget.GridLayoutManager(this@BerandaGuruActivity, 2)
+            adapter = jurusanAdapter
+            isNestedScrollingEnabled = false
+        }
+        DuhaScheduleAdapter = DuhaScheduleAdapter()
+        rvDuhaSchedule.apply {
+            layoutManager = LinearLayoutManager(this@BerandaGuruActivity)
+            adapter = DuhaScheduleAdapter
+            isNestedScrollingEnabled = false
+        }
+    }
+
     private fun loadStatistik() {
         val token = getAuthToken()
         if (token.isEmpty()) return
@@ -206,18 +222,11 @@ class BerandaGuruActivity : BaseAdminActivity() {
     private fun loadDuhaSchedule() {
         val token = getAuthToken()
         if (token.isEmpty()) return
-
         lifecycleScope.launch {
             repository.getJadwalDuhaKeahlian(token).fold(
                 onSuccess = { data ->
                     if (!isFinishing && !isDestroyed) {
-                        DuhaScheduleAdapter = DuhaScheduleAdapter()
                         DuhaScheduleAdapter.submitList(data)
-                        rvDuhaSchedule.apply {
-                            layoutManager = LinearLayoutManager(this@BerandaGuruActivity)
-                            adapter = DuhaScheduleAdapter
-                            isNestedScrollingEnabled = false
-                        }
                     }
                 },
                 onFailure = { error ->
@@ -245,34 +254,20 @@ class BerandaGuruActivity : BaseAdminActivity() {
     
     private fun setupJurusanList() {
         val token = getAuthToken()
-        
         if (token.isEmpty()) return
-        
         lifecycleScope.launch {
             repository.getDuhaToday(token).fold(
                 onSuccess = { DuhaData ->
                     if (!isFinishing && !isDestroyed) {
                         val safeData = DuhaData ?: emptyList()
-                        jurusanAdapter = JurusanAdapter(safeData)
-
-                        rvJurusan.apply {
-                            layoutManager = androidx.recyclerview.widget.GridLayoutManager(this@BerandaGuruActivity, 2)
-                            adapter = jurusanAdapter
-                            isNestedScrollingEnabled = false
-                        }
+                        jurusanAdapter.updateData(safeData)
                     }
                     if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                 },
                 onFailure = { error ->
                     if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                     if (!isFinishing && !isDestroyed) {
-                        jurusanAdapter = JurusanAdapter(emptyList<DuhaJurusanData>())
-
-                        rvJurusan.apply {
-                            layoutManager = androidx.recyclerview.widget.GridLayoutManager(this@BerandaGuruActivity, 2)
-                            adapter = jurusanAdapter
-                            isNestedScrollingEnabled = false
-                        }
+                        jurusanAdapter.updateData(emptyList())
                     }
                 }
             )

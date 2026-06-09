@@ -11,55 +11,72 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
 
-    private val BASE_URL: String
-        get() = if (BuildConfig.API_BASE_URL.endsWith("/")) BuildConfig.API_BASE_URL else BuildConfig.API_BASE_URL + "/"
+    var testBaseUrl: String? = null
 
-    // 2. Variabel Context untuk Autentikasi
+    private val BASE_URL: String
+        get() = testBaseUrl ?: if (BuildConfig.API_BASE_URL.endsWith("/")) BuildConfig.API_BASE_URL else BuildConfig.API_BASE_URL + "/"
+
     private var appContext: Context? = null
 
-    /**
-     * Panggil fungsi ini di onCreate() aplikasi kamu (SASMobileApp.kt)
-     */
     fun init(context: Context) {
         appContext = context.applicationContext
     }
 
-    // 3. Logging Interceptor
+    fun resetForTest(baseUrl: String, context: Context) {
+        testBaseUrl = baseUrl
+        appContext = context.applicationContext
+        _apiService = null
+        _attendanceApi = null
+        _retrofit = null
+        _okHttpClient = null
+    }
+
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
-        // Jika ingin melihat log request/response saat debug, ubah level ke BODY
-        // Jika sudah production, gunakan NONE agar tidak berat
         level = HttpLoggingInterceptor.Level.BODY
     }
 
-    // 4. OkHttpClient Configuration
-    private val okHttpClient by lazy {
-        val ctx = appContext ?: throw IllegalStateException(
-            "RetrofitClient.init(context) must be called before any API call"
-        )
+    private var _okHttpClient: OkHttpClient? = null
+    private val okHttpClient: OkHttpClient
+        get() {
+            if (_okHttpClient == null) {
+                val ctx = appContext ?: throw IllegalStateException(
+                    "RetrofitClient.init(context) must be called before any API call"
+                )
+                _okHttpClient = OkHttpClient.Builder()
+                    .addInterceptor(loggingInterceptor)
+                    .authenticator(TokenAuthenticator(ctx))
+                    .connectTimeout(15, TimeUnit.SECONDS)
+                    .readTimeout(30, TimeUnit.SECONDS)
+                    .writeTimeout(30, TimeUnit.SECONDS)
+                    .build()
+            }
+            return _okHttpClient!!
+        }
 
-        OkHttpClient.Builder()
-            .addInterceptor(loggingInterceptor)
-            .authenticator(TokenAuthenticator(ctx)) // Pastikan class TokenAuthenticator sudah ada
-            .connectTimeout(15, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
-            .writeTimeout(30, TimeUnit.SECONDS)
-            .build()
-    }
+    private var _retrofit: Retrofit? = null
+    private val retrofit: Retrofit
+        get() {
+            if (_retrofit == null) {
+                _retrofit = Retrofit.Builder()
+                    .baseUrl(BASE_URL)
+                    .client(okHttpClient)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build()
+            }
+            return _retrofit!!
+        }
 
-    // 5. Shared Retrofit instance
-    private val retrofit: Retrofit by lazy {
-        Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-    }
+    private var _apiService: ApiService? = null
+    val apiService: ApiService
+        get() {
+            if (_apiService == null) _apiService = retrofit.create(ApiService::class.java)
+            return _apiService!!
+        }
 
-    // 6. ApiService Instance
-    val apiService: ApiService by lazy {
-        retrofit.create(ApiService::class.java)
-    }
-
-    // 7. Generated API services
-    val attendanceApi: AttendanceApi by lazy { retrofit.create(AttendanceApi::class.java) }
+    private var _attendanceApi: AttendanceApi? = null
+    val attendanceApi: AttendanceApi
+        get() {
+            if (_attendanceApi == null) _attendanceApi = retrofit.create(AttendanceApi::class.java)
+            return _attendanceApi!!
+        }
 }

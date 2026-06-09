@@ -260,7 +260,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
             }
         }
 
-        // Build cards for ALL prayer types (matching desktop behavior)
+        // Build cards only from actual jadwal schedules (not prayer type placeholders)
         for (typeKey in displayOrder) {
             val existingJadwal = jadwalList.find {
                 matchesTypeKey(it.jenis_sholat, typeKey) && it.jurusan.isNullOrEmpty()
@@ -268,30 +268,6 @@ override fun onCreate(savedInstanceState: Bundle?) {
             if (existingJadwal != null) {
                 items.add(PrayerScheduleItem.PrayerCard(existingJadwal))
                 addedTypes.add(existingJadwal.jenis_sholat.lowercase())
-            } else {
-                val matchingType = typeById.values.find { matchesTypeKey(it.nama_jenis, typeKey) }
-                if (matchingType != null) {
-                    val pt = timeByTypeId[matchingType.id]
-                    val fallbackWaktu = if (pt == null) {
-                        jadwalList.find {
-                            it.jenis_sholat.equals(matchingType.nama_jenis, ignoreCase = true) &&
-                                it.waktuSholat?.waktuMulai?.isNotEmpty() == true
-                        }?.waktuSholat
-                    } else null
-                    val placeholder = JadwalSholatData(
-                        id = 0,
-                        hari = null,
-                        jurusan = null,
-                        kelas = null,
-                        waktuSholat = WaktuSholatData(
-                            waktuMulai = pt?.waktu_mulai ?: fallbackWaktu?.waktuMulai ?: "",
-                            waktuSelesai = pt?.waktu_selesai ?: fallbackWaktu?.waktuSelesai ?: "",
-                            jenisSholat = JenisSholatData(namaJenis = matchingType.nama_jenis)
-                        )
-                    )
-                    items.add(PrayerScheduleItem.PrayerCard(placeholder))
-                    addedTypes.add(matchingType.nama_jenis.lowercase())
-                }
             }
         }
 

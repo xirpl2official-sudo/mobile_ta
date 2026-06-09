@@ -239,10 +239,12 @@ data class JurusanDuhaSchedulesResponse(
 data class JurusanDuhaSchedule(
     val id_jurusan: Int,
     val nama_jurusan: String,
+    @SerializedName("hari_dhuha")
     val hari_Duha: String?
 )
 
 data class DuhaDayRequest(
+    @SerializedName("hari_dhuha")
     val hari_Duha: String
 )
 

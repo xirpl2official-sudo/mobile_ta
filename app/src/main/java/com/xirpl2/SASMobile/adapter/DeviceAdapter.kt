@@ -56,12 +56,8 @@ class DeviceAdapter(
                 val d = item.item
                 val ownerName = d.user_name ?: d.email ?: "Tidak diketahui"
                 holder.tvDeviceName.text = ownerName
-                val deviceInfo = buildString {
-                    append(d.device_name ?: "Perangkat")
-                    if (d.device_model != null) append(" ($d.device_model)")
-                }
-                holder.tvHardwareId.text = deviceInfo
-                holder.tvExtraInfo.text = "OS: ${d.os_version ?: "-"} | Aktif: ${d.last_auth_at ?: "-"}"
+                holder.tvHardwareId.text = d.hardware_id ?: "-"
+                holder.tvExtraInfo.visibility = View.GONE
                 holder.tvStatus.text = if (d.is_verified) "TERVERIFIKASI" else "PENDING"
                 if (d.is_verified) {
                     setBadgeColors(holder, R.drawable.bg_status_approved, R.color.badge_approved_text)
@@ -73,9 +69,9 @@ class DeviceAdapter(
             is DeviceListItem.ChangeRequest -> {
                 val r = item.item
                 holder.tvDeviceName.text = "Permintaan Ganti Perangkat"
-                val lama = r.hardware_id_lama?.take(8) ?: "???"
-                val baru = r.hardware_id_baru?.take(8) ?: "???"
-                holder.tvHardwareId.text = "NIS: ${r.user_id} | Dari: $lama... Ke: $baru..."
+                val lama = r.hardware_id_lama?.take(12) ?: "???"
+                val baru = r.hardware_id_baru?.take(12) ?: "???"
+                holder.tvHardwareId.text = "Dari: $lama → Ke: $baru"
                 holder.tvExtraInfo.text = "Alasan: ${r.reason ?: "-"}\nDiajukan: ${r.created_at}"
                 holder.tvStatus.text = r.status.uppercase()
 

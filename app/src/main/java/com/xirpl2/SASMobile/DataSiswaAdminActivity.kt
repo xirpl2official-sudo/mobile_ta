@@ -30,6 +30,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.xirpl2.SASMobile.adapter.SiswaAdapter
 import com.xirpl2.SASMobile.model.SiswaItem
+import com.xirpl2.SASMobile.model.KelasItem
 import com.xirpl2.SASMobile.network.RetrofitClient
 import com.xirpl2.SASMobile.repository.BerandaRepository
 import kotlinx.coroutines.Dispatchers
@@ -308,27 +309,79 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
     }
 
     private fun showBulkMutationDialog(selectedItems: List<SiswaItem>) {
+        val token = getAuthToken()
+        if (token.isEmpty()) return
+
         val view = layoutInflater.inflate(R.layout.dialog_bulk_mutasi, null)
-
-        val spinnerKelas = view.findViewById<android.widget.Spinner>(R.id.spinnerTargetKelas)
         val spinnerJurusan = view.findViewById<android.widget.Spinner>(R.id.spinnerTargetJurusan)
+        val spinnerKelas = view.findViewById<android.widget.Spinner>(R.id.spinnerTargetKelas)
+        val spinnerStatus = view.findViewById<android.widget.Spinner>(R.id.spinnerTargetStatus)
 
-        spinnerKelas.adapter = android.widget.ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, listOf("10", "11", "12"))
-        spinnerJurusan.adapter = android.widget.ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, fixedJurusanList)
+        val statusOptions = listOf("Tetap", "AKTIF", "LULUS", "KELUAR", "PINDAH", "PKL", "KEK", "MUTASI")
+        spinnerStatus.adapter = android.widget.ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, statusOptions)
+        spinnerKelas.adapter = android.widget.ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, listOf("Pilih Jurusan dulu"))
+
+        lifecycleScope.launch {
+            repository.getJurusanLookup(token).fold(
+                onSuccess = { jurusanList ->
+                    val jurusanNames = listOf("Pilih Jurusan") + jurusanList.map { it.nama }
+                    val jurusanAdapter = android.widget.ArrayAdapter(this@DataSiswaAdminActivity, android.R.layout.simple_spinner_dropdown_item, jurusanNames)
+                    spinnerJurusan.adapter = jurusanAdapter
+
+                    var allKelas: List<KelasItem> = emptyList()
+                    repository.getKelasLookup(token).fold(
+                        onSuccess = { kelas -> allKelas = kelas },
+                        onFailure = {}
+                    )
+
+                    spinnerJurusan.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
+                        override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: View?, position: Int, id: Long) {
+                            if (position == 0) {
+                                spinnerKelas.adapter = android.widget.ArrayAdapter(this@DataSiswaAdminActivity, android.R.layout.simple_spinner_dropdown_item, listOf("Pilih Jurusan dulu"))
+                                return
+                            }
+                            val selectedJurusanName = jurusanNames[position]
+                            val selectedJurusanId = jurusanList.find { it.nama == selectedJurusanName }?.id
+                            val filteredKelasLabels = allKelas
+                                .filter { it.id_jurusan == selectedJurusanId }
+                                .sortedWith(compareBy({ it.tingkatan }, { it.part }))
+                                .map { it.label }
+                            if (filteredKelasLabels.isEmpty()) {
+                                spinnerKelas.adapter = android.widget.ArrayAdapter(this@DataSiswaAdminActivity, android.R.layout.simple_spinner_dropdown_item, listOf("Tidak ada kelas"))
+                            } else {
+                                spinnerKelas.adapter = android.widget.ArrayAdapter(this@DataSiswaAdminActivity, android.R.layout.simple_spinner_dropdown_item, filteredKelasLabels)
+                            }
+                        }
+                        override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {}
+                    }
+                },
+                onFailure = {
+                    spinnerJurusan.adapter = android.widget.ArrayAdapter(this@DataSiswaAdminActivity, android.R.layout.simple_spinner_dropdown_item, fixedJurusanList)
+                }
+            )
+        }
 
         MaterialAlertDialogBuilder(this)
             .setTitle("Mutasi ${selectedItems.size} Siswa")
             .setView(view)
             .setPositiveButton("Mutasi") { _, _ ->
-                val targetTingkatan = spinnerKelas.selectedItem.toString()
-                val targetJurusan = spinnerJurusan.selectedItem.toString()
-                executeBulkSetClass(selectedItems, "$targetTingkatan $targetJurusan A")
+                val jurusanPos = spinnerJurusan.selectedItemPosition
+                val targetKelas = spinnerKelas.selectedItem.toString()
+                val targetStatus = spinnerStatus.selectedItem.toString()
+
+                if (jurusanPos == 0 || targetKelas.startsWith("Pilih") || targetKelas.startsWith("Tidak")) {
+                    Toast.makeText(this@DataSiswaAdminActivity, "Pilih jurusan dan kelas tujuan", Toast.LENGTH_SHORT).show()
+                    return@setPositiveButton
+                }
+
+                val statusParam = if (targetStatus != "Tetap") targetStatus else null
+                executeBulkSetClass(selectedItems, targetKelas, statusParam)
             }
             .setNegativeButton("Batal", null)
             .show()
     }
 
-    private fun executeBulkSetClass(items: List<SiswaItem>, targetClass: String) {
+    private fun executeBulkSetClass(items: List<SiswaItem>, targetClass: String, targetStatus: String? = null) {
         val token = getAuthToken()
         if (token.isEmpty()) return
 
