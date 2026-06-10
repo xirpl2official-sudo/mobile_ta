@@ -21,6 +21,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.xirpl2.SASMobile.*
 import com.xirpl2.SASMobile.R
 import com.xirpl2.SASMobile.StudentMainActivity
+import androidx.navigation.fragment.findNavController
 import com.xirpl2.SASMobile.model.JadwalSholat
 import com.xirpl2.SASMobile.model.StatusSholat
 import com.xirpl2.SASMobile.model.RiwayatAbsensi
@@ -94,7 +95,7 @@ class BerandaFragment : Fragment(R.layout.fragment_beranda) {
     private fun setupAbsensiButton(view: View) {
         view.findViewById<Button>(R.id.btnAbsensi).setOnClickListener {
             if (!isAdded) return@setOnClickListener
-            startActivity(Intent(requireContext(), ScanQrActivity::class.java))
+            findNavController().navigate(R.id.navigation_scan_qr)
         }
         view.findViewById<androidx.cardview.widget.CardView>(R.id.cardTotalAlpha).setOnClickListener {
             if (!isAdded) return@setOnClickListener

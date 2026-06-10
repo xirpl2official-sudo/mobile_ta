@@ -5,6 +5,9 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.action.ViewActions.click
 import com.xirpl2.SASMobile.*
 import com.xirpl2.SASMobile.helper.AuthHelper
 import com.xirpl2.SASMobile.helper.MockServer
@@ -127,10 +130,10 @@ class SiswaPagesTest : TestCase() {
 
     @Test
     fun scanQR_hasBarcodeView_andScanButton() = run {
-        val ctx = ApplicationProvider.getApplicationContext<android.content.Context>()
-        ActivityScenario.launch<android.app.Activity>(
-            Intent(ctx, ScanQrActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        ).use {
+        ActivityScenario.launch(StudentMainActivity::class.java).use {
+            // Navigate to Scan QR tab via bottom navigation
+            onView(withId(R.id.navigation_scan_qr)).perform(click())
+            device.uiDevice.waitForIdle()
             val s = ScanQRScreen()
             s.barcodeView { isDisplayed() }
             s.btnScan { isDisplayed() }
@@ -140,10 +143,10 @@ class SiswaPagesTest : TestCase() {
 
     @Test
     fun perizinan_hasFormInputs() = run {
-        val ctx = ApplicationProvider.getApplicationContext<android.content.Context>()
-        ActivityScenario.launch<android.app.Activity>(
-            Intent(ctx, PengajuanIzinActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        ).use {
+        ActivityScenario.launch(StudentMainActivity::class.java).use {
+            // Navigate to Perizinan tab via bottom navigation
+            onView(withId(R.id.navigation_perizinan)).perform(click())
+            device.uiDevice.waitForIdle()
             val p = PerizinanScreen()
             p.etStartDate { isDisplayed() }
             p.etEndDate { isDisplayed() }
@@ -155,10 +158,7 @@ class SiswaPagesTest : TestCase() {
 
     @Test
     fun beranda_hasTitle() = run {
-        val ctx = ApplicationProvider.getApplicationContext<android.content.Context>()
-        ActivityScenario.launch<android.app.Activity>(
-            Intent(ctx, BerandaActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        ).use {
+        ActivityScenario.launch(StudentMainActivity::class.java).use {
             SiswaBerandaScreen().tvPageTitle { isDisplayed() }
         }
     }

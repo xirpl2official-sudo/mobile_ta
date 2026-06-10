@@ -51,10 +51,6 @@
 
         <activity
             android:launchMode="singleTop"
-            android:name=".ScanQrActivity"
-            android:exported="false" />
-        <activity
-            android:launchMode="singleTop"
             android:name=".StaffQRActivity"
             android:exported="false" />
         <activity
@@ -65,10 +61,6 @@
             android:launchMode="singleTop"
             android:name=".VerifikasiOtpActivity"
             android:exported="false" /> 
-        <activity
-            android:launchMode="singleTop"
-            android:name=".BerandaActivity"
-            android:exported="false" />
         <activity
             android:launchMode="singleTop"
             android:name=".StudentMainActivity"
@@ -94,10 +86,6 @@
         <activity
             android:launchMode="singleTop"
             android:name=".PengaturanAkunActivity"
-            android:exported="false" />
-        <activity
-            android:launchMode="singleTop"
-            android:name=".PengajuanIzinActivity"
             android:exported="false" />
         <activity
             android:launchMode="singleTop"
@@ -143,10 +131,6 @@
         <activity
             android:launchMode="singleTop"
             android:name=".VerifyAccountActivity"
-            android:exported="false" />
-        <activity
-            android:launchMode="singleTop"
-            android:name=".StudentQRActivity"
             android:exported="false" />
         <activity
             android:launchMode="singleTop"
