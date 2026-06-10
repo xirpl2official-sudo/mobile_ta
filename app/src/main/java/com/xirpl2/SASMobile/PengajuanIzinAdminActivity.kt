@@ -1,6 +1,6 @@
 package com.xirpl2.SASMobile
 
-import android.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -99,9 +99,16 @@ class PengajuanIzinAdminActivity : BaseAdminActivity() {
     private fun setupFilters() {
         val statusOptions = arrayOf("Semua Status", "Pending", "Approved", "Rejected")
         spinnerFilterStatus.setOnClickListener {
+            val checkedStatusIndex = when (currentStatusFilter) {
+                null -> 0
+                "pending" -> 1
+                "disetujui" -> 2
+                "ditolak" -> 3
+                else -> -1
+            }
             AlertDialog.Builder(this)
                 .setTitle("Filter Status")
-                .setSingleChoiceItems(statusOptions, -1) { dialog, which ->
+                .setSingleChoiceItems(statusOptions, checkedStatusIndex) { dialog, which ->
                     val selected = statusOptions[which].lowercase()
                     val mappedStatus = when (selected) {
                         "semua status" -> null
@@ -123,9 +130,14 @@ class PengajuanIzinAdminActivity : BaseAdminActivity() {
 
         val sortOptions = arrayOf("Terbaru", "Terlama")
         spinnerSort.setOnClickListener {
+            val checkedSortIndex = when (currentSort) {
+                "terbaru" -> 0
+                "terlama" -> 1
+                else -> -1
+            }
             AlertDialog.Builder(this)
                 .setTitle("Urutkan")
-                .setSingleChoiceItems(sortOptions, -1) { dialog, which ->
+                .setSingleChoiceItems(sortOptions, checkedSortIndex) { dialog, which ->
                     val selected = sortOptions[which].lowercase().replace(" ", "_")
                     spinnerSort.text = sortOptions[which]
                     if (currentSort != selected) {

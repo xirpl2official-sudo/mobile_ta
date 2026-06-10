@@ -911,8 +911,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
             "Selasa" to dialogView.findViewById<MaterialButton>(R.id.btnSelasa),
             "Rabu" to dialogView.findViewById<MaterialButton>(R.id.btnRabu),
             "Kamis" to dialogView.findViewById<MaterialButton>(R.id.btnKamis),
-            "Jumat" to dialogView.findViewById<MaterialButton>(R.id.btnJumat),
-            "Sabtu" to dialogView.findViewById<MaterialButton>(R.id.btnSabtu)
+            "Jumat" to dialogView.findViewById<MaterialButton>(R.id.btnJumat)
         )
         val selectedDays = mutableSetOf<String>()
 

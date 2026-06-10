@@ -45,7 +45,22 @@ class TambahSiswaActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tambah_siswa)
 
-        window.statusBarColor = androidx.core.content.ContextCompat.getColor(this, R.color.blue_theme)
+        // Enable Edge-to-Edge to match BerandaAdmin's top bar integration
+        androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
+        window.statusBarColor = android.graphics.Color.TRANSPARENT
+        androidx.core.view.WindowCompat.getInsetsController(window, window.decorView).apply {
+            isAppearanceLightStatusBars = false
+        }
+
+        val topBarContent = findViewById<View>(R.id.topBarContent)
+        if (topBarContent != null) {
+            androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(topBarContent) { v, insets ->
+                val statusBars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.statusBars())
+                v.setPadding(v.paddingLeft, statusBars.top, v.paddingRight, v.paddingBottom)
+                insets
+            }
+        }
+
         initViews()
         setupListeners()
         loadLookups()

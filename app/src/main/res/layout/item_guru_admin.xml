@@ -15,7 +15,8 @@
         android:layout_width="160dp"
         android:layout_height="wrap_content"
         android:gravity="start"
-        android:paddingHorizontal="4dp"
+        android:paddingStart="4dp"
+        android:paddingEnd="8dp"
         android:textColor="@color/on_background"
         android:textSize="12sp"
         android:textStyle="bold"
@@ -70,7 +71,8 @@
         android:layout_width="90dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center">
+        android:gravity="center"
+        android:paddingEnd="4dp">
 
         <ImageView
             android:id="@+id/btnEdit"

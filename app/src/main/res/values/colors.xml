@@ -36,6 +36,8 @@
     <color name="blue_theme">#2886D6</color>
     <color name="blue_theme_dark">#1E6BB1</color>
     <color name="blue_theme_light">#EFF6FF</color>
+    <color name="pink_theme_dark">#DB2777</color>
+    <color name="pink_theme_light">#FDF2F8</color>
     <color name="text_sidebar_inactive">#6B7280</color>
     <color name="icon_sidebar_inactive">#9CA3AF</color>
     <color name="text_sidebar_active">#FFFFFF</color>

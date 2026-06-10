@@ -49,9 +49,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
     private lateinit var etSearch: EditText
     private lateinit var tvTanggalAwal: TextView
     private lateinit var tvTanggalAkhir: TextView
-    private lateinit var tvFilterSalat: TextView
     private lateinit var tvFilterJurusan: TextView
-    private lateinit var tvFilterKelas: TextView
 
     // Chart views
     private lateinit var lineChartTrend: com.github.mikephil.charting.charts.LineChart
@@ -97,20 +95,18 @@ class LaporanAdminActivity : BaseAdminActivity() {
 
     // Filter state
     private var searchQuery: String = ""
-    private var selectedSalat: String = "Semua Salat"
-    private var selectedJurusan: String = "Semua Jurusan"
-    private var selectedKelas: String = "Semua Kelas"
     private var tanggalAwal: Calendar = Calendar.getInstance().apply { add(Calendar.DAY_OF_MONTH, -6) }
     private var tanggalAkhir: Calendar = Calendar.getInstance()
 
     // ForcedClass: for wali_kelas, auto-filter to their assigned class
-    private var forcedClass: String? = null
     private var isWaliKelas: Boolean = false
+    private var forcedClass: String? = null
 
-    private val fixedJurusanList = listOf("RPL", "TKJ", "TEI", "TAV", "BC", "TMT", "DKV", "ANM")
-    private val jurusanOptions = listOf("Semua Jurusan") + fixedJurusanList
-    private val kelasOptions = listOf("Semua Kelas", "10", "11", "12")
-    private val salatOptions = listOf("Semua Salat", "Duha dan Zuhur", "Jumat")
+    // Filter state - jurusan & kelas from bottom sheet
+    private var selectedJurusan: String? = null
+    private var selectedKelas: String? = null
+    private val fixedJurusanList = listOf("RPL", "TKJ", "TEI", "TAV", "DKV", "ANM", "BC", "TMT")
+    private val jurusanOptions = listOf("Semua") + fixedJurusanList
 
     override fun getCurrentMenuItem(): AdminMenuItem = AdminMenuItem.LAPORAN
 
@@ -147,9 +143,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
         etSearch = findViewById(R.id.etSearch)
         tvTanggalAwal = findViewById(R.id.tvTanggalAwal)
         tvTanggalAkhir = findViewById(R.id.tvTanggalAkhir)
-        tvFilterSalat = findViewById(R.id.tvFilterSholat)
         tvFilterJurusan = findViewById(R.id.tvFilterJurusan)
-        tvFilterKelas = findViewById(R.id.tvFilterKelas)
 
         lineChartTrend = findViewById(R.id.lineChartTrend)
         progressDonutKehadiran = findViewById(R.id.progressDonutKehadiran)
@@ -194,20 +188,17 @@ class LaporanAdminActivity : BaseAdminActivity() {
         val session = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this)
         val role = session.getString("user_role", "")?.lowercase() ?: ""
         isWaliKelas = role.contains("wali")
+        forcedClass = session.getString("kelas", null)
         if (isWaliKelas) {
-            forcedClass = session.getString("user_kelas", "")?.takeIf { it.isNotBlank() }
-            if (forcedClass != null) {
-                selectedKelas = forcedClass!!
-                tvFilterKelas.text = forcedClass!!
-            }
+            tvFilterJurusan.visibility = View.GONE
+            selectedKelas = forcedClass
         }
     }
 
     private fun setupFilters() {
-        // For wali_kelas: hide Jurusan and Kelas filter dropdowns (forcedClass filtering)
+        // For wali_kelas: hide Jurusan filter
         if (isWaliKelas) {
             tvFilterJurusan.visibility = View.GONE
-            tvFilterKelas.visibility = View.GONE
         }
 
         etSearch.addTextChangedListener(object : TextWatcher {
@@ -244,83 +235,69 @@ class LaporanAdminActivity : BaseAdminActivity() {
             }
         }
 
-        val openFilter = {
+        tvFilterJurusan.setOnClickListener {
             showAdvancedFilterBottomSheet()
         }
-
-        tvFilterSalat.setOnClickListener { openFilter() }
-        tvFilterJurusan.setOnClickListener { openFilter() }
-        tvFilterKelas.setOnClickListener { openFilter() }
     }
 
     private fun showAdvancedFilterBottomSheet() {
         val dialog = com.google.android.material.bottomsheet.BottomSheetDialog(this)
         val view = layoutInflater.inflate(R.layout.bottom_sheet_filter_laporan, null)
-        
-        val chipGroupSalat = view.findViewById<com.google.android.material.chip.ChipGroup>(R.id.chipGroupSalat)
+        dialog.setContentView(view)
+
         val chipGroupJurusan = view.findViewById<com.google.android.material.chip.ChipGroup>(R.id.chipGroupJurusan)
         val chipGroupKelas = view.findViewById<com.google.android.material.chip.ChipGroup>(R.id.chipGroupKelas)
         val btnApply = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnApplyFilter)
 
-        // Set current selections
-        salatOptions.forEach { opt ->
-            val chip = com.google.android.material.chip.Chip(this)
-            chip.text = opt
-            chip.isCheckable = true
-            chip.id = View.generateViewId()
-            if (opt == selectedSalat) {
-                chip.isChecked = true
-            }
-            chipGroupSalat.addView(chip)
-        }
+        // Temp selections while bottom sheet is open
+        var tempJurusan = selectedJurusan
+        var tempKelas = selectedKelas
 
-        jurusanOptions.forEach { opt ->
-            val chip = com.google.android.material.chip.Chip(this)
-            chip.text = opt
-            chip.isCheckable = true
-            chip.id = View.generateViewId()
-            if (opt == selectedJurusan) {
-                chip.isChecked = true
+        // Populate jurusan chips
+        for (nama in jurusanOptions) {
+            val chip = com.google.android.material.chip.Chip(this).apply {
+                text = nama
+                isCheckable = true
+                isChecked = nama == (selectedJurusan ?: "Semua")
+            }
+            chip.setOnClickListener {
+                tempJurusan = if (nama == "Semua") null else nama
             }
             chipGroupJurusan.addView(chip)
         }
 
-        kelasOptions.forEach { opt ->
-            val chip = com.google.android.material.chip.Chip(this)
-            chip.text = opt
-            chip.isCheckable = true
-            chip.id = View.generateViewId()
-            if (opt == selectedKelas) {
-                chip.isChecked = true
+        // Kelas chip selection
+        val kelasChipIds = mapOf(
+            R.id.chipSemuaKelas to null,
+            R.id.chipKelas10 to "10",
+            R.id.chipKelas11 to "11",
+            R.id.chipKelas12 to "12"
+        )
+        for ((chipId, kelasVal) in kelasChipIds) {
+            view.findViewById<com.google.android.material.chip.Chip>(chipId)?.let { chip ->
+                chip.isChecked = kelasVal == selectedKelas
+                chip.setOnClickListener {
+                    tempKelas = kelasVal
+                }
             }
-            chipGroupKelas.addView(chip)
         }
 
         btnApply.setOnClickListener {
-            val checkedSalatId = chipGroupSalat.checkedChipId
-            val checkedJurusanId = chipGroupJurusan.checkedChipId
-            val checkedKelasId = chipGroupKelas.checkedChipId
-
-            if (checkedSalatId != View.NO_ID) {
-                selectedSalat = chipGroupSalat.findViewById<com.google.android.material.chip.Chip>(checkedSalatId).text.toString()
-                tvFilterSalat.text = selectedSalat
-            }
-            if (checkedJurusanId != View.NO_ID) {
-                selectedJurusan = chipGroupJurusan.findViewById<com.google.android.material.chip.Chip>(checkedJurusanId).text.toString()
-                tvFilterJurusan.text = selectedJurusan
-            }
-            if (checkedKelasId != View.NO_ID) {
-                selectedKelas = chipGroupKelas.findViewById<com.google.android.material.chip.Chip>(checkedKelasId).text.toString()
-                tvFilterKelas.text = selectedKelas
-            }
-
+            selectedJurusan = tempJurusan
+            selectedKelas = tempKelas
+            updateFilterDisplay()
             currentPage = 1
             loadData()
             dialog.dismiss()
         }
 
-        dialog.setContentView(view)
         dialog.show()
+    }
+
+    private fun updateFilterDisplay() {
+        val jurusanText = selectedJurusan ?: "Semua Jurusan"
+        val kelasText = selectedKelas ?: "Semua Siswa"
+        tvFilterJurusan.text = "$jurusanText dan $kelasText"
     }
 
     private fun setupButtons() {
@@ -462,13 +439,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
         isLoading = true
         showLoading(true)
 
-        val kelasApi = if (selectedKelas == "Semua Kelas") null else selectedKelas
-        val jurusanApi = if (selectedJurusan == "Semua Jurusan") null else selectedJurusan
-        val salatApi = when (selectedSalat) {
-            "Semua Salat" -> null
-            "Duha dan Zuhur" -> null // Backend does not support combined "Duha dan Zuhur" for single jenisSholat, default to all.
-            else -> selectedSalat.lowercase()
-        }
+        val salatApi: String? = null
         val searchApi = searchQuery.ifEmpty { null }
         val apiDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val startDate = apiDateFormat.format(tanggalAwal.time)
@@ -479,8 +450,8 @@ class LaporanAdminActivity : BaseAdminActivity() {
                 token = token,
                 startDate = startDate,
                 endDate = endDate,
-                kelas = kelasApi,
-                jurusan = jurusanApi,
+                kelas = selectedKelas,
+                jurusan = selectedJurusan,
                 jenisSholat = salatApi,
                 search = searchApi,
                 page = currentPage,
@@ -633,24 +604,8 @@ class LaporanAdminActivity : BaseAdminActivity() {
         val apiDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val startDate = apiDateFormat.format(tanggalAwal.time)
         val endDate = apiDateFormat.format(tanggalAkhir.time)
-        val jurusanApi = if (selectedJurusan == "Semua Jurusan") null else selectedJurusan
-        val kelasApi = if (selectedKelas == "Semua Kelas") null else selectedKelas
-        val salatApi = when (selectedSalat) {
-            "Semua Salat" -> null
-            "Duha dan Zuhur" -> null // Backend does not support combined "Duha dan Zuhur" for single jenisSholat, default to all.
-            else -> selectedSalat.lowercase()
-        }
+        val salatApi: String? = null
         val searchApi = searchQuery.ifEmpty { null }
-
-        // Show active filters to user so they know what is being exported
-        val activeFilters = mutableListOf<String>()
-        if (jurusanApi != null) activeFilters.add("Jurusan: $selectedJurusan")
-        if (kelasApi != null) activeFilters.add("Kelas: $selectedKelas")
-        if (salatApi != null) activeFilters.add("Salat: $selectedSalat") // Changed sholatApi to salatApi and selectedSholat to selectedSalat
-        if (searchApi != null) activeFilters.add("Cari: $searchQuery")
-        if (activeFilters.isNotEmpty()) {
-            Toast.makeText(this, "Filter aktif: ${activeFilters.joinToString(", ")}", Toast.LENGTH_LONG).show()
-        }
 
         val btn = when (format) {
             "excel" -> btnExportExcel
@@ -664,19 +619,19 @@ class LaporanAdminActivity : BaseAdminActivity() {
                 val response: Response<ResponseBody> = when (format) {
                     "excel" -> RetrofitClient.apiService.exportAttendanceReport(
                         token = "Bearer $token", startDate = startDate, endDate = endDate,
-                        jurusan = jurusanApi, kelas = kelasApi, jenisSholat = salatApi, search = searchApi
+                        jurusan = selectedJurusan, kelas = selectedKelas, jenisSholat = salatApi, search = searchApi
                     )
                     "pdf" -> RetrofitClient.apiService.exportAttendanceReportPdf(
                         token = "Bearer $token", startDate = startDate, endDate = endDate,
-                        jurusan = jurusanApi, kelas = kelasApi, jenisSholat = salatApi, search = searchApi
+                        jurusan = selectedJurusan, kelas = selectedKelas, jenisSholat = salatApi, search = searchApi
                     )
                     "csv" -> RetrofitClient.apiService.exportAttendanceCSV(
                         token = "Bearer $token", startDate = startDate, endDate = endDate,
-                        jurusan = jurusanApi, kelas = kelasApi, jenisSholat = salatApi, search = searchApi
+                        jurusan = selectedJurusan, kelas = selectedKelas, jenisSholat = salatApi, search = searchApi
                     )
                     else -> RetrofitClient.apiService.exportAttendanceReport(
                         token = "Bearer $token", startDate = startDate, endDate = endDate,
-                        jurusan = jurusanApi, kelas = kelasApi, jenisSholat = salatApi, search = searchApi
+                        jurusan = selectedJurusan, kelas = selectedKelas, jenisSholat = salatApi, search = searchApi
                     )
                 }
 

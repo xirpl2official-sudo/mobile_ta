@@ -21,7 +21,7 @@ class KelolaGuruAdminAdapter(
 
     private var fullList: List<GuruItem> = emptyList()
     private var currentPage = 0
-    private val pageSize = 5
+    private val pageSize = 10
 
     fun setFullList(list: List<GuruItem>) {
         fullList = list
