@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="24dp">
+
+    <TextView
+        android:id="@+id/tvDialogTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Validasi Halangan"
+        android:textColor="@color/slate_900"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/tvDialogSubtitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Verifikasi pengajuan halangan siswi sebelum menyetujui."
+        android:textColor="@color/text_hint"
+        android:textSize="13sp"
+        android:layout_marginTop="4dp"
+        app:layout_constraintTop_toBottomOf="@id/tvDialogTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardStudentInfo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="@color/slate_50"
+        app:layout_constraintTop_toBottomOf="@id/tvDialogSubtitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:ignore="MissingConstraints">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp">
+
+            <TextView
+                android:id="@+id/tvInfoNamaLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nama"
+                android:textColor="@color/text_hint"
+                android:textSize="11sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvInfoNama"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textColor="@color/slate_900"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvInfoNamaLabel"
+                tools:text="Ana Maria" />
+
+            <TextView
+                android:id="@+id/tvInfoNisLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="NIS"
+                android:textColor="@color/text_hint"
+                android:textSize="11sp"
+                app:layout_constraintStart_toEndOf="@id/tvInfoNamaLabel"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginStart="16dp" />
+
+            <TextView
+                android:id="@+id/tvInfoNis"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/slate_900"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@id/tvInfoNisLabel"
+                app:layout_constraintTop_toBottomOf="@id/tvInfoNisLabel"
+                tools:text="7781" />
+
+            <TextView
+                android:id="@+id/tvInfoKelasLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Kelas"
+                android:textColor="@color/text_hint"
+                android:textSize="11sp"
+                android:layout_marginTop="12dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvInfoNama" />
+
+            <TextView
+                android:id="@+id/tvInfoKelas"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textColor="@color/slate_900"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvInfoKelasLabel"
+                tools:text="10 RPL A" />
+
+            <TextView
+                android:id="@+id/tvInfoTanggalLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tanggal"
+                android:textColor="@color/text_hint"
+                android:textSize="11sp"
+                android:layout_marginTop="12dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvInfoKelas" />
+
+            <TextView
+                android:id="@+id/tvInfoTanggal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textColor="@color/slate_900"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvInfoTanggalLabel"
+                tools:text="10 Juni 2026" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilKeterangan"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:hint="Keterangan"
+        app:layout_constraintTop_toBottomOf="@id/cardStudentInfo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etKeterangan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="haid"
+            android:textSize="14sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <LinearLayout
+        android:id="@+id/dialogActions"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        android:gravity="end"
+        app:layout_constraintTop_toBottomOf="@id/tilKeterangan"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnBatal"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Batal"
+            android:textAllCaps="false"
+            android:layout_marginEnd="8dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnTolak"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/status_error"
+            android:textColor="@android:color/white"
+            android:text="Tolak"
+            android:textAllCaps="false"
+            android:layout_marginEnd="8dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSetujui"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/status_success"
+            android:textColor="@android:color/white"
+            android:text="Setujui"
+            android:textAllCaps="false" />
+
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/dialogProgress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="@id/dialogActions"
+        app:layout_constraintBottom_toBottomOf="@id/dialogActions"
+        app:layout_constraintStart_toStartOf="@id/dialogActions"
+        app:layout_constraintEnd_toEndOf="@id/dialogActions" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

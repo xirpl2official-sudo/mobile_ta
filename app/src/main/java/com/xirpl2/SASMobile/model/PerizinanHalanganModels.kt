@@ -70,3 +70,13 @@ data class HalanganPendingListResponse(
     @SerializedName("data")
     val data: List<HalanganPendingItem>?
 )
+
+data class HalanganApproveRequest(
+    @SerializedName("keterangan")
+    val keterangan: String
+)
+
+data class HalanganRejectRequest(
+    @SerializedName("keterangan")
+    val keterangan: String
+)

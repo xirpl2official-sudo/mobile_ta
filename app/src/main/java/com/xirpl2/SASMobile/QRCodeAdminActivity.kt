@@ -4,16 +4,22 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.CountDownTimer
 import android.util.Base64
+import android.view.LayoutInflater
 import android.view.View
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.button.MaterialButtonToggleGroup
-import com.xirpl2.SASMobile.network.RetrofitClient
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.xirpl2.SASMobile.adapter.PendingHalanganAdapter
+import com.xirpl2.SASMobile.model.HalanganPendingItem
 import com.xirpl2.SASMobile.repository.QRCodeRepository
 import com.xirpl2.SASMobile.repository.PerizinanHalanganRepository
 import kotlinx.coroutines.Dispatchers
@@ -34,6 +40,11 @@ class QRCodeAdminActivity : BaseAdminActivity() {
     private lateinit var btnRefresh: MaterialButton
     private lateinit var progressBar: ProgressBar
     private lateinit var containerQR: View
+    private lateinit var cardPendingHalangan: View
+    private lateinit var rvPendingHalangan: RecyclerView
+    private lateinit var tvPendingCount: TextView
+    private lateinit var tvPendingEmpty: TextView
+    private lateinit var btnDownload: MaterialButton
 
     // Manual Code Views
     private lateinit var tvManualCode: TextView
@@ -44,17 +55,17 @@ class QRCodeAdminActivity : BaseAdminActivity() {
     private lateinit var btnHalangan: MaterialButton
     private var isHalanganMode = false
 
-    // Download button removed
-
     private var countDownTimer: CountDownTimer? = null
     private var codeTimer: CountDownTimer? = null
     private var autoRefreshJob: Job? = null
     private var codeRefreshJob: Job? = null
+    private var pendingPollJob: Job? = null
     private var currentBitmap: Bitmap? = null
 
     private lateinit var swipeRefresh: SwipeRefreshLayout
     private val qrRepository = QRCodeRepository()
     private val halanganRepository = PerizinanHalanganRepository()
+    private lateinit var pendingAdapter: PendingHalanganAdapter
 
     private val QR_REFRESH_INTERVAL = 30_000L  // 30 seconds (match desktop)
     private val CODE_REFRESH_INTERVAL = 20_000L // 20 seconds (match desktop)
@@ -95,8 +106,14 @@ class QRCodeAdminActivity : BaseAdminActivity() {
         tvStatus = findViewById(R.id.tvStatus)
         tvInstructions = findViewById(R.id.tvInstructions)
         btnRefresh = findViewById(R.id.btnRefresh)
+        btnDownload = findViewById(R.id.btnDownload)
         progressBar = findViewById(R.id.progressBar)
         containerQR = findViewById(R.id.containerQR)
+
+        cardPendingHalangan = findViewById(R.id.cardPendingHalangan)
+        rvPendingHalangan = findViewById(R.id.rvPendingHalangan)
+        tvPendingCount = findViewById(R.id.tvPendingCount)
+        tvPendingEmpty = findViewById(R.id.tvPendingEmpty)
 
         tvManualCode = findViewById(R.id.tvManualCode)
         tvCodeExpires = findViewById(R.id.tvCodeExpires)
@@ -107,6 +124,10 @@ class QRCodeAdminActivity : BaseAdminActivity() {
         btnHalangan = findViewById(R.id.btnHalangan)
 
         filterHalanganToggle()
+
+        pendingAdapter = PendingHalanganAdapter { item -> showValidasiDialog(item) }
+        rvPendingHalangan.layoutManager = LinearLayoutManager(this)
+        rvPendingHalangan.adapter = pendingAdapter
     }
 
     private fun setupClickListeners() {
@@ -114,11 +135,24 @@ class QRCodeAdminActivity : BaseAdminActivity() {
             if (isHalanganMode) loadHalanganQR() else { loadQRCode(); loadAttendanceCode() }
         }
 
+        btnDownload.setOnClickListener {
+            downloadQR()
+        }
+
         toggleQRType.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (!isChecked) return@addOnButtonCheckedListener
             isHalanganMode = checkedId == R.id.btnHalangan
             cardManualCode.visibility = if (isHalanganMode) View.GONE else View.VISIBLE
-            if (isHalanganMode) loadHalanganQR() else { loadQRCode(); loadAttendanceCode() }
+            cardPendingHalangan.visibility = if (isHalanganMode) View.VISIBLE else View.GONE
+            if (isHalanganMode) {
+                loadHalanganQR()
+                loadPendingHalangan()
+                startPendingPolling()
+            } else {
+                stopPendingPolling()
+                loadQRCode()
+                loadAttendanceCode()
+            }
         }
     }
 
@@ -361,11 +395,154 @@ class QRCodeAdminActivity : BaseAdminActivity() {
 
     // downloadQRCode() removed - no longer needed
 
+    private fun downloadQR() {
+        val bitmap = currentBitmap ?: return
+        try {
+            val filename = "QR_Halangan_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())}.png"
+            val values = android.content.ContentValues().apply {
+                put(android.provider.MediaStore.Images.Media.DISPLAY_NAME, filename)
+                put(android.provider.MediaStore.Images.Media.MIME_TYPE, "image/png")
+                put(android.provider.MediaStore.Images.Media.RELATIVE_PATH, android.os.Environment.DIRECTORY_PICTURES)
+            }
+            val uri = contentResolver.insert(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+            uri?.let {
+                contentResolver.openOutputStream(it)?.use { stream ->
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+                }
+                Toast.makeText(this, "QR tersimpan di Pictures", Toast.LENGTH_SHORT).show()
+            }
+        } catch (e: Exception) {
+            Toast.makeText(this, "Gagal menyimpan: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun loadPendingHalangan() {
+        val token = getAuthToken()
+        if (token.isEmpty()) return
+        lifecycleScope.launch(Dispatchers.IO) {
+            halanganRepository.getPendingHalangan(token).fold(
+                onSuccess = { items ->
+                    withContext(Dispatchers.Main) {
+                        pendingAdapter.submitList(items)
+                        tvPendingCount.text = "${items.size} siswi"
+                        tvPendingEmpty.visibility = if (items.isEmpty()) View.VISIBLE else View.GONE
+                        rvPendingHalangan.visibility = if (items.isEmpty()) View.GONE else View.VISIBLE
+                    }
+                },
+                onFailure = { }
+            )
+        }
+    }
+
+    private fun startPendingPolling() {
+        stopPendingPolling()
+        pendingPollJob = lifecycleScope.launch {
+            while (true) {
+                delay(10_000L)
+                loadPendingHalangan()
+            }
+        }
+    }
+
+    private fun stopPendingPolling() {
+        pendingPollJob?.cancel()
+        pendingPollJob = null
+    }
+
+    private fun showValidasiDialog(item: HalanganPendingItem) {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_validasi_halangan, null)
+        val etKeterangan = dialogView.findViewById<EditText>(R.id.etKeterangan)
+        val dialogProgress = dialogView.findViewById<ProgressBar>(R.id.dialogProgress)
+        val btnBatal = dialogView.findViewById<MaterialButton>(R.id.btnBatal)
+        val btnTolak = dialogView.findViewById<MaterialButton>(R.id.btnTolak)
+        val btnSetujui = dialogView.findViewById<MaterialButton>(R.id.btnSetujui)
+
+        dialogView.findViewById<TextView>(R.id.tvInfoNama).text = item.namaSiswa
+        dialogView.findViewById<TextView>(R.id.tvInfoNis).text = item.nis
+        dialogView.findViewById<TextView>(R.id.tvInfoKelas).text = item.kelas
+        dialogView.findViewById<TextView>(R.id.tvInfoTanggal).text = formatDateID(item.tanggal)
+
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
+
+        btnBatal.setOnClickListener { dialog.dismiss() }
+
+        btnSetujui.setOnClickListener {
+            val token = getAuthToken()
+            if (token.isEmpty()) return@setOnClickListener
+            val keterangan = etKeterangan.text.toString().ifBlank { "haid" }
+            showDialogLoading(dialogView, true)
+            lifecycleScope.launch(Dispatchers.IO) {
+                halanganRepository.approveHalangan(token, item.idHalangan, keterangan).fold(
+                    onSuccess = {
+                        withContext(Dispatchers.Main) {
+                            dialog.dismiss()
+                            Toast.makeText(this@QRCodeAdminActivity, "Halangan disetujui", Toast.LENGTH_SHORT).show()
+                            loadPendingHalangan()
+                        }
+                    },
+                    onFailure = { e ->
+                        withContext(Dispatchers.Main) {
+                            showDialogLoading(dialogView, false)
+                            Toast.makeText(this@QRCodeAdminActivity, e.message ?: "Gagal", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                )
+            }
+        }
+
+        btnTolak.setOnClickListener {
+            val token = getAuthToken()
+            if (token.isEmpty()) return@setOnClickListener
+            val keterangan = etKeterangan.text.toString().trim()
+            if (keterangan.isEmpty()) {
+                etKeterangan.error = "Alasan penolakan wajib diisi"
+                return@setOnClickListener
+            }
+            showDialogLoading(dialogView, true)
+            lifecycleScope.launch(Dispatchers.IO) {
+                halanganRepository.rejectHalangan(token, item.idHalangan, keterangan).fold(
+                    onSuccess = {
+                        withContext(Dispatchers.Main) {
+                            dialog.dismiss()
+                            Toast.makeText(this@QRCodeAdminActivity, "Halangan ditolak", Toast.LENGTH_SHORT).show()
+                            loadPendingHalangan()
+                        }
+                    },
+                    onFailure = { e ->
+                        withContext(Dispatchers.Main) {
+                            showDialogLoading(dialogView, false)
+                            Toast.makeText(this@QRCodeAdminActivity, e.message ?: "Gagal", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                )
+            }
+        }
+
+        dialog.show()
+    }
+
+    private fun showDialogLoading(dialogView: View, show: Boolean) {
+        dialogView.findViewById<ProgressBar>(R.id.dialogProgress).visibility = if (show) View.VISIBLE else View.GONE
+        dialogView.findViewById<View>(R.id.dialogActions).visibility = if (show) View.GONE else View.VISIBLE
+    }
+
+    private fun formatDateID(tanggal: String): String {
+        return try {
+            val inp = SimpleDateFormat("yyyy-MM-dd", Locale("id", "ID"))
+            val out = SimpleDateFormat("d MMM yyyy", Locale("id", "ID"))
+            inp.parse(tanggal)?.let { out.format(it) } ?: tanggal
+        } catch (e: Exception) { tanggal }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         countDownTimer?.cancel()
         codeTimer?.cancel()
         autoRefreshJob?.cancel()
         codeRefreshJob?.cancel()
+        pendingPollJob?.cancel()
     }
 }

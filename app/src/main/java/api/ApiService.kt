@@ -740,6 +740,20 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Response<com.xirpl2.SASMobile.model.HalanganPendingListResponse>
 
+    @POST("v2/attendance/halangan-qr/{id}/approve")
+    suspend fun approveHalangan(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int,
+        @Body request: com.xirpl2.SASMobile.model.HalanganApproveRequest
+    ): Response<com.xirpl2.SASMobile.model.MessageResponse>
+
+    @POST("v2/attendance/halangan-qr/{id}/reject")
+    suspend fun rejectHalangan(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int,
+        @Body request: com.xirpl2.SASMobile.model.HalanganRejectRequest
+    ): Response<com.xirpl2.SASMobile.model.MessageResponse>
+
     // --- Reports: PDF Export ---
 
     @GET("v2/reports/attendances/pdf")

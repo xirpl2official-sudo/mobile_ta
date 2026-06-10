@@ -52,6 +52,56 @@ class PerizinanHalanganRepository {
         }
     }
 
+    suspend fun getPendingHalangan(token: String): Result<List<HalanganPendingItem>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.getPendingHalangan("Bearer $token")
+                if (!response.isSuccessful) {
+                    val msg = parseError(response)
+                    return@withContext Result.failure(Exception(msg))
+                }
+                val body = response.body()
+                Result.success(body?.data ?: emptyList())
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun approveHalangan(token: String, id: Int, keterangan: String): Result<String> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.approveHalangan(
+                    "Bearer $token", id, HalanganApproveRequest(keterangan)
+                )
+                if (!response.isSuccessful) {
+                    val msg = parseError(response)
+                    return@withContext Result.failure(Exception(msg))
+                }
+                Result.success(response.body()?.message ?: "Disetujui")
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun rejectHalangan(token: String, id: Int, keterangan: String): Result<String> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.rejectHalangan(
+                    "Bearer $token", id, HalanganRejectRequest(keterangan)
+                )
+                if (!response.isSuccessful) {
+                    val msg = parseError(response)
+                    return@withContext Result.failure(Exception(msg))
+                }
+                Result.success(response.body()?.message ?: "Ditolak")
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
     private fun parseError(response: Response<*>): String {
         return try {
             val errorBody = response.errorBody()?.string()
