@@ -97,7 +97,37 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/toggleScanType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:checkedButton="@+id/btnScanAbsensi"
+        app:singleSelection="true"
+        app:selectionRequired="true"
+        app:layout_constraintTop_toBottomOf="@id/tvSubtitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnScanAbsensi"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="Absensi"
+            android:textAllCaps="false"
+            android:textSize="13sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnScanHalangan"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="Halangan"
+            android:textAllCaps="false"
+            android:textSize="13sp" />
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guidelineScannerTop"
         android:layout_width="wrap_content"

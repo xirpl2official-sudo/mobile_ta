@@ -105,8 +105,15 @@ class StudentMainActivity : BaseActivity() {
     }
 
     fun getAuthTokenSiswa(): String {
-        return com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this)
-            .getString("auth_token", "") ?: ""
+        val token = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this)
+            .getString("auth_token", null)
+        if (!token.isNullOrEmpty()) return token
+        val sessionToken = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this)
+            .getString("auth_token", null)
+        if (!sessionToken.isNullOrEmpty()) return sessionToken
+        val plainToken = getSharedPreferences("UserData", Context.MODE_PRIVATE)
+            .getString("auth_token", null)
+        return plainToken ?: ""
     }
 
     private fun setupStatusBar() {

@@ -19,6 +19,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.button.MaterialButtonToggleGroup
 import com.journeyapps.barcodescanner.BarcodeResult
 import com.journeyapps.barcodescanner.BarcodeView
 import com.journeyapps.barcodescanner.DefaultDecoderFactory
@@ -26,6 +27,7 @@ import com.xirpl2.SASMobile.R
 import com.xirpl2.SASMobile.StudentMainActivity
 import com.xirpl2.SASMobile.model.QRCodeVerifyData
 import com.xirpl2.SASMobile.repository.QRCodeRepository
+import com.xirpl2.SASMobile.repository.PerizinanHalanganRepository
 import kotlinx.coroutines.launch
 
 class ScanQrFragment : Fragment(R.layout.fragment_scan_qr) {
@@ -41,8 +43,13 @@ class ScanQrFragment : Fragment(R.layout.fragment_scan_qr) {
     private lateinit var tvAttendanceTime: TextView
     private lateinit var btnScanAgain: MaterialButton
     private lateinit var progressBar: ProgressBar
+    private lateinit var toggleScanType: MaterialButtonToggleGroup
+    private lateinit var btnScanHalangan: MaterialButton
+
     private val repository = QRCodeRepository()
+    private val halanganRepository = PerizinanHalanganRepository()
     private var isProcessing = false
+    private var isHalanganMode = false
 
     private val cameraPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -52,6 +59,7 @@ class ScanQrFragment : Fragment(R.layout.fragment_scan_qr) {
         super.onViewCreated(view, savedInstanceState)
         applyEdgeToEdge(view)
         initializeViews(view)
+        setupToggle()
         setupClickListeners()
         setupBarcodeScanner()
         checkCameraPermission()
@@ -69,6 +77,20 @@ class ScanQrFragment : Fragment(R.layout.fragment_scan_qr) {
         tvAttendanceTime = view.findViewById(R.id.tvAttendanceTime)
         btnScanAgain = view.findViewById(R.id.btnScanAgain)
         progressBar = view.findViewById(R.id.progressBarScan)
+        toggleScanType = view.findViewById(R.id.toggleScanType)
+        btnScanHalangan = view.findViewById(R.id.btnScanHalangan)
+    }
+
+    private fun setupToggle() {
+        val sharedPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(requireContext())
+        val jk = sharedPref.getString("jenis_kelamin", "L")
+        if (jk != "P") {
+            btnScanHalangan.visibility = View.GONE
+        }
+        toggleScanType.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (!isChecked) return@addOnButtonCheckedListener
+            isHalanganMode = checkedId == R.id.btnScanHalangan
+        }
     }
 
     private fun setupClickListeners() {
@@ -78,10 +100,7 @@ class ScanQrFragment : Fragment(R.layout.fragment_scan_qr) {
 
     private fun setupBarcodeScanner() {
         barcodeView.decoderFactory = DefaultDecoderFactory(listOf(
-            com.google.zxing.BarcodeFormat.QR_CODE,
-            com.google.zxing.BarcodeFormat.CODE_128,
-            com.google.zxing.BarcodeFormat.EAN_13,
-            com.google.zxing.BarcodeFormat.CODE_39
+            com.google.zxing.BarcodeFormat.QR_CODE
         ))
     }
 
@@ -94,15 +113,17 @@ class ScanQrFragment : Fragment(R.layout.fragment_scan_qr) {
             override fun barcodeResult(result: BarcodeResult?) {
                 barcodeView.pause()
                 activity?.runOnUiThread {
-                    if (result != null && result.text.isNotBlank()) verifyQRCode(result.text)
-                    else showStatus("Tidak ada QR yang terdeteksi", false)
+                    if (result != null && result.text.isNotBlank()) {
+                        if (isHalanganMode) verifyHalanganQR(result.text)
+                        else verifyAbsensiQR(result.text)
+                    } else showStatus("Tidak ada QR yang terdeteksi", false)
                 }
             }
             override fun possibleResultPoints(resultPoints: MutableList<com.google.zxing.ResultPoint>?) {}
         })
     }
 
-    private fun verifyQRCode(qrToken: String) {
+    private fun verifyAbsensiQR(qrToken: String) {
         val token = getToken()
         if (token.isEmpty()) { showStatus("Sesi berakhir, login kembali", false); return }
         isProcessing = true; showLoading()
@@ -110,6 +131,31 @@ class ScanQrFragment : Fragment(R.layout.fragment_scan_qr) {
             repository.verifyQRCode(token, qrToken).fold(
                 onSuccess = { data -> hideLoading(); isProcessing = false; showVerificationResult(data) },
                 onFailure = { error -> hideLoading(); isProcessing = false; showStatus(error.message ?: "Gagal", false) }
+            )
+        }
+    }
+
+    private fun verifyHalanganQR(qrToken: String) {
+        val token = getToken()
+        if (token.isEmpty()) { showStatus("Sesi berakhir, login kembali", false); return }
+        isProcessing = true; showLoading()
+        lifecycleScope.launch {
+            halanganRepository.verifyHalangan(token, qrToken).fold(
+                onSuccess = {
+                    hideLoading(); isProcessing = false
+                    tvStudentName.text = "Halangan"
+                    tvStudentClass.text = "Izin 14 hari"
+                    tvPrayerType.text = "Disetujui"
+                    tvAttendanceStatus.text = "Berhasil"
+                    tvAttendanceTime.text = ""
+                    cardResult.visibility = View.VISIBLE
+                    showStatus("Izin halangan tercatat! 14 hari", true)
+                    Toast.makeText(requireContext(), "Halangan berhasil diverifikasi", Toast.LENGTH_SHORT).show()
+                },
+                onFailure = { error ->
+                    hideLoading(); isProcessing = false
+                    showStatus(error.message ?: "Gagal verifikasi halangan", false)
+                }
             )
         }
     }
