@@ -141,16 +141,16 @@ class ScanQrFragment : Fragment(R.layout.fragment_scan_qr) {
         isProcessing = true; showLoading()
         lifecycleScope.launch {
             halanganRepository.verifyHalangan(token, qrToken).fold(
-                onSuccess = {
+                onSuccess = { data ->
                     hideLoading(); isProcessing = false
-                    tvStudentName.text = "Halangan"
-                    tvStudentClass.text = "Izin 14 hari"
-                    tvPrayerType.text = "Disetujui"
-                    tvAttendanceStatus.text = "Berhasil"
-                    tvAttendanceTime.text = ""
+                    tvStudentName.text = data.namaSiswa
+                    tvStudentClass.text = if (data.jurusan.isNotEmpty()) "${data.kelas} - ${data.jurusan}" else data.kelas
+                    tvPrayerType.text = "Halangan"
+                    tvAttendanceStatus.text = data.status.replaceFirstChar { it.uppercase() }
+                    tvAttendanceTime.text = data.tanggal
                     cardResult.visibility = View.VISIBLE
-                    showStatus("Izin halangan tercatat! 14 hari", true)
-                    Toast.makeText(requireContext(), "Halangan berhasil diverifikasi", Toast.LENGTH_SHORT).show()
+                    showStatus("Pengajuan halangan tercatat!", true)
+                    Toast.makeText(requireContext(), "Halangan berhasil diajukan", Toast.LENGTH_SHORT).show()
                 },
                 onFailure = { error ->
                     hideLoading(); isProcessing = false

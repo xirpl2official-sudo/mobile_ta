@@ -567,6 +567,132 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/chipGroupFilter"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_small"
+                        app:singleSelection="true"
+                        app:selectionRequired="true"
+                        app:checkedChip="@id/chipWeek"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/btnUnduhRiwayat">
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipToday"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Hari Ini"
+                            android:textSize="11sp" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipWeek"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Minggu Ini"
+                            android:textSize="11sp" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipMonth"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Bulan Ini"
+                            android:textSize="11sp" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipCustom"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Custom"
+                            android:textSize="11sp" />
+                    </com.google.android.material.chip.ChipGroup>
+
+                    
+                    <LinearLayout
+                        android:id="@+id/customDateContainer"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:visibility="gone"
+                        android:layout_marginTop="@dimen/spacing_small"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/chipGroupFilter">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/tilStartDate"
+                            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:hint="Dari"
+                            app:endIconMode="none">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etStartDate"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:focusable="false"
+                                android:cursorVisible="false"
+                                android:hint="yyyy-mm-dd"
+                                android:textSize="12sp"
+                                android:inputType="none" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=" s.d "
+                            android:textSize="12sp"
+                            android:layout_marginHorizontal="4dp" />
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/tilEndDate"
+                            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:hint="Sampai"
+                            app:endIconMode="none">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etEndDate"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:focusable="false"
+                                android:cursorVisible="false"
+                                android:hint="yyyy-mm-dd"
+                                android:textSize="12sp"
+                                android:inputType="none" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnApplyCustomDate"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="OK"
+                            android:textSize="12sp"
+                            android:insetTop="0dp"
+                            android:insetBottom="0dp"
+                            app:cornerRadius="8dp"
+                            android:layout_marginStart="4dp" />
+                    </LinearLayout>
+
+                    
+                    <androidx.constraintlayout.widget.Barrier
+                        android:id="@+id/barrierFilterBottom"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:barrierDirection="bottom"
+                        app:constraint_referenced_ids="chipGroupFilter,customDateContainer" />
+
+                    
                     <LinearLayout
                         android:id="@+id/riwayatHeader"
                         android:layout_width="0dp"
@@ -576,7 +702,7 @@
                         android:layout_marginTop="@dimen/spacing_small"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/btnUnduhRiwayat">
+                        app:layout_constraintTop_toBottomOf="@id/barrierFilterBottom">
 
                         <TextView
                             android:layout_width="0dp"

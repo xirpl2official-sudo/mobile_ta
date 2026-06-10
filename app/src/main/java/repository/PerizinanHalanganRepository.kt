@@ -11,13 +11,10 @@ class PerizinanHalanganRepository {
 
     private val apiService = RetrofitClient.apiService
 
-    suspend fun requestHalangan(token: String, tanggalMulai: String): Result<RequestHalanganData> {
+    suspend fun generateHalanganQR(token: String): Result<HalanganQRData> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.requestHalangan(
-                    "Bearer $token",
-                    RequestHalanganBody(tanggalMulai = tanggalMulai)
-                )
+                val response = apiService.generateHalanganQR("Bearer $token")
                 if (!response.isSuccessful) {
                     val msg = parseError(response)
                     return@withContext Result.failure(Exception(msg))
@@ -33,7 +30,7 @@ class PerizinanHalanganRepository {
         }
     }
 
-    suspend fun verifyHalangan(token: String, halanganToken: String): Result<String> {
+    suspend fun verifyHalangan(token: String, halanganToken: String): Result<HalanganVerifyData> {
         return withContext(Dispatchers.IO) {
             try {
                 val response = apiService.verifyHalangan(
@@ -45,7 +42,10 @@ class PerizinanHalanganRepository {
                     return@withContext Result.failure(Exception(msg))
                 }
                 val body = response.body()
-                Result.success(body?.message ?: "Verifikasi berhasil")
+                if (body?.data == null) {
+                    return@withContext Result.failure(Exception("Response data kosong"))
+                }
+                Result.success(body.data)
             } catch (e: Exception) {
                 Result.failure(e)
             }

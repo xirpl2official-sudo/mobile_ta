@@ -1,44 +1,27 @@
 package com.xirpl2.SASMobile.repository
 
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.xirpl2.SASMobile.model.AttendanceCodeData
 import com.xirpl2.SASMobile.model.QRCodeData
 import com.xirpl2.SASMobile.model.QRCodeVerifyData
+import com.xirpl2.SASMobile.model.QRCodeVerifyRequest
+import com.xirpl2.SASMobile.model.VerifyCodeRequest
 import com.xirpl2.SASMobile.network.RetrofitClient
-import com.xirpl2.SASMobile.network.generated.model.QRCodeVerifyRequest as GeneratedQRCodeVerifyRequest
-import com.xirpl2.SASMobile.network.generated.model.VerifyCodeRequest as GeneratedVerifyCodeRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 
 class QRCodeRepository {
 
-    private val attendanceApi = RetrofitClient.attendanceApi
+    private val apiService = RetrofitClient.apiService
     private val gson = Gson()
 
-    // -- Helpers: Map<String,Any> -> legacy typed models (response surface unchanged) --
-
-    private fun mapToQRCodeData(map: Map<String, Any>?): QRCodeData? {
-        if (map == null) return null
-        return gson.fromJson(gson.toJson(map), QRCodeData::class.java)
-    }
-
-    private fun mapToQRCodeVerifyData(map: Map<String, Any>?): QRCodeVerifyData? {
-        if (map == null) return null
-        return gson.fromJson(gson.toJson(map), QRCodeVerifyData::class.java)
-    }
-
-    private fun mapToAttendanceCodeData(map: Map<String, Any>?): AttendanceCodeData? {
-        if (map == null) return null
-        return gson.fromJson(gson.toJson(map), AttendanceCodeData::class.java)
-    }
+    // -- QR Verify helpers --
 
     suspend fun generateQRCode(token: String): Result<QRCodeData> {
         return withContext(Dispatchers.IO) {
             try {
-                val response: Response<com.xirpl2.SASMobile.network.generated.model.QRCodeGenerateResponse> =
-                    attendanceApi.v2AttendanceQrCodesCurrentGet()
+                val response = apiService.getCurrentQRCode("Bearer $token")
 
                 if (!response.isSuccessful) {
                     val errorMessage = when (response.code()) {
@@ -55,7 +38,7 @@ class QRCodeRepository {
                     return@withContext Result.failure(Exception("Response body kosong"))
                 }
 
-                val qrData = mapToQRCodeData(body.data)
+                val qrData = body.data
                     ?: return@withContext Result.failure(Exception("Data QR code kosong"))
                 return@withContext Result.success(qrData)
             } catch (e: Exception) {
@@ -67,19 +50,16 @@ class QRCodeRepository {
     suspend fun verifyQRCode(authToken: String, qrToken: String): Result<QRCodeVerifyData> {
         return withContext(Dispatchers.IO) {
             try {
-                val response: Response<com.xirpl2.SASMobile.network.generated.model.QRCodeVerifyResponse> =
-                    attendanceApi.v2AttendanceQrCodesVerifyPost(
-                        GeneratedQRCodeVerifyRequest(token = qrToken)
-                    )
+                val response = apiService.verifyQRCode(
+                    "Bearer $authToken",
+                    QRCodeVerifyRequest(token = qrToken)
+                )
 
                 if (!response.isSuccessful) {
                     if (response.code() == 409) {
                         val parsed = parseErrorBodyAsVerifyResponse(response)
                         if (parsed?.data != null) {
-                            val verifyData = mapToQRCodeVerifyData(parsed.data)
-                            if (verifyData != null) {
-                                return@withContext Result.success(verifyData)
-                            }
+                            return@withContext Result.success(parsed.data)
                         }
                         return@withContext Result.failure(
                             Exception(parsed?.message ?: "Siswa sudah tercatat hadir untuk jadwal ini")
@@ -100,7 +80,7 @@ class QRCodeRepository {
                     return@withContext Result.failure(Exception("Response body kosong"))
                 }
 
-                val verifyData = mapToQRCodeVerifyData(body.data)
+                val verifyData = body.data
                     ?: return@withContext Result.failure(Exception("Data verifikasi tidak ditemukan"))
                 return@withContext Result.success(verifyData)
             } catch (e: Exception) {
@@ -111,11 +91,11 @@ class QRCodeRepository {
 
     private fun parseErrorBodyAsVerifyResponse(
         response: Response<*>
-    ): com.xirpl2.SASMobile.network.generated.model.QRCodeVerifyResponse? {
+    ): com.xirpl2.SASMobile.model.QRCodeVerifyResponse? {
         return try {
             val errorBody = response.errorBody()?.string()
             if (errorBody != null) {
-                gson.fromJson(errorBody, com.xirpl2.SASMobile.network.generated.model.QRCodeVerifyResponse::class.java)
+                gson.fromJson(errorBody, com.xirpl2.SASMobile.model.QRCodeVerifyResponse::class.java)
             } else {
                 null
             }
@@ -127,13 +107,12 @@ class QRCodeRepository {
     suspend fun generateAttendanceCode(token: String): Result<AttendanceCodeData> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = attendanceApi.v2AttendanceCodeGenerateGet()
+                val response = apiService.generateAttendanceCode("Bearer $token")
                 if (!response.isSuccessful) {
                     return@withContext Result.failure(Exception("HTTP Error: ${response.code()}"))
                 }
                 val body = response.body() ?: return@withContext Result.failure(Exception("Response body kosong"))
-                val data = mapToAttendanceCodeData(body.data)
-                    ?: return@withContext Result.failure(Exception("Data kode kosong"))
+                val data = body.data ?: return@withContext Result.failure(Exception("Data kode kosong"))
                 Result.success(data)
             } catch (e: Exception) {
                 Result.failure(Exception("Gagal terhubung ke server: ${e.message}"))

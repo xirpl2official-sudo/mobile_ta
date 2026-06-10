@@ -11,6 +11,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.widget.NestedScrollView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -35,6 +36,7 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
     private lateinit var filterJenisSholat: TextView
     private lateinit var tvCountInfo: TextView
     private lateinit var recyclerPresensi: RecyclerView
+    private lateinit var nestedScrollView: NestedScrollView
     private lateinit var progressLoading: ProgressBar
     private lateinit var tvEmptyState: TextView
 
@@ -171,6 +173,7 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
         filterJenisSholat = findViewById(R.id.filterJenisSholat) ?: TextView(this)
         tvCountInfo = findViewById(R.id.tvCountInfo) ?: TextView(this)
         recyclerPresensi = findViewById(R.id.recyclerPresensi) ?: RecyclerView(this)
+        nestedScrollView = findViewById(R.id.nestedScrollView) ?: NestedScrollView(this)
         progressLoading = findViewById(R.id.progressLoading) ?: ProgressBar(this)
         tvEmptyState = findViewById(R.id.tvEmptyState) ?: TextView(this)
         tableHorizontalScrollView = findViewById(R.id.tableHorizontalScrollView) ?: View(this)
@@ -178,30 +181,23 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
 
     private fun setupRecyclerView() {
         presensiAdapter = PresensiAdapter()
-        val layoutManager = LinearLayoutManager(this@PresensiSholatAdminActivity)
         recyclerPresensi.apply {
-            this.layoutManager = layoutManager
+            layoutManager = LinearLayoutManager(this@PresensiSholatAdminActivity)
             adapter = presensiAdapter
-            
-            
-            addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    super.onScrolled(recyclerView, dx, dy)
-                    
-                    val visibleItemCount = layoutManager.childCount
-                    val totalItemCount = layoutManager.itemCount
-                    val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+            isNestedScrollingEnabled = false
+        }
 
-                    if (!isLoading && !isLastPage) {
-                        if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
-                            && firstVisibleItemPosition >= 0
-                            && totalItemCount >= limit
-                        ) {
-                            loadMoreData()
-                        }
+        nestedScrollView.setOnScrollChangeListener { _: NestedScrollView, _: Int, scrollY: Int, _: Int, oldScrollY: Int ->
+            if (scrollY > oldScrollY) {
+                val child = nestedScrollView.getChildAt(0)
+                if (child != null) {
+                    val scrollViewHeight = nestedScrollView.height
+                    val childHeight = child.height
+                    if ((scrollY + scrollViewHeight) >= (childHeight - 200)) {
+                        loadMoreData()
                     }
                 }
-            })
+            }
         }
     }
 
@@ -231,11 +227,13 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
         currentPage = 1
         isLastPage = false
         dataList.clear()
-        presensiAdapter.clearData() 
+        presensiAdapter.footerState = PresensiAdapter.FooterState.HIDDEN
+        presensiAdapter.clearData()
         loadData()
     }
 
     private fun loadMoreData() {
+        if (isLoading || isLastPage) return
         currentPage++
         loadData()
     }
@@ -317,14 +315,13 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
 
         if (isLoading) return
         isLoading = true
-        
+
         if (currentPage == 1) {
             showLoading(true)
         } else {
-            
+            presensiAdapter.footerState = PresensiAdapter.FooterState.LOADING
         }
 
-        
         val kelasApi = if (selectedKelas == "Semua Kelas") null else selectedKelas
         val jurusanApi = if (selectedJurusan == "Semua Jurusan") null else selectedJurusan
         val jenisSholatApi = getJenisSholatApiValue(selectedJenisSholat)
@@ -353,13 +350,21 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
 
                     if (currentPage == 1) {
                         dataList.clear()
+                        dataList.addAll(items ?: emptyList())
+                        presensiAdapter.updateData(dataList)
+                    } else {
+                        dataList.addAll(items ?: emptyList())
+                        presensiAdapter.appendData(items ?: emptyList())
                     }
-                    dataList.addAll(items ?: emptyList())
-                    presensiAdapter.updateData(dataList)
 
                     isLastPage = pagination?.let {
                         it.page >= it.totalPages
                     } ?: ((items?.size ?: 0) < limit)
+
+                    presensiAdapter.footerState = if (isLastPage && dataList.isNotEmpty())
+                        PresensiAdapter.FooterState.NO_MORE
+                    else
+                        PresensiAdapter.FooterState.HIDDEN
 
                     val totalItems = pagination?.totalItems ?: dataList.size
                     tvCountInfo.text = "Total: $totalItems data"
@@ -377,6 +382,8 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
                     if (isFinishing || isDestroyed) return@fold
                     isLoading = false
                     showLoading(false)
+                    presensiAdapter.footerState = PresensiAdapter.FooterState.HIDDEN
+                    if (currentPage > 1) currentPage--
                     if (currentPage == 1) {
                         showEmptyState("Gagal memuat data: ${error.message}")
                     }

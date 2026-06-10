@@ -217,11 +217,17 @@ class BerandaRepository {
         }
     }
 
-    suspend fun getHistorySiswa(token: String, week: Int = 0): Result<HistorySiswaData> {
+    suspend fun getHistorySiswa(
+        token: String,
+        week: Int = 0,
+        filter: String? = null,
+        startDate: String? = null,
+        endDate: String? = null
+    ): Result<HistorySiswaData> {
         return withContext(Dispatchers.IO) {
             try {
                 val response: Response<HistorySiswaResponse> =
-                    apiService.getMyAttendanceHistory("Bearer $token", week)
+                    apiService.getMyAttendanceHistory("Bearer $token", week, filter, startDate, endDate)
 
                 if (!response.isSuccessful) {
                     return@withContext Result.failure(

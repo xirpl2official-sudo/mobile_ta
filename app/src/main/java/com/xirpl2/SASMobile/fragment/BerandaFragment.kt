@@ -18,6 +18,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.material.chip.ChipGroup
+import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.textfield.TextInputEditText
 import com.xirpl2.SASMobile.*
 import com.xirpl2.SASMobile.R
 import com.xirpl2.SASMobile.StudentMainActivity
@@ -31,6 +35,9 @@ import com.xirpl2.SASMobile.utils.NotificationCounterManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.TimeZone
 
 class BerandaFragment : Fragment(R.layout.fragment_beranda) {
 
@@ -49,6 +56,15 @@ class BerandaFragment : Fragment(R.layout.fragment_beranda) {
     private lateinit var riwayatAdapter: RiwayatAbsensiAdapter
     private val repository = BerandaRepository()
     private var isDataLoaded = false
+
+    private lateinit var chipGroupFilter: ChipGroup
+    private lateinit var customDateContainer: LinearLayout
+    private lateinit var etStartDate: TextInputEditText
+    private lateinit var etEndDate: TextInputEditText
+    private lateinit var btnApplyCustomDate: com.google.android.material.button.MaterialButton
+    private var currentFilter: String = ""
+    private var customStartDate: String? = null
+    private var customEndDate: String? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -81,6 +97,12 @@ class BerandaFragment : Fragment(R.layout.fragment_beranda) {
         cardWaktuAbsensi = view.findViewById(R.id.cardWaktuAbsensi)
         notificationBellContainer = view.findViewById(R.id.notificationBellContainer)
         tvNotificationBadge = view.findViewById(R.id.tvNotificationBadge)
+        chipGroupFilter = view.findViewById(R.id.chipGroupFilter)
+        customDateContainer = view.findViewById(R.id.customDateContainer)
+        etStartDate = view.findViewById(R.id.etStartDate)
+        etEndDate = view.findViewById(R.id.etEndDate)
+        btnApplyCustomDate = view.findViewById(R.id.btnApplyCustomDate)
+        setupFilterChips()
         notificationBellContainer.setOnClickListener {
             if (!isAdded) return@setOnClickListener
             startActivity(Intent(requireContext(), NotificationCenterActivity::class.java))
@@ -90,6 +112,57 @@ class BerandaFragment : Fragment(R.layout.fragment_beranda) {
             if (count > 0) { tvNotificationBadge.text = if (count > 99) "99+" else count.toString(); tvNotificationBadge.visibility = View.VISIBLE }
             else tvNotificationBadge.visibility = View.GONE
         }
+    }
+
+    private fun setupFilterChips() {
+        chipGroupFilter.setOnCheckedStateChangeListener { group, checkedIds ->
+            if (checkedIds.isEmpty()) return@setOnCheckedStateChangeListener
+            val chipId = checkedIds[0]
+            val isCustom = chipId == R.id.chipCustom
+            customDateContainer.visibility = if (isCustom) View.VISIBLE else View.GONE
+            if (!isCustom) {
+                currentFilter = when (chipId) {
+                    R.id.chipToday -> "today"
+                    R.id.chipMonth -> "this_month"
+                    else -> ""
+                }
+                customStartDate = null
+                customEndDate = null
+                loadAllData()
+            } else {
+                currentFilter = ""
+            }
+        }
+
+        etStartDate.setOnClickListener { showDatePicker(true) }
+        etEndDate.setOnClickListener { showDatePicker(false) }
+
+        btnApplyCustomDate.setOnClickListener {
+            val sd = etStartDate.text?.toString()
+            val ed = etEndDate.text?.toString()
+            if (sd.isNullOrBlank() || ed.isNullOrBlank()) {
+                Toast.makeText(requireContext(), "Pilih tanggal mulai dan selesai", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            currentFilter = "custom"
+            customStartDate = sd
+            customEndDate = ed
+            loadAllData()
+        }
+    }
+
+    private fun showDatePicker(isStart: Boolean) {
+        val fmt = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val constraints = CalendarConstraints.Builder().build()
+        val picker = MaterialDatePicker.Builder.datePicker()
+            .setCalendarConstraints(constraints)
+            .build()
+        picker.addOnPositiveButtonClickListener { millis ->
+            val cal = java.util.Calendar.getInstance().apply { timeInMillis = millis }
+            val dateStr = fmt.format(cal.time)
+            if (isStart) etStartDate.setText(dateStr) else etEndDate.setText(dateStr)
+        }
+        picker.show(parentFragmentManager, "datePicker")
     }
 
     private fun setupAbsensiButton(view: View) {
@@ -173,7 +246,13 @@ class BerandaFragment : Fragment(R.layout.fragment_beranda) {
         val token = getToken()
         if (token.isEmpty()) return
         viewLifecycleOwner.lifecycleScope.launch {
-            repository.getHistorySiswa(token, 0).fold(
+            repository.getHistorySiswa(
+                token = token,
+                week = 0,
+                filter = if (currentFilter.isNotEmpty()) currentFilter else null,
+                startDate = customStartDate,
+                endDate = customEndDate
+            ).fold(
                 onSuccess = { historyData ->
                     if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                     historyData.statistik?.let { stats ->

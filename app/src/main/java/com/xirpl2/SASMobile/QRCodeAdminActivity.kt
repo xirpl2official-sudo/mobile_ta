@@ -15,6 +15,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.xirpl2.SASMobile.network.RetrofitClient
 import com.xirpl2.SASMobile.repository.QRCodeRepository
+import com.xirpl2.SASMobile.repository.PerizinanHalanganRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -53,6 +54,7 @@ class QRCodeAdminActivity : BaseAdminActivity() {
 
     private lateinit var swipeRefresh: SwipeRefreshLayout
     private val qrRepository = QRCodeRepository()
+    private val halanganRepository = PerizinanHalanganRepository()
 
     private val QR_REFRESH_INTERVAL = 30_000L  // 30 seconds (match desktop)
     private val CODE_REFRESH_INTERVAL = 20_000L // 20 seconds (match desktop)
@@ -184,12 +186,13 @@ class QRCodeAdminActivity : BaseAdminActivity() {
 
         if (currentBitmap == null) showLoading()
         lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                val response = RetrofitClient.apiService.getCurrentQRCodeImage("Bearer $token",
-                    type = "halangan")
-                if (response.isSuccessful) {
-                    val bytes = response.body()?.bytes()
-                    if (bytes != null && bytes.isNotEmpty()) {
+            halanganRepository.generateHalanganQR(token).fold(
+                onSuccess = { data ->
+                    try {
+                        val base64Data = if (data.qrCode.contains(",")) {
+                            data.qrCode.split(",")[1]
+                        } else data.qrCode
+                        val bytes = Base64.decode(base64Data, Base64.DEFAULT)
                         val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
                         withContext(Dispatchers.Main) {
                             currentBitmap = bitmap
@@ -198,29 +201,27 @@ class QRCodeAdminActivity : BaseAdminActivity() {
                             showQRCode()
                             if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                         }
-                        return@launch
+                    } catch (e: Exception) {
+                        withContext(Dispatchers.Main) {
+                            if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
+                            showError("Gagal decode QR Halangan")
+                        }
+                    }
+                },
+                onFailure = { e ->
+                    val errMsg = e.message ?: "Gagal memuat QR Halangan"
+                    withContext(Dispatchers.Main) {
+                        if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
+                        if (errMsg.contains("Forbidden", ignoreCase = true) || errMsg.contains("perempuan", ignoreCase = true)) {
+                            isHalanganMode = false
+                            toggleQRType.check(R.id.btnAbsensi)
+                            showError("Hanya guru perempuan atau admin yang dapat generate QR Halangan")
+                        } else {
+                            showError(errMsg)
+                        }
                     }
                 }
-                val errMsg = try { response.errorBody()?.string() } catch (_: Exception) { null }
-                    ?: response.message()
-                withContext(Dispatchers.Main) {
-                    if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
-                    if (errMsg.contains("Forbidden", ignoreCase = true) || errMsg.contains("403")) {
-                        isHalanganMode = false
-                        toggleQRType.check(R.id.btnAbsensi)
-                        showError("Hanya guru perempuan atau admin yang dapat generate QR Halangan")
-                    } else if (errMsg.contains("tidak ada jadwal", ignoreCase = true) || errMsg.contains("404")) {
-                        showNoSchedule("Tidak ada jadwal sholat aktif saat ini")
-                    } else {
-                        showError(errMsg)
-                    }
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
-                    showError(e.message ?: "Gagal memuat QR Halangan")
-                }
-            }
+            )
         }
     }
 

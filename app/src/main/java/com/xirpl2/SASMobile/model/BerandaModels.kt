@@ -264,7 +264,7 @@ data class PaginationInfo(
     val limit: Int = 20,
     @SerializedName("total_pages")
     val totalPages: Int = 1,
-    @SerializedName("total")
+    @SerializedName("total_items")
     val totalItems: Int = 0
 )
 

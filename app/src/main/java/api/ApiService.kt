@@ -223,7 +223,12 @@ interface ApiService {
     @GET("v2/students/me/attendance-history")
     suspend fun getMyAttendanceHistory(
         @Header("Authorization") token: String,
-        @Query("week") week: Int? = null
+        @Query("week") week: Int? = null,
+        @Query("filter") filter: String? = null,
+        @Query("start_date") startDate: String? = null,
+        @Query("end_date") endDate: String? = null,
+        @Query("page") page: Int? = null,
+        @Query("page_size") pageSize: Int? = null
     ): Response<HistorySiswaResponse>
 
     @POST("v2/students/{nis}/attendances")
@@ -717,25 +722,23 @@ interface ApiService {
     @DELETE("v2/data-retention/backups")
     suspend fun deleteBackup(@Header("Authorization") token: String): Response<MessageResponse>
 
-    // --- Perizinan Halangan ---
+    // --- Perizinan Halangan (V2: attendance/halangan-qr) ---
 
-    @POST("v2/perizinan/halangan/request")
-    suspend fun requestHalangan(
-        @Header("Authorization") token: String,
-        @Body request: com.xirpl2.SASMobile.model.RequestHalanganBody
-    ): Response<com.xirpl2.SASMobile.model.ApiResponse<com.xirpl2.SASMobile.model.RequestHalanganData>>
+    @GET("v2/attendance/halangan-qr/generate")
+    suspend fun generateHalanganQR(
+        @Header("Authorization") token: String
+    ): Response<com.xirpl2.SASMobile.model.HalanganQRGenerateResponse>
 
-    @POST("v2/perizinan/halangan/verify")
+    @POST("v2/attendance/halangan-qr/verify")
     suspend fun verifyHalangan(
         @Header("Authorization") token: String,
         @Body request: com.xirpl2.SASMobile.model.VerifyHalanganBody
-    ): Response<com.xirpl2.SASMobile.model.MessageResponse>
+    ): Response<com.xirpl2.SASMobile.model.HalanganVerifyResponse>
 
-    @GET("v2/perizinan/halangan/status/{siswa_id}")
-    suspend fun getHalanganStatus(
-        @Header("Authorization") token: String,
-        @Path("siswa_id") siswaId: Int
-    ): Response<com.xirpl2.SASMobile.model.ApiResponse<com.xirpl2.SASMobile.model.HalanganStatusData>>
+    @GET("v2/attendance/halangan-qr/pending")
+    suspend fun getPendingHalangan(
+        @Header("Authorization") token: String
+    ): Response<com.xirpl2.SASMobile.model.HalanganPendingListResponse>
 
     // --- Reports: PDF Export ---
 
