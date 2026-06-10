@@ -113,7 +113,7 @@ class TambahGuruActivity : BaseActivity() {
         setLoadingState(true)
 
         lifecycleScope.launch {
-            val request = CreateGuruRequest(email = email, password = password, nama = nama, nip = nip)
+            val request = CreateGuruRequest(email = email, password = password, nama = nama, nip = nip ?: "")
             repository.createGuru(token, request).fold(
                 onSuccess = {
                     setLoadingState(false)

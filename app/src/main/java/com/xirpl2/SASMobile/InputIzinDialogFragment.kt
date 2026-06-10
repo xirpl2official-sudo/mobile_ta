@@ -272,10 +272,9 @@ class InputIzinDialogFragment : DialogFragment() {
         }
         
         val request = CreateAbsensiRequest(
-            id_jadwal = selectedJadwalId!!,
+            id_jenis = selectedJadwalId!!,
             status = status,
-            tanggal = selectedDate,
-            deskripsi = deskripsi
+            tanggal = selectedDate
         )
         
         btnSimpan.isEnabled = false

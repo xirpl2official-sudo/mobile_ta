@@ -31,6 +31,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.xirpl2.SASMobile.adapter.SiswaAdapter
 import com.xirpl2.SASMobile.model.SiswaItem
 import com.xirpl2.SASMobile.model.KelasItem
+import com.xirpl2.SASMobile.model.JurusanItem
+import com.xirpl2.SASMobile.model.AcademicYear
+import com.xirpl2.SASMobile.model.UpdateSiswaRequest
+import com.xirpl2.SASMobile.model.BulkProgressionRequest
 import com.xirpl2.SASMobile.network.RetrofitClient
 import com.xirpl2.SASMobile.repository.BerandaRepository
 import kotlinx.coroutines.Dispatchers
@@ -1206,100 +1210,111 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
     private fun showEditSiswaDialog(siswa: SiswaItem) {
         val dialogView = layoutInflater.inflate(R.layout.dialog_tambah_siswa, null)
 
-        val tvTitle = dialogView.findViewById<TextView>(android.R.id.title)
-            ?: dialogView.findViewWithTag<TextView>("title")
-
+        val tvTitle = dialogView.findViewById<TextView>(R.id.tvDialogTitle)
         val etNis = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etNis)
         val etNama = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etNama)
         val rgJenisKelamin = dialogView.findViewById<android.widget.RadioGroup>(R.id.rgJenisKelamin)
         val rbLakiLaki = dialogView.findViewById<android.widget.RadioButton>(R.id.rbLakiLaki)
         val rbPerempuan = dialogView.findViewById<android.widget.RadioButton>(R.id.rbPerempuan)
-        val etKelas = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etKelas)
         val actvJurusan = dialogView.findViewById<android.widget.AutoCompleteTextView>(R.id.actvJurusan)
+        val actvKelas = dialogView.findViewById<android.widget.AutoCompleteTextView>(R.id.actvKelas)
+        val actvTahunMasuk = dialogView.findViewById<android.widget.AutoCompleteTextView>(R.id.actvTahunMasuk)
+        val actvAgama = dialogView.findViewById<android.widget.AutoCompleteTextView>(R.id.actvAgama)
+        val actvStatusAkademik = dialogView.findViewById<android.widget.AutoCompleteTextView>(R.id.actvStatusAkademik)
+        val labelStatusAkademik = dialogView.findViewById<TextView>(R.id.labelStatusAkademik)
+        val tilStatusAkademik = dialogView.findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.tilStatusAkademik)
         val btnBatal = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnBatal)
         val btnSimpan = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnSimpan)
         val btnClose = dialogView.findViewById<android.widget.ImageView>(R.id.btnClose)
 
-        etNis.setText(siswa.nis)
-        etNis.isEnabled = false
+        tvTitle.text = "Edit Siswa"
+        etNis.setText(siswa.nis); etNis.isEnabled = false
         etNama.setText(siswa.nama_siswa)
-        if (siswa.jenis_kelamin == "L") {
-            rbLakiLaki.isChecked = true
-        } else {
-            rbPerempuan.isChecked = true
-        }
-        etKelas.setText(siswa.kelas)
-        actvJurusan.setText(siswa.jurusan)
+        if (siswa.jenis_kelamin == "L") rbLakiLaki.isChecked = true else rbPerempuan.isChecked = true
 
-        val jurusanAdapter = android.widget.ArrayAdapter(
-            this,
-            android.R.layout.simple_dropdown_item_1line,
-            fixedJurusanList
-        )
-        actvJurusan.setAdapter(jurusanAdapter)
+        val agamaOptions = listOf("Islam", "Kristen", "Katolik", "Hindu", "Buddha", "Konghucu")
+        actvAgama.setAdapter(android.widget.ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, agamaOptions))
+        actvAgama.setText(siswa.agama?.takeIf { it.isNotBlank() } ?: "Islam", false)
 
+        val statusOptions = listOf("AKTIF", "LULUS", "KELUAR", "PINDAH", "PKL", "KEK", "MUTASI")
+        actvStatusAkademik.setAdapter(android.widget.ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, statusOptions))
+        actvStatusAkademik.setText(siswa.statusAkademik?.takeIf { it.isNotBlank() } ?: "AKTIF", false)
+        labelStatusAkademik.visibility = View.VISIBLE
+        tilStatusAkademik.visibility = View.VISIBLE
         btnSimpan.text = "Update"
 
-        val dialog = AlertDialog.Builder(this)
-            .setView(dialogView)
-            .setCancelable(false)
-            .create()
+        val dialog = AlertDialog.Builder(this).setView(dialogView).setCancelable(false).create()
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
-        btnBatal.setOnClickListener {
-            dialog.dismiss()
+        val token = getAuthToken()
+        lifecycleScope.launch {
+            var jurusanList = listOf<JurusanItem>()
+            var kelasList = listOf<KelasItem>()
+            var tahunList = listOf<AcademicYear>()
+
+            repository.getJurusanLookup(token).onSuccess { list ->
+                jurusanList = list
+                actvJurusan.setAdapter(android.widget.ArrayAdapter(this@DataSiswaAdminActivity, android.R.layout.simple_dropdown_item_1line, list.map { it.nama }))
+                actvJurusan.setText(siswa.jurusan, false)
+            }
+            repository.getKelasLookup(token).onSuccess { list -> kelasList = list }
+            repository.getAcademicYearsList(token).onSuccess { list ->
+                tahunList = list
+                val displayList = list.map { if (it.is_active) "${it.tahun} (Aktif)" else it.tahun }
+                actvTahunMasuk.setAdapter(android.widget.ArrayAdapter(this@DataSiswaAdminActivity, android.R.layout.simple_dropdown_item_1line, displayList))
+            }
+
+            actvJurusan.onItemClickListener = android.widget.AdapterView.OnItemClickListener { _, _, pos, _ ->
+                if (pos < jurusanList.size && kelasList.isNotEmpty()) {
+                    val filtered = kelasList.filter { it.jurusan == jurusanList[pos].nama }
+                    actvKelas.setAdapter(android.widget.ArrayAdapter(this@DataSiswaAdminActivity, android.R.layout.simple_dropdown_item_1line, filtered.map { it.label }))
+                    actvKelas.setText("", false)
+                }
+            }
         }
+
+        btnClose.setOnClickListener { dialog.dismiss() }
+        btnBatal.setOnClickListener { dialog.dismiss() }
 
         btnSimpan.setOnClickListener {
             val nama = etNama.text?.toString()?.trim() ?: ""
             val jenisKelamin = if (rbLakiLaki.isChecked) "L" else "P"
-            val kelas = etKelas.text?.toString()?.trim()?.uppercase() ?: ""
-            val jurusan = actvJurusan.text?.toString()?.trim()?.uppercase() ?: ""
+            val jurusanName = actvJurusan.text?.toString()?.trim() ?: ""
+            val kelasName = actvKelas.text?.toString()?.trim() ?: ""
+            val agama = actvAgama.text?.toString()?.trim() ?: ""
+            val status = actvStatusAkademik.text?.toString()?.trim() ?: ""
+            val tahunDisplay = actvTahunMasuk.text?.toString()?.trim() ?: ""
 
-            if (nama.isEmpty()) {
-                etNama.error = "Nama tidak boleh kosong"
-                return@setOnClickListener
-            }
-            if (kelas.isEmpty() || kelas !in listOf("10", "11", "12")) {
-                etKelas.error = "Kelas harus 10, 11, atau 12"
-                return@setOnClickListener
-            }
-            if (jurusan.isEmpty()) {
-                Toast.makeText(this, "Pilih jurusan", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+            if (nama.isEmpty()) { etNama.error = "Nama tidak boleh kosong"; return@setOnClickListener }
+            if (kelasName.isEmpty()) { Toast.makeText(this, "Pilih kelas", Toast.LENGTH_SHORT).show(); return@setOnClickListener }
+            if (jurusanName.isEmpty()) { Toast.makeText(this, "Pilih jurusan", Toast.LENGTH_SHORT).show(); return@setOnClickListener }
 
-            val request = com.xirpl2.SASMobile.model.UpdateSiswaRequest(
-                nama_siswa = nama,
-                jenis_kelamin = jenisKelamin,
-                id_kelas = siswa.id_kelas,
-                id_jurusan = siswa.id_jurusan
-            )
-
-            btnSimpan.isEnabled = false
-            btnSimpan.text = "Mengupdate..."
-
+            btnSimpan.isEnabled = false; btnSimpan.text = "Mengupdate..."
             lifecycleScope.launch {
-                repository.updateSiswa(getAuthToken(), siswa.nis, request).fold(
-                    onSuccess = { updatedSiswa ->
+                val jurusanList = repository.getJurusanLookup(token).getOrNull() ?: emptyList()
+                val kelasList = repository.getKelasLookup(token).getOrNull() ?: emptyList()
+                val tahunList = repository.getAcademicYearsList(token).getOrNull() ?: emptyList()
+                val jurusanId = jurusanList.find { it.nama.equals(jurusanName, true) }?.id ?: siswa.id_jurusan
+                val kelasId = kelasList.find { it.label.equals(kelasName, true) }?.id_kelas ?: siswa.id_kelas
+                val tahunId = tahunList.find { tahunDisplay.contains(it.tahun) }?.id
+
+                val request = UpdateSiswaRequest(nama_siswa = nama, jenis_kelamin = jenisKelamin, id_kelas = kelasId, id_jurusan = jurusanId, id_tahun_masuk = tahunId, agama = agama, status_akademik = status)
+                repository.updateSiswa(token, siswa.nis, request).fold(
+                    onSuccess = {
                         runOnUiThread {
                             Toast.makeText(this@DataSiswaAdminActivity, "Siswa berhasil diupdate!", Toast.LENGTH_SHORT).show()
-                            dialog.dismiss()
-
-                            loadStudentData(reset = true)
+                            dialog.dismiss(); loadStudentData(reset = true)
                         }
                     },
                     onFailure = { error ->
                         runOnUiThread {
                             Toast.makeText(this@DataSiswaAdminActivity, "Gagal: ${error.message}", Toast.LENGTH_SHORT).show()
-                            btnSimpan.isEnabled = true
-btnSimpan.text = "Perbarui"
+                            btnSimpan.isEnabled = true; btnSimpan.text = "Update"
                         }
                     }
                 )
             }
         }
-
-        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
         dialog.show()
     }
 

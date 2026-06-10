@@ -91,7 +91,7 @@ class TambahGuruDialogFragment : BottomSheetDialogFragment() {
                     btnSimpan.isEnabled = true
                     return@launch
                 }
-                val request = CreateGuruRequest(email = email, password = password, nama = nama, nip = nip)
+                val request = CreateGuruRequest(email = email, password = password, nama = nama, nip = nip ?: "")
                 repository.createGuru(token, request).fold(
                     onSuccess = {
                         Toast.makeText(ctx, "Guru berhasil ditambahkan", Toast.LENGTH_SHORT).show()

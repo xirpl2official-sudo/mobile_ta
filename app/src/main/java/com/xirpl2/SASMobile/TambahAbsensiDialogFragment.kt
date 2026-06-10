@@ -305,10 +305,9 @@ class TambahAbsensiDialogFragment : DialogFragment() {
         }
         
         val request = CreateAbsensiRequest(
-            id_jadwal = selectedJadwalId!!,
+            id_jenis = selectedJadwalId!!,
             status = status,
-            tanggal = selectedDate,
-            deskripsi = if (deskripsi.isEmpty()) "Mencatat presensi manual" else deskripsi
+            tanggal = selectedDate
         )
         
         btnSimpan.isEnabled = false

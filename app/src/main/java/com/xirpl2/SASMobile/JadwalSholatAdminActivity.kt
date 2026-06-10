@@ -241,13 +241,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
         val genericPrayers = jadwalList.filter { it.jurusan.isNullOrEmpty() }
 
-        // 2. Prayer times map: id_jenis -> PrayerTime (for time enrichment)
-        val timeByTypeId = prayerTimesList.associateBy { it.id_jenis_sholat }
-
-        // 3. Prayer types map: id -> PrayerType (for names)
-        val typeById = prayerTypesList.associateBy { it.id }
-
-        // Preferred display order
+        // Build cards only from actual jadwal schedules
         val displayOrder = listOf("Duha", "Zuhur", "jumat")
         val addedTypes = mutableSetOf<String>()
 
@@ -279,28 +273,6 @@ override fun onCreate(savedInstanceState: Bundle?) {
                 addedTypes.add(typeKey)
             }
         }
-        for (type in typeById.values) {
-            val key = type.nama_jenis.lowercase()
-            if (key !in addedTypes) {
-                val pt = timeByTypeId[type.id]
-                val fallbackWaktu = if (pt == null) {
-                    jadwalList.find {
-                        it.jenis_sholat.equals(type.nama_jenis, ignoreCase = true) &&
-                            it.waktuSholat?.waktuMulai?.isNotEmpty() == true
-                    }?.waktuSholat
-                } else null
-                val placeholder = JadwalSholatData(
-                    id = 0,
-                    waktuSholat = WaktuSholatData(
-                        waktuMulai = pt?.waktu_mulai ?: fallbackWaktu?.waktuMulai ?: "",
-                        waktuSelesai = pt?.waktu_selesai ?: fallbackWaktu?.waktuSelesai ?: "",
-                        jenisSholat = JenisSholatData(namaJenis = type.nama_jenis)
-                    )
-                )
-                items.add(PrayerScheduleItem.PrayerCard(placeholder))
-            }
-        }
-
         showEmptyState(items.isEmpty())
 
         if (prayerAdapter == null) {

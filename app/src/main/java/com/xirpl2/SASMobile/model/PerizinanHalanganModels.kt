@@ -20,7 +20,7 @@ data class RequestHalanganData(
 )
 
 data class VerifyHalanganBody(
-    @SerializedName("halangan_token")
+    @SerializedName("token")
     val halanganToken: String
 )
 

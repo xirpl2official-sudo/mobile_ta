@@ -74,14 +74,14 @@ interface ApiService {
 
     @POST("v2/auth/tokens/refresh")
     suspend fun refreshToken(
-        @Body request: RefreshRequest
-    ): Response<AuthResponse>
+        @Body request: com.xirpl2.SASMobile.model.RefreshRequest
+    ): Response<com.xirpl2.SASMobile.model.RefreshResponse>
 
     /** Synchronous variant for use in OkHttp Authenticator (no coroutine context). */
     @POST("v2/auth/tokens/refresh")
     fun refreshTokenSync(
-        @Body request: RefreshRequest
-    ): retrofit2.Call<AuthResponse>
+        @Body request: com.xirpl2.SASMobile.model.RefreshRequest
+    ): retrofit2.Call<com.xirpl2.SASMobile.model.RefreshResponse>
 
     // --- Prayer Schedules ---
 

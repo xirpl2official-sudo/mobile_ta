@@ -45,7 +45,7 @@ data class CreateGuruRequest(
     val email: String,
     val password: String,
     val nama: String,
-    val nip: String? = null
+    val nip: String
 )
 
 data class UpdateGuruRequest(

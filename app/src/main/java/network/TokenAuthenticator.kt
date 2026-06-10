@@ -65,10 +65,10 @@ class TokenAuthenticator(private val context: Context) : Authenticator {
                     .refreshTokenSync(RefreshRequest(refreshToken))
                     .execute()
 
-                if (refreshResponse.isSuccessful && refreshResponse.body()?.data != null) {
-                    val userData = refreshResponse.body()!!.data!!
-                    val newToken = userData.token
-                    val newRefreshToken = userData.refresh_token
+                if (refreshResponse.isSuccessful && refreshResponse.body() != null) {
+                    val refreshBody = refreshResponse.body()!!
+                    val newToken = refreshBody.token
+                    val newRefreshToken = refreshBody.refresh_token
 
                     if (newToken.isNullOrEmpty()) {
                         Log.e(TAG, "Refresh succeeded but no new token returned")

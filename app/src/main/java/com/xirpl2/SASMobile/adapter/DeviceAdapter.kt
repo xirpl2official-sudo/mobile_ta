@@ -56,8 +56,9 @@ class DeviceAdapter(
                 val d = item.item
                 val ownerName = d.user_name ?: d.email ?: "Tidak diketahui"
                 holder.tvDeviceName.text = ownerName
-                holder.tvHardwareId.text = d.hardware_id ?: "-"
-                holder.tvExtraInfo.visibility = View.GONE
+                holder.tvHardwareId.text = (d.hardware_id ?: "-").take(16)
+                holder.tvExtraInfo.text = "OS: ${d.os_version ?: "-"} | Aktif: ${d.last_auth_at ?: "-"}"
+                holder.tvExtraInfo.visibility = View.VISIBLE
                 holder.tvStatus.text = if (d.is_verified) "TERVERIFIKASI" else "PENDING"
                 if (d.is_verified) {
                     setBadgeColors(holder, R.drawable.bg_status_approved, R.color.badge_approved_text)
