@@ -336,25 +336,18 @@ class LaporanAdminActivity : BaseAdminActivity() {
         val startDate = apiDateFormat.format(tanggalAwal.time)
         val endDate = apiDateFormat.format(tanggalAkhir.time)
 
-        lifecycleScope.launch {
+        lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val statsResponse = RetrofitClient.apiService.getAttendanceAnalytics("Bearer $token", startDate = startDate, endDate = endDate)
                 if (statsResponse.isSuccessful) {
                     val stats = statsResponse.body()?.data
-                    if (stats != null && ::progressDonutKehadiran.isInitialized) {
+                    if (stats != null) {
                         val hadir = stats.total_kehadiran_hari_ini
                         val izin = stats.total_izin_hari_ini
                         val sakit = stats.total_sakit_hari_ini
                         val alpha = stats.total_alpha_hari_ini
                         val total = hadir + izin + sakit + alpha
                         val persen = if (total > 0) ((hadir * 100) / total) else 0
-
-                        progressDonutKehadiran.progress = persen
-                        tvDonutPersen.text = "${persen}%"
-                        tvLegendHadir.text = hadir.toString()
-                        tvLegendIzin.text = izin.toString()
-                        tvLegendSakit.text = sakit.toString()
-                        tvLegendAlpha.text = alpha.toString()
 
                         val entries = listOf(
                             Entry(0f, hadir.toFloat()),
@@ -363,60 +356,86 @@ class LaporanAdminActivity : BaseAdminActivity() {
                             Entry(3f, alpha.toFloat())
                         )
                         val labels = listOf("Hadir", "Izin", "Sakit", "Alfa")
-                        val colors = listOf(
-                            ContextCompat.getColor(this@LaporanAdminActivity, R.color.green),
-                            ContextCompat.getColor(this@LaporanAdminActivity, R.color.orange_warning),
-                            ContextCompat.getColor(this@LaporanAdminActivity, R.color.blue),
-                            ContextCompat.getColor(this@LaporanAdminActivity, R.color.red)
-                        )
 
-                        val lineDataSet = LineDataSet(entries, "Kehadiran").apply {
-                            this.colors = colors
-                            setCircleColors(colors)
-                            lineWidth = 2f
-                            circleRadius = 4f
-                            setDrawValues(true)
-                            valueTextSize = 11f
-                            valueTextColor = ContextCompat.getColor(this@LaporanAdminActivity, R.color.on_background)
-                            mode = LineDataSet.Mode.CUBIC_BEZIER
-                            setDrawFilled(true)
-                            fillColor = ContextCompat.getColor(this@LaporanAdminActivity, R.color.stat_blue_text)
-                            fillAlpha = 30
-                        }
+                        withContext(Dispatchers.Main) {
+                            if (isFinishing || isDestroyed) return@withContext
+                            if (!::progressDonutKehadiran.isInitialized) return@withContext
 
-                        lineChartTrend.apply {
-                            data = LineData(lineDataSet)
-                            description.isEnabled = false
-                            legend.isEnabled = true
-                            legend.textColor = ContextCompat.getColor(this@LaporanAdminActivity, R.color.on_background)
-                            xAxis.apply {
-                                position = XAxis.XAxisPosition.BOTTOM
-                                valueFormatter = object : com.github.mikephil.charting.formatter.IndexAxisValueFormatter(labels) {
-                                    override fun getFormattedValue(value: Float): String {
-                                        return labels.getOrNull(value.toInt()) ?: ""
+                            progressDonutKehadiran.progress = persen
+                            tvDonutPersen.text = "${persen}%"
+                            tvLegendHadir.text = hadir.toString()
+                            tvLegendIzin.text = izin.toString()
+                            tvLegendSakit.text = sakit.toString()
+                            tvLegendAlpha.text = alpha.toString()
+
+                            val colors = listOf(
+                                ContextCompat.getColor(this@LaporanAdminActivity, R.color.green),
+                                ContextCompat.getColor(this@LaporanAdminActivity, R.color.orange_warning),
+                                ContextCompat.getColor(this@LaporanAdminActivity, R.color.blue),
+                                ContextCompat.getColor(this@LaporanAdminActivity, R.color.red)
+                            )
+
+                            val lineDataSet = LineDataSet(entries, "Kehadiran").apply {
+                                this.colors = colors
+                                setCircleColors(colors)
+                                lineWidth = 2f
+                                circleRadius = 4f
+                                setDrawValues(true)
+                                valueTextSize = 11f
+                                valueTextColor = ContextCompat.getColor(this@LaporanAdminActivity, R.color.on_background)
+                                mode = LineDataSet.Mode.CUBIC_BEZIER
+                                setDrawFilled(true)
+                                fillColor = ContextCompat.getColor(this@LaporanAdminActivity, R.color.stat_blue_text)
+                                fillAlpha = 30
+                            }
+
+                            lineChartTrend.apply {
+                                data = LineData(lineDataSet)
+                                description.isEnabled = false
+                                legend.isEnabled = true
+                                legend.textColor = ContextCompat.getColor(this@LaporanAdminActivity, R.color.on_background)
+                                xAxis.apply {
+                                    position = XAxis.XAxisPosition.BOTTOM
+                                    valueFormatter = object : com.github.mikephil.charting.formatter.IndexAxisValueFormatter(labels) {
+                                        override fun getFormattedValue(value: Float): String {
+                                            return labels.getOrNull(value.toInt()) ?: ""
+                                        }
                                     }
+                                    textColor = ContextCompat.getColor(this@LaporanAdminActivity, R.color.on_background)
+                                    setDrawGridLines(false)
+                                    granularity = 1f
                                 }
-                                textColor = ContextCompat.getColor(this@LaporanAdminActivity, R.color.on_background)
-                                setDrawGridLines(false)
-                                granularity = 1f
+                                axisLeft.apply {
+                                    textColor = ContextCompat.getColor(this@LaporanAdminActivity, R.color.on_background)
+                                    axisMinimum = 0f
+                                    granularity = 1f
+                                }
+                                axisRight.isEnabled = false
+                                setTouchEnabled(true)
+                                isDragEnabled = true
+                                setScaleEnabled(false)
+                                setPinchZoom(false)
+                                setBackgroundColor(Color.TRANSPARENT)
+                                animateX(500)
+                                invalidate()
                             }
-                            axisLeft.apply {
-                                textColor = ContextCompat.getColor(this@LaporanAdminActivity, R.color.on_background)
-                                axisMinimum = 0f
-                                granularity = 1f
-                            }
-                            axisRight.isEnabled = false
-                            setTouchEnabled(true)
-                            isDragEnabled = true
-                            setScaleEnabled(false)
-                            setPinchZoom(false)
-                            setBackgroundColor(Color.TRANSPARENT)
-                            animateX(500)
-                            invalidate()
+                        }
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            resetChartDisplay()
                         }
                     }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        resetChartDisplay()
+                    }
                 }
-            } catch (e: Exception) { android.util.Log.w("LaporanAdmin", "Attendance chart error", e) }
+            } catch (e: Exception) {
+                android.util.Log.w("LaporanAdmin", "Attendance chart error", e)
+                withContext(Dispatchers.Main) {
+                    resetChartDisplay()
+                }
+            }
 
             try {
                 val chartResponse = RetrofitClient.apiService.getChartData("Bearer $token", startDate = startDate, endDate = endDate)
@@ -429,23 +448,40 @@ class LaporanAdminActivity : BaseAdminActivity() {
                             val prayerData = mutableMapOf<String, Int>()
                             for (item in prayerBreakdown) {
                                 val obj = item.asJsonObject
-                                val prayer = obj.get("prayer")?.asString ?: continue
+                                val prayer = obj.get("prayer")?.asString?.lowercase() ?: continue
                                 val hadir = obj.get("hadir")?.asInt ?: 0
-                                prayerData[prayer.lowercase()] = hadir
+                                prayerData[prayer] = hadir
                                 if (hadir > maxHadir) maxHadir = hadir
                             }
-                            val Duha = prayerData["Duha"] ?: 0
-                            val Zuhur = prayerData["Zuhur"] ?: 0
+                            val duha = prayerData["duha"] ?: 0
+                            val zuhur = prayerData["zuhur"] ?: 0
                             val jumat = prayerData["jumat"] ?: 0
 
-                            progressBarDuha.max = maxHadir; progressBarDuha.progress = Duha; tvBarDuha.text = "$Duha hadir"
-                            progressBarZuhur.max = maxHadir; progressBarZuhur.progress = Zuhur; tvBarZuhur.text = "$Zuhur hadir"
-                            progressBarJumat.max = maxHadir; progressBarJumat.progress = jumat; tvBarJumat.text = "$jumat hadir"
+                            withContext(Dispatchers.Main) {
+                                if (isFinishing || isDestroyed) return@withContext
+                                if (!::progressBarDuha.isInitialized) return@withContext
+
+                                progressBarDuha.max = maxHadir; progressBarDuha.progress = duha; tvBarDuha.text = "$duha hadir"
+                                progressBarZuhur.max = maxHadir; progressBarZuhur.progress = zuhur; tvBarZuhur.text = "$zuhur hadir"
+                                progressBarJumat.max = maxHadir; progressBarJumat.progress = jumat; tvBarJumat.text = "$jumat hadir"
+                            }
                         }
                     }
                 }
-            } catch (e: Exception) { android.util.Log.w("LaporanAdmin", "Prayer breakdown chart error", e) }
+            } catch (e: Exception) {
+                android.util.Log.w("LaporanAdmin", "Prayer breakdown chart error", e)
+            }
         }
+    }
+
+    private fun resetChartDisplay() {
+        if (!::progressDonutKehadiran.isInitialized) return
+        progressDonutKehadiran.progress = 0
+        tvDonutPersen.text = "0%"
+        tvLegendHadir.text = "0"
+        tvLegendIzin.text = "0"
+        tvLegendSakit.text = "0"
+        tvLegendAlpha.text = "0"
     }
 
     // ===== DATA LOADING (PAGE-BASED) =====

@@ -157,19 +157,19 @@ data class StatisticsResponse(
 )
 
 data class StatisticsData(
-    val tanggal: String,
-    val total_siswa: Int,
-    val total_absen_hari_ini: Int,
-    val total_kehadiran_hari_ini: Int,
+    val tanggal: String = "",
+    val total_siswa: Int = 0,
+    val total_absen_hari_ini: Int = 0,
+    val total_kehadiran_hari_ini: Int = 0,
     val total_izin_hari_ini: Int = 0,
     val total_sakit_hari_ini: Int = 0,
-    val total_alpha_hari_ini: Int,
-    val total_tidak_hadir_hari_ini: Int,
-    val persentase_kehadiran: Double,
+    val total_alpha_hari_ini: Int = 0,
+    val total_tidak_hadir_hari_ini: Int = 0,
+    val persentase_kehadiran: Double = 0.0,
     val persentase_izin: Double = 0.0,
     val persentase_sakit: Double = 0.0,
     val persentase_alpha: Double = 0.0,
-    val rata_rata_kehadiran: Double
+    val rata_rata_kehadiran: Double = 0.0
 )
 
 data class StatistikAbsensiResponse(
