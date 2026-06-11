@@ -317,7 +317,7 @@ class KelolaKelasActivity : BaseAdminActivity() {
         val total10 = kelas10.sumOf { it.siswa_count }
 
         val view = layoutInflater.inflate(R.layout.dialog_mass_promotion, null)
-        val dialog = MaterialAlertDialogBuilder(this).setView(view).setCancelable(false).create()
+        val dialog = MaterialAlertDialogBuilder(this).setView(view).setCancelable(true).create()
 
         val ivStep1Check = view.findViewById<android.widget.ImageView>(R.id.ivStep1Check)
         val ivStep2Check = view.findViewById<android.widget.ImageView>(R.id.ivStep2Check)
@@ -336,7 +336,6 @@ class KelolaKelasActivity : BaseAdminActivity() {
 
         btnStep2.isEnabled = false
         btnStep3.isEnabled = false
-        btnClose.visibility = View.GONE
 
         btnStep1.setOnClickListener {
             btnStep1.isEnabled = false; pbStep1.visibility = View.VISIBLE
