@@ -53,7 +53,7 @@ class ScanQrFragment : Fragment(R.layout.fragment_scan_qr) {
 
     private val cameraPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
-    ) { isGranted -> if (isGranted) barcodeView.resume() else showPermissionDeniedDialog() }
+    ) { isGranted -> if (isGranted) startScanning() else showPermissionDeniedDialog() }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -62,7 +62,7 @@ class ScanQrFragment : Fragment(R.layout.fragment_scan_qr) {
         setupToggle()
         setupClickListeners()
         setupBarcodeScanner()
-        checkCameraPermission()
+        checkCameraAndAutoScan()
     }
 
     private fun initializeViews(view: View) {
@@ -193,7 +193,7 @@ class ScanQrFragment : Fragment(R.layout.fragment_scan_qr) {
     private fun hideLoading() { progressBar.visibility = View.GONE; btnScan.isEnabled = true; btnScan.alpha = 1.0f }
 
     private fun hasCameraPermission() = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
-    private fun checkCameraPermission() { if (hasCameraPermission()) barcodeView.resume() else requestCameraPermission() }
+    private fun checkCameraAndAutoScan() { if (hasCameraPermission()) startScanning() else requestCameraPermission() }
     private fun requestCameraPermission() { cameraPermissionLauncher.launch(Manifest.permission.CAMERA) }
 
     private fun showPermissionDeniedDialog() {
@@ -203,7 +203,7 @@ class ScanQrFragment : Fragment(R.layout.fragment_scan_qr) {
             .setNegativeButton("Kembali", null).show()
     }
 
-    override fun onResume() { super.onResume(); if (hasCameraPermission() && ::cardResult.isInitialized && cardResult.visibility != View.VISIBLE && !isProcessing) barcodeView.resume() }
+    override fun onResume() { super.onResume(); if (hasCameraPermission() && ::cardResult.isInitialized && cardResult.visibility != View.VISIBLE && !isProcessing) startScanning() }
     override fun onPause() { super.onPause(); if (::barcodeView.isInitialized) barcodeView.pause() }
     override fun onDestroyView() { super.onDestroyView(); if (::barcodeView.isInitialized) barcodeView.pause() }
 

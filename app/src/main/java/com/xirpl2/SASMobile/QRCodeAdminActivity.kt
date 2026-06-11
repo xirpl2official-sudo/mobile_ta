@@ -28,7 +28,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 class QRCodeAdminActivity : BaseAdminActivity() {
 
@@ -47,6 +48,7 @@ class QRCodeAdminActivity : BaseAdminActivity() {
     // Manual Code Views
     private lateinit var tvManualCode: TextView
     private lateinit var tvCodeExpires: TextView
+    private lateinit var tvHalanganTimestamp: TextView
     private lateinit var cardManualCode: View
     private lateinit var toggleQRType: MaterialButtonToggleGroup
     private lateinit var btnAbsensi: MaterialButton
@@ -115,6 +117,7 @@ class QRCodeAdminActivity : BaseAdminActivity() {
 
         tvManualCode = findViewById(R.id.tvManualCode)
         tvCodeExpires = findViewById(R.id.tvCodeExpires)
+        tvHalanganTimestamp = findViewById(R.id.tvHalanganTimestamp)
         cardManualCode = findViewById(R.id.cardManualCode)
 
         toggleQRType = findViewById(R.id.toggleQRType)
@@ -179,7 +182,9 @@ class QRCodeAdminActivity : BaseAdminActivity() {
 
         val dataPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(this)
         val jk = dataPref.getString("jenis_kelamin", null)
-        if (jk == "P") {
+        val jabatan = dataPref.getString("jabatan", "")?.lowercase() ?: ""
+
+        if (jk == "P" || jabatan.contains("agama")) {
             btnHalangan.visibility = View.VISIBLE
         }
     }
@@ -236,6 +241,7 @@ class QRCodeAdminActivity : BaseAdminActivity() {
                             ivQRCode.setImageBitmap(bitmap)
                             tvJenisSholat.text = "Halangan"
                             showQRCode()
+                            showHalanganTimestamp()
                             if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
                         }
                     } catch (e: Exception) {
@@ -253,7 +259,7 @@ class QRCodeAdminActivity : BaseAdminActivity() {
                             isHalanganMode = false
                             toggleQRType.check(R.id.btnAbsensi)
                             stopHalanganAutoRefresh()
-                            showError("Hanya guru perempuan atau admin yang dapat generate QR Halangan")
+                            showError("Hanya guru perempuan, guru agama laki-laki, atau admin yang dapat generate QR Halangan")
                         } else {
                             showHalanganEmpty()
                         }
@@ -400,6 +406,13 @@ class QRCodeAdminActivity : BaseAdminActivity() {
         ivQRCode.alpha = 0.3f
         currentBitmap = null
         cardManualCode.visibility = View.GONE
+        tvHalanganTimestamp.visibility = View.GONE
+    }
+
+    private fun showHalanganTimestamp() {
+        val now = SimpleDateFormat("d MMM yyyy HH:mm", Locale("id", "ID")).format(Date())
+        tvHalanganTimestamp.text = "Terakhir diperbarui: $now"
+        tvHalanganTimestamp.visibility = View.VISIBLE
     }
 
     private fun showError(message: String) {
@@ -469,6 +482,8 @@ class QRCodeAdminActivity : BaseAdminActivity() {
         dialogView.findViewById<TextView>(R.id.tvInfoNama).text = item.namaSiswa
         dialogView.findViewById<TextView>(R.id.tvInfoNis).text = item.nis
         dialogView.findViewById<TextView>(R.id.tvInfoKelas).text = item.kelas
+        dialogView.findViewById<TextView>(R.id.tvInfoJurusan).text = item.jurusan
+        dialogView.findViewById<TextView>(R.id.tvInfoJk).text = item.jk
         dialogView.findViewById<TextView>(R.id.tvInfoTanggal).text = formatDateID(item.tanggal)
 
         val dialog = MaterialAlertDialogBuilder(this)

@@ -32,6 +32,7 @@ class PendingHalanganAdapter(
         holder.tvNis.text = item.nis
         holder.tvNama.text = item.namaSiswa
         holder.tvKelas.text = item.kelas
+        holder.tvTanggal.text = formatTanggal(item.tanggal)
         holder.btnValidasi.setOnClickListener { onValidate(item) }
     }
 
@@ -41,6 +42,17 @@ class PendingHalanganAdapter(
         val tvNis: TextView = itemView.findViewById(R.id.tvPendingNis)
         val tvNama: TextView = itemView.findViewById(R.id.tvPendingNama)
         val tvKelas: TextView = itemView.findViewById(R.id.tvPendingKelas)
+        val tvTanggal: TextView = itemView.findViewById(R.id.tvPendingTanggal)
         val btnValidasi: MaterialButton = itemView.findViewById(R.id.btnPendingValidasi)
+    }
+
+    private fun formatTanggal(tanggal: String): String {
+        return try {
+            val parts = tanggal.split("-")
+            if (parts.size == 3) {
+                val monthNames = arrayOf("Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des")
+                "${parts[2].toInt()} ${monthNames.getOrElse(parts[1].toInt() - 1) { parts[1] }}"
+            } else tanggal
+        } catch (e: Exception) { tanggal }
     }
 }

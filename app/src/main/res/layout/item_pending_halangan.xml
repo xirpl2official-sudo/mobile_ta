@@ -14,7 +14,7 @@
         android:id="@+id/tvPendingNis"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_weight="0.8"
         android:textStyle="bold"
         android:textSize="12sp"
         android:textColor="@color/slate_900"
@@ -25,7 +25,7 @@
         android:id="@+id/tvPendingNama"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1.5"
+        android:layout_weight="1.2"
         android:textSize="12sp"
         android:textColor="@color/slate_700"
         android:ellipsize="end"
@@ -37,7 +37,7 @@
         android:id="@+id/tvPendingKelas"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1.2"
+        android:layout_weight="0.8"
         android:textSize="12sp"
         android:textColor="@color/slate_600"
         android:ellipsize="end"
@@ -45,12 +45,22 @@
         android:layout_marginEnd="4dp"
         tools:text="10 RPL A" />
 
+    <TextView
+        android:id="@+id/tvPendingTanggal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.8"
+        android:textSize="12sp"
+        android:textColor="@color/slate_600"
+        android:layout_marginEnd="4dp"
+        tools:text="10 Jun" />
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnPendingValidasi"
         style="@style/Widget.Material3.Button.OutlinedButton"
         android:layout_width="0dp"
         android:layout_height="32dp"
-        android:layout_weight="0.8"
+        android:layout_weight="0.6"
         android:text="Validasi"
         android:textSize="10sp"
         android:textAllCaps="false"

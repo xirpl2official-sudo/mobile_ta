@@ -110,9 +110,52 @@
                 android:textColor="@color/slate_900"
                 android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/tvInfoJk"
                 app:layout_constraintTop_toBottomOf="@id/tvInfoKelasLabel"
                 tools:text="10 RPL A" />
+
+            <TextView
+                android:id="@+id/tvInfoJkLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="JK"
+                android:textColor="@color/text_hint"
+                android:textSize="11sp"
+                android:layout_marginTop="12dp"
+                app:layout_constraintEnd_toEndOf="@id/tvInfoJk"
+                app:layout_constraintTop_toBottomOf="@id/tvInfoNis" />
+
+            <TextView
+                android:id="@+id/tvInfoJk"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textColor="@color/slate_900"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvInfoJkLabel"
+                tools:text="P" />
+
+            <TextView
+                android:id="@+id/tvInfoJurusanLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Jurusan"
+                android:textColor="@color/text_hint"
+                android:textSize="11sp"
+                android:layout_marginTop="12dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvInfoKelas" />
+
+            <TextView
+                android:id="@+id/tvInfoJurusan"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textColor="@color/slate_900"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvInfoJurusanLabel"
+                tools:text="RPL" />
 
             <TextView
                 android:id="@+id/tvInfoTanggalLabel"
@@ -123,7 +166,7 @@
                 android:textSize="11sp"
                 android:layout_marginTop="12dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvInfoKelas" />
+                app:layout_constraintTop_toBottomOf="@id/tvInfoJurusan" />
 
             <TextView
                 android:id="@+id/tvInfoTanggal"
