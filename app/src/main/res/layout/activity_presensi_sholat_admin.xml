@@ -329,7 +329,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:fillViewport="true"
-                app:layout_constraintTop_toBottomOf="@id/tvCountInfo"
+                app:layout_constraintTop_toBottomOf="@id/tvPageInfo"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 
