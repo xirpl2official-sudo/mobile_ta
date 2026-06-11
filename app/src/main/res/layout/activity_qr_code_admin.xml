@@ -177,7 +177,7 @@
                             android:layout_height="match_parent"
                             android:padding="24dp"
                             android:scaleType="fitCenter"
-                            android:contentDescription="QR Code Presensi"
+                            android:contentDescription="Kode QR Presensi"
                             android:src="@drawable/ic_qr_code" />
 
                     </com.google.android.material.card.MaterialCardView>

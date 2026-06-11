@@ -567,63 +567,84 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     
-                    <com.google.android.material.chip.ChipGroup
-                        android:id="@+id/chipGroupFilter"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/spacing_small"
-                        app:singleSelection="true"
-                        app:selectionRequired="true"
-                        app:checkedChip="@id/chipWeek"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/btnUnduhRiwayat">
+                     
+                     <LinearLayout
+                         android:id="@+id/filterContainer"
+                         android:layout_width="0dp"
+                         android:layout_height="wrap_content"
+                         android:orientation="horizontal"
+                         app:layout_constraintStart_toStartOf="parent"
+                         app:layout_constraintEnd_toEndOf="parent"
+                         app:layout_constraintTop_toBottomOf="@id/btnUnduhRiwayat">
 
-                        <com.google.android.material.chip.Chip
-                            android:id="@+id/chipToday"
-                            style="@style/Widget.Material3.Chip.Filter"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Hari Ini"
-                            android:textSize="11sp" />
+                         <HorizontalScrollView
+                             android:layout_width="wrap_content"
+                             android:layout_height="wrap_content"
+                             android:fillViewport="true"
+                             android:scrollbars="none">
 
-                        <com.google.android.material.chip.Chip
-                            android:id="@+id/chipWeek"
-                            style="@style/Widget.Material3.Chip.Filter"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Minggu Ini"
-                            android:textSize="11sp" />
+                             <com.google.android.material.chip.ChipGroup
+                                 android:id="@+id/chipGroupFilter"
+                                 android:layout_width="wrap_content"
+                                 android:layout_height="wrap_content"
+                                 android:layout_marginTop="@dimen/spacing_small"
+                                 app:singleSelection="true"
+                                 app:selectionRequired="true"
+                                 app:checkedChip="@id/chipWeek"
+                                 app:chipSpacing="4dp"
+                                 app:layout_constrainedWidth="true">
 
-                        <com.google.android.material.chip.Chip
-                            android:id="@+id/chipMonth"
-                            style="@style/Widget.Material3.Chip.Filter"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Bulan Ini"
-                            android:textSize="11sp" />
+                                 <com.google.android.material.chip.Chip
+                                     android:id="@+id/chipToday"
+                                     style="@style/Widget.Material3.Chip.Filter"
+                                     android:layout_width="wrap_content"
+                                     android:layout_height="wrap_content"
+                                      android:text="Hari Ini"
+                                      android:textSize="11sp"
+                                      app:chipBackgroundColor="@color/chip_filter_selector" />
 
-                        <com.google.android.material.chip.Chip
-                            android:id="@+id/chipCustom"
-                            style="@style/Widget.Material3.Chip.Filter"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Custom"
-                            android:textSize="11sp" />
-                    </com.google.android.material.chip.ChipGroup>
+                                 <com.google.android.material.chip.Chip
+                                     android:id="@+id/chipWeek"
+                                     style="@style/Widget.Material3.Chip.Filter"
+                                     android:layout_width="wrap_content"
+                                     android:layout_height="wrap_content"
+                                      android:text="Minggu Ini"
+                                      android:textSize="11sp"
+                                      app:chipBackgroundColor="@color/chip_filter_selector" />
 
-                    
-                    <LinearLayout
-                        android:id="@+id/customDateContainer"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:visibility="gone"
-                        android:layout_marginTop="@dimen/spacing_small"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/chipGroupFilter">
+                                 <com.google.android.material.chip.Chip
+                                     android:id="@+id/chipMonth"
+                                     style="@style/Widget.Material3.Chip.Filter"
+                                     android:layout_width="wrap_content"
+                                     android:layout_height="wrap_content"
+                                      android:text="Bulan Ini"
+                                      android:textSize="11sp"
+                                      app:chipBackgroundColor="@color/chip_filter_selector" />
+
+                                 <com.google.android.material.chip.Chip
+                                     android:id="@+id/chipCustom"
+                                     style="@style/Widget.Material3.Chip.Filter"
+                                     android:layout_width="wrap_content"
+                                     android:layout_height="wrap_content"
+                                      android:text="Custom"
+                                      android:textSize="11sp"
+                                      app:chipBackgroundColor="@color/chip_filter_selector" />
+                             </com.google.android.material.chip.ChipGroup>
+                         </HorizontalScrollView>
+                     </LinearLayout>
+
+
+                     <LinearLayout
+                         android:id="@+id/customDateContainer"
+                         android:layout_width="0dp"
+                         android:layout_height="wrap_content"
+                         android:orientation="horizontal"
+                         android:gravity="center_vertical"
+                         android:visibility="gone"
+                         android:layout_marginTop="@dimen/spacing_small"
+                         app:layout_constraintStart_toStartOf="parent"
+                         app:layout_constraintEnd_toEndOf="parent"
+                         app:layout_constraintTop_toBottomOf="@id/filterContainer">
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/tilStartDate"
@@ -686,25 +707,16 @@
                             android:layout_marginStart="4dp" />
                     </LinearLayout>
 
-                    
-                    <androidx.constraintlayout.widget.Barrier
-                        android:id="@+id/barrierFilterBottom"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:barrierDirection="bottom"
-                        app:constraint_referenced_ids="chipGroupFilter,customDateContainer" />
-
-                    
-                    <LinearLayout
-                        android:id="@+id/riwayatHeader"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:paddingVertical="@dimen/spacing_small"
-                        android:layout_marginTop="@dimen/spacing_small"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/barrierFilterBottom">
+                     <LinearLayout
+                         android:id="@+id/riwayatHeader"
+                         android:layout_width="0dp"
+                         android:layout_height="wrap_content"
+                         android:orientation="horizontal"
+                         android:paddingVertical="@dimen/spacing_small"
+                         android:layout_marginTop="@dimen/spacing_small"
+                         app:layout_constraintStart_toStartOf="parent"
+                         app:layout_constraintEnd_toEndOf="parent"
+                         app:layout_constraintTop_toBottomOf="@id/customDateContainer">
 
                         <TextView
                             android:layout_width="0dp"

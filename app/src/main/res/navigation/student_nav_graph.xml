@@ -20,7 +20,7 @@
     <fragment
         android:id="@+id/navigation_scan_qr"
         android:name="com.xirpl2.SASMobile.fragment.ScanQrFragment"
-        android:label="Scan QR"
+        android:label="Pindai QR"
         tools:layout="@layout/fragment_scan_qr" />
 
     <fragment

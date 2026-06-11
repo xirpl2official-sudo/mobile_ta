@@ -561,7 +561,7 @@
                                 android:layout_height="48dp"
                                 android:padding="8dp"
                                 android:src="@drawable/ic_qr_code"
-                                android:contentDescription="QR Code"
+                                 android:contentDescription="Kode QR"
                                 android:background="?attr/selectableItemBackgroundBorderless"
                                 app:tint="@color/blue_theme"
                                 app:layout_constraintEnd_toEndOf="parent"

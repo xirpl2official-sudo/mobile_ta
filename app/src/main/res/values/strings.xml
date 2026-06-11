@@ -77,7 +77,7 @@
     
     <string name="Pengaturan">Pengaturan</string>
     <string name="PengaturanAkun">Pengaturan Akun</string>
-    <string name="KelolaInformasiAkun">Kelola informasi akun anda</string>
+    <string name="KelolaInformasiAkun">Kelola informasi akun Anda</string>
     <string name="FotoProfil">Foto Profil</string>
     <string name="DeskripsiFotoProfil">Foto profil kamu akan otomatis memotong huruf depan namamu</string>
     <string name="NamaLengkap">Nama Lengkap</string>
@@ -102,13 +102,13 @@
 
     
     <string name="QrCodeAbsensi">QR CODE PRESENSI</string>
-    <string name="QrCodeAktif">QR Code Aktif</string>
+    <string name="QrCodeAktif">Kode QR Aktif</string>
     <string name="InstruksiStaffQR">Tampilkan QR code ini di layar/proyektor.\nSiswa dapat memindai untuk presensi.</string>
 
     
-    <string name="PindaiQR">PINDAI QR CODE</string>
+    <string name="PindaiQR">Pindai Kode QR</string>
     <string name="PindaiKodeQR">PINDAI KODE QR</string>
-    <string name="ArahkanKamera">Arahkan kamera ke QR Code</string>
+    <string name="ArahkanKamera">Arahkan kamera ke Kode QR</string>
     <string name="Pindai">PINDAI</string>
     <string name="NamaSiswa">Nama Siswa</string>
     <string name="PlaceholderKelasJurusan">XII RPL 1 - Rekayasa Perangkat Lunak</string>

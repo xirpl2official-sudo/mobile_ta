@@ -2,7 +2,6 @@ package com.xirpl2.SASMobile
 
 import android.app.Activity
 import android.content.Intent
-import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
@@ -16,7 +15,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -34,14 +32,6 @@ import kotlinx.coroutines.withContext
 
 class PengaturanAkunActivity : BaseActivity() {
 
-    companion object {
-        private const val PREFS_NAME = "AppPrefs"
-        private const val KEY_THEME = "theme_mode"
-        const val THEME_LIGHT = "light"
-        const val THEME_DARK = "dark"
-        const val THEME_SYSTEM = "system"
-    }
-
     private lateinit var btnBack: ImageView
     private lateinit var cardProfilePhoto: CardView
     private lateinit var tvInitial: TextView
@@ -57,9 +47,6 @@ class PengaturanAkunActivity : BaseActivity() {
     private lateinit var tilEmail: View
     private lateinit var tilChangeEmail: View
     private lateinit var cardDeviceChange: View
-    private lateinit var btnTerang: MaterialButton
-    private lateinit var btnGelap: MaterialButton
-    private lateinit var btnSistem: MaterialButton
     
     private var currentUserData: UserData? = null
     private var selectedImageUri: Uri? = null
@@ -95,7 +82,6 @@ class PengaturanAkunActivity : BaseActivity() {
         }
 
         initializeViews()
-        setupThemeButtons()
 
         val sessionPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this)
         userRole = sessionPref.getString("user_role", "")?.lowercase() ?: ""
@@ -128,9 +114,6 @@ class PengaturanAkunActivity : BaseActivity() {
         tilEmail = findViewById(R.id.tilEmail)
         tilChangeEmail = findViewById(R.id.tilChangeEmail)
         cardDeviceChange = findViewById(R.id.cardDeviceChange)
-        btnTerang = findViewById(R.id.btnTerang)
-        btnGelap = findViewById(R.id.btnGelap)
-        btnSistem = findViewById(R.id.btnSistem)
     }
 
     private fun applyRoleBasedVisibility() {
@@ -198,73 +181,6 @@ class PengaturanAkunActivity : BaseActivity() {
         btnDeviceChangeRequest?.setOnClickListener {
             showDeviceChangeDialog()
         }
-    }
-
-    private fun setupThemeButtons() {
-        val currentTheme = getSavedTheme()
-        updateButtonStates(currentTheme)
-
-        btnTerang.setOnClickListener {
-            saveTheme(THEME_LIGHT)
-            applyTheme(THEME_LIGHT)
-            updateButtonStates(THEME_LIGHT)
-        }
-
-        btnGelap.setOnClickListener {
-            saveTheme(THEME_DARK)
-            applyTheme(THEME_DARK)
-            updateButtonStates(THEME_DARK)
-        }
-
-        btnSistem.setOnClickListener {
-            saveTheme(THEME_SYSTEM)
-            applyTheme(THEME_SYSTEM)
-            updateButtonStates(THEME_SYSTEM)
-        }
-    }
-
-    private fun getSavedTheme(): String {
-        val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
-        return prefs.getString(KEY_THEME, THEME_SYSTEM) ?: THEME_SYSTEM
-    }
-
-    private fun saveTheme(theme: String) {
-        val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
-        prefs.edit().putString(KEY_THEME, theme).apply()
-    }
-
-    private fun applyTheme(theme: String) {
-        val mode = when (theme) {
-            THEME_LIGHT -> AppCompatDelegate.MODE_NIGHT_NO
-            THEME_DARK -> AppCompatDelegate.MODE_NIGHT_YES
-            else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-        }
-        AppCompatDelegate.setDefaultNightMode(mode)
-    }
-
-    private fun updateButtonStates(activeTheme: String) {
-        btnTerang.setStyleOutline()
-        btnGelap.setStyleOutline()
-        btnSistem.setStyleOutline()
-
-        when (activeTheme) {
-            THEME_LIGHT -> btnTerang.setStyleFilled()
-            THEME_DARK -> btnGelap.setStyleFilled()
-            THEME_SYSTEM -> btnSistem.setStyleFilled()
-        }
-    }
-
-    private fun MaterialButton.setStyleOutline() {
-        this.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this@PengaturanAkunActivity, android.R.color.transparent))
-        this.strokeColor = ColorStateList.valueOf(ContextCompat.getColor(this@PengaturanAkunActivity, R.color.blue_theme))
-        this.strokeWidth = 3
-        this.setTextColor(ContextCompat.getColor(this@PengaturanAkunActivity, R.color.blue_theme))
-    }
-
-    private fun MaterialButton.setStyleFilled() {
-        this.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this@PengaturanAkunActivity, R.color.blue_theme))
-        this.strokeWidth = 0
-        this.setTextColor(ContextCompat.getColor(this@PengaturanAkunActivity, R.color.white))
     }
 
     private fun loadUserDataFromAPI() {

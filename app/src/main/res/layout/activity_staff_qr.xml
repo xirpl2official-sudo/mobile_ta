@@ -131,7 +131,7 @@
                 android:layout_height="match_parent"
                 android:padding="16dp"
                 android:scaleType="fitCenter"
-                android:contentDescription="QR Code"
+                android:contentDescription="Kode QR"
                 tools:src="@drawable/ic_launcher_background"/>
 
         </androidx.cardview.widget.CardView>
