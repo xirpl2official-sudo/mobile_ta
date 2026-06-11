@@ -145,7 +145,7 @@ class KelolaGuruAdminActivity : BaseAdminActivity() {
                     guruList.addAll(list)
 
                     adapter.setFullList(guruList)
-                    tvCountInfo.text = "Menampilkan ${adapter.currentList.size} dari ${list.size} data"
+                    tvCountInfo.text = "Menampilkan ${adapter.currentList.size} dari ${list.size} guru"
 
                     if (list.isEmpty()) {
                         tvEmptyState.visibility = View.VISIBLE

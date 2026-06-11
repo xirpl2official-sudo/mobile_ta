@@ -108,6 +108,10 @@ class LaporanAdminActivity : BaseAdminActivity() {
     private val fixedJurusanList = listOf("RPL", "TKJ", "TEI", "TAV", "DKV", "ANM", "BC", "TMT")
     private val jurusanOptions = listOf("Semua") + fixedJurusanList
 
+    // Filter state - jenis sholat
+    private var selectedJenisSholat: String = "Semua Salat"
+    private val jenisSholatOptions = listOf("Semua Salat", "Duha", "Zuhur", "Jumat")
+
     override fun getCurrentMenuItem(): AdminMenuItem = AdminMenuItem.LAPORAN
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -247,11 +251,26 @@ class LaporanAdminActivity : BaseAdminActivity() {
 
         val chipGroupJurusan = view.findViewById<com.google.android.material.chip.ChipGroup>(R.id.chipGroupJurusan)
         val chipGroupKelas = view.findViewById<com.google.android.material.chip.ChipGroup>(R.id.chipGroupKelas)
+        val chipGroupJenisSalat = view.findViewById<com.google.android.material.chip.ChipGroup>(R.id.chipGroupJenisSalat)
         val btnApply = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnApplyFilter)
 
         // Temp selections while bottom sheet is open
         var tempJurusan = selectedJurusan
         var tempKelas = selectedKelas
+        var tempJenisSholat = selectedJenisSholat
+
+        // Populate jenis sholat chips
+        for (nama in jenisSholatOptions) {
+            val chip = com.google.android.material.chip.Chip(this).apply {
+                text = nama
+                isCheckable = true
+                isChecked = nama == selectedJenisSholat
+            }
+            chip.setOnClickListener {
+                tempJenisSholat = nama
+            }
+            chipGroupJenisSalat.addView(chip)
+        }
 
         // Populate jurusan chips
         for (nama in jurusanOptions) {
@@ -285,6 +304,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
         btnApply.setOnClickListener {
             selectedJurusan = tempJurusan
             selectedKelas = tempKelas
+            selectedJenisSholat = tempJenisSholat
             updateFilterDisplay()
             currentPage = 1
             loadData()
@@ -295,9 +315,10 @@ class LaporanAdminActivity : BaseAdminActivity() {
     }
 
     private fun updateFilterDisplay() {
+        val jenisSholatText = selectedJenisSholat
         val jurusanText = selectedJurusan ?: "Semua Jurusan"
         val kelasText = selectedKelas ?: "Semua Siswa"
-        tvFilterJurusan.text = "$jurusanText dan $kelasText"
+        tvFilterJurusan.text = "$jenisSholatText, $jurusanText, $kelasText"
     }
 
     private fun setupButtons() {
@@ -439,7 +460,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
         isLoading = true
         showLoading(true)
 
-        val salatApi: String? = null
+        val salatApi = getJenisSholatApiValue(selectedJenisSholat)
         val searchApi = searchQuery.ifEmpty { null }
         val apiDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val startDate = apiDateFormat.format(tanggalAwal.time)
@@ -604,7 +625,7 @@ class LaporanAdminActivity : BaseAdminActivity() {
         val apiDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val startDate = apiDateFormat.format(tanggalAwal.time)
         val endDate = apiDateFormat.format(tanggalAkhir.time)
-        val salatApi: String? = null
+        val salatApi = getJenisSholatApiValue(selectedJenisSholat)
         val searchApi = searchQuery.ifEmpty { null }
 
         val btn = when (format) {
@@ -745,6 +766,13 @@ class LaporanAdminActivity : BaseAdminActivity() {
         val displayDateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         tvTanggalAwal.text = displayDateFormat.format(tanggalAwal.time)
         tvTanggalAkhir.text = displayDateFormat.format(tanggalAkhir.time)
+    }
+
+    private fun getJenisSholatApiValue(displayValue: String): String? {
+        return when (displayValue) {
+            "Semua Salat" -> null
+            else -> displayValue
+        }
     }
 
     private fun showLoading(show: Boolean) {
