@@ -9,6 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.xirpl2.SASMobile.adapter.JurusanGroupAdapter
@@ -16,10 +17,16 @@ import com.xirpl2.SASMobile.adapter.JurusanGroup
 import com.xirpl2.SASMobile.model.KelasManagementItem
 import com.xirpl2.SASMobile.model.SiswaItem
 import com.xirpl2.SASMobile.model.StaffInfo
+import com.xirpl2.SASMobile.model.SequentialProgressionRequest
+import com.xirpl2.SASMobile.model.BulkFieldsRequest
+import com.xirpl2.SASMobile.model.MessageResponse
 import com.xirpl2.SASMobile.repository.BerandaRepository
+import com.xirpl2.SASMobile.network.RetrofitClient
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
 
 class KelolaKelasActivity : BaseAdminActivity() {
@@ -33,6 +40,7 @@ class KelolaKelasActivity : BaseAdminActivity() {
     private lateinit var tvEmptyState: TextView
     private lateinit var emptyStateContainer: View
     private lateinit var recyclerKelas: RecyclerView
+    private lateinit var btnMassPromotion: MaterialButton
 
     private var allKelasList = mutableListOf<KelasManagementItem>()
     private var staffList = listOf<StaffInfo>()
@@ -79,6 +87,7 @@ class KelolaKelasActivity : BaseAdminActivity() {
         tvEmptyState = findViewById(R.id.tvEmptyState)
         emptyStateContainer = findViewById(R.id.emptyState)
         recyclerKelas = findViewById(R.id.recyclerKelas)
+        btnMassPromotion = findViewById(R.id.btnMassPromotion)
     }
 
     private fun setupRecyclerView() {
@@ -120,6 +129,8 @@ class KelolaKelasActivity : BaseAdminActivity() {
             selectedJurusan = parent.getItemAtPosition(position).toString()
             applyFilters()
         }
+
+        btnMassPromotion.setOnClickListener { showMassPromotionWizard() }
     }
 
     private fun loadData() {
@@ -294,5 +305,101 @@ class KelolaKelasActivity : BaseAdminActivity() {
     private fun showStudentDetail(siswa: SiswaItem) {
         val dialog = SiswaDetailDialogFragment.newInstance(siswa)
         dialog.show(supportFragmentManager, "SiswaDetailDialog")
+    }
+
+    private fun showMassPromotionWizard() {
+        val kelas12 = allKelasList.filter { it.tingkatan == 12 }
+        val kelas11 = allKelasList.filter { it.tingkatan == 11 }
+        val kelas10 = allKelasList.filter { it.tingkatan == 10 }
+
+        val total12 = kelas12.sumOf { it.siswa_count }
+        val total11 = kelas11.sumOf { it.siswa_count }
+        val total10 = kelas10.sumOf { it.siswa_count }
+
+        val view = layoutInflater.inflate(R.layout.dialog_mass_promotion, null)
+        val dialog = MaterialAlertDialogBuilder(this).setView(view).setCancelable(false).create()
+
+        val ivStep1Check = view.findViewById<android.widget.ImageView>(R.id.ivStep1Check)
+        val ivStep2Check = view.findViewById<android.widget.ImageView>(R.id.ivStep2Check)
+        val ivStep3Check = view.findViewById<android.widget.ImageView>(R.id.ivStep3Check)
+        val pbStep1 = view.findViewById<ProgressBar>(R.id.pbStep1)
+        val pbStep2 = view.findViewById<ProgressBar>(R.id.pbStep2)
+        val pbStep3 = view.findViewById<ProgressBar>(R.id.pbStep3)
+        val btnStep1 = view.findViewById<MaterialButton>(R.id.btnStep1)
+        val btnStep2 = view.findViewById<MaterialButton>(R.id.btnStep2)
+        val btnStep3 = view.findViewById<MaterialButton>(R.id.btnStep3)
+        val btnClose = view.findViewById<MaterialButton>(R.id.btnWizardClose)
+
+        view.findViewById<TextView>(R.id.tvStep1Info).text = "${kelas12.size} kelas, $total12 siswa akan diluluskan (Alumni)"
+        view.findViewById<TextView>(R.id.tvStep2Info).text = "${kelas11.size} kelas, $total11 siswa akan naik ke kelas 12"
+        view.findViewById<TextView>(R.id.tvStep3Info).text = "${kelas10.size} kelas, $total10 siswa akan naik ke kelas 11"
+
+        btnStep2.isEnabled = false
+        btnStep3.isEnabled = false
+        btnClose.visibility = View.GONE
+
+        btnStep1.setOnClickListener {
+            btnStep1.isEnabled = false; pbStep1.visibility = View.VISIBLE
+            lifecycleScope.launch(Dispatchers.IO) {
+                val token = getAuthToken()
+                val ok = graduateKelas12(token, kelas12)
+                withContext(Dispatchers.Main) {
+                    pbStep1.visibility = View.GONE
+                    if (ok) { ivStep1Check.visibility = View.VISIBLE; btnStep2.isEnabled = true
+                        Toast.makeText(this@KelolaKelasActivity, "Kelas 12 diluluskan", Toast.LENGTH_SHORT).show() }
+                    else { btnStep1.isEnabled = true; Toast.makeText(this@KelolaKelasActivity, "Gagal", Toast.LENGTH_SHORT).show() }
+                }
+            }
+        }
+
+        btnStep2.setOnClickListener {
+            btnStep2.isEnabled = false; pbStep2.visibility = View.VISIBLE
+            lifecycleScope.launch(Dispatchers.IO) {
+                val token = getAuthToken()
+                val res = repository.sequentialProgression(token, SequentialProgressionRequest("11", "12"))
+                withContext(Dispatchers.Main) {
+                    pbStep2.visibility = View.GONE
+                    res.fold(
+                        onSuccess = { ivStep2Check.visibility = View.VISIBLE; btnStep3.isEnabled = true
+                            Toast.makeText(this@KelolaKelasActivity, "Kelas 11 → 12 berhasil", Toast.LENGTH_SHORT).show() },
+                        onFailure = { btnStep2.isEnabled = true; Toast.makeText(this@KelolaKelasActivity, it.message, Toast.LENGTH_SHORT).show() }
+                    )
+                }
+            }
+        }
+
+        btnStep3.setOnClickListener {
+            btnStep3.isEnabled = false; pbStep3.visibility = View.VISIBLE
+            lifecycleScope.launch(Dispatchers.IO) {
+                val token = getAuthToken()
+                val res = repository.sequentialProgression(token, SequentialProgressionRequest("10", "11"))
+                withContext(Dispatchers.Main) {
+                    pbStep3.visibility = View.GONE
+                    res.fold(
+                        onSuccess = { ivStep3Check.visibility = View.VISIBLE; btnClose.visibility = View.VISIBLE
+                            Toast.makeText(this@KelolaKelasActivity, "Kelas 10 → 11 berhasil", Toast.LENGTH_SHORT).show() },
+                        onFailure = { btnStep3.isEnabled = true; Toast.makeText(this@KelolaKelasActivity, it.message, Toast.LENGTH_SHORT).show() }
+                    )
+                }
+            }
+        }
+
+        btnClose.setOnClickListener { dialog.dismiss(); loadData() }
+        dialog.show()
+    }
+
+    private suspend fun graduateKelas12(token: String, kelas12: List<KelasManagementItem>): Boolean {
+        val allNis = mutableListOf<String>()
+        for (k in kelas12) {
+            val detail = withContext(Dispatchers.IO) {
+                try {
+                    val r = RetrofitClient.apiService.getAdminManagementKelasDetail("Bearer $token", k.id_kelas)
+                    if (r.isSuccessful) r.body()?.data?.students?.map { it.nis } ?: emptyList() else emptyList()
+                } catch (e: Exception) { emptyList() }
+            }
+            allNis.addAll(detail)
+        }
+        if (allNis.isEmpty()) return true
+        return repository.updateBulkStudentFields(token, BulkFieldsRequest(student_ids = allNis, statusAkademik = "ALUMNI")).isSuccess
     }
 }

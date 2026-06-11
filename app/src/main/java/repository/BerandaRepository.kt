@@ -1004,6 +1004,28 @@ class BerandaRepository {
         }
     }
 
+    suspend fun sequentialProgression(token: String, request: SequentialProgressionRequest): Result<MessageResponse> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.sequentialProgression("Bearer $token", request)
+                if (!response.isSuccessful) {
+                    val errorBody = response.errorBody()?.string()
+                    val msg = try {
+                        org.json.JSONObject(errorBody ?: "").optString("error")
+                            .takeIf { it.isNotEmpty() }
+                            ?: org.json.JSONObject(errorBody ?: "").optString("message")
+                    } catch (e: Exception) {
+                        errorBody ?: "HTTP Error: ${response.code()}"
+                    }
+                    return@withContext Result.failure(Exception(msg))
+                }
+                Result.success(response.body() ?: MessageResponse(message = "OK"))
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
     // --- Lookups ---
 
     suspend fun getJurusanLookup(token: String): Result<List<JurusanItem>> {

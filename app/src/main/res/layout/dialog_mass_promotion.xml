@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Proses Kenaikan Kelas Massal"
+        android:textColor="@color/slate_900"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ikuti tahapan berurutan di bawah ini."
+        android:textColor="@color/text_hint"
+        android:textSize="13sp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="16dp" />
+
+    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/divider" />
+
+    <!-- Step 1 -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="16dp">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+            <TextView android:id="@+id/tvStep1Title" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="1. Luluskan Kelas 12" android:textColor="@color/slate_900" android:textSize="15sp" android:textStyle="bold" />
+            <ImageView android:id="@+id/ivStep1Check" android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/centang" android:visibility="gone" android:contentDescription="Selesai" />
+        </LinearLayout>
+        <TextView android:id="@+id/tvStep1Info" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/slate_500" android:textSize="12sp" android:layout_marginTop="2dp" android:text="..." />
+        <ProgressBar android:id="@+id/pbStep1" android:layout_width="wrap_content" android:layout_height="32dp" android:visibility="gone" android:layout_marginTop="8dp" android:indeterminateTint="@color/blue_theme" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/btnStep1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Luluskan Kelas 12" android:textAllCaps="false" android:textSize="13sp" android:textColor="@android:color/white" app:backgroundTint="@color/blue_theme" app:cornerRadius="6dp" android:layout_marginTop="8dp" />
+    </LinearLayout>
+
+    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/divider" android:layout_marginTop="16dp" />
+
+    <!-- Step 2 -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="16dp">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+            <TextView android:id="@+id/tvStep2Title" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="2. Naikkan Kelas 11 → 12" android:textColor="@color/slate_900" android:textSize="15sp" android:textStyle="bold" />
+            <ImageView android:id="@+id/ivStep2Check" android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/centang" android:visibility="gone" android:contentDescription="Selesai" />
+        </LinearLayout>
+        <TextView android:id="@+id/tvStep2Info" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/slate_500" android:textSize="12sp" android:layout_marginTop="2dp" android:text="..." />
+        <ProgressBar android:id="@+id/pbStep2" android:layout_width="wrap_content" android:layout_height="32dp" android:visibility="gone" android:layout_marginTop="8dp" android:indeterminateTint="@color/blue_theme" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/btnStep2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Naikkan Kelas 11 → 12" android:textAllCaps="false" android:textSize="13sp" android:textColor="@android:color/white" app:backgroundTint="@color/blue_theme" app:cornerRadius="6dp" android:layout_marginTop="8dp" />
+    </LinearLayout>
+
+    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/divider" android:layout_marginTop="16dp" />
+
+    <!-- Step 3 -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="16dp">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+            <TextView android:id="@+id/tvStep3Title" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="3. Naikkan Kelas 10 → 11" android:textColor="@color/slate_900" android:textSize="15sp" android:textStyle="bold" />
+            <ImageView android:id="@+id/ivStep3Check" android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/centang" android:visibility="gone" android:contentDescription="Selesai" />
+        </LinearLayout>
+        <TextView android:id="@+id/tvStep3Info" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/slate_500" android:textSize="12sp" android:layout_marginTop="2dp" android:text="..." />
+        <ProgressBar android:id="@+id/pbStep3" android:layout_width="wrap_content" android:layout_height="32dp" android:visibility="gone" android:layout_marginTop="8dp" android:indeterminateTint="@color/blue_theme" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/btnStep3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Naikkan Kelas 10 → 11" android:textAllCaps="false" android:textSize="13sp" android:textColor="@android:color/white" app:backgroundTint="@color/blue_theme" app:cornerRadius="6dp" android:layout_marginTop="8dp" />
+    </LinearLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnWizardClose"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tutup"
+        android:textAllCaps="false"
+        android:layout_marginTop="24dp"
+        android:textColor="@color/blue_theme"
+        app:strokeColor="@color/blue_theme"
+        app:cornerRadius="8dp" />
+
+</LinearLayout>
