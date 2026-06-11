@@ -346,7 +346,7 @@ data class BackupConfirmRequest(
 data class NotifyWaliKelasRequest(
     @SerializedName("nis_list")
     val nisList: List<String>,
-    val message: String
+    val message: String = ""
 )
 
 data class ImportStudentItem(

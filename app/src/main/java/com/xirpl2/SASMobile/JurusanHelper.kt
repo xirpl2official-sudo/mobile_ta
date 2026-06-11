@@ -20,17 +20,17 @@ object JurusanHelper {
      * Also serves as the color reference for all jurusan names.
      */
     private val FALLBACK_JURUSAN = listOf(
-        Jurusan(nama = "Mekatronika", namaLengkap = "Mekatronika", warna = "#4CAF50"),
-        Jurusan(nama = "TMT", namaLengkap = "Mekatronika", warna = "#4CAF50"),
-        Jurusan(nama = "TKJ", namaLengkap = "Teknik Komputer dan Jaringan", warna = "#FFC107"),
-        Jurusan(nama = "TEI", namaLengkap = "Teknik Elektronika Industri", warna = "#4CAF50"),
-        Jurusan(nama = "Animasi", namaLengkap = "Animasi", warna = "#E91E63"),
-        Jurusan(nama = "ANM", namaLengkap = "Animasi", warna = "#E91E63"),
-        Jurusan(nama = "TAV", namaLengkap = "Teknik Audio Video", warna = "#81C784"),
-        Jurusan(nama = "DKV", namaLengkap = "Desain Komunikasi Visual", warna = "#2196F3"),
-        Jurusan(nama = "Broadcasting", namaLengkap = "Broadcasting", warna = "#F44336"),
-        Jurusan(nama = "BC", namaLengkap = "Broadcasting", warna = "#F44336"),
-        Jurusan(nama = "RPL", namaLengkap = "Rekayasa Perangkat Lunak", warna = "#FF9800")
+        Jurusan(nama = "RPL", namaLengkap = "Rekayasa Perangkat Lunak", warna = "#FF9800"),
+        Jurusan(nama = "TKJ", namaLengkap = "Teknik Komputer dan Jaringan", warna = "#FBBF24"),
+        Jurusan(nama = "TEI", namaLengkap = "Teknik Elektronika Industri", warna = "#10B981"),
+        Jurusan(nama = "TAV", namaLengkap = "Teknik Audio Video", warna = "#A3E635"),
+        Jurusan(nama = "BC", namaLengkap = "Broadcasting", warna = "#EF4444"),
+        Jurusan(nama = "TMT", namaLengkap = "Mekatronika", warna = "#22C55E"),
+        Jurusan(nama = "DKV", namaLengkap = "Desain Komunikasi Visual", warna = "#38BDF8"),
+        Jurusan(nama = "ANM", namaLengkap = "Animasi", warna = "#F43F5E"),
+        Jurusan(nama = "Mekatronika", namaLengkap = "Mekatronika", warna = "#22C55E"),
+        Jurusan(nama = "Broadcasting", namaLengkap = "Broadcasting", warna = "#EF4444"),
+        Jurusan(nama = "Animasi", namaLengkap = "Animasi", warna = "#F43F5E")
     )
 
     private val gson = Gson()
@@ -43,7 +43,10 @@ object JurusanHelper {
     fun getColorForJurusan(nama: String): String {
         val trimmed = nama.trim()
         return FALLBACK_JURUSAN
-            .firstOrNull { it.nama.equals(trimmed, ignoreCase = true) }
+            .firstOrNull {
+                it.nama.equals(trimmed, ignoreCase = true) ||
+                it.namaLengkap.equals(trimmed, ignoreCase = true)
+            }
             ?.warna
             ?: "#2196F3"
     }

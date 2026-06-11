@@ -1271,6 +1271,12 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
                     actvKelas.setText("", false)
                 }
             }
+
+            if (kelasList.isNotEmpty() && jurusanList.isNotEmpty()) {
+                val initialFiltered = kelasList.filter { it.jurusan == siswa.jurusan }
+                actvKelas.setAdapter(android.widget.ArrayAdapter(this@DataSiswaAdminActivity, android.R.layout.simple_dropdown_item_1line, initialFiltered.map { it.label }))
+                actvKelas.setText(siswa.kelas, false)
+            }
         }
 
         btnClose.setOnClickListener { dialog.dismiss() }

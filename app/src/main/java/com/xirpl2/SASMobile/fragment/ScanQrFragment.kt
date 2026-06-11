@@ -85,7 +85,7 @@ class ScanQrFragment : Fragment(R.layout.fragment_scan_qr) {
         val sharedPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(requireContext())
         val jk = sharedPref.getString("jenis_kelamin", "L")
         if (jk != "P") {
-            btnScanHalangan.visibility = View.GONE
+            toggleScanType.visibility = View.GONE
         }
         toggleScanType.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (!isChecked) return@addOnButtonCheckedListener

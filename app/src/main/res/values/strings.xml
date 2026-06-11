@@ -107,7 +107,7 @@
 
     
     <string name="PindaiQR">PINDAI QR CODE</string>
-    <string name="PindaiKodeQR">PINDAI QR CODE</string>
+    <string name="PindaiKodeQR">PINDAI KODE QR</string>
     <string name="ArahkanKamera">Arahkan kamera ke QR Code</string>
     <string name="Pindai">PINDAI</string>
     <string name="NamaSiswa">Nama Siswa</string>
@@ -252,6 +252,8 @@
     <string name="semua_jurusan">Semua Jurusan</string>
     <string name="semua_wali">Semua Wali</string>
     <string name="info_belum_terdaftar">Daftar siswa yang belum memiliki akun terdaftar.</string>
+    <string name="kirim_notifikasi">Kirim Notifikasi</string>
+    <string name="terpilih_x_siswa">%d siswa terpilih</string>
     <string name="wali_kelas">Wali Kelas</string>
     <string name="sebelumnya"><![CDATA[< Sebelumnya]]></string>
     <string name="selanjutnya"><![CDATA[Selanjutnya >]]></string>

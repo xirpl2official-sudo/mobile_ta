@@ -112,8 +112,7 @@
                 android:background="@color/background"
                 android:paddingHorizontal="@dimen/spacing_medium"
                 android:paddingVertical="@dimen/spacing_medium"
-                android:clipToPadding="false"
-                android:clipChildren="false">
+                android:paddingBottom="80dp">
 
 
                 <ProgressBar

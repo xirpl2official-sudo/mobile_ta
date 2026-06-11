@@ -103,7 +103,7 @@
         android:paddingHorizontal="4dp"
         android:paddingVertical="3dp"
         android:background="@drawable/bg_status_gray"
-        android:textColor="@android:color/white"
+        android:textColor="@color/on_background"
         android:textSize="10sp"
         android:text="AKTIF"
         android:ellipsize="end"

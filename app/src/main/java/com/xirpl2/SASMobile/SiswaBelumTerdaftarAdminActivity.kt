@@ -3,16 +3,20 @@ package com.xirpl2.SASMobile
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.MotionEvent
 import android.view.View
 import android.widget.*
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.material.button.MaterialButton
 import com.xirpl2.SASMobile.adapter.SiswaAdapter
+import com.xirpl2.SASMobile.model.NotifyWaliKelasRequest
 import com.xirpl2.SASMobile.model.SiswaItem
 import com.xirpl2.SASMobile.repository.BerandaRepository
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
@@ -28,8 +32,12 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
     private lateinit var tableContainer: android.widget.LinearLayout
     private lateinit var paginationRow: LinearLayout
     private lateinit var tvPagination: TextView
-    private lateinit var btnPrevPage: com.google.android.material.button.MaterialButton
-    private lateinit var btnNextPage: com.google.android.material.button.MaterialButton
+    private lateinit var btnPrevPage: MaterialButton
+    private lateinit var btnNextPage: MaterialButton
+    private lateinit var cbSelectAll: CheckBox
+    private lateinit var notifyBar: android.widget.LinearLayout
+    private lateinit var tvSelectedCount: TextView
+    private lateinit var btnNotifyWali: MaterialButton
 
     private lateinit var adapter: SiswaAdapter
 
@@ -39,6 +47,7 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
     private var totalItemsCount = 0
     private val allStudents = mutableListOf<SiswaItem>()
     private val apiPageSize = 50
+    private var generation = 0
 
     private var forcedClass: String? = null
     private var forcedClassId: Int? = null
@@ -90,6 +99,10 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
         tvPagination = findViewById(R.id.tvPagination)
         btnPrevPage = findViewById(R.id.btnPrevPage)
         btnNextPage = findViewById(R.id.btnNextPage)
+        cbSelectAll = findViewById(R.id.cbSelectAll)
+        notifyBar = findViewById(R.id.notifyBar)
+        tvSelectedCount = findViewById(R.id.tvSelectedCount)
+        btnNotifyWali = findViewById(R.id.btnNotifyWali)
 
         swipeRefresh.setOnRefreshListener {
             loadUnregisteredStudents(reset = true)
@@ -105,6 +118,16 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
             updatePagination()
         }
 
+        cbSelectAll.setOnCheckedChangeListener { _, isChecked ->
+            if (adapter.getTotalItems() > 0) {
+                adapter.selectAll(isChecked)
+            }
+        }
+
+        btnNotifyWali.setOnClickListener {
+            sendNotifyWaliKelas()
+        }
+
         findViewById<View>(R.id.iconMenu).setOnClickListener { openSidebar() }
     }
 
@@ -118,9 +141,29 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
             isUnregistered = true
         )
 
+        adapter.setOnSelectionChangedListener { count ->
+            updateSelectionUI(count)
+        }
+
         rvSiswaBaru.layoutManager = LinearLayoutManager(this)
         rvSiswaBaru.adapter = adapter
         rvSiswaBaru.isNestedScrollingEnabled = false
+    }
+
+    private fun updateSelectionUI(count: Int) {
+        if (count > 0) {
+            notifyBar.visibility = View.VISIBLE
+            tvSelectedCount.text = getString(R.string.terpilih_x_siswa, count)
+        } else {
+            notifyBar.visibility = View.GONE
+        }
+        cbSelectAll.setOnCheckedChangeListener(null)
+        cbSelectAll.isChecked = count > 0 && count == adapter.getTotalItems()
+        cbSelectAll.setOnCheckedChangeListener { _, isChecked ->
+            if (adapter.getTotalItems() > 0) {
+                adapter.selectAll(isChecked)
+            }
+        }
     }
 
     private fun updatePagination() {
@@ -137,6 +180,8 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
         isWaliKelas = role.contains("wali")
         if (isWaliKelas) {
             forcedClass = session.getString("user_kelas", "")?.takeIf { it.isNotBlank() }
+            cbSelectAll.visibility = View.GONE
+            notifyBar.visibility = View.GONE
         }
     }
 
@@ -173,6 +218,10 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
                         val spinnerAdapter = ArrayAdapter(this@SiswaBelumTerdaftarAdminActivity, android.R.layout.simple_dropdown_item_1line, options)
                         acJurusan.setAdapter(spinnerAdapter)
                         acJurusan.setText(options[0], false)
+                        acJurusan.setOnTouchListener { v, event ->
+                            if (event.action == MotionEvent.ACTION_UP) (v as AutoCompleteTextView).showDropDown()
+                            false
+                        }
                         acJurusan.setOnItemClickListener { _, _, position, _ ->
                             selectedJurusanId = if (position == 0) null else list[position - 1].id
                             loadUnregisteredStudents(reset = true)
@@ -189,6 +238,10 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
                         val spinnerAdapter = ArrayAdapter(this@SiswaBelumTerdaftarAdminActivity, android.R.layout.simple_dropdown_item_1line, options)
                         acWaliKelas.setAdapter(spinnerAdapter)
                         acWaliKelas.setText(options[0], false)
+                        acWaliKelas.setOnTouchListener { v, event ->
+                            if (event.action == MotionEvent.ACTION_UP) (v as AutoCompleteTextView).showDropDown()
+                            false
+                        }
                         acWaliKelas.setOnItemClickListener { _, _, position, _ ->
                             selectedWaliStaffId = if (position == 0) null else list[position - 1].id_staff
                             loadUnregisteredStudents(reset = true)
@@ -210,11 +263,13 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
 
         if (reset) {
             allStudents.clear()
+            generation++
         }
 
         showLoading(true)
         loadingJob?.cancel()
 
+        val currentGen = generation
         loadingJob = lifecycleScope.launch {
             if (forcedClass != null && forcedClassId == null) {
                 repository.getKelasLookup(token).fold(
@@ -258,9 +313,12 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
                         lastError = e
                     }
                 )
+                if (!isActive) return@launch
             }
 
             showLoading(false)
+
+            if (!isActive || currentGen != generation) return@launch
 
             if (lastError != null && tempList.isEmpty()) {
                 val e = lastError!!
@@ -287,6 +345,34 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
             layoutEmpty.visibility = if (empty) View.VISIBLE else View.GONE
             paginationRow.visibility = if (empty || adapter.getTotalPages() <= 1) View.GONE else View.VISIBLE
             updatePagination()
+        }
+    }
+
+    private fun sendNotifyWaliKelas() {
+        val selected = adapter.getSelectedItems()
+        if (selected.isEmpty()) return
+
+        val token = getAuthToken()
+        if (token.isEmpty()) return
+
+        val nisList = selected.map { it.nis }
+        btnNotifyWali.isEnabled = false
+        btnNotifyWali.text = "Mengirim..."
+
+        lifecycleScope.launch {
+            repository.notifyWaliKelas(token, NotifyWaliKelasRequest(nisList)).fold(
+                onSuccess = { msg ->
+                    Toast.makeText(this@SiswaBelumTerdaftarAdminActivity, msg, Toast.LENGTH_SHORT).show()
+                    btnNotifyWali.isEnabled = true
+                    btnNotifyWali.text = getString(R.string.kirim_notifikasi)
+                    adapter.selectAll(false)
+                },
+                onFailure = { e ->
+                    Toast.makeText(this@SiswaBelumTerdaftarAdminActivity, "Gagal: ${e.message}", Toast.LENGTH_LONG).show()
+                    btnNotifyWali.isEnabled = true
+                    btnNotifyWali.text = getString(R.string.kirim_notifikasi)
+                }
+            )
         }
     }
 

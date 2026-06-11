@@ -39,13 +39,11 @@ class JadwalSholatAdapter(
 
         when (jadwal.status) {
             StatusSholat.SELESAI -> {
-                holder.cardJadwalItem.setCardBackgroundColor(ContextCompat.getColor(ctx, R.color.slate_100))
                 holder.textStatusSholat.text = ctx.getString(R.string.StatusSelesai)
                 holder.textStatusSholat.setTextColor(ContextCompat.getColor(ctx, R.color.slate_500))
                 holder.textStatusSholat.setBackgroundResource(R.drawable.bg_badge_selesai)
             }
             StatusSholat.SEDANG_BERLANGSUNG -> {
-                holder.cardJadwalItem.setCardBackgroundColor(ContextCompat.getColor(ctx, R.color.blue_theme))
                 holder.tvNamaSholat.setTextColor(ContextCompat.getColor(ctx, android.R.color.white))
                 holder.tvJamSholat.setTextColor(ContextCompat.getColor(ctx, R.color.slate_200))
                 holder.textStatusSholat.text = ctx.getString(R.string.StatusBerlangsung)
@@ -53,7 +51,6 @@ class JadwalSholatAdapter(
                 holder.textStatusSholat.setBackgroundResource(R.drawable.bg_badge_berlangsung)
             }
             StatusSholat.AKAN_DATANG -> {
-                holder.cardJadwalItem.setCardBackgroundColor(ContextCompat.getColor(ctx, R.color.status_warning))
                 holder.textStatusSholat.text = ctx.getString(R.string.StatusAkanDatang)
                 holder.textStatusSholat.setTextColor(ContextCompat.getColor(ctx, android.R.color.white))
                 holder.textStatusSholat.setBackgroundResource(R.drawable.bg_badge_akandatang)

@@ -11,7 +11,7 @@ class PerizinanHalanganRepository {
 
     private val apiService = RetrofitClient.apiService
 
-    suspend fun generateHalanganQR(token: String): Result<HalanganQRData> {
+    suspend fun generateHalanganQR(token: String): Result<HalanganQRData?> {
         return withContext(Dispatchers.IO) {
             try {
                 val response = apiService.generateHalanganQR("Bearer $token")
@@ -20,10 +20,7 @@ class PerizinanHalanganRepository {
                     return@withContext Result.failure(Exception(msg))
                 }
                 val body = response.body()
-                if (body?.data == null) {
-                    return@withContext Result.failure(Exception("Response data kosong"))
-                }
-                Result.success(body.data)
+                Result.success(body?.data)
             } catch (e: Exception) {
                 Result.failure(e)
             }

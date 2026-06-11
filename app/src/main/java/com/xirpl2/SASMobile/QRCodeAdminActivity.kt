@@ -44,8 +44,6 @@ class QRCodeAdminActivity : BaseAdminActivity() {
     private lateinit var rvPendingHalangan: RecyclerView
     private lateinit var tvPendingCount: TextView
     private lateinit var tvPendingEmpty: TextView
-    private lateinit var btnDownload: MaterialButton
-
     // Manual Code Views
     private lateinit var tvManualCode: TextView
     private lateinit var tvCodeExpires: TextView
@@ -59,6 +57,7 @@ class QRCodeAdminActivity : BaseAdminActivity() {
     private var codeTimer: CountDownTimer? = null
     private var autoRefreshJob: Job? = null
     private var codeRefreshJob: Job? = null
+    private var halanganRefreshJob: Job? = null
     private var pendingPollJob: Job? = null
     private var currentBitmap: Bitmap? = null
 
@@ -106,7 +105,6 @@ class QRCodeAdminActivity : BaseAdminActivity() {
         tvStatus = findViewById(R.id.tvStatus)
         tvInstructions = findViewById(R.id.tvInstructions)
         btnRefresh = findViewById(R.id.btnRefresh)
-        btnDownload = findViewById(R.id.btnDownload)
         progressBar = findViewById(R.id.progressBar)
         containerQR = findViewById(R.id.containerQR)
 
@@ -135,10 +133,6 @@ class QRCodeAdminActivity : BaseAdminActivity() {
             if (isHalanganMode) loadHalanganQR() else { loadQRCode(); loadAttendanceCode() }
         }
 
-        btnDownload.setOnClickListener {
-            downloadQR()
-        }
-
         toggleQRType.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (!isChecked) return@addOnButtonCheckedListener
             isHalanganMode = checkedId == R.id.btnHalangan
@@ -148,8 +142,10 @@ class QRCodeAdminActivity : BaseAdminActivity() {
                 loadHalanganQR()
                 loadPendingHalangan()
                 startPendingPolling()
+                startHalanganAutoRefresh()
             } else {
                 stopPendingPolling()
+                stopHalanganAutoRefresh()
                 loadQRCode()
                 loadAttendanceCode()
             }
@@ -222,6 +218,13 @@ class QRCodeAdminActivity : BaseAdminActivity() {
         lifecycleScope.launch(Dispatchers.IO) {
             halanganRepository.generateHalanganQR(token).fold(
                 onSuccess = { data ->
+                    if (data == null || data.qrCode.isNullOrBlank()) {
+                        withContext(Dispatchers.Main) {
+                            showHalanganEmpty()
+                            if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
+                        }
+                        return@fold
+                    }
                     try {
                         val base64Data = if (data.qrCode.contains(",")) {
                             data.qrCode.split(",")[1]
@@ -237,8 +240,8 @@ class QRCodeAdminActivity : BaseAdminActivity() {
                         }
                     } catch (e: Exception) {
                         withContext(Dispatchers.Main) {
+                            showHalanganEmpty()
                             if (::swipeRefresh.isInitialized) swipeRefresh.isRefreshing = false
-                            showError("Gagal decode QR Halangan")
                         }
                     }
                 },
@@ -249,9 +252,10 @@ class QRCodeAdminActivity : BaseAdminActivity() {
                         if (errMsg.contains("Forbidden", ignoreCase = true) || errMsg.contains("perempuan", ignoreCase = true)) {
                             isHalanganMode = false
                             toggleQRType.check(R.id.btnAbsensi)
+                            stopHalanganAutoRefresh()
                             showError("Hanya guru perempuan atau admin yang dapat generate QR Halangan")
                         } else {
-                            showError(errMsg)
+                            showHalanganEmpty()
                         }
                     }
                 }
@@ -385,34 +389,24 @@ class QRCodeAdminActivity : BaseAdminActivity() {
         cardManualCode.visibility = View.GONE
     }
 
+    private fun showHalanganEmpty() {
+        progressBar.visibility = View.GONE
+        containerQR.visibility = View.VISIBLE
+        tvJenisSholat.text = "Tidak dapat membuat QR Halangan"
+        tvStatus.text = "QR akan otomatis diperbarui setiap 30 detik"
+        tvStatus.setTextColor(getColor(R.color.gray_light))
+        tvCountdown.text = ""
+        ivQRCode.setImageResource(R.drawable.ic_qr_code)
+        ivQRCode.alpha = 0.3f
+        currentBitmap = null
+        cardManualCode.visibility = View.GONE
+    }
+
     private fun showError(message: String) {
         runOnUiThread {
             progressBar.visibility = View.GONE
             containerQR.visibility = View.VISIBLE
             Toast.makeText(this, message, Toast.LENGTH_LONG).show()
-        }
-    }
-
-    // downloadQRCode() removed - no longer needed
-
-    private fun downloadQR() {
-        val bitmap = currentBitmap ?: return
-        try {
-            val filename = "QR_Halangan_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())}.png"
-            val values = android.content.ContentValues().apply {
-                put(android.provider.MediaStore.Images.Media.DISPLAY_NAME, filename)
-                put(android.provider.MediaStore.Images.Media.MIME_TYPE, "image/png")
-                put(android.provider.MediaStore.Images.Media.RELATIVE_PATH, android.os.Environment.DIRECTORY_PICTURES)
-            }
-            val uri = contentResolver.insert(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
-            uri?.let {
-                contentResolver.openOutputStream(it)?.use { stream ->
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
-                }
-                Toast.makeText(this, "QR tersimpan di Pictures", Toast.LENGTH_SHORT).show()
-            }
-        } catch (e: Exception) {
-            Toast.makeText(this, "Gagal menyimpan: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -447,6 +441,21 @@ class QRCodeAdminActivity : BaseAdminActivity() {
     private fun stopPendingPolling() {
         pendingPollJob?.cancel()
         pendingPollJob = null
+    }
+
+    private fun startHalanganAutoRefresh() {
+        stopHalanganAutoRefresh()
+        halanganRefreshJob = lifecycleScope.launch {
+            while (true) {
+                delay(QR_REFRESH_INTERVAL)
+                loadHalanganQR()
+            }
+        }
+    }
+
+    private fun stopHalanganAutoRefresh() {
+        halanganRefreshJob?.cancel()
+        halanganRefreshJob = null
     }
 
     private fun showValidasiDialog(item: HalanganPendingItem) {
@@ -543,6 +552,7 @@ class QRCodeAdminActivity : BaseAdminActivity() {
         codeTimer?.cancel()
         autoRefreshJob?.cancel()
         codeRefreshJob?.cancel()
+        halanganRefreshJob?.cancel()
         pendingPollJob?.cancel()
     }
 }

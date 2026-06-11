@@ -1,5 +1,6 @@
 package com.xirpl2.SASMobile.repository
 
+import android.net.Uri
 import com.xirpl2.SASMobile.model.*
 import com.xirpl2.SASMobile.network.RetrofitClient
 import kotlinx.coroutines.Dispatchers
@@ -481,7 +482,7 @@ class BerandaRepository {
     ): Result<SiswaItem> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.updateStudent("Bearer $token", nis.replace("/", "%2F"), request)
+                val response = apiService.updateStudent("Bearer $token", Uri.encode(nis), request)
 
                 if (!response.isSuccessful) {
                     return@withContext Result.failure(
@@ -491,11 +492,12 @@ class BerandaRepository {
 
                 val body = response.body()
                 if (body == null) {
-                    return@withContext Result.failure(Exception("Response body kosong"))
+                    throw Exception("Response body kosong untuk update siswa")
                 }
 
-                val data = body.data ?: return@withContext Result.failure(Exception("Data siswa tidak tersedia"))
-                return@withContext Result.success(data)
+                val updatedSiswa = body.data
+                    ?: return@withContext Result.failure(Exception("Data update siswa kosong"))
+                return@withContext Result.success(updatedSiswa)
             } catch (e: Exception) {
                 Result.failure(e)
             }
@@ -511,7 +513,7 @@ class BerandaRepository {
             try {
                 val response = apiService.updateStudent(
                     "Bearer $token",
-                    nis.replace("/", "%2F"),
+                    Uri.encode(nis),
                     request
                 )
 
@@ -537,7 +539,7 @@ class BerandaRepository {
     suspend fun getStudentDetail(token: String, nis: String): Result<StudentDetailResponse> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.getStudentDetail("Bearer $token", nis.replace("/", "%2F"))
+                val response = apiService.getStudentDetail("Bearer $token", Uri.encode(nis))
 
                 if (!response.isSuccessful) {
                     return@withContext Result.failure(
@@ -564,7 +566,7 @@ class BerandaRepository {
     ): Result<String> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.deleteStudent("Bearer $token", nis.replace("/", "%2F"))
+                val response = apiService.deleteStudent("Bearer $token", Uri.encode(nis))
 
                 if (!response.isSuccessful) {
                     return@withContext Result.failure(
@@ -642,7 +644,7 @@ class BerandaRepository {
     ): Result<String> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.submitAttendance("Bearer $token", nis.replace("/", "%2F"), request)
+                val response = apiService.submitAttendance("Bearer $token", Uri.encode(nis), request)
                 if (!response.isSuccessful) {
                     return@withContext Result.failure(
                         Exception("HTTP Error: ${response.code()} - ${response.message()}")
@@ -1277,7 +1279,7 @@ class BerandaRepository {
     suspend fun updateStudentStatus(token: String, nis: String, request: UpdateStatusRequest): Result<Unit> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.updateStudentStatus("Bearer $token", nis.replace("/", "%2F"), request)
+                val response = apiService.updateStudentStatus("Bearer $token", Uri.encode(nis), request)
                 if (response.isSuccessful) {
                     Result.success(Unit)
                 } else {
