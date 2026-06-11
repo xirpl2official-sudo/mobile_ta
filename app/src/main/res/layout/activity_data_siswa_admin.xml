@@ -467,6 +467,13 @@
                                 android:paddingVertical="12dp"
                                 android:background="@color/surface">
 
+                                <CheckBox
+                                    android:id="@+id/cbSelectAll"
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:padding="4dp"
+                                    android:layout_marginEnd="8dp" />
+
                                 <TextView
                                     android:id="@+id/tvSelectedCount"
                                     android:layout_width="0dp"
@@ -592,6 +599,16 @@
                                     android:background="@color/blue_theme"
                                     android:paddingVertical="12dp"
                                     android:gravity="center_vertical">
+
+                                    <CheckBox
+                                        android:id="@+id/cbHeaderSelectAll"
+                                        android:layout_width="36dp"
+                                        android:layout_height="wrap_content"
+                                        android:padding="0dp"
+                                        android:minWidth="0dp"
+                                        android:minHeight="0dp"
+                                        android:layout_marginStart="8dp"
+                                        android:gravity="center" />
 
                                     <TextView
                                         android:layout_width="90dp"

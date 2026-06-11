@@ -3,6 +3,7 @@ package com.xirpl2.SASMobile.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
 import com.google.android.material.button.MaterialButton
@@ -113,6 +114,7 @@ class SiswaAdapter(
         private val tvWaliKelas: TextView? = itemView.findViewById(R.id.tvWaliKelas)
         private val btnDetail: MaterialButton? = itemView.findViewById(R.id.btnDetail)
         private val btnMoreMenu: ImageView? = itemView.findViewById(R.id.btnMoreMenu)
+        private val cbRow: CheckBox? = itemView.findViewById(R.id.cbRow)
         private val tvJenisKelamin: TextView? = itemView.findViewById(R.id.tvJenisKelamin)
         private val tvStatusAkademik: TextView? = itemView.findViewById(R.id.tvStatusAkademik)
 
@@ -147,7 +149,15 @@ class SiswaAdapter(
             }
             tvStatusAkademik?.text = siswa.statusAkademik?.uppercase() ?: "AKTIF"
 
-            itemView.setOnClickListener { onDetailClick(siswa) }
+            cbRow?.let {
+                it.visibility = View.VISIBLE
+                it.isChecked = isSelected
+                it.setOnClickListener { onToggleSelection() }
+            }
+
+            itemView.setOnClickListener {
+                if (selectionMode) onToggleSelection() else onDetailClick(siswa)
+            }
 
             itemView.setOnLongClickListener {
                 if (!selectionMode) onToggleSelection()

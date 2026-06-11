@@ -18,6 +18,7 @@ import android.view.View
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.EditText
+import android.widget.CheckBox
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
@@ -101,6 +102,8 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
     // Bulk Action views
     private lateinit var bulkActionCard: View
     private lateinit var tvSelectedCount: TextView
+    private lateinit var cbSelectAll: CheckBox
+    private lateinit var cbHeaderSelectAll: CheckBox
     private var isSelectionMode = false
 
     // ForcedClass: for wali_kelas, auto-filter to their assigned class
@@ -172,6 +175,8 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
 
         bulkActionCard = findViewById(R.id.bulkActionCard)
         tvSelectedCount = findViewById(R.id.tvSelectedCount)
+        cbSelectAll = findViewById(R.id.cbSelectAll)
+        cbHeaderSelectAll = findViewById(R.id.cbHeaderSelectAll)
 
         // Pagination UI
         tvPageInfo = findViewById(R.id.tvPageInfo)
@@ -191,6 +196,16 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
                 exitSelectionMode()
             }
             tvSelectedCount.text = "$count terpilih"
+            cbSelectAll.isChecked = count == allStudentList.size && allStudentList.isNotEmpty()
+            cbHeaderSelectAll.isChecked = count == allStudentList.size && allStudentList.isNotEmpty()
+        }
+
+        cbSelectAll.setOnCheckedChangeListener { _, isChecked ->
+            siswaAdapter.selectAll(isChecked)
+        }
+
+        cbHeaderSelectAll.setOnCheckedChangeListener { _, isChecked ->
+            siswaAdapter.selectAll(isChecked)
         }
 
         findViewById<View>(R.id.btnCloseBulk)?.setOnClickListener {
@@ -211,6 +226,7 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
     private fun exitSelectionMode() {
         isSelectionMode = false
         bulkActionCard.visibility = View.GONE
+        cbHeaderSelectAll.isChecked = false
         siswaAdapter.setSelectionMode(false)
     }
 
