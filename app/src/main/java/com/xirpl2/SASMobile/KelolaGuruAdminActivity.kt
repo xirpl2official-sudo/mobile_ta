@@ -7,6 +7,7 @@ import android.text.TextWatcher
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.google.android.material.snackbar.Snackbar
@@ -30,9 +31,7 @@ class KelolaGuruAdminActivity : BaseAdminActivity() {
     private lateinit var tvEmptyState: View
     private lateinit var etSearch: EditText
     private lateinit var tvCountInfo: TextView
-    private lateinit var paginationControls: View
-    private lateinit var btnPrevPage: ImageView
-    private lateinit var btnNextPage: ImageView
+    private lateinit var paginationControls: LinearLayout
     private lateinit var tvPageInfo: TextView
 
     private lateinit var adapter: KelolaGuruAdminAdapter
@@ -74,12 +73,7 @@ class KelolaGuruAdminActivity : BaseAdminActivity() {
         etSearch = findViewById(R.id.etSearch)
         tvCountInfo = findViewById(R.id.tvCountInfo)
         paginationControls = findViewById(R.id.paginationControls)
-        btnPrevPage = findViewById(R.id.btnPrevPage)
-        btnNextPage = findViewById(R.id.btnNextPage)
         tvPageInfo = findViewById(R.id.tvPageInfo)
-
-        btnPrevPage.setOnClickListener { adapter.prevPage() }
-        btnNextPage.setOnClickListener { adapter.nextPage() }
 
         val fabAddGuru = findViewById<View>(R.id.fabAddGuru)
         fabAddGuru?.setOnClickListener {
@@ -105,7 +99,7 @@ class KelolaGuruAdminActivity : BaseAdminActivity() {
                 showConfirmDelete(guru)
             },
             onPageChanged = { totalItems, totalPages, currentPage ->
-                tvPageInfo.text = "Halaman $currentPage dari $totalPages"
+                updatePaginationUI(totalPages, currentPage)
             }
         )
         recyclerGuru.layoutManager = LinearLayoutManager(this)
@@ -145,7 +139,7 @@ class KelolaGuruAdminActivity : BaseAdminActivity() {
                     guruList.addAll(list)
 
                     adapter.setFullList(guruList)
-                    tvCountInfo.text = "Menampilkan ${adapter.currentList.size} dari ${list.size} guru"
+                    tvCountInfo.text = "${list.size} guru ditemukan"
 
                     if (list.isEmpty()) {
                         tvEmptyState.visibility = View.VISIBLE
@@ -230,6 +224,54 @@ class KelolaGuruAdminActivity : BaseAdminActivity() {
                     Snackbar.make(findViewById(R.id.main), "Gagal: ${e.message ?: "menghapus data guru"}", Snackbar.LENGTH_SHORT).show()
                 }
             )
+        }
+    }
+
+    private fun updatePaginationUI(totalPages: Int, currentPage: Int) {
+        paginationControls.removeAllViews()
+        if (totalPages <= 1) {
+            paginationControls.visibility = View.GONE
+            return
+        }
+        paginationControls.visibility = View.VISIBLE
+
+        if (currentPage > 1) {
+            paginationControls.addView(createPageButton("‹") { adapter.prevPage() })
+        }
+
+        for (i in 1..totalPages) {
+            if (totalPages <= 7 || i == 1 || i == totalPages || (i in currentPage - 1..currentPage + 1)) {
+                val btn = createPageButton(i.toString()) { adapter.goToPage(i) }
+                if (i == currentPage) {
+                    btn.setBackgroundResource(R.drawable.bg_pagination_active)
+                    btn.setTextColor(getColor(android.R.color.white))
+                }
+                paginationControls.addView(btn)
+            } else if (i == 2 || i == totalPages - 1) {
+                val dots = TextView(this).apply {
+                    text = "…"; setPadding(12, 8, 12, 8); gravity = android.view.Gravity.CENTER
+                    textSize = 14f; setTextColor(getColor(R.color.text_secondary))
+                }
+                paginationControls.addView(dots)
+            }
+        }
+
+        if (currentPage < totalPages) {
+            paginationControls.addView(createPageButton("›") { adapter.nextPage() })
+        }
+    }
+
+    private fun createPageButton(text: String, onClick: () -> Unit): TextView {
+        return TextView(this).apply {
+            this.text = text; textSize = 13f
+            setTextColor(getColor(R.color.blue_theme))
+            setPadding(24, 12, 24, 12); gravity = android.view.Gravity.CENTER
+            setBackgroundResource(R.drawable.bg_pagination_button)
+            val params = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply { setMargins(4, 0, 4, 0) }
+            layoutParams = params
+            setOnClickListener { onClick() }
         }
     }
 }

@@ -299,40 +299,10 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:paddingHorizontal="16dp"
+                            android:gravity="center"
                             android:paddingVertical="12dp"
-                            android:layout_marginTop="4dp">
-
-                            <ImageView
-                                android:id="@+id/btnPrevPage"
-                                android:layout_width="36dp"
-                                android:layout_height="36dp"
-                                android:padding="8dp"
-                                android:src="@drawable/ic_chevron_left"
-                                android:contentDescription="Halaman sebelumnya"
-                                app:tint="@color/slate_500" />
-
-                            <TextView
-                                android:id="@+id/tvPageInfo"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:gravity="center"
-                                android:text="Halaman 1 dari 1"
-                                android:textSize="13sp"
-                                android:textColor="@color/on_surface" />
-
-                            <ImageView
-                                android:id="@+id/btnNextPage"
-                                android:layout_width="36dp"
-                                android:layout_height="36dp"
-                                android:padding="8dp"
-                                android:src="@drawable/ic_chevron_right"
-                                android:contentDescription="Halaman berikutnya"
-                                app:tint="@color/slate_500" />
-
-                        </LinearLayout>
+                            android:paddingHorizontal="8dp"
+                            android:layout_marginTop="4dp" />
 
                     </LinearLayout>
 
