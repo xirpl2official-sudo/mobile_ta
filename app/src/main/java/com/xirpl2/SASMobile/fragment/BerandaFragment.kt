@@ -225,6 +225,7 @@ class BerandaFragment : Fragment(R.layout.fragment_beranda) {
                         else true
                     }
                     .map { data -> JadwalSholat(id = data.id, namaSholat = data.jenis_sholat, jamMulai = data.jam_mulai, jamSelesai = data.jam_selesai, status = JadwalSholatHelper.getStatusSholat(data.jam_mulai, data.jam_selesai)) }
+                    .distinctBy { it.namaSholat.lowercase() }
                 viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
                     if (!isAdded) return@launch
                     if (!::jadwalAdapter.isInitialized) { jadwalAdapter = JadwalSholatAdapter(); rvJadwalSholat.adapter = jadwalAdapter }

@@ -44,8 +44,6 @@ class JadwalSholatAdapter(
                 holder.textStatusSholat.setBackgroundResource(R.drawable.bg_badge_selesai)
             }
             StatusSholat.SEDANG_BERLANGSUNG -> {
-                holder.tvNamaSholat.setTextColor(ContextCompat.getColor(ctx, android.R.color.white))
-                holder.tvJamSholat.setTextColor(ContextCompat.getColor(ctx, R.color.slate_200))
                 holder.textStatusSholat.text = ctx.getString(R.string.StatusBerlangsung)
                 holder.textStatusSholat.setTextColor(ContextCompat.getColor(ctx, android.R.color.white))
                 holder.textStatusSholat.setBackgroundResource(R.drawable.bg_badge_berlangsung)
