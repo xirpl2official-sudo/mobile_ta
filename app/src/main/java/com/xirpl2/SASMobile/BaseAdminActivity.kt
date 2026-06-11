@@ -124,11 +124,13 @@ abstract class BaseAdminActivity : BaseActivity() {
             sidebarView.findViewById<View>(R.id.menuManajemenPerangkat)?.visibility = View.GONE
 
             if (isWali) {
-                // Wali Kelas: Dashboard, Jadwal, Kelola Siswa, Presensi, Pengajuan Izin, Laporan, Siswa Belum Terdaftar
                 sidebarView.findViewById<View>(R.id.menuJadwalSholat)?.visibility = View.VISIBLE
                 sidebarView.findViewById<View>(R.id.menuDataSiswa)?.visibility = View.VISIBLE
+            } else if (isGuru) {
+                sidebarView.findViewById<View>(R.id.menuJadwalSholat)?.visibility = View.VISIBLE
+                sidebarView.findViewById<View>(R.id.menuPresensi)?.visibility = View.VISIBLE
+                sidebarView.findViewById<View>(R.id.menuDataSiswa)?.visibility = View.GONE
             } else {
-                // Guru biasa: hide Jadwal, Kelola Siswa, Presensi
                 sidebarView.findViewById<View>(R.id.menuJadwalSholat)?.visibility = View.GONE
                 sidebarView.findViewById<View>(R.id.menuDataSiswa)?.visibility = View.GONE
                 sidebarView.findViewById<View>(R.id.menuPresensi)?.visibility = View.GONE

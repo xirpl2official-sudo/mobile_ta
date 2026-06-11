@@ -191,8 +191,9 @@ class LaporanAdminActivity : BaseAdminActivity() {
     private fun initForcedClass() {
         val session = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this)
         val role = session.getString("user_role", "")?.lowercase() ?: ""
-        isWaliKelas = role.contains("wali")
-        forcedClass = session.getString("kelas", null)
+        isWaliKelas = role.contains("wali") || role == "guru"
+        forcedClass = session.getString("user_kelas", "")?.takeIf { it.isNotBlank() }
+            ?: session.getString("kelas", null)
         if (isWaliKelas) {
             tvFilterJurusan.visibility = View.GONE
             selectedKelas = forcedClass

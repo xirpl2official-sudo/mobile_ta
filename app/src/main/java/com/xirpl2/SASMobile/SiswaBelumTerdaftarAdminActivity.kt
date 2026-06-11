@@ -177,9 +177,10 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
     private fun initForcedClass() {
         val session = com.xirpl2.SASMobile.utils.SecurePreferences.getUserSession(this)
         val role = session.getString("user_role", "")?.lowercase() ?: ""
-        isWaliKelas = role.contains("wali")
+        isWaliKelas = role.contains("wali") || role == "guru"
         if (isWaliKelas) {
             forcedClass = session.getString("user_kelas", "")?.takeIf { it.isNotBlank() }
+                ?: session.getString("kelas", "")?.takeIf { it.isNotBlank() }
             cbSelectAll.visibility = View.GONE
             notifyBar.visibility = View.GONE
         }
