@@ -23,6 +23,25 @@
         android:textColor="@color/on_surface"
         android:layout_marginBottom="24dp" />
 
+    <!-- Jenis Salat Filter -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Jenis Salat"
+        android:textStyle="bold"
+        android:textSize="14sp"
+        android:textColor="@color/text_secondary"
+        android:layout_marginBottom="8dp" />
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/chipGroupJenisSalat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:singleSelection="true"
+        android:layout_marginBottom="16dp">
+        <!-- Will be populated dynamically -->
+    </com.google.android.material.chip.ChipGroup>
+
     <!-- Jurusan Filter -->
     <TextView
         android:layout_width="wrap_content"
