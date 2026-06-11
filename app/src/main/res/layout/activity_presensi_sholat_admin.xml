@@ -257,6 +257,18 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
+            <TextView
+                android:id="@+id/tvPageInfo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Halaman 1 dari 1"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                app:layout_constraintTop_toBottomOf="@id/tvCountInfo"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
             
             <ProgressBar
                 android:id="@+id/progressLoading"
@@ -314,17 +326,16 @@
             <HorizontalScrollView
                 android:id="@+id/tableHorizontalScrollView"
                 android:layout_width="0dp"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:fillViewport="true"
                 app:layout_constraintTop_toBottomOf="@id/tvCountInfo"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:orientation="vertical">
 
                     
@@ -421,13 +432,26 @@
                         android:id="@+id/recyclerPresensi"
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                         android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:minHeight="400dp"
                         android:scrollbars="vertical" />
 
                 </LinearLayout>
 
             </HorizontalScrollView>
+
+            <LinearLayout
+                android:id="@+id/paginationContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@id/tableHorizontalScrollView"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

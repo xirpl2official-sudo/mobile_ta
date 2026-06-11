@@ -7,6 +7,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
@@ -69,6 +70,10 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
     private var isLoading = false
     private var isLastPage = false
     private val dataList = mutableListOf<AbsensiStaffItem>()
+
+    private var totalPages = 1
+    private lateinit var paginationContainer: LinearLayout
+    private lateinit var tvPageInfo: TextView
 
     
     private val fixedJurusanList = listOf("RPL", "TKJ", "TEI", "TAV", "BC", "TMT", "DKV", "ANM")
@@ -177,6 +182,8 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
         progressLoading = findViewById(R.id.progressLoading) ?: ProgressBar(this)
         tvEmptyState = findViewById(R.id.tvEmptyState) ?: TextView(this)
         tableHorizontalScrollView = findViewById(R.id.tableHorizontalScrollView) ?: View(this)
+        paginationContainer = findViewById(R.id.paginationContainer)
+        tvPageInfo = findViewById(R.id.tvPageInfo)
     }
 
     private fun setupRecyclerView() {
@@ -236,6 +243,68 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
         if (isLoading || isLastPage) return
         currentPage++
         loadData()
+    }
+
+    private fun updatePaginationUI() {
+        paginationContainer.removeAllViews()
+        if (totalPages <= 1) {
+            paginationContainer.visibility = View.GONE
+            tvPageInfo.visibility = View.GONE
+            return
+        }
+        paginationContainer.visibility = View.VISIBLE
+        tvPageInfo.visibility = View.VISIBLE
+        tvPageInfo.text = "Halaman $currentPage dari $totalPages"
+
+        if (currentPage > 1) {
+            val prev = createPageButton("‹") { if (!isLoading) { currentPage--; applyPage() } }
+            paginationContainer.addView(prev)
+        }
+
+        for (i in 1..totalPages) {
+            if (totalPages <= 7 || i == 1 || i == totalPages || (i in currentPage - 1..currentPage + 1)) {
+                val btn = createPageButton(i.toString()) { if (!isLoading && currentPage != i) { currentPage = i; applyPage() } }
+                if (i == currentPage) {
+                    btn.setBackgroundResource(R.drawable.bg_pagination_active)
+                    btn.setTextColor(getColor(android.R.color.white))
+                }
+                paginationContainer.addView(btn)
+            } else if (i == 2 || i == totalPages - 1) {
+                val dots = TextView(this).apply {
+                    text = "…"; setPadding(12, 8, 12, 8); gravity = android.view.Gravity.CENTER
+                    textSize = 14f; setTextColor(getColor(R.color.text_secondary))
+                }
+                paginationContainer.addView(dots)
+            }
+        }
+
+        if (currentPage < totalPages) {
+            val next = createPageButton("›") { if (!isLoading) { currentPage++; applyPage() } }
+            paginationContainer.addView(next)
+        }
+
+        nestedScrollView.post { nestedScrollView.scrollTo(0, 0) }
+    }
+
+    private fun applyPage() {
+        dataList.clear()
+        presensiAdapter.clearData()
+        showLoading(true)
+        loadData()
+    }
+
+    private fun createPageButton(text: String, onClick: () -> Unit): TextView {
+        return TextView(this).apply {
+            this.text = text; textSize = 13f
+            setTextColor(getColor(R.color.blue_theme))
+            setPadding(24, 12, 24, 12); gravity = android.view.Gravity.CENTER
+            setBackgroundResource(R.drawable.bg_pagination_button)
+            val params = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply { setMargins(4, 0, 4, 0) }
+            layoutParams = params
+            setOnClickListener { onClick() }
+        }
     }
 
     private fun initForcedClass() {
@@ -360,6 +429,7 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
                     isLastPage = pagination?.let {
                         it.page >= it.totalPages
                     } ?: ((items?.size ?: 0) < limit)
+                    totalPages = pagination?.totalPages ?: 1
 
                     presensiAdapter.footerState = if (isLastPage && dataList.isNotEmpty())
                         PresensiAdapter.FooterState.NO_MORE
@@ -368,6 +438,7 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
 
                     val totalItems = pagination?.totalItems ?: dataList.size
                     tvCountInfo.text = "Total: $totalItems data"
+                    updatePaginationUI()
 
                     if (dataList.isEmpty()) {
                         showEmptyState("Tidak ada data presensi")
