@@ -35,6 +35,19 @@ class StudentMainActivity : BaseActivity() {
 
         bottomNav.setupWithNavController(navController)
 
+        bottomNav.setOnItemSelectedListener { item ->
+            if (item.itemId == navController.currentDestination?.id) {
+                false
+            } else {
+                navController.navigate(item.itemId) {
+                    popUpTo(navController.graph.startDestinationId) { saveState = true }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+                true
+            }
+        }
+
         applyBottomNavColors(bottomNav)
 
         navController.addOnDestinationChangedListener { _, dest, _ -> }
