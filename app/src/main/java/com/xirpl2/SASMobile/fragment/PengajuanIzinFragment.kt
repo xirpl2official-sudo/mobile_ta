@@ -21,6 +21,7 @@ import com.xirpl2.SASMobile.StudentMainActivity
 import com.xirpl2.SASMobile.adapter.RiwayatIzinAdapter
 import com.xirpl2.SASMobile.network.RetrofitClient
 import com.xirpl2.SASMobile.repository.PengajuanIzinRepository
+import com.xirpl2.SASMobile.utils.LogoHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -71,6 +72,7 @@ class PengajuanIzinFragment : Fragment(R.layout.fragment_pengajuan_izin) {
         super.onViewCreated(view, savedInstanceState)
         applyEdgeToEdge(view)
         initializeViews(view)
+        view.findViewById<ImageView>(R.id.logoSekolah)?.let { LogoHelper.loadLogo(it) }
         setupPermitTypes()
         setupDatePickers()
         setupSubmitButton()

@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
@@ -13,8 +15,10 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.materialswitch.MaterialSwitch
 import com.xirpl2.SASMobile.network.RetrofitClient
 import com.xirpl2.SASMobile.utils.SecurePreferences
+import com.xirpl2.SASMobile.utils.LogoHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -30,6 +34,15 @@ class PengaturanActivity : BaseActivity() {
     private lateinit var btnTerang: MaterialButton
     private lateinit var btnGelap: MaterialButton
     private lateinit var btnSistem: MaterialButton
+    private lateinit var switchAutoLogin: MaterialSwitch
+    private lateinit var ivLogoPreview: ImageView
+    private lateinit var btnPilihLogo: MaterialButton
+    private lateinit var btnResetLogo: MaterialButton
+    private lateinit var ivHeaderLogo: ImageView
+
+    private val logoPickerLauncher = registerForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri -> uri?.let { onLogoSelected(it) } }
 
     companion object {
         private const val PREFS_NAME = "AppPrefs"
@@ -37,6 +50,7 @@ class PengaturanActivity : BaseActivity() {
         const val THEME_LIGHT = "light"
         const val THEME_DARK = "dark"
         const val THEME_SYSTEM = "system"
+        const val KEY_AUTO_LOGIN = "auto_login_enabled"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,6 +76,8 @@ class PengaturanActivity : BaseActivity() {
         initializeViews()
         loadAccountInfo()
         setupThemeButtons()
+        setupAutoLoginToggle()
+        setupLogoUpload()
         setupListeners()
     }
 
@@ -75,6 +91,11 @@ class PengaturanActivity : BaseActivity() {
         btnTerang = findViewById(R.id.btnTerang)
         btnGelap = findViewById(R.id.btnGelap)
         btnSistem = findViewById(R.id.btnSistem)
+        switchAutoLogin = findViewById(R.id.switchAutoLogin)
+        ivLogoPreview = findViewById(R.id.ivLogoPreview)
+        btnPilihLogo = findViewById(R.id.btnPilihLogo)
+        btnResetLogo = findViewById(R.id.btnResetLogo)
+        ivHeaderLogo = findViewById(R.id.logoSekolah)
     }
 
     private fun loadAccountInfo() {
@@ -134,6 +155,52 @@ class PengaturanActivity : BaseActivity() {
                     // Use cached data
                 }
             }
+        }
+    }
+
+    private fun setupLogoUpload() {
+        btnPilihLogo.setOnClickListener {
+            logoPickerLauncher.launch("image/*")
+        }
+
+        btnResetLogo.setOnClickListener {
+            LogoHelper.resetLogo(this)
+            ivLogoPreview.setImageResource(R.drawable.logo_smk)
+            ivHeaderLogo.setImageResource(R.drawable.logo_smk)
+            btnResetLogo.visibility = View.GONE
+            Toast.makeText(this, "Logo dikembalikan ke default", Toast.LENGTH_SHORT).show()
+        }
+
+        refreshLogoState()
+    }
+
+    private fun onLogoSelected(uri: android.net.Uri) {
+        val saved = LogoHelper.saveLogo(this, uri)
+        if (!saved) {
+            Toast.makeText(this, "Gagal menyimpan logo", Toast.LENGTH_SHORT).show()
+            return
+        }
+        refreshLogoState()
+        Toast.makeText(this, "Logo berhasil diperbarui", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun refreshLogoState() {
+        if (LogoHelper.hasCustomLogo(this)) {
+            LogoHelper.loadLogo(ivLogoPreview)
+            LogoHelper.loadLogo(ivHeaderLogo)
+            btnResetLogo.visibility = View.VISIBLE
+        }
+    }
+
+    private fun setupAutoLoginToggle() {
+        val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+        val isEnabled = prefs.getBoolean(KEY_AUTO_LOGIN, true)
+        switchAutoLogin.isChecked = isEnabled
+
+        switchAutoLogin.setOnCheckedChangeListener { _, isChecked ->
+            prefs.edit().putBoolean(KEY_AUTO_LOGIN, isChecked).apply()
+            val msg = if (isChecked) "Login otomatis diaktifkan" else "Login otomatis dinonaktifkan"
+            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
         }
     }
 

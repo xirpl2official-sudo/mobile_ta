@@ -108,7 +108,11 @@ class MasukActivity : BaseActivity() {
             autoLoginJob = lifecycleScope.launch {
                 delay(500)
                 if (!isFinishing && !isDestroyed) {
-                    checkAndValidateExistingToken()
+                    val autoLoginEnabled = getSharedPreferences("AppPrefs", MODE_PRIVATE)
+                        .getBoolean("auto_login_enabled", true)
+                    if (autoLoginEnabled) {
+                        checkAndValidateExistingToken()
+                    }
                 }
             }
 

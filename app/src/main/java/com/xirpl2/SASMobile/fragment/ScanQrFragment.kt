@@ -28,6 +28,7 @@ import com.xirpl2.SASMobile.StudentMainActivity
 import com.xirpl2.SASMobile.model.QRCodeVerifyData
 import com.xirpl2.SASMobile.repository.QRCodeRepository
 import com.xirpl2.SASMobile.repository.PerizinanHalanganRepository
+import com.xirpl2.SASMobile.utils.LogoHelper
 import kotlinx.coroutines.launch
 
 class ScanQrFragment : Fragment(R.layout.fragment_scan_qr) {
@@ -59,6 +60,7 @@ class ScanQrFragment : Fragment(R.layout.fragment_scan_qr) {
         super.onViewCreated(view, savedInstanceState)
         applyEdgeToEdge(view)
         initializeViews(view)
+        view.findViewById<ImageView>(R.id.logoSekolah)?.let { LogoHelper.loadLogo(it) }
         setupToggle()
         setupClickListeners()
         setupBarcodeScanner()

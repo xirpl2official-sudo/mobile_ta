@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -14,12 +15,14 @@ import com.xirpl2.SASMobile.PengaturanActivity
 import com.xirpl2.SASMobile.PengaturanAkunActivity
 import com.xirpl2.SASMobile.R
 import com.xirpl2.SASMobile.StudentMainActivity
+import com.xirpl2.SASMobile.utils.LogoHelper
 
 class ProfilFragment : Fragment(R.layout.fragment_profil) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         applyEdgeToEdge(view)
+        view.findViewById<ImageView>(R.id.logoSekolah)?.let { LogoHelper.loadLogo(it) }
         loadProfile(view)
         setupMenu(view)
     }

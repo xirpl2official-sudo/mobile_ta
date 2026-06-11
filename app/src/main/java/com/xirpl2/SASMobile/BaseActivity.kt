@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
+import android.widget.ImageView
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -18,6 +19,7 @@ import androidx.core.content.ContextCompat
 import com.xirpl2.SASMobile.utils.AnrDetector
 import com.xirpl2.SASMobile.utils.NotificationHelper
 import com.xirpl2.SASMobile.utils.UniversalSafeNavigator
+import com.xirpl2.SASMobile.utils.LogoHelper
 import com.xirpl2.SASMobile.update.UpdateChecker
 import com.xirpl2.SASMobile.update.UpdateDialog
 import com.xirpl2.SASMobile.update.UpdateDownloader
@@ -61,6 +63,11 @@ abstract class BaseActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         onBackPressedDispatcher.addCallback(this, backPressedCallback)
         Log.d(TAG, "onCreate: ${this::class.java.simpleName}")
+    }
+
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+        findViewById<ImageView>(R.id.logoSekolah)?.let { LogoHelper.loadLogo(it) }
     }
 
     override fun onResume() {

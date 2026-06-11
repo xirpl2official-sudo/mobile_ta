@@ -32,6 +32,7 @@ import com.xirpl2.SASMobile.model.RiwayatAbsensi
 import com.xirpl2.SASMobile.model.StatusAbsensi
 import com.xirpl2.SASMobile.repository.BerandaRepository
 import com.xirpl2.SASMobile.utils.NotificationCounterManager
+import com.xirpl2.SASMobile.utils.LogoHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -70,6 +71,7 @@ class BerandaFragment : Fragment(R.layout.fragment_beranda) {
         super.onViewCreated(view, savedInstanceState)
         applyEdgeToEdge(view)
         initializeViews(view)
+        view.findViewById<ImageView>(R.id.logoSekolah)?.let { LogoHelper.loadLogo(it) }
         setupJadwalSholat()
         setupRiwayatAbsensi()
         setupAbsensiButton(view)
