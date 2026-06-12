@@ -29,7 +29,6 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
     private lateinit var acJurusan: AutoCompleteTextView
     private lateinit var acWaliKelas: AutoCompleteTextView
     private lateinit var tvCountInfo: TextView
-    private lateinit var tableContainer: android.widget.LinearLayout
     private lateinit var paginationRow: LinearLayout
     private lateinit var paginationContainer: LinearLayout
     private lateinit var tvPagination: TextView
@@ -100,7 +99,6 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
         acJurusan = findViewById(R.id.acJurusan)
         acWaliKelas = findViewById(R.id.acWaliKelas)
         tvCountInfo = findViewById(R.id.tvCountInfo)
-        tableContainer = findViewById(R.id.tableContainer)
         paginationRow = findViewById(R.id.paginationRow)
         tvPagination = findViewById(R.id.tvPagination)
         paginationContainer = findViewById(R.id.paginationRow)
@@ -183,14 +181,7 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
         } else {
             notifyBar.visibility = View.GONE
         }
-        cbSelectAll.setOnCheckedChangeListener(null)
-        cbSelectAll.isChecked = count > 0 && count == adapter.currentList.size
-        cbSelectAll.setOnCheckedChangeListener { _, isChecked ->
-            val pageItems = getCurrentPageItems()
-            if (pageItems.isNotEmpty()) {
-                adapter.selectAll(isChecked)
-            }
-        }
+        // cbSelectAll removed from card layout
     }
 
     private fun updatePagination() {
@@ -299,7 +290,7 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
         if (isWaliKelas) {
             forcedClass = session.getString("user_kelas", "")?.takeIf { it.isNotBlank() }
                 ?: session.getString("kelas", "")?.takeIf { it.isNotBlank() }
-            cbSelectAll.visibility = View.GONE
+            // Hide selection features for wali kelas
             notifyBar.visibility = View.GONE
         }
     }
@@ -463,7 +454,7 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
             }
             tvCountInfo.text = "Menampilkan ${allStudents.size} dari $totalItemsCount data"
             val empty = allStudents.isEmpty()
-            tableContainer.visibility = if (empty) View.GONE else View.VISIBLE
+            swipeRefresh.visibility = if (empty) View.GONE else View.VISIBLE
             layoutEmpty.visibility = if (empty) View.VISIBLE else View.GONE
             paginationRow.visibility = if (empty || displayTotalPages <= 1) View.GONE else View.VISIBLE
             updatePagination()

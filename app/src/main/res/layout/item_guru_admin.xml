@@ -67,15 +67,22 @@
         tools:textColor="@color/blue_theme" />
 
     <!-- Aksi (3-dot menu) -->
-    <ImageView
-        android:id="@+id/btnMoreMenu"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:padding="6dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="Menu Aksi"
-        android:src="@drawable/ic_more_vert"
-        android:scaleType="centerInside"
-        app:tint="@color/slate_600" />
+    <FrameLayout
+        android:layout_width="90dp"
+        android:layout_height="36dp">
+        
+        <ImageView
+            android:id="@+id/btnMoreMenu"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center"
+            android:padding="6dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Menu Aksi"
+            android:src="@drawable/ic_more_vert"
+            android:scaleType="centerInside"
+            app:tint="@color/slate_600" />
+            
+    </FrameLayout>
 
 </LinearLayout>

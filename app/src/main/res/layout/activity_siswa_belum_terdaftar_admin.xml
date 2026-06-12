@@ -236,110 +236,116 @@
                 android:layout_gravity="center" />
 
             <!-- Table -->
-            <LinearLayout
-                android:id="@+id/tableContainer"
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/swipeRefresh"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_marginTop="12dp"
-                android:layout_weight="1"
-                android:background="@color/background"
-                android:orientation="vertical">
+                android:layout_weight="1">
 
                 <LinearLayout
-                    android:id="@+id/tableHeader"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:background="@color/blue_theme"
-                    android:paddingVertical="12dp"
-                    android:gravity="center_vertical">
+                    android:background="@color/background"
+                    android:orientation="vertical">
 
-                    <CheckBox
-                        android:id="@+id/cbSelectAll"
-                        android:layout_width="36dp"
+                    <!-- Table Header -->
+                    <LinearLayout
+                        android:id="@+id/tableHeader"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="0dp"
-                        android:minWidth="0dp"
-                        android:minHeight="0dp"
-                        android:layout_marginStart="8dp"
-                        android:buttonTint="@android:color/white" />
+                        android:orientation="horizontal"
+                        android:background="@color/blue_theme"
+                        android:paddingVertical="12dp"
+                        android:gravity="center_vertical">
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.20"
-                        android:text="@string/NIS"
-                        android:textColor="@android:color/white"
-                        android:textSize="12sp"
-                        android:paddingHorizontal="8dp"
-                        android:gravity="center" />
+                        <CheckBox
+                            android:id="@+id/cbSelectAll"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.6"
+                            android:gravity="center"
+                            android:buttonTint="@android:color/white" />
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.22"
-                        android:text="@string/Nama"
-                        android:textColor="@android:color/white"
-                        android:textSize="12sp"
-                        android:paddingHorizontal="4dp" />
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1.2"
+                            android:text="@string/NIS"
+                            android:textColor="@android:color/white"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:paddingHorizontal="6dp"
+                            android:gravity="center" />
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.12"
-                        android:text="@string/Kelas"
-                        android:textColor="@android:color/white"
-                        android:textSize="12sp"
-                        android:paddingHorizontal="2dp"
-                        android:gravity="center" />
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:text="@string/Nama"
+                            android:textColor="@android:color/white"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:paddingHorizontal="6dp"
+                            android:gravity="start" />
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.15"
-                        android:text="@string/Jurusan"
-                        android:textColor="@android:color/white"
-                        android:textSize="11sp"
-                        android:paddingHorizontal="4dp"
-                        android:gravity="center" />
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1.5"
+                            android:text="@string/Kelas"
+                            android:textColor="@android:color/white"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:paddingHorizontal="6dp"
+                            android:gravity="center" />
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.20"
-                        android:text="@string/wali_kelas"
-                        android:textColor="@android:color/white"
-                        android:textSize="12sp"
-                        android:paddingHorizontal="4dp"
-                        android:gravity="center" />
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1.5"
+                            android:text="@string/Jurusan"
+                            android:textColor="@android:color/white"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:paddingHorizontal="6dp"
+                            android:gravity="center" />
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.14"
-                        android:text="@string/Aksi"
-                        android:textColor="@android:color/white"
-                        android:textSize="10sp"
-                        android:paddingHorizontal="4dp"
-                        android:gravity="center" />
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1.8"
+                            android:text="@string/wali_kelas"
+                            android:textColor="@android:color/white"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:paddingHorizontal="6dp"
+                            android:gravity="center" />
 
-                </LinearLayout>
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1.2"
+                            android:text="@string/Aksi"
+                            android:textColor="@android:color/white"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:paddingHorizontal="6dp"
+                            android:gravity="center" />
 
-                <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-                    android:id="@+id/swipeRefresh"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1">
+                    </LinearLayout>
 
+                    <!-- RecyclerView -->
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rvSiswaBaru"
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:scrollbars="vertical" />
-                </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-            </LinearLayout>
+                </LinearLayout>
+
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
             <LinearLayout
                 android:id="@+id/paginationRow"

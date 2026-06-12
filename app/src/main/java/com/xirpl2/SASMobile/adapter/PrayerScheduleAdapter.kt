@@ -136,6 +136,22 @@ class PrayerScheduleAdapter(
         fun bind(item: PrayerScheduleItem.PrayerCard) {
             val jadwal = item.jadwal
 
+            // Add extra margin for first prayer card after Duha Keahlian table
+            val cardView = itemView as com.google.android.material.card.MaterialCardView
+            val layoutParams = cardView.layoutParams as ViewGroup.MarginLayoutParams
+            
+            // Check if this is the first prayer card (position after Duha Keahlian)
+            val isFirstCard = bindingAdapterPosition == 1 && items.firstOrNull() is PrayerScheduleItem.DuhaKeahlian
+            
+            if (isFirstCard) {
+                // Add extra top margin (80dp) for first card to avoid FAB overlap
+                layoutParams.topMargin = (40 * itemView.context.resources.displayMetrics.density).toInt()
+            } else {
+                // Normal margin for other cards
+                layoutParams.topMargin = (8 * itemView.context.resources.displayMetrics.density).toInt()
+            }
+            cardView.layoutParams = layoutParams
+
             tvPrayerName.text = jadwal.jenis_sholat
 
             if (!jadwal.hari.isNullOrEmpty()) {

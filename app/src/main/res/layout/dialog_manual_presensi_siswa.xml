@@ -159,14 +159,15 @@
                     android:id="@+id/etCode"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="24sp"
+                    android:textSize="18sp"
                     android:textStyle="bold"
                     android:gravity="center"
                     android:letterSpacing="0.3"
                     android:hint=""
                     android:inputType="number"
                     android:maxLength="6"
-                    android:minHeight="56dp" />
+                    android:minHeight="56dp"
+                    android:textCursorDrawable="@null" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
