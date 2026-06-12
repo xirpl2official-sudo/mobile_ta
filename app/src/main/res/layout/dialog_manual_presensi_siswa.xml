@@ -163,7 +163,7 @@
                     android:textStyle="bold"
                     android:gravity="center"
                     android:letterSpacing="0.3"
-                    android:hint="000000"
+                    android:hint=""
                     android:inputType="number"
                     android:maxLength="6"
                     android:minHeight="56dp" />

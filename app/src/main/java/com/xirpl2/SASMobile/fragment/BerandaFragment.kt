@@ -192,7 +192,7 @@ class BerandaFragment : Fragment(R.layout.fragment_beranda) {
     private fun setupRiwayatAbsensi() {
         riwayatAdapter = RiwayatAbsensiAdapter()
         rvRiwayatAbsensi.apply { layoutManager = LinearLayoutManager(requireContext()); adapter = riwayatAdapter; isNestedScrollingEnabled = false }
-        view?.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnUnduhRiwayat)?.setOnClickListener { exportRiwayatToCsv() }
+        view?.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnUnduhRiwayat)?.setOnClickListener { exportRiwayatToExcel() }
     }
 
     private fun loadAllData() {
@@ -283,19 +283,27 @@ class BerandaFragment : Fragment(R.layout.fragment_beranda) {
         }
     }
 
-    private fun exportRiwayatToCsv() {
+    private fun exportRiwayatToExcel() {
         if (!isAdded) return
         val items = riwayatAdapter.currentList
         if (items.isEmpty()) { Toast.makeText(requireContext(), "Tidak ada data riwayat", Toast.LENGTH_SHORT).show(); return }
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-            val csv = "\uFEFF" + (listOf("Tanggal,Salat,Waktu,Status") + items.map { "${it.tanggal},${it.namaSholat},${it.waktuAbsen ?: "-"},${it.status.name}" }).joinToString("\n")
-            val fileName = "riwayat_absensi_${java.text.SimpleDateFormat("yyyyMMdd_HHmmss", java.util.Locale.getDefault()).format(java.util.Date())}.csv"
             try {
+                // Build simple HTML table as XLS-compatible format
+                val timestamp = java.text.SimpleDateFormat("yyyyMMdd_HHmmss", java.util.Locale.getDefault()).format(java.util.Date())
+                val fileName = "riwayat_absensi_$timestamp.xls"
+                val htmlContent = buildString {
+                    appendLine("<html><head><meta charset='utf-8'><style>th{background:#1976D2;color:white;padding:6px 12px;text-align:left}td{padding:6px 12px;border-bottom:1px solid #e0e0e0}tr:nth-child(even){background:#f8f9fa}</style></head><body><h3>Riwayat Absensi</h3><table><tr><th>Tanggal</th><th>Salat</th><th>Waktu</th><th>Status</th></tr>")
+                    for (item in items) {
+                        appendLine("<tr><td>${item.tanggal}</td><td>${item.namaSholat}</td><td>${item.waktuAbsen ?: "-"}</td><td>${item.status.name}</td></tr>")
+                    }
+                    appendLine("</table></body></html>")
+                }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    val cv = ContentValues().apply { put(MediaStore.Downloads.DISPLAY_NAME, fileName); put(MediaStore.Downloads.MIME_TYPE, "text/csv"); put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS) }
-                    requireContext().contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, cv)?.let { requireContext().contentResolver.openOutputStream(it)?.use { os -> os.write(csv.toByteArray()) } }
+                    val cv = ContentValues().apply { put(MediaStore.Downloads.DISPLAY_NAME, fileName); put(MediaStore.Downloads.MIME_TYPE, "application/vnd.ms-excel"); put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS) }
+                    requireContext().contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, cv)?.let { requireContext().contentResolver.openOutputStream(it)?.use { os -> os.write(htmlContent.toByteArray()) } }
                 } else {
-                    @Suppress("DEPRECATION") val f = java.io.File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName); f.writeText(csv)
+                    @Suppress("DEPRECATION") val f = java.io.File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName); f.writeText(htmlContent)
                 }
                 viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
                     if (!isAdded) return@launch

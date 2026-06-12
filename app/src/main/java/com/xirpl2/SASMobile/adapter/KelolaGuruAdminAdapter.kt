@@ -80,9 +80,7 @@ class KelolaGuruAdminAdapter(
         private val tvNip: TextView = itemView.findViewById(R.id.tvNip)
         private val tvEmail: TextView = itemView.findViewById(R.id.tvEmail)
         private val tvWaliKelas: TextView = itemView.findViewById(R.id.tvWaliKelas)
-        private val btnEdit: ImageView = itemView.findViewById(R.id.btnEdit)
-        private val btnLepasWaliKelas: ImageView = itemView.findViewById(R.id.btnLepasWaliKelas)
-        private val btnDelete: ImageView = itemView.findViewById(R.id.btnDelete)
+        private val btnMoreMenu: ImageView = itemView.findViewById(R.id.btnMoreMenu)
 
         fun bind(guru: GuruItem) {
             tvNama.text = guru.nama
@@ -94,18 +92,46 @@ class KelolaGuruAdminAdapter(
                 tvWaliKelas.background = ContextCompat.getDrawable(itemView.context, R.drawable.bg_badge_jurusan)
                 tvWaliKelas.setTextColor(ContextCompat.getColor(itemView.context, R.color.blue_theme))
                 tvWaliKelas.visibility = View.VISIBLE
-                btnLepasWaliKelas.visibility = View.VISIBLE
             } else {
                 tvWaliKelas.text = "-"
                 tvWaliKelas.background = null
                 tvWaliKelas.setTextColor(ContextCompat.getColor(itemView.context, R.color.slate_700))
                 tvWaliKelas.visibility = View.VISIBLE
-                btnLepasWaliKelas.visibility = View.GONE
             }
 
-            btnEdit.setOnClickListener { onEditClick(guru) }
-            btnLepasWaliKelas.setOnClickListener { onLepasWaliKelasClick(guru) }
-            btnDelete.setOnClickListener { onDeleteClick(guru) }
+            btnMoreMenu.setOnClickListener { anchorView ->
+                val popup = androidx.appcompat.widget.PopupMenu(itemView.context, anchorView)
+                popup.menu.add(0, 1, 0, "Ubah Data")
+                if (guru.id_kelas_wali != null) {
+                    popup.menu.add(0, 2, 1, "Lepas Wali Kelas")
+                }
+                popup.menu.add(0, 3, 2, "Hapus")
+
+                // Force show icons
+                try {
+                    val fields = popup.javaClass.declaredFields
+                    for (field in fields) {
+                        if ("mPopup" == field.name) {
+                            field.isAccessible = true
+                            val menuPopupHelper = field.get(popup)
+                            val classPopupHelper = Class.forName(menuPopupHelper.javaClass.name)
+                            val setForceShowIcon = classPopupHelper.getMethod("setForceShowIcon", Boolean::class.javaPrimitiveType)
+                            setForceShowIcon.invoke(menuPopupHelper, true)
+                            break
+                        }
+                    }
+                } catch (e: Exception) { }
+
+                popup.setOnMenuItemClickListener { item ->
+                    when (item.itemId) {
+                        1 -> { onEditClick(guru); true }
+                        2 -> { onLepasWaliKelasClick(guru); true }
+                        3 -> { onDeleteClick(guru); true }
+                        else -> false
+                    }
+                }
+                popup.show()
+            }
         }
     }
 

@@ -136,6 +136,23 @@
                 android:textSize="12sp"
                 android:inputType="none" />
 
+        <AutoCompleteTextView
+                android:id="@+id/actvKelas"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="0dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/bg_dropdown"
+                android:drawableEnd="@drawable/ic_chevron_right"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="12dp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:hint="Semua Kelas"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                android:inputType="none" />
+
         </LinearLayout>
 
         <com.google.android.material.button.MaterialButton

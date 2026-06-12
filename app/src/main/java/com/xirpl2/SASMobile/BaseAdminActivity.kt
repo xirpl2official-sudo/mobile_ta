@@ -130,6 +130,7 @@ abstract class BaseAdminActivity : BaseActivity() {
                 sidebarView.findViewById<View>(R.id.menuJadwalSholat)?.visibility = View.VISIBLE
                 sidebarView.findViewById<View>(R.id.menuPresensi)?.visibility = View.VISIBLE
                 sidebarView.findViewById<View>(R.id.menuDataSiswa)?.visibility = View.GONE
+                sidebarView.findViewById<View>(R.id.menuSiswaBelumTerdaftar)?.visibility = View.GONE
             } else {
                 sidebarView.findViewById<View>(R.id.menuJadwalSholat)?.visibility = View.GONE
                 sidebarView.findViewById<View>(R.id.menuDataSiswa)?.visibility = View.GONE

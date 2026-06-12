@@ -30,7 +30,6 @@ class PengajuanIzinAdminActivity : BaseAdminActivity() {
     private lateinit var progressBar: ProgressBar
     private lateinit var emptyState: View
     private lateinit var btnLoadMore: Button
-    private lateinit var fabHelp: View
 
     private val repository = PengajuanIzinRepository()
     
@@ -83,7 +82,6 @@ class PengajuanIzinAdminActivity : BaseAdminActivity() {
         progressBar = findViewById(R.id.progressBar)
         emptyState = findViewById(R.id.emptyState)
         btnLoadMore = findViewById(R.id.btnLoadMore)
-        fabHelp = findViewById(R.id.fabHelp)
     }
 
     private fun setupRecyclerView() {
@@ -97,7 +95,7 @@ class PengajuanIzinAdminActivity : BaseAdminActivity() {
     }
 
     private fun setupFilters() {
-        val statusOptions = arrayOf("Semua Status", "Pending", "Approved", "Rejected")
+        val statusOptions = arrayOf("Semua Status", "Menunggu", "Disetujui", "Ditolak")
         spinnerFilterStatus.setOnClickListener {
             val checkedStatusIndex = when (currentStatusFilter) {
                 null -> 0
@@ -182,10 +180,6 @@ class PengajuanIzinAdminActivity : BaseAdminActivity() {
             loadData(reset = false)
         }
 
-        fabHelp.setOnClickListener {
-            showHelpDialog()
-        }
-        
         findViewById<Button>(R.id.btnResetFilter)?.setOnClickListener {
             resetFilters()
         }
@@ -429,10 +423,31 @@ class PengajuanIzinAdminActivity : BaseAdminActivity() {
             }
         }
 
-        MaterialAlertDialogBuilder(this)
+        // Show approve/reject buttons for pending items (matching desktop behavior)
+        val layoutPendingActions = dialogView.findViewById<LinearLayout>(R.id.layoutDetailActionsPending)
+        val btnDetailTolak = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnDetailTolak)
+        val btnDetailSetujui = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnDetailSetujui)
+
+        if (item.status.lowercase() == "pending") {
+            layoutPendingActions.visibility = View.VISIBLE
+        }
+
+        val dialog = MaterialAlertDialogBuilder(this)
             .setView(dialogView)
             .setPositiveButton("Tutup", null)
-            .show()
+            .create()
+
+        btnDetailSetujui.setOnClickListener {
+            dialog.dismiss()
+            showConfirmApprove(item)
+        }
+
+        btnDetailTolak.setOnClickListener {
+            dialog.dismiss()
+            showConfirmReject(item)
+        }
+
+        dialog.show()
     }
 
     private fun openFile(url: String) {

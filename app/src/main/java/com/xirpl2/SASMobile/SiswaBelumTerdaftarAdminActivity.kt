@@ -31,6 +31,7 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
     private lateinit var tvCountInfo: TextView
     private lateinit var tableContainer: android.widget.LinearLayout
     private lateinit var paginationRow: LinearLayout
+    private lateinit var paginationContainer: LinearLayout
     private lateinit var tvPagination: TextView
     private lateinit var btnPrevPage: MaterialButton
     private lateinit var btnNextPage: MaterialButton
@@ -48,6 +49,11 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
     private val allStudents = mutableListOf<SiswaItem>()
     private val apiPageSize = 50
     private var generation = 0
+
+    // Client-side pagination state
+    private var currentPage = 1
+    private val displayPageSize = 20
+    private val displayTotalPages: Int get() = if (allStudents.isEmpty()) 1 else Math.ceil(allStudents.size.toDouble() / displayPageSize).toInt()
 
     private var forcedClass: String? = null
     private var forcedClassId: Int? = null
@@ -97,6 +103,7 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
         tableContainer = findViewById(R.id.tableContainer)
         paginationRow = findViewById(R.id.paginationRow)
         tvPagination = findViewById(R.id.tvPagination)
+        paginationContainer = findViewById(R.id.paginationRow)
         btnPrevPage = findViewById(R.id.btnPrevPage)
         btnNextPage = findViewById(R.id.btnNextPage)
         cbSelectAll = findViewById(R.id.cbSelectAll)
@@ -109,17 +116,24 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
         }
 
         btnPrevPage.setOnClickListener {
-            adapter.prevPage()
-            updatePagination()
+            if (currentPage > 1) {
+                currentPage--
+                showCurrentPage()
+                updatePagination()
+            }
         }
 
         btnNextPage.setOnClickListener {
-            adapter.nextPage()
-            updatePagination()
+            if (currentPage < displayTotalPages) {
+                currentPage++
+                showCurrentPage()
+                updatePagination()
+            }
         }
 
         cbSelectAll.setOnCheckedChangeListener { _, isChecked ->
-            if (adapter.getTotalItems() > 0) {
+            val pageItems = getCurrentPageItems()
+            if (pageItems.isNotEmpty()) {
                 adapter.selectAll(isChecked)
             }
         }
@@ -150,6 +164,18 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
         rvSiswaBaru.isNestedScrollingEnabled = false
     }
 
+    private fun getCurrentPageItems(): List<SiswaItem> {
+        val start = (currentPage - 1) * displayPageSize
+        val end = minOf(start + displayPageSize, allStudents.size)
+        return if (start < allStudents.size) allStudents.subList(start, end) else emptyList()
+    }
+
+    private fun showCurrentPage() {
+        val pageItems = getCurrentPageItems()
+        adapter.submitList(pageItems)
+        updateSelectionUI(adapter.getSelectedCount())
+    }
+
     private fun updateSelectionUI(count: Int) {
         if (count > 0) {
             notifyBar.visibility = View.VISIBLE
@@ -158,20 +184,112 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
             notifyBar.visibility = View.GONE
         }
         cbSelectAll.setOnCheckedChangeListener(null)
-        cbSelectAll.isChecked = count > 0 && count == adapter.getTotalItems()
+        cbSelectAll.isChecked = count > 0 && count == adapter.currentList.size
         cbSelectAll.setOnCheckedChangeListener { _, isChecked ->
-            if (adapter.getTotalItems() > 0) {
+            val pageItems = getCurrentPageItems()
+            if (pageItems.isNotEmpty()) {
                 adapter.selectAll(isChecked)
             }
         }
     }
 
     private fun updatePagination() {
-        val current = adapter.getCurrentPage()
-        val total = adapter.getTotalPages()
-        tvPagination.text = getString(R.string.halaman_x_dari_y, current, total)
-        btnPrevPage.isEnabled = current > 1
-        btnNextPage.isEnabled = current < total
+        val totalPages = displayTotalPages
+        paginationContainer.removeAllViews()
+        if (totalPages <= 1) {
+            paginationContainer.visibility = View.GONE
+            return
+        }
+        paginationContainer.visibility = View.VISIBLE
+
+        if (currentPage > 1) {
+            val prev = createPageButton("\u2039") {
+                currentPage--
+                showCurrentPage()
+                updatePagination()
+            }
+            paginationContainer.addView(prev)
+        }
+
+        val maxVisible = 5
+        var startPage = maxOf(1, currentPage - maxVisible / 2)
+        val endPage = minOf(totalPages, startPage + maxVisible - 1)
+        startPage = maxOf(1, endPage - maxVisible + 1)
+
+        if (startPage > 1) {
+            paginationContainer.addView(createPageButton("1") {
+                currentPage = 1
+                showCurrentPage()
+                updatePagination()
+            })
+            if (startPage > 2) {
+                val dots = TextView(this).apply {
+                    text = "\u2026"
+                    setPadding(8, 0, 8, 0)
+                    gravity = android.view.Gravity.CENTER
+                    textSize = 14f
+                    setTextColor(getColor(R.color.text_secondary))
+                }
+                paginationContainer.addView(dots)
+            }
+        }
+
+        for (i in startPage..endPage) {
+            val btn = createPageButton(i.toString()) {
+                currentPage = i
+                showCurrentPage()
+                updatePagination()
+            }
+            if (i == currentPage) {
+                btn.setBackgroundResource(R.drawable.bg_pagination_active)
+                btn.setTextColor(getColor(android.R.color.white))
+            }
+            paginationContainer.addView(btn)
+        }
+
+        if (endPage < totalPages) {
+            if (endPage < totalPages - 1) {
+                val dots = TextView(this).apply {
+                    text = "\u2026"
+                    setPadding(8, 0, 8, 0)
+                    gravity = android.view.Gravity.CENTER
+                    textSize = 14f
+                    setTextColor(getColor(R.color.text_secondary))
+                }
+                paginationContainer.addView(dots)
+            }
+            paginationContainer.addView(createPageButton(totalPages.toString()) {
+                currentPage = totalPages
+                showCurrentPage()
+                updatePagination()
+            })
+        }
+
+        if (currentPage < totalPages) {
+            val next = createPageButton("\u203A") {
+                currentPage++
+                showCurrentPage()
+                updatePagination()
+            }
+            paginationContainer.addView(next)
+        }
+    }
+
+    private fun createPageButton(text: String, onClick: () -> Unit): TextView {
+        return TextView(this).apply {
+            this.text = text
+            textSize = 13f
+            setTextColor(getColor(R.color.blue_theme))
+            setPadding(24, 12, 24, 12)
+            gravity = android.view.Gravity.CENTER
+            setBackgroundResource(R.drawable.bg_pagination_button)
+            val params = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply { setMargins(4, 0, 4, 0) }
+            layoutParams = params
+            setOnClickListener { onClick() }
+        }
     }
 
     private fun initForcedClass() {
@@ -336,15 +454,18 @@ class SiswaBelumTerdaftarAdminActivity : BaseAdminActivity() {
 
             allStudents.clear()
             allStudents.addAll(tempList)
+            currentPage = 1
 
             if (allStudents.isNotEmpty()) {
-                adapter.setFullList(allStudents.toList())
+                showCurrentPage()
+            } else {
+                adapter.submitList(emptyList())
             }
             tvCountInfo.text = "Menampilkan ${allStudents.size} dari $totalItemsCount data"
             val empty = allStudents.isEmpty()
             tableContainer.visibility = if (empty) View.GONE else View.VISIBLE
             layoutEmpty.visibility = if (empty) View.VISIBLE else View.GONE
-            paginationRow.visibility = if (empty || adapter.getTotalPages() <= 1) View.GONE else View.VISIBLE
+            paginationRow.visibility = if (empty || displayTotalPages <= 1) View.GONE else View.VISIBLE
             updatePagination()
         }
     }

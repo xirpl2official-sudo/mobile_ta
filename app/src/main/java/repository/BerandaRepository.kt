@@ -1026,6 +1026,74 @@ class BerandaRepository {
         }
     }
 
+    // --- Promotion Phase Endpoints (matches desktop) ---
+
+    suspend fun graduateGrade12(token: String): Result<MessageResponse> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.graduateGrade12("Bearer $token")
+                if (!response.isSuccessful) {
+                    val errorBody = response.errorBody()?.string()
+                    val msg = try {
+                        org.json.JSONObject(errorBody ?: "").optString("error")
+                            .takeIf { it.isNotEmpty() }
+                            ?: org.json.JSONObject(errorBody ?: "").optString("message")
+                    } catch (e: Exception) {
+                        errorBody ?: "HTTP Error: ${response.code()}"
+                    }
+                    return@withContext Result.failure(Exception(msg))
+                }
+                Result.success(response.body() ?: MessageResponse(message = "OK"))
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun promoteGrade11(token: String): Result<MessageResponse> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.promoteGrade11("Bearer $token")
+                if (!response.isSuccessful) {
+                    val errorBody = response.errorBody()?.string()
+                    val msg = try {
+                        org.json.JSONObject(errorBody ?: "").optString("error")
+                            .takeIf { it.isNotEmpty() }
+                            ?: org.json.JSONObject(errorBody ?: "").optString("message")
+                    } catch (e: Exception) {
+                        errorBody ?: "HTTP Error: ${response.code()}"
+                    }
+                    return@withContext Result.failure(Exception(msg))
+                }
+                Result.success(response.body() ?: MessageResponse(message = "OK"))
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun promoteGrade10(token: String): Result<MessageResponse> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.promoteGrade10("Bearer $token")
+                if (!response.isSuccessful) {
+                    val errorBody = response.errorBody()?.string()
+                    val msg = try {
+                        org.json.JSONObject(errorBody ?: "").optString("error")
+                            .takeIf { it.isNotEmpty() }
+                            ?: org.json.JSONObject(errorBody ?: "").optString("message")
+                    } catch (e: Exception) {
+                        errorBody ?: "HTTP Error: ${response.code()}"
+                    }
+                    return@withContext Result.failure(Exception(msg))
+                }
+                Result.success(response.body() ?: MessageResponse(message = "OK"))
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
     // --- Lookups ---
 
     suspend fun getJurusanLookup(token: String): Result<List<JurusanItem>> {

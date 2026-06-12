@@ -85,8 +85,7 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
     private var totalPages = 1
     private var totalItems = 0
     private var isLoading = false
-    private var isLastPage = false
-    private val pageSize = 100
+    private val pageSize = 20
 
     private var selectedJurusan: String = "Semua Jurusan"
     private var selectedKelas: String = "Semua Kelas"
@@ -189,6 +188,14 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
     }
 
     private fun setupBulkActionLogic() {
+        // Hide bulk action for wali_kelas / guru roles
+        if (isWaliKelas) {
+            bulkActionCard.visibility = View.GONE
+            cbHeaderSelectAll.visibility = View.GONE
+            cbSelectAll.visibility = View.GONE
+            return
+        }
+
         siswaAdapter.setOnSelectionChangedListener { count ->
             if (count > 0 && !isSelectionMode) {
                 enterSelectionMode()
@@ -753,16 +760,13 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
         if (reset) {
             currentPage = 1
             allStudentList.clear()
-            siswaAdapter.setFullList(emptyList())
-            isLastPage = false
+            siswaAdapter.submitList(emptyList())
             if (!::swipeRefresh.isInitialized || !swipeRefresh.isRefreshing) {
                 progressLoading.visibility = View.VISIBLE
             }
             emptyStateContainer.visibility = View.GONE
             recyclerSiswa.visibility = View.GONE
             findViewById<View>(R.id.tableHorizontalScrollView).visibility = View.GONE
-        } else {
-            // Loading more pages from API — no visual indicator needed
         }
 
         isLoading = true
@@ -787,18 +791,10 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
                     totalItems = response.pagination?.total_items ?: 0
                     totalPages = response.pagination?.total_pages ?: 1
 
-                    if (reset) {
-                        allStudentList.clear()
-                    }
+                    allStudentList.clear()
                     allStudentList.addAll(newStudents)
 
-                    if (newStudents.size < pageSize) {
-                        isLastPage = true
-                    }
-
-                    siswaAdapter.setFullList(allStudentList.toList())
-
-                    // Load on-demand (user scrolls), not auto-fetch all pages
+                    siswaAdapter.submitList(newStudents.toList())
 
                     if (allStudentList.isEmpty()) {
                         tvEmptyState.text = "Tidak ada data siswa"
@@ -837,12 +833,7 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
         }
     }
 
-    private fun loadMoreData() {
-        if (!isLoading && !isLastPage) {
-            currentPage++
-            loadStudentData(reset = false)
-        }
-    }
+
 
     private fun loadClassCount() {
         val token = getAuthToken()
@@ -860,7 +851,6 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
     }
 
     private fun updateCountInfo() {
-        tvCountInfo.text = "Menampilkan ${allStudentList.size} dari $totalItems data"
         tvStatTotalSiswa.text = totalItems.toString()
     }
 
@@ -870,28 +860,23 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
         val role = session.getString("user_role", "")
         val isReadOnly = role == "wali_kelas" || role == "guru"
 
-        findViewById<View>(R.id.btnTambahSiswa)?.setOnClickListener {
-            if (isReadOnly) {
-                Toast.makeText(this, "Akses ditolak", Toast.LENGTH_SHORT).show()
-            } else {
+        if (isReadOnly) {
+            // Wali Kelas / Guru: only unduh allowed, hide tambah, import, cetak
+            findViewById<View>(R.id.btnTambahSiswa)?.visibility = View.GONE
+            findViewById<View>(R.id.btnImportSiswa)?.visibility = View.GONE
+            findViewById<View>(R.id.btnUnduhData)?.setOnClickListener {
+                showExportSiswaDialog()
+            }
+        } else {
+            findViewById<View>(R.id.btnTambahSiswa)?.setOnClickListener {
                 startActivity(Intent(this, TambahSiswaActivity::class.java))
             }
-        }
-
-        findViewById<View>(R.id.btnImportSiswa)?.setOnClickListener {
-            if (isReadOnly) {
-                Toast.makeText(this, "Akses ditolak", Toast.LENGTH_SHORT).show()
-            } else {
+            findViewById<View>(R.id.btnImportSiswa)?.setOnClickListener {
                 showImportSiswaDialog()
             }
-        }
-
-        findViewById<View>(R.id.btnUnduhData)?.setOnClickListener {
-            showExportSiswaDialog()
-        }
-
-        findViewById<View>(R.id.btnCetakData)?.setOnClickListener {
-            printDataSiswa()
+            findViewById<View>(R.id.btnUnduhData)?.setOnClickListener {
+                showExportSiswaDialog()
+            }
         }
     }
 
@@ -902,42 +887,82 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
                     "- Kelas: $selectedKelas\n" +
                     "- Jurusan: $selectedJurusan\n" +
                     "- Jenis Kelamin: $selectedGender\n\n" +
-                    "Data akan diekspor ke format CSV (.csv)")
+                    "Data akan diekspor ke format Excel (.xls)")
             .setPositiveButton("Ekspor") { dialog, _ ->
                 dialog.dismiss()
-                exportToCsv()
+                exportToExcel()
             }
             .setNegativeButton("Batal", null)
             .show()
     }
 
-    private fun exportToCsv() {
-        if (allStudentList.isEmpty()) {
-            Toast.makeText(this, "Tidak ada data untuk diekspor", Toast.LENGTH_SHORT).show()
-            return
-        }
+    private suspend fun fetchAllStudents(): List<SiswaItem> {
+        val token = getAuthToken()
+        if (token.isEmpty()) return emptyList()
 
+        val allItems = mutableListOf<SiswaItem>()
+        var page = 1
+        var hasMore = true
+
+        while (hasMore) {
+            val result = repository.getSiswaList(
+                token = token,
+                page = page,
+                pageSize = 100,
+                jurusan = if (selectedJurusan == "Semua Jurusan") null else selectedJurusan,
+                tingkatan = if (selectedKelas == "Semua Kelas") null else selectedKelas.toIntOrNull(),
+                jk = getGenderApiValue(selectedGender),
+                search = if (searchQuery.isNotEmpty()) searchQuery else null,
+                agama = if (selectedAgama == "Semua Agama") null else selectedAgama
+            )
+            result.fold(
+                onSuccess = { response ->
+                    val items = response.data ?: emptyList()
+                    allItems.addAll(items)
+                    val respTotalPages = response.pagination?.total_pages ?: 1
+                    hasMore = page < respTotalPages
+                    page++
+                },
+                onFailure = { hasMore = false }
+            )
+        }
+        return allItems
+    }
+
+    private fun exportToExcel() {
         val progressDialog = AlertDialog.Builder(this)
             .setTitle("Mengekspor Data")
-            .setMessage("Sedang menyiapkan ${allStudentList.size} data siswa...")
+            .setMessage("Sedang mengambil semua data siswa...")
             .setCancelable(false)
             .create()
         progressDialog.show()
 
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-                val fileName = "data_siswa_$timestamp.csv"
-
-                val csvContent = buildString {
-                    appendLine("No,NIS,Nama Siswa,Jenis Kelamin,Kelas,Jurusan")
-                    allStudentList.forEachIndexed { index, siswa ->
-                        val jkDisplay = if (siswa.jenis_kelamin == "L") "Laki-laki" else "Perempuan"
-                        appendLine("${index + 1},${escapeCsv(siswa.nis)},${escapeCsv(siswa.nama_siswa)},$jkDisplay,${escapeCsv(siswa.kelas)},${escapeCsv(siswa.jurusan)}")
+                val exportList = fetchAllStudents()
+                if (exportList.isEmpty()) {
+                    withContext(Dispatchers.Main) {
+                        if (isFinishing || isDestroyed) return@withContext
+                        progressDialog.dismiss()
+                        Toast.makeText(this@DataSiswaAdminActivity, "Tidak ada data untuk diekspor", Toast.LENGTH_SHORT).show()
                     }
+                    return@launch
                 }
 
-                val savedUri = saveCsvFile(fileName, csvContent)
+                val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+                val fileName = "data_siswa_$timestamp.xls"
+
+                val htmlContent = buildString {
+                    appendLine("<html><head><meta charset='utf-8'><style>th{background:#1976D2;color:white;padding:6px 12px;text-align:left}td{padding:6px 12px;border-bottom:1px solid #e0e0e0}tr:nth-child(even){background:#f8f9fa}</style></head><body><h3>Data Siswa - SMK Negeri 2 Singosari</h3><table><tr><th>No</th><th>NIS</th><th>Nama Siswa</th><th>Jenis Kelamin</th><th>Kelas</th><th>Jurusan</th><th>Wali Kelas</th></tr>")
+                    exportList.forEachIndexed { index, siswa ->
+                        val jkDisplay = if (siswa.jenis_kelamin == "L") "Laki-laki" else "Perempuan"
+                        val wali = siswa.waliKelasName ?: "-"
+                        appendLine("<tr><td>${index + 1}</td><td>${siswa.nis}</td><td>${siswa.nama_siswa}</td><td>$jkDisplay</td><td>${siswa.kelas}</td><td>${siswa.jurusan}</td><td>$wali</td></tr>")
+                    }
+                    appendLine("</table></body></html>")
+                }
+
+                val savedUri = saveExcelFile(fileName, htmlContent)
 
                 withContext(Dispatchers.Main) {
                     if (isFinishing || isDestroyed) return@withContext
@@ -945,7 +970,7 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
                     if (savedUri != null) {
                         Toast.makeText(
                             this@DataSiswaAdminActivity,
-                            "Berhasil export ${allStudentList.size} data siswa ke $fileName",
+                            "Berhasil export ${exportList.size} data siswa ke $fileName",
                             Toast.LENGTH_LONG
                         ).show()
                     } else {
@@ -962,134 +987,18 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
         }
     }
 
-    private fun printDataSiswa() {
-        if (allStudentList.isEmpty()) {
-            Toast.makeText(this, "Tidak ada data untuk dicetak", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val timestamp = SimpleDateFormat("dd MMMM yyyy HH:mm", Locale("id", "ID")).format(Date())
-        val filters = mutableListOf<String>()
-        if (selectedKelas != "Semua Kelas") filters.add("Kelas: $selectedKelas")
-        if (selectedJurusan != "Semua Jurusan") filters.add("Jurusan: $selectedJurusan")
-        if (selectedGender != "Semua JK") filters.add("JK: $selectedGender")
-        if (selectedAgama != "Semua Agama") filters.add("Agama: $selectedAgama")
-        val filterText = if (filters.isNotEmpty()) filters.joinToString(" | ") else "Semua Data"
-
-        val rowsHtml = buildString {
-            allStudentList.forEachIndexed { index, siswa ->
-                val jkDisplay = if (siswa.jenis_kelamin.equals("L", ignoreCase = true)) "L" else "P"
-                val wali = siswa.waliKelasName ?: "-"
-                append("""
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td>${siswa.nis}</td>
-                        <td>${siswa.nama_siswa}</td>
-                        <td>$jkDisplay</td>
-                        <td>${siswa.kelas}</td>
-                        <td>${siswa.jurusan}</td>
-                        <td>$wali</td>
-                    </tr>
-                """.trimIndent())
-            }
-        }
-
-        val html = """
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="utf-8">
-                <style>
-                    @page { size: A4 landscape; margin: 10mm; }
-                    * { margin: 0; padding: 0; box-sizing: border-box; }
-                    body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 10px; color: #1a1a1a; padding: 12px; }
-                    .header { text-align: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #1976D2; }
-                    .header h1 { font-size: 16px; color: #1976D2; margin-bottom: 2px; }
-                    .header h2 { font-size: 13px; color: #333; font-weight: normal; }
-                    .header .meta { font-size: 9px; color: #666; margin-top: 4px; }
-                    .info-bar { display: flex; justify-content: space-between; font-size: 9px; color: #555; margin-bottom: 8px; padding: 4px 8px; background: #f5f5f5; border-radius: 4px; }
-                    table { width: 100%; border-collapse: collapse; }
-                    th { background: #1976D2; color: white; padding: 5px 6px; font-size: 9px; text-align: left; }
-                    td { padding: 4px 6px; border-bottom: 1px solid #e0e0e0; font-size: 9px; }
-                    tr:nth-child(even) { background: #f8f9fa; }
-                    tr:hover { background: #e3f2fd; }
-                    .footer { margin-top: 12px; text-align: center; font-size: 8px; color: #999; border-top: 1px solid #e0e0e0; padding-top: 6px; }
-                </style>
-            </head>
-            <body>
-                <div class="header">
-                    <h1>SMK NEGERI 2 SINGOSARI</h1>
-                    <h2>Data Siswa</h2>
-                    <div class="meta">Dicetak: $timestamp</div>
-                </div>
-                <div class="info-bar">
-                    <span>Filter: $filterText</span>
-                    <span>Total: ${allStudentList.size} siswa</span>
-                </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th style="width:30px">No</th>
-                            <th style="width:80px">NIS</th>
-                            <th style="width:180px">Nama Siswa</th>
-                            <th style="width:30px">JK</th>
-                            <th style="width:45px">Kelas</th>
-                            <th style="width:55px">Jurusan</th>
-                            <th>Wali Kelas</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        $rowsHtml
-                    </tbody>
-                </table>
-                <div class="footer">
-                    SMK Negeri 2 Singosari &mdash; Sistem Presensi Salat &mdash; Halaman cetak
-                </div>
-            </body>
-            </html>
-        """.trimIndent()
-
-        val webView = WebView(this).apply {
-            webViewClient = WebViewClient()
-            settings.javaScriptEnabled = false
-        }
-
-        webView.loadDataWithBaseURL(null, html, "text/HTML", "UTF-8", null)
-
-        webView.webViewClient = object : WebViewClient() {
-            override fun onPageFinished(view: WebView?, url: String?) {
-                val printManager = getSystemService(Context.PRINT_SERVICE) as PrintManager
-                val jobName = "DataSiswa_${SimpleDateFormat("yyyyMMdd_HHmm", Locale.getDefault()).format(Date())}"
-                val printAdapter: PrintDocumentAdapter = view?.createPrintDocumentAdapter(jobName) ?: return
-                printManager.print(jobName, printAdapter, PrintAttributes.Builder().build())
-                // Destroy WebView after print to prevent memory leak
-                webView.destroy()
-            }
-        }
-    }
-
-    private fun escapeCsv(value: String): String {
-        return if (value.contains(",") || value.contains("\"") || value.contains("\n")) {
-            "\"${value.replace("\"", "\"\"")}\""
-        } else {
-            value
-        }
-    }
-
-    private fun saveCsvFile(fileName: String, csvContent: String): String? {
+    private fun saveExcelFile(fileName: String, content: String): String? {
         return try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 val values = ContentValues().apply {
                     put(MediaStore.Downloads.DISPLAY_NAME, fileName)
-                    put(MediaStore.Downloads.MIME_TYPE, "text/csv")
+                    put(MediaStore.Downloads.MIME_TYPE, "application/vnd.ms-excel")
                     put(MediaStore.Downloads.RELATIVE_PATH, "Download/SASMobile")
                 }
                 val uri = contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
                 uri?.let {
                     contentResolver.openOutputStream(it)?.use { outputStream ->
-                        val bom = byteArrayOf(0xEF.toByte(), 0xBB.toByte(), 0xBF.toByte())
-                        outputStream.write(bom)
-                        outputStream.write(csvContent.toByteArray(Charsets.UTF_8))
+                        outputStream.write(content.toByteArray(Charsets.UTF_8))
                         outputStream.flush()
                     }
                     it.toString()
@@ -1099,18 +1008,137 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
                 if (!dir.exists()) dir.mkdirs()
                 val file = File(dir, fileName)
                 file.outputStream().use { outputStream ->
-                    val bom = byteArrayOf(0xEF.toByte(), 0xBB.toByte(), 0xBF.toByte())
-                    outputStream.write(bom)
-                    outputStream.write(csvContent.toByteArray(Charsets.UTF_8))
+                    outputStream.write(content.toByteArray(Charsets.UTF_8))
                     outputStream.flush()
                 }
                 file.absolutePath
             }
         } catch (e: Exception) {
-            android.util.Log.e(TAG, "Error saving CSV: ${e.message}")
+            android.util.Log.e(TAG, "Error saving Excel: ${e.message}")
             null
         }
     }
+
+    private fun printDataSiswa() {
+        val progressDialog = AlertDialog.Builder(this)
+            .setTitle("Menyiapkan Cetakan")
+            .setMessage("Sedang mengambil semua data siswa...")
+            .setCancelable(false)
+            .create()
+        progressDialog.show()
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            val printList = fetchAllStudents()
+            withContext(Dispatchers.Main) {
+                if (isFinishing || isDestroyed) return@withContext
+                progressDialog.dismiss()
+                if (printList.isEmpty()) {
+                    Toast.makeText(this@DataSiswaAdminActivity, "Tidak ada data untuk dicetak", Toast.LENGTH_SHORT).show()
+                    return@withContext
+                }
+
+                val timestamp = SimpleDateFormat("dd MMMM yyyy HH:mm", Locale("id", "ID")).format(Date())
+                val filters = mutableListOf<String>()
+                if (selectedKelas != "Semua Kelas") filters.add("Kelas: $selectedKelas")
+                if (selectedJurusan != "Semua Jurusan") filters.add("Jurusan: $selectedJurusan")
+                if (selectedGender != "Semua JK") filters.add("JK: $selectedGender")
+                if (selectedAgama != "Semua Agama") filters.add("Agama: $selectedAgama")
+                val filterText = if (filters.isNotEmpty()) filters.joinToString(" | ") else "Semua Data"
+
+                val rowsHtml = buildString {
+                    printList.forEachIndexed { index, siswa ->
+                        val jkDisplay = if (siswa.jenis_kelamin.equals("L", ignoreCase = true)) "L" else "P"
+                        val wali = siswa.waliKelasName ?: "-"
+                        append("""
+                            <tr>
+                                <td>${index + 1}</td>
+                                <td>${siswa.nis}</td>
+                                <td>${siswa.nama_siswa}</td>
+                                <td>$jkDisplay</td>
+                                <td>${siswa.kelas}</td>
+                                <td>${siswa.jurusan}</td>
+                                <td>$wali</td>
+                            </tr>
+                        """.trimIndent())
+                    }
+                }
+
+                val html = """
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <meta charset="utf-8">
+                        <style>
+                            @page { size: A4 landscape; margin: 10mm; }
+                            * { margin: 0; padding: 0; box-sizing: border-box; }
+                            body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 10px; color: #1a1a1a; padding: 12px; }
+                            .header { text-align: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #1976D2; }
+                            .header h1 { font-size: 16px; color: #1976D2; margin-bottom: 2px; }
+                            .header h2 { font-size: 13px; color: #333; font-weight: normal; }
+                            .header .meta { font-size: 9px; color: #666; margin-top: 4px; }
+                            .info-bar { display: flex; justify-content: space-between; font-size: 9px; color: #555; margin-bottom: 8px; padding: 4px 8px; background: #f5f5f5; border-radius: 4px; }
+                            table { width: 100%; border-collapse: collapse; }
+                            th { background: #1976D2; color: white; padding: 5px 6px; font-size: 9px; text-align: left; }
+                            td { padding: 4px 6px; border-bottom: 1px solid #e0e0e0; font-size: 9px; }
+                            tr:nth-child(even) { background: #f8f9fa; }
+                            tr:hover { background: #e3f2fd; }
+                            .footer { margin-top: 12px; text-align: center; font-size: 8px; color: #999; border-top: 1px solid #e0e0e0; padding-top: 6px; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                            <h1>SMK NEGERI 2 SINGOSARI</h1>
+                            <h2>Data Siswa</h2>
+                            <div class="meta">Dicetak: $timestamp</div>
+                        </div>
+                        <div class="info-bar">
+                            <span>Filter: $filterText</span>
+                            <span>Total: ${printList.size} siswa</span>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width:30px">No</th>
+                                    <th style="width:80px">NIS</th>
+                                    <th style="width:180px">Nama Siswa</th>
+                                    <th style="width:30px">JK</th>
+                                    <th style="width:45px">Kelas</th>
+                                    <th style="width:55px">Jurusan</th>
+                                    <th>Wali Kelas</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                $rowsHtml
+                            </tbody>
+                        </table>
+                        <div class="footer">
+                            SMK Negeri 2 Singosari &mdash; Sistem Presensi Salat &mdash; Halaman cetak
+                        </div>
+                    </body>
+                    </html>
+                """.trimIndent()
+
+                val webView = WebView(this@DataSiswaAdminActivity).apply {
+                    webViewClient = WebViewClient()
+                    settings.javaScriptEnabled = false
+                }
+
+                webView.loadDataWithBaseURL(null, html, "text/HTML", "UTF-8", null)
+
+                webView.webViewClient = object : WebViewClient() {
+                    override fun onPageFinished(view: WebView?, url: String?) {
+                        val printManager = getSystemService(Context.PRINT_SERVICE) as PrintManager
+                        val jobName = "DataSiswa_${SimpleDateFormat("yyyyMMdd_HHmm", Locale.getDefault()).format(Date())}"
+                        val printAdapter: PrintDocumentAdapter = view?.createPrintDocumentAdapter(jobName) ?: return
+                        printManager.print(jobName, printAdapter, PrintAttributes.Builder().build())
+                        webView.destroy()
+                    }
+                }
+            }
+        }
+    }
+
+
 
     private fun showImportSiswaDialog() {
         MaterialAlertDialogBuilder(this)
@@ -1414,26 +1442,26 @@ class DataSiswaAdminActivity : BaseAdminActivity() {
 
     private fun setupPagination() {
         btnPrevPage.setOnClickListener {
-            siswaAdapter.prevPage()
-            updatePaginationUI()
+            if (currentPage > 1 && !isLoading) {
+                currentPage--
+                loadStudentData()
+            }
         }
         btnNextPage.setOnClickListener {
-            siswaAdapter.nextPage()
-            updatePaginationUI()
+            if (currentPage < totalPages && !isLoading) {
+                currentPage++
+                loadStudentData()
+            }
         }
     }
 
     private fun updatePaginationUI() {
-        val totalPages = siswaAdapter.getTotalPages()
-        val currentPage = siswaAdapter.getCurrentPage()
         tvPageInfo.text = "Halaman $currentPage dari $totalPages"
         btnPrevPage.alpha = if (currentPage <= 1) 0.3f else 1f
         btnNextPage.alpha = if (currentPage >= totalPages) 0.3f else 1f
-        // Update count info
         val start = (currentPage - 1) * pageSize + 1
-        val end = minOf(currentPage * pageSize, allStudentList.size)
-        val shown = end - start + 1
-        tvCountInfo.text = "Menampilkan $shown dari $totalItems data"
+        val end = minOf(currentPage * pageSize, totalItems)
+        tvCountInfo.text = if (totalItems > 0) "Menampilkan $start-$end dari $totalItems data" else "Tidak ada data"
     }
 
     private fun showUpdateStatusDialog(siswa: SiswaItem) {

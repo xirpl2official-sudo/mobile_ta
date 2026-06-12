@@ -207,6 +207,41 @@
 
         </LinearLayout>
 
+        <!-- Approve/Reject buttons (shown only for pending status) -->
+        <LinearLayout
+            android:id="@+id/layoutDetailActionsPending"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end"
+            android:layout_marginTop="16dp"
+            android:visibility="gone">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDetailTolak"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:text="Tolak"
+                android:textAllCaps="false"
+                android:textSize="13sp"
+                android:textColor="@color/red"
+                app:strokeColor="@color/red"
+                app:cornerRadius="8dp"
+                android:layout_marginEnd="8dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDetailSetujui"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:text="Setujui"
+                android:textAllCaps="false"
+                android:textSize="13sp"
+                android:textColor="@android:color/white"
+                app:backgroundTint="@color/green"
+                app:cornerRadius="8dp" />
+        </LinearLayout>
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnTutup"
             android:layout_width="match_parent"
@@ -218,7 +253,7 @@
             android:textStyle="bold"
             app:backgroundTint="#64748B"
             app:cornerRadius="8dp"
-            android:layout_marginTop="16dp" />
+            android:layout_marginTop="12dp" />
 
     </LinearLayout>
 </ScrollView>

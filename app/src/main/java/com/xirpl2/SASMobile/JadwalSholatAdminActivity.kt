@@ -115,7 +115,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
                 onFailure = { hasError = true }
             )
             deferredDuha.await().fold(
-                onSuccess = { list -> DuhaKeahlianList = list },
+                onSuccess = { list -> DuhaKeahlianList = list.filter { !it.hari.equals("Jumat", ignoreCase = true) } },
                 onFailure = { hasError = true }
             )
             deferredJurusan.await().fold(

@@ -85,7 +85,11 @@ class PresensiAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         holder.tvJenisSholat.text = item.jenis_sholat ?: "-"
 
         val tanggal = item.tanggal
-        holder.tvTanggal.text = if (tanggal.length >= 10) tanggal.substring(5, 10).replace("-", "/") else tanggal
+        holder.tvTanggal.text = try {
+            val inp = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US)
+            val out = java.text.SimpleDateFormat("dd MMMM yyyy", java.util.Locale("in", "ID"))
+            inp.parse(tanggal)?.let { out.format(it) } ?: tanggal
+        } catch (e: Exception) { tanggal }
 
         val status = item.status.lowercase()
         val statusDisplay = status.replaceFirstChar { if (it.isLowerCase()) it.uppercase() else it.toString() }
@@ -100,20 +104,8 @@ class PresensiAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         }
         holder.tvStatus.setBackgroundResource(backgroundRes)
 
-        holder.btnDetail.visibility = View.VISIBLE
-        if (status == "izin" || status == "sakit") {
-            holder.btnDetail.text = "Detail"
-            holder.btnDetail.isEnabled = true
-            holder.btnDetail.alpha = 1f
-            holder.btnDetail.setOnClickListener {
-                showDetailDialog(holder.itemView.context, item)
-            }
-        } else {
-            holder.btnDetail.text = "-"
-            holder.btnDetail.isEnabled = false
-            holder.btnDetail.alpha = 0.4f
-            holder.btnDetail.setOnClickListener(null)
-        }
+        // Aksi column removed per user request
+        holder.btnDetail.visibility = View.GONE
     }
 
     private fun bindFooter(holder: FooterViewHolder) {

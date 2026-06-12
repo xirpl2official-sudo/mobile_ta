@@ -24,41 +24,7 @@ class SiswaAdapter(
     private var isSelectionMode = false
     private var onSelectionChanged: ((Int) -> Unit)? = null
 
-    private var fullList: List<SiswaItem> = emptyList()
-    private var currentPage = 0
-    private val pageSize = 20
 
-    fun setFullList(list: List<SiswaItem>) {
-        fullList = list
-        currentPage = 0
-        selectedNis.clear()
-        onSelectionChanged?.invoke(0)
-        refreshPage()
-    }
-
-    fun getTotalPages(): Int = if (fullList.isEmpty()) 1 else Math.ceil(fullList.size.toDouble() / pageSize).toInt()
-
-    fun getCurrentPage(): Int = currentPage + 1
-
-    fun getTotalItems(): Int = fullList.size
-
-    fun goToPage(page: Int) {
-        val zeroBased = page - 1
-        if (zeroBased in 0 until getTotalPages()) {
-            currentPage = zeroBased
-            refreshPage()
-        }
-    }
-
-    fun nextPage() { goToPage(currentPage + 2) }
-    fun prevPage() { goToPage(currentPage) }
-
-    private fun refreshPage() {
-        val start = currentPage * pageSize
-        val end = minOf(start + pageSize, fullList.size)
-        val pageItems = if (start < fullList.size) fullList.subList(start, end) else emptyList()
-        submitList(pageItems.toList())
-    }
 
     fun setOnSelectionChangedListener(listener: (Int) -> Unit) {
         onSelectionChanged = listener
@@ -80,12 +46,12 @@ class SiswaAdapter(
     }
 
     fun selectAll(select: Boolean) {
-        if (select) fullList.forEach { selectedNis.add(it.nis) } else selectedNis.clear()
+        if (select) currentList.forEach { selectedNis.add(it.nis) } else selectedNis.clear()
         notifyDataSetChanged()
         onSelectionChanged?.invoke(selectedNis.size)
     }
 
-    fun getSelectedItems(): List<SiswaItem> = fullList.filter { selectedNis.contains(it.nis) }
+    fun getSelectedItems(): List<SiswaItem> = currentList.filter { selectedNis.contains(it.nis) }
     fun getSelectedCount(): Int = selectedNis.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -138,21 +104,26 @@ class SiswaAdapter(
                 tvNis.setTypeface(null, android.graphics.Typeface.NORMAL)
             }
 
-            tvNama.text = siswa.nama_siswa
-            tvKelas.text = siswa.kelas
-            tvJurusan?.text = siswa.jurusan
+            tvNama.text = siswa.nama_siswa.ifEmpty { "-" }
+            tvKelas.text = siswa.kelas.ifEmpty { "-" }
+            tvJurusan?.text = siswa.jurusan.ifEmpty { "-" }
             tvWaliKelas?.text = siswa.waliKelasName?.ifEmpty { "-" } ?: "-"
             tvJenisKelamin?.text = when (siswa.jenis_kelamin.uppercase()) {
                 "L" -> "Laki-laki"
                 "P" -> "Perempuan"
-                else -> siswa.jenis_kelamin
+                else -> siswa.jenis_kelamin.ifEmpty { "-" }
             }
             tvStatusAkademik?.text = siswa.statusAkademik?.uppercase() ?: "AKTIF"
 
+            // Hide checkbox for read-only roles (wali_kelas/guru)
             cbRow?.let {
-                it.visibility = View.VISIBLE
-                it.isChecked = isSelected
-                it.setOnClickListener { onToggleSelection() }
+                if (isReadOnly) {
+                    it.visibility = View.GONE
+                } else {
+                    it.visibility = View.VISIBLE
+                    it.isChecked = isSelected
+                    it.setOnClickListener { onToggleSelection() }
+                }
             }
 
             itemView.setOnClickListener {

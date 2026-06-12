@@ -346,41 +346,27 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
+                android:layout_marginBottom="16dp"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:visibility="gone">
+                android:visibility="gone" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnPrevPage"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/sebelumnya"
-                    android:textAllCaps="false"
-                    android:textColor="@color/blue_theme"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:id="@+id/tvPagination"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="16dp"
-                    tools:text="Halaman 1 dari 1"
-                    android:textColor="@color/on_background"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnNextPage"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/selanjutnya"
-                    android:textAllCaps="false"
-                    android:textColor="@color/blue_theme"
-                    android:textSize="13sp" />
-
-            </LinearLayout>
+            <!-- Hidden prev/next for compatibility -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnPrevPage"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnNextPage"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/tvPagination"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone" />
 
             <LinearLayout
                 android:id="@+id/layoutEmpty"

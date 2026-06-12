@@ -51,6 +51,8 @@ class ScanQrFragment : Fragment(R.layout.fragment_scan_qr) {
     private val halanganRepository = PerizinanHalanganRepository()
     private var isProcessing = false
     private var isHalanganMode = false
+    private var isFemaleStudent = false
+    private var pendingHalanganScan = false
 
     private val cameraPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -84,20 +86,28 @@ class ScanQrFragment : Fragment(R.layout.fragment_scan_qr) {
     }
 
     private fun setupToggle() {
+        toggleScanType.visibility = View.GONE
+        // Check if student is female for dual QR scan flow
         val sharedPref = com.xirpl2.SASMobile.utils.SecurePreferences.getUserData(requireContext())
         val jk = sharedPref.getString("jenis_kelamin", "L")
-        if (jk != "P") {
-            toggleScanType.visibility = View.GONE
-        }
-        toggleScanType.addOnButtonCheckedListener { _, checkedId, isChecked ->
-            if (!isChecked) return@addOnButtonCheckedListener
-            isHalanganMode = checkedId == R.id.btnScanHalangan
-        }
+        isFemaleStudent = jk == "P"
     }
 
     private fun setupClickListeners() {
         btnScan.setOnClickListener { if (!isProcessing) startScanning() }
-        btnScanAgain.setOnClickListener { hideResult(); startScanning() }
+        btnScanAgain.setOnClickListener {
+            hideResult()
+            if (pendingHalanganScan) {
+                // Switch to halangan mode for female students
+                pendingHalanganScan = false
+                isHalanganMode = true
+                showStatus("Scan QR Halangan...", true)
+                startScanning()
+            } else {
+                isHalanganMode = false
+                startScanning()
+            }
+        }
     }
 
     private fun setupBarcodeScanner() {
@@ -131,7 +141,20 @@ class ScanQrFragment : Fragment(R.layout.fragment_scan_qr) {
         isProcessing = true; showLoading()
         lifecycleScope.launch {
             repository.verifyQRCode(token, qrToken).fold(
-                onSuccess = { data -> hideLoading(); isProcessing = false; showVerificationResult(data) },
+                onSuccess = { data ->
+                    hideLoading(); isProcessing = false
+                    showVerificationResult(data)
+                    // For female students, automatically prompt halangan scan after successful absensi
+                    if (isFemaleStudent && data.valid) {
+                        pendingHalanganScan = true
+                        // Disable main scan button so user must use "Scan Halangan" button
+                        btnScan.isEnabled = false
+                        btnScan.alpha = 0.3f
+                        showStatus("Absensi berhasil! Silakan scan QR Halangan", true)
+                        btnScanAgain.text = "Scan Halangan"
+                        btnScanAgain.visibility = View.VISIBLE
+                    }
+                },
                 onFailure = { error -> hideLoading(); isProcessing = false; showStatus(error.message ?: "Gagal", false) }
             )
         }
@@ -145,17 +168,23 @@ class ScanQrFragment : Fragment(R.layout.fragment_scan_qr) {
             halanganRepository.verifyHalangan(token, qrToken).fold(
                 onSuccess = { data ->
                     hideLoading(); isProcessing = false
+                    isHalanganMode = false; pendingHalanganScan = false
+                    // Re-enable main scan button
+                    btnScan.isEnabled = true; btnScan.alpha = 1.0f
                     tvStudentName.text = data.namaSiswa
                     tvStudentClass.text = if (data.jurusan.isNotEmpty()) "${data.kelas} - ${data.jurusan}" else data.kelas
                     tvPrayerType.text = "Halangan"
                     tvAttendanceStatus.text = data.status.replaceFirstChar { it.uppercase() }
                     tvAttendanceTime.text = data.tanggal
                     cardResult.visibility = View.VISIBLE
-                    showStatus("Pengajuan halangan tercatat!", true)
+                    showStatus("Absensi & Halangan berhasil dicatat!", true)
                     Toast.makeText(requireContext(), "Halangan berhasil diajukan", Toast.LENGTH_SHORT).show()
                 },
                 onFailure = { error ->
                     hideLoading(); isProcessing = false
+                    isHalanganMode = false; pendingHalanganScan = false
+                    // Re-enable main scan button
+                    btnScan.isEnabled = true; btnScan.alpha = 1.0f
                     showStatus(error.message ?: "Gagal verifikasi halangan", false)
                 }
             )
@@ -190,7 +219,7 @@ class ScanQrFragment : Fragment(R.layout.fragment_scan_qr) {
         tvStatus.setTextColor(if (isSuccess) requireContext().getColor(R.color.status_success) else requireContext().getColor(R.color.status_error))
     }
 
-    private fun hideResult() { cardResult.visibility = View.GONE }
+    private fun hideResult() { cardResult.visibility = View.GONE; btnScanAgain.text = "Pindai Lagi" }
     private fun showLoading() { progressBar.visibility = View.VISIBLE; btnScan.isEnabled = false; btnScan.alpha = 0.5f }
     private fun hideLoading() { progressBar.visibility = View.GONE; btnScan.isEnabled = true; btnScan.alpha = 1.0f }
 

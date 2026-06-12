@@ -17,11 +17,7 @@ import com.xirpl2.SASMobile.adapter.JurusanGroup
 import com.xirpl2.SASMobile.model.KelasManagementItem
 import com.xirpl2.SASMobile.model.SiswaItem
 import com.xirpl2.SASMobile.model.StaffInfo
-import com.xirpl2.SASMobile.model.SequentialProgressionRequest
-import com.xirpl2.SASMobile.model.BulkFieldsRequest
-import com.xirpl2.SASMobile.model.MessageResponse
 import com.xirpl2.SASMobile.repository.BerandaRepository
-import com.xirpl2.SASMobile.network.RetrofitClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -36,6 +32,7 @@ class KelolaKelasActivity : BaseAdminActivity() {
 
     private lateinit var etSearch: EditText
     private lateinit var actvJurusan: AutoCompleteTextView
+    private lateinit var actvKelas: AutoCompleteTextView
     private lateinit var progressLoading: ProgressBar
     private lateinit var tvEmptyState: TextView
     private lateinit var emptyStateContainer: View
@@ -45,8 +42,10 @@ class KelolaKelasActivity : BaseAdminActivity() {
     private var allKelasList = mutableListOf<KelasManagementItem>()
     private var staffList = listOf<StaffInfo>()
     private var majorsList = mutableListOf("Semua Jurusan")
+    private var kelasTingkatanList = mutableListOf("Semua Kelas")
 
     private var selectedJurusan = "Semua Jurusan"
+    private var selectedKelasFilter = "Semua Kelas"
     private var searchQuery = ""
     private lateinit var swipeRefresh: SwipeRefreshLayout
     private var searchJob: Job? = null
@@ -83,6 +82,7 @@ class KelolaKelasActivity : BaseAdminActivity() {
     private fun initializeViews() {
         etSearch = findViewById(R.id.etSearch)
         actvJurusan = findViewById(R.id.actvJurusan)
+        actvKelas = findViewById(R.id.actvKelas)
         progressLoading = findViewById(R.id.progressLoading)
         tvEmptyState = findViewById(R.id.tvEmptyState)
         emptyStateContainer = findViewById(R.id.emptyState)
@@ -130,6 +130,14 @@ class KelolaKelasActivity : BaseAdminActivity() {
             applyFilters()
         }
 
+        actvKelas.setOnClickListener {
+            actvKelas.showDropDown()
+        }
+        actvKelas.setOnItemClickListener { parent, _, position, _ ->
+            selectedKelasFilter = parent.getItemAtPosition(position).toString()
+            applyFilters()
+        }
+
         btnMassPromotion.setOnClickListener { showMassPromotionWizard() }
     }
 
@@ -150,6 +158,10 @@ class KelolaKelasActivity : BaseAdminActivity() {
 
                     val majors = list.mapNotNull { it.jurusan }.distinct().sorted()
                     setupJurusanDropdown(majors)
+
+                    // Setup kelas tingkatan filter (10, 11, 12)
+                    val tingkatanOptions = list.mapNotNull { it.tingkatan }.distinct().sorted().map { it.toString() }
+                    setupKelasDropdown(tingkatanOptions)
 
                     applyFilters()
                     progressLoading.visibility = View.GONE
@@ -180,6 +192,16 @@ class KelolaKelasActivity : BaseAdminActivity() {
         actvJurusan.setText(majorsList[0], false)
     }
 
+    private fun setupKelasDropdown(tingkatanOptions: List<String>) {
+        kelasTingkatanList.clear()
+        kelasTingkatanList.add("Semua Kelas")
+        kelasTingkatanList.addAll(tingkatanOptions)
+
+        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, kelasTingkatanList)
+        actvKelas.setAdapter(adapter)
+        actvKelas.setText(kelasTingkatanList[0], false)
+    }
+
     private fun loadStaffList() {
         val token = getAuthToken()
         if (token.isEmpty()) return
@@ -199,7 +221,8 @@ class KelolaKelasActivity : BaseAdminActivity() {
             val matchSearch = kelas.label.contains(searchQuery, ignoreCase = true) ||
                              (kelas.wali_kelas?.contains(searchQuery, ignoreCase = true) ?: false)
             val matchJurusan = selectedJurusan == "Semua Jurusan" || kelas.jurusan == selectedJurusan
-            matchSearch && matchJurusan
+            val matchKelas = selectedKelasFilter == "Semua Kelas" || kelas.tingkatan?.toString() == selectedKelasFilter
+            matchSearch && matchJurusan && matchKelas
         }
 
         val groups = result
@@ -341,12 +364,14 @@ class KelolaKelasActivity : BaseAdminActivity() {
             btnStep1.isEnabled = false; pbStep1.visibility = View.VISIBLE
             lifecycleScope.launch(Dispatchers.IO) {
                 val token = getAuthToken()
-                val ok = graduateKelas12(token, kelas12)
+                val res = repository.graduateGrade12(token)
                 withContext(Dispatchers.Main) {
                     pbStep1.visibility = View.GONE
-                    if (ok) { ivStep1Check.visibility = View.VISIBLE; btnStep2.isEnabled = true
-                        Toast.makeText(this@KelolaKelasActivity, "Kelas 12 diluluskan", Toast.LENGTH_SHORT).show() }
-                    else { btnStep1.isEnabled = true; Toast.makeText(this@KelolaKelasActivity, "Gagal", Toast.LENGTH_SHORT).show() }
+                    res.fold(
+                        onSuccess = { ivStep1Check.visibility = View.VISIBLE; btnStep2.isEnabled = true
+                            Toast.makeText(this@KelolaKelasActivity, "Kelas 12 diluluskan", Toast.LENGTH_SHORT).show() },
+                        onFailure = { btnStep1.isEnabled = true; Toast.makeText(this@KelolaKelasActivity, "Gagal: ${it.message}", Toast.LENGTH_SHORT).show() }
+                    )
                 }
             }
         }
@@ -355,13 +380,13 @@ class KelolaKelasActivity : BaseAdminActivity() {
             btnStep2.isEnabled = false; pbStep2.visibility = View.VISIBLE
             lifecycleScope.launch(Dispatchers.IO) {
                 val token = getAuthToken()
-                val res = repository.sequentialProgression(token, SequentialProgressionRequest("11", "12"))
+                val res = repository.promoteGrade11(token)
                 withContext(Dispatchers.Main) {
                     pbStep2.visibility = View.GONE
                     res.fold(
                         onSuccess = { ivStep2Check.visibility = View.VISIBLE; btnStep3.isEnabled = true
                             Toast.makeText(this@KelolaKelasActivity, "Kelas 11 → 12 berhasil", Toast.LENGTH_SHORT).show() },
-                        onFailure = { btnStep2.isEnabled = true; Toast.makeText(this@KelolaKelasActivity, it.message, Toast.LENGTH_SHORT).show() }
+                        onFailure = { btnStep2.isEnabled = true; Toast.makeText(this@KelolaKelasActivity, "Gagal: ${it.message}", Toast.LENGTH_SHORT).show() }
                     )
                 }
             }
@@ -371,13 +396,13 @@ class KelolaKelasActivity : BaseAdminActivity() {
             btnStep3.isEnabled = false; pbStep3.visibility = View.VISIBLE
             lifecycleScope.launch(Dispatchers.IO) {
                 val token = getAuthToken()
-                val res = repository.sequentialProgression(token, SequentialProgressionRequest("10", "11"))
+                val res = repository.promoteGrade10(token)
                 withContext(Dispatchers.Main) {
                     pbStep3.visibility = View.GONE
                     res.fold(
                         onSuccess = { ivStep3Check.visibility = View.VISIBLE; btnClose.visibility = View.VISIBLE
                             Toast.makeText(this@KelolaKelasActivity, "Kelas 10 → 11 berhasil", Toast.LENGTH_SHORT).show() },
-                        onFailure = { btnStep3.isEnabled = true; Toast.makeText(this@KelolaKelasActivity, it.message, Toast.LENGTH_SHORT).show() }
+                        onFailure = { btnStep3.isEnabled = true; Toast.makeText(this@KelolaKelasActivity, "Gagal: ${it.message}", Toast.LENGTH_SHORT).show() }
                     )
                 }
             }
@@ -387,18 +412,5 @@ class KelolaKelasActivity : BaseAdminActivity() {
         dialog.show()
     }
 
-    private suspend fun graduateKelas12(token: String, kelas12: List<KelasManagementItem>): Boolean {
-        val allNis = mutableListOf<String>()
-        for (k in kelas12) {
-            val detail = withContext(Dispatchers.IO) {
-                try {
-                    val r = RetrofitClient.apiService.getAdminManagementKelasDetail("Bearer $token", k.id_kelas)
-                    if (r.isSuccessful) r.body()?.data?.students?.map { it.nis } ?: emptyList() else emptyList()
-                } catch (e: Exception) { emptyList() }
-            }
-            allNis.addAll(detail)
-        }
-        if (allNis.isEmpty()) return true
-        return repository.updateBulkStudentFields(token, BulkFieldsRequest(student_ids = allNis, statusAkademik = "ALUMNI")).isSuccess
-    }
+
 }

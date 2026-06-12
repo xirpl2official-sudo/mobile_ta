@@ -332,19 +332,7 @@
                                     android:textColor="@color/slate_700"
                                     android:layout_marginEnd="8dp" />
 
-                                <com.google.android.material.button.MaterialButton
-                                    android:id="@+id/btnCetakData"
-                                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="36dp"
-                                    android:text="Cetak"
-                                    android:textAllCaps="false"
-                                    android:textSize="12sp"
-                                    app:icon="@drawable/ic_print"
-                                    app:iconSize="16dp"
-                                    app:cornerRadius="8dp"
-                                    app:strokeColor="@color/slate_300"
-                                    android:textColor="@color/slate_700" />
+
 
                             </LinearLayout>
 

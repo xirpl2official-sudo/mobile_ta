@@ -327,13 +327,8 @@ class PresensiSholatAdminActivity : BaseAdminActivity() {
             filterJurusan.visibility = View.GONE
         }
 
-        filterTanggal.setOnClickListener {
-            showFilterDialog("Pilih Tanggal", tanggalOptions, selectedTanggal) { selected ->
-                selectedTanggal = selected
-                filterTanggal.text = selected
-                refreshData()
-            }
-        }
+        // Hide date filter per user request
+        filterTanggal.visibility = View.GONE
 
         filterKelas.setOnClickListener {
             showFilterDialog("Pilih Kelas", kelasOptions, selectedKelas) { selected ->

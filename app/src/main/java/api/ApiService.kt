@@ -567,6 +567,17 @@ interface ApiService {
     @POST("v2/admin/student-control/sequential-progression")
     suspend fun sequentialProgression(@Header("Authorization") token: String, @Body request: SequentialProgressionRequest): Response<MessageResponse>
 
+    // --- Promotion Phase Endpoints (matches desktop) ---
+
+    @POST("v2/admin/promotion/phases/graduate-12")
+    suspend fun graduateGrade12(@Header("Authorization") token: String): Response<MessageResponse>
+
+    @POST("v2/admin/promotion/phases/promote-11")
+    suspend fun promoteGrade11(@Header("Authorization") token: String): Response<MessageResponse>
+
+    @POST("v2/admin/promotion/phases/promote-10")
+    suspend fun promoteGrade10(@Header("Authorization") token: String): Response<MessageResponse>
+
     // --- Admin Promotion - Simulate (FASE 3.5) ---
 
     @POST("v2/admin/promotion/simulate")
